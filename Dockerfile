@@ -1,5 +1,5 @@
 # Stage 1: Build with Maven and OpenJDK 21
-FROM maven:3.9.8-eclipse-temurin-21 AS build
+FROM maven:3.9.8-eclipse-temurin-21-slim AS build
 
 WORKDIR /app
 
