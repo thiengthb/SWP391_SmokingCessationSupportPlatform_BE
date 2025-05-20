@@ -15,6 +15,7 @@ FROM openjdk:25-ea-21-slim
 WORKDIR /app
 
 COPY --from=build /app/target/*.jar app.jar
+COPY .env .
 
 EXPOSE 8080
 
