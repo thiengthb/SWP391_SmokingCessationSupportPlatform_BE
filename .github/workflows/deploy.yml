@@ -1,0 +1,25 @@
+name: Backend Deployment
+
+on:
+  push:
+    branches[main]
+
+jobs:
+  deploy:
+    run-on: ubuntu-lastest
+    steps:
+      - name: Deploy using SSH
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          password: ${{ secrets.PASSWORD }}
+          port: 22
+          script: |
+            cd /home/project-deploy-vps
+            git fetch origin
+            git checkout main
+            git pull
+            maven install
+            maven clean package -DskipTests
+            docker compose up
