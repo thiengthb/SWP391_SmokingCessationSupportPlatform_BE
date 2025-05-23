@@ -35,10 +35,10 @@ jobs:
       # Build and push Docker image
       - name: Build and push Docker image
         run: |
-          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/my-spring-boot-app:${{ github.sha }} .
-          docker tag ${{ secrets.DOCKERHUB_USERNAME }}/my-spring-boot-app:${{ github.sha }} ${{ secrets.DOCKERHUB_USERNAME }}/my-spring-boot-app:latest
-          docker push ${{ secrets.DOCKERHUB_USERNAME }}/my-spring-boot-app:${{ github.sha }}
-          docker push ${{ secrets.DOCKERHUB_USERNAME }}/my-spring-boot-app:latest
+          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/my-springboot-app:${{ github.sha }} .
+          docker tag ${{ secrets.DOCKERHUB_USERNAME }}/my-springboot-app:${{ github.sha }} ${{ secrets.DOCKERHUB_USERNAME }}/my-springboot-app:latest
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/my-springboot-app:${{ github.sha }}
+          docker push ${{ secrets.DOCKERHUB_USERNAME }}/my-springboot-app:latest
 
       # Deploy to EC2
       - name: Deploy to EC2
@@ -57,14 +57,14 @@ jobs:
             sudo docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_TOKEN }}
           
             # Stop and remove existing container if it exists
-            sudo docker stop my-spring-boot-container || true
-            sudo docker rm my-spring-boot-container || true
+            sudo docker stop my-springboot-container || true
+            sudo docker rm my-springboot-container || true
           
             # Pull the latest image
-            sudo docker pull ${{ secrets.DOCKERHUB_USERNAME }}/my-spring-boot-app:latest
+            sudo docker pull ${{ secrets.DOCKERHUB_USERNAME }}/my-springboot-app:latest
           
             # Run the new container
-            sudo docker run -d --name my-spring-boot-container -p 8080:8080 ${{ secrets.DOCKERHUB_USERNAME }}/my-spring-boot-app:latest
+            sudo docker run -d --name my-springboot-container -p 8080:8080 ${{ secrets.DOCKERHUB_USERNAME }}/my-springboot-app:latest
           
             # Clean up unused images
             sudo docker image prune -f
