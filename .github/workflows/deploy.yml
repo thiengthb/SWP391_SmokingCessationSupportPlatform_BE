@@ -54,21 +54,21 @@ jobs:
           # SSH into EC2 and deploy
           ssh -o StrictHostKeyChecking=no -i ssh_key.pem $EC2_USER@$EC2_HOST << 'EOF'
             # Log in to DockerHub
-            docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_TOKEN }}
+            sudo docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_TOKEN }}
           
             # Stop and remove existing container if it exists
-            docker stop my-spring-boot-container || true
-            docker rm my-spring-boot-container || true
+            sudo docker stop my-spring-boot-container || true
+            sudo docker rm my-spring-boot-container || true
           
             # Pull the latest image
-            docker pull ${{ secrets.DOCKERHUB_USERNAME }}/my-spring-boot-app:latest
+            sudo docker pull ${{ secrets.DOCKERHUB_USERNAME }}/my-spring-boot-app:latest
           
             # Run the new container
-            docker run -d --name my-spring-boot-container -p 8080:8080 ${{ secrets.DOCKERHUB_USERNAME }}/my-spring-boot-app:latest
+            sudo docker run -d --name my-spring-boot-container -p 8080:8080 ${{ secrets.DOCKERHUB_USERNAME }}/my-spring-boot-app:latest
           
             # Clean up unused images
-            docker image prune -f
+            sudo docker image prune -f
           EOF
           
           # Clean up SSH key
-          rm ssh_key.pem
+          sudo rm ssh_key.pem
