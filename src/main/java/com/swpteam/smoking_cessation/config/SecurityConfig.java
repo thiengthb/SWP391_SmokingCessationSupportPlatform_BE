@@ -16,6 +16,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .authorizeHttpRequests(auth -> auth
+                .requestMatchers("/oauth2/callback", "/auth/**").permitAll()
                         .anyRequest().permitAll() // Cho phép tất cả endpoint công khai
                 )
                 .csrf(csrf -> csrf.disable()); // Tắt CSRF để test API
@@ -27,3 +28,4 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder(); // Để mã hóa mật khẩu
     }
 }
+
