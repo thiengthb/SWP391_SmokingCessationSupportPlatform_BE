@@ -7,7 +7,7 @@ target/
 ### STS ###
 .apt_generated
 .classpath
-.factorypath
+.factorypathwwwww
 .project
 .settings
 .springBeans
@@ -31,3 +31,6 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### Environment ###
+.env
