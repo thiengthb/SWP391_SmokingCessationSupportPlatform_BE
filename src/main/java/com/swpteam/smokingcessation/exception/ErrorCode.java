@@ -1,31 +1,20 @@
 package com.swpteam.smokingcessation.exception;
 
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
 public enum ErrorCode {
-    USER_NOTEXIST (100,"User does not exist in the system")
+    USER_NOT_EXISTED(1000,"User does not exist"),
+    MEMBERSHIP_NOT_EXISTED(1001, "Membership does not exist")
     ;
 
-    private int code;
-    private String message;
+    private final int code;
+    private final String message;
 
     ErrorCode(int code, String message) {
         this.message = message;
         this.code = code;
     }
 
-    public
-    void setMessage(String message) {
-        this.message = message;
-    }
-
-    public void setCode(int code) {
-        this.code = code;
-    }
-
-    public int getCode() {
-        return code;
-    }
-
-    public String getMessage() {
-        return message;
-    }
 }
