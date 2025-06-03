@@ -14,10 +14,10 @@ public class MembershipCreationRequest {
     @NotBlank(message = "Name must not be empty")
     String name;
 
-    @Positive(message = "Duration must a positive number")
+    @Positive(message = "Duration must be a positive number")
     int duration;
 
-    @Positive(message = "Price must a positive number")
+    @Positive(message = "Price must be a positive number")
     double price;
 
     String description;
