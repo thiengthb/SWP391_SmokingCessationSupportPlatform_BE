@@ -1,8 +1,12 @@
 package com.swpteam.smokingcessation.exception;
 
+
 public enum ErrorCode {
-    USER_NOTEXIST (100,"User does not exist in the system")
-    ;
+    ACCOUNT_NOT_EXISTED(100, "Account does not exist in the system"),
+    ACCOUNT_EXISTED(101, "Account already exist in the system"),
+    ACCOUNT_DELETED(102, "Account has been deleted"),
+    TOKEN_EXPIRED(103, "Token is expired"),
+    WRONG_PASSWORD(104, "Wrong password for email");
 
     private int code;
     private String message;
@@ -12,8 +16,7 @@ public enum ErrorCode {
         this.code = code;
     }
 
-    public
-    void setMessage(String message) {
+    public void setMessage(String message) {
         this.message = message;
     }
 
