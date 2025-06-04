@@ -9,6 +9,8 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class SubscriptionRequest {
+    String accountId;
+    String email;
     Long amount;
     String name;
     String currency;

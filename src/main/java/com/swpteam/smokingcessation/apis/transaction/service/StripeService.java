@@ -5,11 +5,18 @@ import com.stripe.model.checkout.Session;
 import com.stripe.param.checkout.SessionCreateParams;
 import com.swpteam.smokingcessation.apis.transaction.dto.request.SubscriptionRequest;
 import com.swpteam.smokingcessation.apis.transaction.dto.response.StripeResponse;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
 
 @Service
+@RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@Slf4j
 public class StripeService {
 
     public StripeResponse checkoutSubscription(SubscriptionRequest request) {
@@ -35,7 +42,9 @@ public class StripeService {
         SessionCreateParams params =
                 SessionCreateParams.builder()
                         .addPaymentMethodType(SessionCreateParams.PaymentMethodType.CARD)
-                        .setMode(SessionCreateParams.Mode.PAYMENT)
+                        .setMode(SessionCreateParams.Mode.SUBSCRIPTION)
+                        .setCustomerEmail(request.getEmail())
+                        .setCustomer(request.getAccountId())
                         .setSuccessUrl("http://localhost:8080/success")
                         .setCancelUrl("http://localhost:8080/cancel")
                         .addLineItem(lineItem)
