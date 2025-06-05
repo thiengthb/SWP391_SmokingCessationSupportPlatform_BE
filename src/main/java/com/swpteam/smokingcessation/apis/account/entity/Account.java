@@ -3,7 +3,6 @@ package com.swpteam.smokingcessation.apis.account.entity;
 import com.swpteam.smokingcessation.apis.setting.Setting;
 import com.swpteam.smokingcessation.apis.subscription.entity.Subscription;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Size;
 import lombok.*;
 import org.hibernate.proxy.HibernateProxy;
 

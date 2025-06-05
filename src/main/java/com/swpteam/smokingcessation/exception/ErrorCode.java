@@ -1,6 +1,6 @@
 package com.swpteam.smokingcessation.exception;
 
-import lombok.AllArgsConstructor;
+
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -20,6 +20,11 @@ public enum ErrorCode {
     END_DATE_REQUIRED(1004, "End date is required", HttpStatus.BAD_REQUEST),
     PAYMENT_STATUS_REQUIRED(1005, "Payment status is required", HttpStatus.BAD_REQUEST),
     ACCOUNT_NOT_BLANK(1006, "Account ID cannot be blank", HttpStatus.BAD_REQUEST),
+    PASSWORD_REQUIRED(1007, "Password field cannot be empty", HttpStatus.BAD_REQUEST),
+    CODE_REQUIRED(1008, "Google code field cannot be empty", HttpStatus.BAD_REQUEST),
+    REFRESH_TOKEN_REQUIRED(1009, "Refresh token field cannot be empty", HttpStatus.BAD_REQUEST),
+    PASSWORD_INVALID(1010, "Password must be at least {min} characters", HttpStatus.BAD_REQUEST),
+    PHONE_NUMBER_INVALID(1011, "Phone number must be 10 digits and consists of numbers only", HttpStatus.BAD_REQUEST),
 
     // Authentication
     UNAUTHENTICATED(1000, "Unauthenticated", HttpStatus.UNAUTHORIZED),

@@ -12,7 +12,10 @@ import com.swpteam.smokingcessation.apis.account.entity.AccountStatus;
 import com.swpteam.smokingcessation.apis.account.entity.Role;
 import com.swpteam.smokingcessation.apis.account.mapper.AccountMapper;
 import com.swpteam.smokingcessation.apis.account.repository.AccountRepository;
-import com.swpteam.smokingcessation.apis.authentication.dto.request.*;
+import com.swpteam.smokingcessation.apis.authentication.dto.request.AuthenticationRequest;
+import com.swpteam.smokingcessation.apis.authentication.dto.request.GoogleTokenRequest;
+import com.swpteam.smokingcessation.apis.authentication.dto.request.RefreshTokenRequest;
+import com.swpteam.smokingcessation.apis.authentication.dto.request.RegisterRequest;
 import com.swpteam.smokingcessation.apis.authentication.dto.response.AuthenticationResponse;
 import com.swpteam.smokingcessation.apis.authentication.dto.response.GoogleTokenResponse;
 import com.swpteam.smokingcessation.apis.authentication.dto.response.IntrospectResponse;
@@ -162,6 +165,7 @@ public class AuthenticationService {
         }
     }
 
+    //Using refresh token to issue a new token
     public AuthenticationResponse refreshToken(RefreshTokenRequest request) throws ParseException, JOSEException {
         String refreshToken = request.getRefreshToken();
         SignedJWT signedJWT;
