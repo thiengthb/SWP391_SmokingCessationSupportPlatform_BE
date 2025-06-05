@@ -9,7 +9,7 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class RefreshTokenRequest {
-    @NotBlank(message = "BLANK_INVALID")
+public class TokenRefreshRequest {
+    @NotBlank(message = "REFRESH_TOKEN_REQUIRED")
     String refreshToken;
 }
