@@ -10,6 +10,6 @@ import lombok.experimental.FieldDefaults;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class GoogleTokenRequest {
-    @NotBlank(message = "BLANK_INVALID")
+    @NotBlank(message = "CODE_REQUIRED")
     String code;
 }

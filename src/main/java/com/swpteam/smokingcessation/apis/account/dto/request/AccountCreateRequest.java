@@ -17,11 +17,11 @@ import java.time.LocalDateTime;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class AccountCreateRequest {
-    @NotBlank(message = "BLANK_INVALID")
+    @NotBlank(message = "EMAIL_REQUIRED")
     @Email(message = "EMAIL_INVALID")
     String email;
 
-    @NotBlank(message = "BLANK_INVALID")
+    @NotBlank(message = "MESSAGE_REQUIRED")
     @Size(min = 8, message = "PASSWORD_INVALID")
     String password;
 
