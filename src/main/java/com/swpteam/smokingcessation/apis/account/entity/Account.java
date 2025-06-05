@@ -29,8 +29,7 @@ public class Account {
     @Column(nullable = false, columnDefinition = "NVARCHAR(100)")
     private String password;
 
-    @Column(unique = true, columnDefinition = "NVARCHAR(11)")
-    @Size(min = 11, message = "Phone number needs to be at least 11 characters long")
+    @Column(unique = true, columnDefinition = "NVARCHAR(10)")
     private String phoneNumber;
 
     @Enumerated(EnumType.STRING)
