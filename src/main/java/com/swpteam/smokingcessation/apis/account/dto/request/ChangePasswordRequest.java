@@ -14,14 +14,14 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @DifferentPasswords
 public class ChangePasswordRequest {
-    @NotBlank(message = "Email is required")
-    @Email(message = "Email should be valid")
+    @NotBlank(message = "BLANK_INVALID")
+    @Email(message = "EMAIL_INVALID")
     String email;
 
-    @NotBlank(message = "Old password is required")
+    @NotBlank(message = "BLANK_INVALID")
     String oldPassword;
 
-    @Size(min = 8, message = "The password need to be at least 8 characters")
-    @NotBlank(message = "New password is required")
+    @Size(min = 8, message = "PASSWORD_INVALID")
+    @NotBlank(message = "BLANK_INVALID")
     String newPassword;
 }
