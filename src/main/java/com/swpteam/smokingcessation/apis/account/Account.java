@@ -5,7 +5,6 @@ import com.swpteam.smokingcessation.apis.account.enums.Role;
 import com.swpteam.smokingcessation.apis.setting.Setting;
 import com.swpteam.smokingcessation.apis.subscription.Subscription;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Size;
 import lombok.*;
 import org.hibernate.proxy.HibernateProxy;
 
