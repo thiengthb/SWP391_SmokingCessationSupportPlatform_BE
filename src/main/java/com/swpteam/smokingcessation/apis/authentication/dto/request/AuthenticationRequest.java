@@ -1,5 +1,8 @@
 package com.swpteam.smokingcessation.apis.authentication.dto.request;
 
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -9,6 +12,11 @@ import lombok.experimental.FieldDefaults;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class AuthenticationRequest {
+    @NotBlank(message = "BLANK_INVALID")
+    @Email(message = "EMAIL_INVALID")
     String email;
+
+    @NotBlank(message = "BLANK_INVALID")
+    @Size(min = 8, message = "PASSWORD_INVALID")
     String password;
 }
