@@ -2,6 +2,7 @@ package com.swpteam.smokingcessation.apis.membership.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -11,13 +12,14 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class MembershipCreationRequest {
-    @NotBlank(message = "Name must not be empty")
+    @NotBlank(message = "MEMBERSHIP_NAME_NOT_EMPTY")
+    @Size(min = 3, message = "MEMBERSHIP_MIN_SIZE")
     String name;
 
-    @Positive(message = "Duration must be a positive number")
+    @Positive(message = "DURATION_NEGATIVE")
     int duration;
 
-    @Positive(message = "Price must be a positive number")
+    @Positive(message = "PRICE_NEGATIVE")
     double price;
 
     String description;

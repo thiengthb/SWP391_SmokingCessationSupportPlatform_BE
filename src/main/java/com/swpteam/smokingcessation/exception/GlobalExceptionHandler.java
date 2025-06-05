@@ -5,6 +5,7 @@ import com.swpteam.smokingcessation.common.response.ApiResponse;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -17,46 +18,76 @@ import java.util.Map;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(value = AppException.class)
-    ResponseEntity<ApiResponse> handlingAppException(AppException exception) {
-        ErrorCode errorCode = exception.getErrorCode();
-        ApiResponse apiResponse = new ApiResponse<>();
+    @ExceptionHandler(value = Exception.class)
+    ResponseEntity<ApiResponse> handlingException(Exception exception) {
+        ApiResponse apiResponse = new ApiResponse<>().builder()
+                .code(ErrorCode.UNCATEGORIZED_EXCEPTION.getCode())
+                .message(ErrorCode.UNCATEGORIZED_EXCEPTION.getMessage())
+                .build();
 
-        apiResponse.setCode(errorCode.getCode());
-        apiResponse.setMessage(errorCode.getMessage());
         return ResponseEntity.badRequest().body(apiResponse);
     }
 
+    @ExceptionHandler(value = AppException.class)
+    ResponseEntity<ApiResponse> handlingAppException(AppException exception) {
+        ErrorCode errorCode = exception.getErrorCode();
+        ApiResponse apiResponse = new ApiResponse<>().builder()
+                .code(errorCode.getCode())
+                .message(errorCode.getMessage())
+                .build();
+
+        return ResponseEntity
+                .status(errorCode.getHttpCode())
+                .body(apiResponse);
+    }
+
     @ExceptionHandler(EntityNotFoundException.class)
-    public ResponseEntity<String> handleEntityNotFound(EntityNotFoundException ex) {
-        return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
+    ResponseEntity<String> handleEntityNotFoundException(EntityNotFoundException exception) {
+        return new ResponseEntity<>(exception.getMessage(), HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(value = AccessDeniedException.class)
+    ResponseEntity<ApiResponse> handlingAccessDeniedException(AppException exception) {
+        ErrorCode errorCode = ErrorCode.UNAUTHORIZED;
+
+        ApiResponse apiResponse = new ApiResponse<>().builder()
+                .code(errorCode.getCode())
+                .message(errorCode.getMessage())
+                .build();
+
+        return ResponseEntity
+                .status(errorCode.getHttpCode())
+                .body(apiResponse);
     }
 
     @ExceptionHandler(SecurityException.class)
-    public ResponseEntity<ApiResponse> handleSecurityException(SecurityException ex) {
-        ApiResponse apiResponse = new ApiResponse<>();
-        apiResponse.setCode(401);
-        apiResponse.setMessage(ex.getMessage());
+    ResponseEntity<ApiResponse> handleSecurityException(SecurityException exception) {
+        ApiResponse apiResponse = new ApiResponse<>().builder()
+                .code(401)
+                .message(exception.getMessage())
+                .build();
+
         return new ResponseEntity<>(apiResponse, HttpStatus.UNAUTHORIZED);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ApiResponse<Map<String, String>>> handleValidationExceptions(MethodArgumentNotValidException ex) {
-        Map<String, String> errors = new HashMap<>();
-        // Field errors
-        for (FieldError error : ex.getBindingResult().getFieldErrors()) {
-            errors.put(error.getField(), error.getDefaultMessage());
+    ResponseEntity<ApiResponse> handleValidationExceptions(MethodArgumentNotValidException exception) {
+        String enumKey = exception.getFieldError().getDefaultMessage();
+        ErrorCode errorCode = ErrorCode.INVALID_MESSAGE_KEY;
+
+        try {
+            errorCode = ErrorCode.valueOf(enumKey);
+        } catch (IllegalArgumentException ignored) {
         }
-        // Global (object-level) errors
-        for (ObjectError error : ex.getBindingResult().getGlobalErrors()) {
-            errors.put(error.getObjectName(), error.getDefaultMessage());
-        }
-        ApiResponse<Map<String, String>> apiResponse = ApiResponse.<Map<String, String>>builder()
-                .code(HttpStatus.BAD_REQUEST.value())
-                .message("Validation failed")
-                .result(errors)
+
+        ApiResponse apiResponse = new ApiResponse().builder()
+                .code(errorCode.getCode())
+                .message(errorCode.getMessage())
                 .build();
-        return new ResponseEntity<>(apiResponse, HttpStatus.BAD_REQUEST);
+
+        return ResponseEntity
+                .status(errorCode.getHttpCode())
+                .body(apiResponse);
     }
 }
     

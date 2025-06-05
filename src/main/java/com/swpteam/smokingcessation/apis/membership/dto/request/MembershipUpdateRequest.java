@@ -11,10 +11,10 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class MembershipUpdateRequest {
-    @Positive(message = "Duration must be a positive number")
+    @Positive(message = "DURATION_NEGATIVE")
     int duration;
 
-    @Positive(message = "Price must be a positive number")
+    @Positive(message = "PRICE_NEGATIVE")
     double price;
 
     String description;
