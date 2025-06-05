@@ -5,6 +5,7 @@ import com.nimbusds.jose.crypto.MACSigner;
 import com.nimbusds.jose.crypto.MACVerifier;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
+import com.swpteam.smokingcessation.apis.account.dto.request.AccountCreateRequest;
 import com.swpteam.smokingcessation.apis.account.dto.response.AccountResponse;
 import com.swpteam.smokingcessation.apis.account.Account;
 import com.swpteam.smokingcessation.apis.account.enums.AccountStatus;
@@ -95,7 +96,7 @@ public class AuthenticationService {
         boolean authenticated = passwordEncoder.matches(request.getPassword(), account.getPassword());
 
         if (!authenticated) {
-            throw new AppException(ErrorCode.ACCOUNT_NOT_EXISTED);
+            throw new AppException(ErrorCode.WRONG_PASSWORD);
         }
 
         var accessToken = generateToken(request.getEmail());
@@ -168,7 +169,7 @@ public class AuthenticationService {
         JWSVerifier verifier = new MACVerifier(SIGNER_KEY.getBytes());
 
         if (!signedJWT.verify(verifier)) {
-            throw new SecurityException("Invalid JWT signature");
+            throw new AppException(ErrorCode.INVALID_SIGNATURE);
         }
 
         Date expiryTime = signedJWT.getJWTClaimsSet().getExpirationTime();
@@ -195,8 +196,7 @@ public class AuthenticationService {
             throw new AppException(ErrorCode.ACCOUNT_EXISTED);
         }
 
-        Account account = accountMapper.toAccount(
-                com.swpteam.smokingcessation.apis.account.dto.request.AccountCreateRequest.builder()
+        Account account = accountMapper.toAccount(AccountCreateRequest.builder()
                         .email(request.getEmail())
                         .password(request.getPassword())
                         .phoneNumber(request.getPhoneNumber())
