@@ -8,6 +8,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.validation.FieldError;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -23,7 +25,7 @@ public class GlobalExceptionHandler {
     private static final String MIN_ATTRIBUTE = "min";
 
     @ExceptionHandler(value = AppException.class)
-    ResponseEntity<ApiResponse> handlingAppException(AppException exception){
+    ResponseEntity<ApiResponse> handlingAppException(AppException exception) {
         ErrorCode errorCode = exception.getErrorCode();
         ApiResponse apiResponse = new ApiResponse<>();
 
@@ -37,6 +39,13 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
     }
 
+    @ExceptionHandler(SecurityException.class)
+    public ResponseEntity<ApiResponse> handleSecurityException(SecurityException ex) {
+        ApiResponse apiResponse = new ApiResponse<>();
+        apiResponse.setCode(401);
+        apiResponse.setMessage(ex.getMessage());
+        return new ResponseEntity<>(apiResponse, HttpStatus.UNAUTHORIZED);
+    }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ApiResponse> handleValidationExceptions(MethodArgumentNotValidException exception) {
@@ -86,3 +95,4 @@ public class GlobalExceptionHandler {
         return ResponseEntity.badRequest().body(apiResponse);
     }
 }
+    
