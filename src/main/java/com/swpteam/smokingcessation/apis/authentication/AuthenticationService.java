@@ -70,7 +70,7 @@ public class AuthenticationService {
     @Value("${spring.security.oauth2.client.registration.google.redirect-uri:http://localhost:8080/oauth2/callback}")
     protected String REDIRECT_URI;
 
-    public com.swpteam.smokingcessation.apis.authentication.dto.response.GoogleTokenResponse getGoogleToken(GoogleTokenRequest request) {
+    public GoogleTokenResponse getGoogleToken(GoogleTokenRequest request) {
         String tokenEndpoint = "https://oauth2.googleapis.com/token";
         Mono<GoogleTokenResponse> responseMono = webClient.post()
                 .uri(tokenEndpoint)
@@ -202,7 +202,6 @@ public class AuthenticationService {
                         .phoneNumber(request.getPhoneNumber())
                         .role(Role.MEMBER)
                         .status(AccountStatus.ACTIVE)
-                        .isDeleted(false)
                         .build()
         );
 

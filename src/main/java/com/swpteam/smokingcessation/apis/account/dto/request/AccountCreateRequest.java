@@ -29,7 +29,4 @@ public class AccountCreateRequest {
     String phoneNumber;
     Role role;
     AccountStatus status;
-    LocalDateTime createdAt;
-    LocalDateTime updatedAt;
-    boolean isDeleted;
 }
