@@ -15,7 +15,10 @@ public enum ErrorCode {
     // Common
     ACCOUNT_REQUIRED(1000, "Account is required", HttpStatus.BAD_REQUEST),
     EMAIL_REQUIRED(1001, "Email is required", HttpStatus.BAD_REQUEST),
-    EMAIL_FORMAT(1002, "Wrong email format", HttpStatus.BAD_REQUEST),
+    INVALID_EMAIL_FORMAT(1002, "Wrong email format", HttpStatus.BAD_REQUEST),
+    START_DATE_REQUIRED(1003, "Start date is required", HttpStatus.BAD_REQUEST),
+    END_DATE_REQUIRED(1004, "End date is required", HttpStatus.BAD_REQUEST),
+    PAYMENT_STATUS_REQUIRED(1005, "Payment status is required", HttpStatus.BAD_REQUEST),
 
     // Authentication
     UNAUTHENTICATED(1000, "Unauthenticated", HttpStatus.UNAUTHORIZED),
@@ -32,16 +35,20 @@ public enum ErrorCode {
     MEMBERSHIP_NOT_EXISTED(4000, "Membership does not exist", HttpStatus.BAD_REQUEST),
     MEMBERSHIP_EXISTED(4001, "Membership already existed", HttpStatus.BAD_REQUEST),
     MEMBERSHIP_NAME_NOT_EMPTY(4002, "Membership name must not be empty", HttpStatus.BAD_REQUEST),
-    MEMBERSHIP_MIN_SIZE(4003, "Membership name length must be at least 3 characters", HttpStatus.BAD_REQUEST),
+    MEMBERSHIP_MIN_SIZE(4003, "Membership name length must be at least {min} characters", HttpStatus.BAD_REQUEST),
     DURATION_NEGATIVE(4004, "Duration must be a positive number", HttpStatus.BAD_REQUEST),
     PRICE_NEGATIVE(4005, "Price must be a positive number", HttpStatus.BAD_REQUEST),
 
     // Transaction
-    AMOUNT_REQUIRED(5002, "Transaction amount is required", HttpStatus.BAD_REQUEST),
-    NAME_REQUIRED(5003, "Name is required", HttpStatus.BAD_REQUEST),
-    CURRENCY_REQUIRED(5004, "Currency is required", HttpStatus.BAD_REQUEST),
-    AMOUNT_NEGATIVE(5005, "Transaction amount must be a positive number", HttpStatus.BAD_REQUEST),
+    AMOUNT_REQUIRED(5001, "Transaction amount is required", HttpStatus.BAD_REQUEST),
+    NAME_REQUIRED(5002, "Name is required", HttpStatus.BAD_REQUEST),
+    CURRENCY_REQUIRED(5003, "Currency is required", HttpStatus.BAD_REQUEST),
+    AMOUNT_NEGATIVE(5004, "Transaction amount must be a positive number", HttpStatus.BAD_REQUEST),
 
+    // Subscription
+    SUBSCRIPTION_NOT_EXISTED(4000, "Subscription does not exist", HttpStatus.BAD_REQUEST),
+    START_DATE_MUST_BE_TODAY_OR_FUTURE(6001, "Start date must be today or in the future", HttpStatus.BAD_REQUEST),
+    END_DATE_MUST_BE_IN_FUTURE(6002, "End date must be today or in the future", HttpStatus.BAD_REQUEST),
 
     ;
     private final int code;

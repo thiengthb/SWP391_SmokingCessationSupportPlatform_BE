@@ -11,13 +11,7 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class SubscriptionRequest {
-    @NotNull(message = "ACCOUNT_REQUIRED")
-    String accountId;
-
-    @NotNull(message = "EMAIL_REQUIRED")
-    @Email(message = "EMAIL_FORMAT")
-    String email;
+public class StripeSubscriptionRequest {
 
     @NotNull(message = "AMOUNT_REQUIRED")
     @Positive(message = "AMOUNT_NEGATIVE")

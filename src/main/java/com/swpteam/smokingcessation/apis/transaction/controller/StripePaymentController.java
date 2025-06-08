@@ -1,6 +1,6 @@
 package com.swpteam.smokingcessation.apis.transaction.controller;
 
-import com.swpteam.smokingcessation.apis.transaction.dto.request.SubscriptionRequest;
+import com.swpteam.smokingcessation.apis.transaction.dto.request.StripeSubscriptionRequest;
 import com.swpteam.smokingcessation.apis.transaction.dto.response.StripeResponse;
 import com.swpteam.smokingcessation.apis.transaction.service.StripeService;
 import com.swpteam.smokingcessation.common.response.ApiResponse;
@@ -22,7 +22,7 @@ public class StripePaymentController {
     StripeService stripeService;
 
     @PostMapping("/checkout")
-    public ApiResponse<StripeResponse> checkoutSubscription(@RequestBody SubscriptionRequest request) {
+    public ApiResponse<StripeResponse> checkoutSubscription(@RequestBody StripeSubscriptionRequest request) {
         return ApiResponse.<StripeResponse>builder()
                 .message("Checkout Success")
                 .result(stripeService.checkoutSubscription(request))

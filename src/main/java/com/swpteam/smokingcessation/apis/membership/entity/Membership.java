@@ -1,11 +1,14 @@
 package com.swpteam.smokingcessation.apis.membership.entity;
 
+import com.swpteam.smokingcessation.apis.subscription.entity.Subscription;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @Setter
@@ -22,4 +25,7 @@ public class Membership {
     String description;
     LocalDateTime createdAt;
     LocalDateTime updatedAt;
+
+    @OneToMany(mappedBy = "membership")
+    private List<Subscription> subscriptions;
 }

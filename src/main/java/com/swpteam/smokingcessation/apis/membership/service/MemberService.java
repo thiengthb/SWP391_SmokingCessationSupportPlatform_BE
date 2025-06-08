@@ -27,11 +27,9 @@ public class MemberService {
 
     public MembershipResponse createMembership(MembershipCreationRequest request) {
         Membership membership = membershipMapper.toEntity(request);
-
         membership.setCreatedAt(LocalDateTime.now());
-        membershipRepository.save(membership);
 
-        return membershipMapper.toResponse(membership);
+        return membershipMapper.toResponse(membershipRepository.save(membership));
     }
 
     public MembershipResponse updateMembership(String name, MembershipUpdateRequest request) {
@@ -39,11 +37,9 @@ public class MemberService {
                         .orElseThrow(() -> new AppException(ErrorCode.MEMBERSHIP_NOT_EXISTED));
 
         membershipMapper.updateMembership(membership, request);
-
         membership.setUpdatedAt(LocalDateTime.now());
-        membershipRepository.save(membership);
 
-        return membershipMapper.toResponse(membership);
+        return membershipMapper.toResponse(membershipRepository.save(membership));
     }
 
     public void deleteMembership(String name) {

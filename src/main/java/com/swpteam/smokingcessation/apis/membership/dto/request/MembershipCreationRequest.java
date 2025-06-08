@@ -13,7 +13,7 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class MembershipCreationRequest {
     @NotBlank(message = "MEMBERSHIP_NAME_NOT_EMPTY")
-    @Size(min = 3, message = "MEMBERSHIP_MIN_SIZE")
+    @Size(min = 1, message = "MEMBERSHIP_MIN_SIZE")
     String name;
 
     @Positive(message = "DURATION_NEGATIVE")
