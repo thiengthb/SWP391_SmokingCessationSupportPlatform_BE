@@ -1,18 +1,20 @@
 package com.swpteam.smokingcessation.exception;
 
 
-import com.swpteam.smokingcessation.common.ApiResponse;
-import com.swpteam.smokingcessation.constants.ErrorCode;
+import com.swpteam.smokingcessation.common.response.ApiResponse;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.ConstraintViolation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
+import org.springframework.validation.FieldError;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
@@ -24,9 +26,8 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(value = Exception.class)
     ResponseEntity<ApiResponse> handlingException(Exception exception) {
-        exception.printStackTrace();
-        new ApiResponse<>();
-        ApiResponse apiResponse = ApiResponse.builder()
+        log.error("Unhandled exception", exception);
+        ApiResponse apiResponse = new ApiResponse<>().builder()
                 .code(ErrorCode.UNCATEGORIZED_EXCEPTION.getCode())
                 .message(ErrorCode.UNCATEGORIZED_EXCEPTION.getMessage())
                 .build();
@@ -37,8 +38,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(value = AppException.class)
     ResponseEntity<ApiResponse> handlingAppException(AppException exception) {
         ErrorCode errorCode = exception.getErrorCode();
-        new ApiResponse<>();
-        ApiResponse apiResponse = ApiResponse.builder()
+        ApiResponse apiResponse = new ApiResponse<>().builder()
                 .code(errorCode.getCode())
                 .message(errorCode.getMessage())
                 .build();
@@ -57,8 +57,7 @@ public class GlobalExceptionHandler {
     ResponseEntity<ApiResponse> handlingAccessDeniedException(AppException exception) {
         ErrorCode errorCode = ErrorCode.UNAUTHORIZED;
 
-        new ApiResponse<>();
-        ApiResponse apiResponse = ApiResponse.builder()
+        ApiResponse apiResponse = new ApiResponse<>().builder()
                 .code(errorCode.getCode())
                 .message(errorCode.getMessage())
                 .build();
@@ -70,8 +69,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(SecurityException.class)
     ResponseEntity<ApiResponse> handleSecurityException(SecurityException exception) {
-        new ApiResponse<>();
-        ApiResponse apiResponse = ApiResponse.builder()
+        ApiResponse apiResponse = new ApiResponse<>().builder()
                 .code(401)
                 .message(exception.getMessage())
                 .build();
@@ -98,8 +96,7 @@ public class GlobalExceptionHandler {
         } catch (IllegalArgumentException ignored) {
         }
 
-        new ApiResponse();
-        ApiResponse apiResponse = ApiResponse.builder()
+        ApiResponse apiResponse = new ApiResponse().builder()
                 .code(errorCode.getCode())
                 .message(Objects.nonNull(attributes)
                         ? mapAttribute(errorCode.getMessage(), attributes)
