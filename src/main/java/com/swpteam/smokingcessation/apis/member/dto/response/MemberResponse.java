@@ -1,6 +1,5 @@
 package com.swpteam.smokingcessation.apis.member.dto.response;
 
-import com.swpteam.smokingcessation.apis.account.entity.Account;
 import com.swpteam.smokingcessation.apis.member.entity.MemberGender;
 import lombok.*;
 import lombok.experimental.FieldDefaults;

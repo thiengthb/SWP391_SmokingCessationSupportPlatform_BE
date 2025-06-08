@@ -2,7 +2,6 @@ package com.swpteam.smokingcessation.apis.member.entity;
 
 import com.swpteam.smokingcessation.apis.account.entity.Account;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Past;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 

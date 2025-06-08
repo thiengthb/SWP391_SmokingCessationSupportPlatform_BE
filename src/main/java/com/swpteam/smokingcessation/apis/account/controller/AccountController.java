@@ -33,6 +33,38 @@ class AccountController {
                 .build();
     }
 
+    @GetMapping
+    List<Account> getUsers() {
+        return accountService.getAccounts();
+    }
+
+    @GetMapping("/{accountId}")
+    ApiResponse<AccountResponse> getAccountById(@PathVariable("accountId") String id) {
+        var result = accountService.getAccountById(id);
+
+        return ApiResponse.<AccountResponse>builder()
+                .result(result)
+                .build();
+    }
+
+    @PutMapping("/update/{accountId}")
+    ApiResponse<AccountResponse> updateAccount(@PathVariable("accountId") String id, @RequestBody AccountUpdateRequest request) {
+        var result = accountService.updateAccount(request, id);
+
+        return ApiResponse.<AccountResponse>builder()
+                .result(result)
+                .build();
+    }
+
+    @DeleteMapping("/delete/{accountId}")
+    ApiResponse<String> deleteAccount(@PathVariable("accountId") String id) {
+        accountService.deleteAccount(id);
+
+        return ApiResponse.<String>builder()
+                .result("User is deleted")
+                .build();
+    }
+
     @PostMapping("/change-password")
     ApiResponse<AccountResponse> changePassword(@RequestBody @Valid ChangePasswordRequest request) {
         var result = accountService.changePassword(request);
@@ -51,35 +83,4 @@ class AccountController {
                 .build();
     }
 
-    @PutMapping("/update/{userId}")
-    ApiResponse<AccountResponse> updateAccount(@PathVariable("userId") String id, @RequestBody AccountUpdateRequest request) {
-        var result = accountService.updateAccount(request, id);
-
-        return ApiResponse.<AccountResponse>builder()
-                .result(result)
-                .build();
-    }
-
-    @DeleteMapping("/delete/{userId}")
-    ApiResponse<String> deleteAccount(@PathVariable("userId") String id) {
-        accountService.deleteAccount(id);
-
-        return ApiResponse.<String>builder()
-                .result("User is deleted")
-                .build();
-    }
-
-    @GetMapping
-    List<Account> getUsers() {
-        return accountService.getAccounts();
-    }
-
-    @GetMapping("/{userId}")
-    ApiResponse<AccountResponse> getAccountById(@PathVariable("userId") String id) {
-        var result = accountService.getAccountById(id);
-
-        return ApiResponse.<AccountResponse>builder()
-                .result(result)
-                .build();
-    }
 }
