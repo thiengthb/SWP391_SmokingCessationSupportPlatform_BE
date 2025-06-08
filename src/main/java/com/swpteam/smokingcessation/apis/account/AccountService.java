@@ -1,15 +1,12 @@
-package com.swpteam.smokingcessation.apis.account.service;
+package com.swpteam.smokingcessation.apis.account;
 
 import com.swpteam.smokingcessation.apis.account.dto.request.AccountCreateRequest;
 import com.swpteam.smokingcessation.apis.account.dto.request.AccountUpdateRequest;
 import com.swpteam.smokingcessation.apis.account.dto.request.ChangePasswordRequest;
 import com.swpteam.smokingcessation.apis.account.dto.response.AccountResponse;
 import com.swpteam.smokingcessation.apis.account.entity.Account;
-import com.swpteam.smokingcessation.apis.account.mapper.AccountMapper;
-import com.swpteam.smokingcessation.apis.account.repository.AccountRepository;
 import com.swpteam.smokingcessation.apis.setting.Setting;
 import com.swpteam.smokingcessation.apis.setting.SettingRepository;
-import com.swpteam.smokingcessation.apis.setting.SettingService;
 import com.swpteam.smokingcessation.exception.AppException;
 import com.swpteam.smokingcessation.exception.ErrorCode;
 import jakarta.transaction.Transactional;

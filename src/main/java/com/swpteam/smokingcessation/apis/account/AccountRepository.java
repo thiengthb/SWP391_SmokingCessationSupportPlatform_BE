@@ -1,4 +1,4 @@
-package com.swpteam.smokingcessation.apis.account.repository;
+package com.swpteam.smokingcessation.apis.account;
 
 import com.swpteam.smokingcessation.apis.account.entity.Account;
 import org.springframework.data.jpa.repository.JpaRepository;

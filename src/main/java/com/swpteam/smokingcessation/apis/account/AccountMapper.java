@@ -1,4 +1,4 @@
-package com.swpteam.smokingcessation.apis.account.mapper;
+package com.swpteam.smokingcessation.apis.account;
 
 import com.swpteam.smokingcessation.apis.account.dto.request.AccountCreateRequest;
 import com.swpteam.smokingcessation.apis.account.dto.request.AccountUpdateRequest;

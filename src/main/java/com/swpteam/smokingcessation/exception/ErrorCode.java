@@ -1,6 +1,7 @@
 package com.swpteam.smokingcessation.exception;
 
 
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -27,15 +28,17 @@ public enum ErrorCode {
     PHONE_NUMBER_INVALID(1011, "Phone number must be 10 digits and consists of numbers only", HttpStatus.BAD_REQUEST),
 
     // Authentication
-    UNAUTHENTICATED(1000, "Unauthenticated", HttpStatus.UNAUTHORIZED),
-    UNAUTHORIZED(1001, "You do not have permission", HttpStatus.FORBIDDEN),
-    TOKEN_EXPIRED(1003, "Token is expired", HttpStatus.BAD_REQUEST),
-    WRONG_PASSWORD(1004, "Wrong password for email", HttpStatus.BAD_REQUEST),
+    UNAUTHENTICATED(2000, "Unauthenticated", HttpStatus.UNAUTHORIZED),
+    UNAUTHORIZED(2001, "You do not have permission", HttpStatus.FORBIDDEN),
+    TOKEN_EXPIRED(2002, "Token is expired", HttpStatus.BAD_REQUEST),
+    WRONG_PASSWORD(2003, "Wrong password for email", HttpStatus.BAD_REQUEST),
+    INVALID_SIGNATURE(2004, "Token signature is invalid", HttpStatus.BAD_REQUEST),
+    EMAIL_SEND_FAILED(2005, "Failed to send email. Please try again later.", HttpStatus.INTERNAL_SERVER_ERROR),
 
     // Account
-    ACCOUNT_NOT_EXISTED(1000, "Account does not exist", HttpStatus.BAD_REQUEST),
-    ACCOUNT_EXISTED(1001, "Account already existed", HttpStatus.BAD_REQUEST),
-    ACCOUNT_DELETED(1002, "Account has been deleted", HttpStatus.BAD_REQUEST),
+    ACCOUNT_NOT_EXISTED(3000, "Account does not exist", HttpStatus.BAD_REQUEST),
+    ACCOUNT_EXISTED(3001, "Account already existed", HttpStatus.BAD_REQUEST),
+    ACCOUNT_DELETED(3002, "Account has been deleted", HttpStatus.BAD_REQUEST),
 
     // Membership
     MEMBERSHIP_NOT_EXISTED(4000, "Membership does not exist", HttpStatus.BAD_REQUEST),
@@ -65,7 +68,9 @@ public enum ErrorCode {
     MOTIVATION_MAX(7005, "Motivation per day must be at most 100", HttpStatus.BAD_REQUEST),
     DEADLINE_REQUIRED(7006, "Report deadline is required", HttpStatus.BAD_REQUEST),
 
-
+    //Member
+    MEMBER_EXISTED(8000, "Member fields already exist", HttpStatus.BAD_REQUEST),
+    MEMBER_NOT_EXISTED(8001, "Member doesn't exist", HttpStatus.BAD_REQUEST),
     ;
     private final int code;
     private final String message;

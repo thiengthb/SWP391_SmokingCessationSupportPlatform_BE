@@ -44,12 +44,27 @@ public class MailService {
             case ADVICE -> "🧠 Health Advice";
         };
     }
+
     private String buildTemplateHtml(String title, String content) throws IOException {
         String template = new String(
                 Files.readAllBytes(Paths.get("src/main/resources/mail-template.html")),
                 StandardCharsets.UTF_8
         );
         return String.format(template, title, content);
+    }
+
+    public void sendHtml(String to, String subject, String htmlContent) throws MessagingException {
+        var message = mailSender.createMimeMessage();
+        var helper = new MimeMessageHelper(message, true, "UTF-8");
+        helper.setTo(to);
+        helper.setSubject(subject);
+        helper.setText(htmlContent, true); // true for HTML
+        mailSender.send(message);
+    }
+
+    public void sendTemplatedHtml(String to, String subject, String title, String content) throws MessagingException, IOException {
+        String html = buildTemplateHtml(title, content);
+        sendHtml(to, subject, html);
     }
 }
 
