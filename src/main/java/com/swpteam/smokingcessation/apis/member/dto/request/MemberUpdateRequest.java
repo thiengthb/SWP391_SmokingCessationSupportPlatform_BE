@@ -12,7 +12,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class MemberCreateRequest {
+public class MemberUpdateRequest {
     String fullName;
     @Past(message = "DOB_INVALID")
     LocalDate dob;
