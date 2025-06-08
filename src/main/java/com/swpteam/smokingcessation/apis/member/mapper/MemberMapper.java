@@ -11,7 +11,7 @@ import org.mapstruct.MappingTarget;
 @Mapper(componentModel = "spring")
 public interface MemberMapper {
 
-    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "account", ignore = true)
     @Mapping(target = "score", ignore = true)
     @Mapping(target = "currentStreak", ignore = true)
     @Mapping(target = "lastCounterReset", ignore = true)
