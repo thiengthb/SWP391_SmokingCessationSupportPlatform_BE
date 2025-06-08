@@ -30,10 +30,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
+import java.io.IOException;
 import java.text.ParseException;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
+import java.util.StringJoiner;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -44,6 +46,7 @@ public class AuthenticationService {
     AccountRepository accountRepository;
     AccountMapper accountMapper;
     InvalidatedTokenRepository invalidatedTokenRepository;
+    MailService mailService;
     WebClient webClient = WebClient.create();
 
     @NonFinal
@@ -59,6 +62,10 @@ public class AuthenticationService {
     protected long REFRESHABLE_DURATION;
 
     @NonFinal
+    @Value("${jwt.reset-duration}")
+    protected long RESET_DURATION;
+
+    @NonFinal
     @Value("${spring.security.oauth2.client.registration.google.client-id}")
     protected String CLIENT_ID;
 
@@ -69,6 +76,10 @@ public class AuthenticationService {
     @NonFinal
     @Value("${spring.security.oauth2.client.registration.google.redirect-uri:http://localhost:8080/oauth2/callback}")
     protected String REDIRECT_URI;
+
+    @NonFinal
+    @Value("${app.frontend-domain}")
+    protected String FRONTEND_DOMAIN;
 
     public GoogleTokenResponse getGoogleToken(GoogleTokenRequest request) {
         String tokenEndpoint = "https://oauth2.googleapis.com/token";
@@ -99,8 +110,8 @@ public class AuthenticationService {
             throw new AppException(ErrorCode.WRONG_PASSWORD);
         }
 
-        var accessToken = generateToken(request.getEmail());
-        var refreshToken = generateRefreshToken(request.getEmail());
+        var accessToken = generateToken(account);
+        var refreshToken = generateRefreshToken(account);
 
         return AuthenticationResponse.builder()
                 .accessToken(accessToken)
@@ -109,17 +120,17 @@ public class AuthenticationService {
                 .build();
     }
 
-    private String generateToken(String email) {
+    private String generateToken(Account account) {
         JWSHeader jwsHeader = new JWSHeader(JWSAlgorithm.HS512);
 
         JWTClaimsSet jwtClaimsSet = new JWTClaimsSet.Builder()
-                .subject(email)
+                .subject(account.getEmail())
                 .issuer("swpteam")
                 .issueTime(new Date())
                 .expirationTime(new Date(
-                        Instant.now().plus(1, ChronoUnit.HOURS).toEpochMilli()
+                        Instant.now().plus(VALID_DURATION, ChronoUnit.MINUTES).toEpochMilli()
                 ))
-                .claim("customClaim", "claim")
+                .claim("scope", buildScope(account))
                 .build();
 
 
@@ -136,15 +147,16 @@ public class AuthenticationService {
 
     }
 
-    private String generateRefreshToken(String email) {
+
+    private String generateRefreshToken(Account account) {
         JWSHeader jwsHeader = new JWSHeader(JWSAlgorithm.HS512);
 
         JWTClaimsSet jwtClaimsSet = new JWTClaimsSet.Builder()
-                .subject(email)
+                .subject(account.getEmail())
                 .issuer("swpteam")
                 .issueTime(new Date())
                 .expirationTime(new Date(
-                        Instant.now().plus(30, ChronoUnit.DAYS).toEpochMilli() // 30 days validity
+                        Instant.now().plus(REFRESHABLE_DURATION, ChronoUnit.MINUTES).toEpochMilli() // 30 days validity
                 ))
                 .claim("type", "refresh")
                 .build();
@@ -161,6 +173,42 @@ public class AuthenticationService {
         }
     }
 
+    private String generateResetToken(Account account) {
+        JWSHeader jwsHeader = new JWSHeader(JWSAlgorithm.HS512);
+
+        JWTClaimsSet jwtClaimsSet = new JWTClaimsSet.Builder()
+                .subject(account.getEmail())
+                .issuer("swpteam")
+                .issueTime(new Date())
+                .expirationTime(new Date(
+                        Instant.now().plus(RESET_DURATION, ChronoUnit.MINUTES).toEpochMilli() // 30 days validity
+                ))
+                .claim("type", "reset")
+                .build();
+
+        Payload payload = new Payload(jwtClaimsSet.toJSONObject());
+
+        JWSObject jwsObject = new JWSObject(jwsHeader, payload);
+        try {
+            jwsObject.sign(new MACSigner(SIGNER_KEY.getBytes()));
+            return jwsObject.serialize();
+        } catch (JOSEException e) {
+            log.error("Cannot create reset token", e);
+            throw new RuntimeException(e);
+        }
+    }
+
+    private String buildScope(Account account) {
+        StringJoiner stringJoiner = new StringJoiner(" ");
+
+        if (account.getRole() != null) {
+            stringJoiner.add("ROLE_" + account.getRole().name());
+        }
+
+        return stringJoiner.toString();
+    }
+
+    //Using refresh token to issue a new token
     public AuthenticationResponse refreshToken(RefreshTokenRequest request) throws ParseException, JOSEException {
         String refreshToken = request.getRefreshToken();
         SignedJWT signedJWT;
@@ -182,7 +230,7 @@ public class AuthenticationService {
         Account account = accountRepository.findByEmail(email)
                 .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_EXISTED));
 
-        String newToken = generateToken(email);
+        String newToken = generateToken(account);
 
         return AuthenticationResponse.builder()
                 .accessToken(newToken)
@@ -197,12 +245,12 @@ public class AuthenticationService {
         }
 
         Account account = accountMapper.toAccount(AccountCreateRequest.builder()
-                        .email(request.getEmail())
-                        .password(request.getPassword())
-                        .phoneNumber(request.getPhoneNumber())
-                        .role(Role.MEMBER)
-                        .status(AccountStatus.ACTIVE)
-                        .build()
+                .email(request.getEmail())
+                .password(request.getPassword())
+                .phoneNumber(request.getPhoneNumber())
+                .role(Role.MEMBER)
+                .status(AccountStatus.ACTIVE)
+                .build()
         );
 
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
@@ -245,5 +293,25 @@ public class AuthenticationService {
             throw new AppException(ErrorCode.UNAUTHENTICATED);
 
         return signedJWT;
+    }
+
+    public void sendResetPasswordEmail(String email) {
+        Account account = accountRepository.findByEmail(email).orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_EXISTED));
+
+        String token = generateResetToken(account);
+        String resetLink = FRONTEND_DOMAIN + "/reset-password?token=" + token;
+
+        String title = "Password Reset Request";
+        String content = "We received a request to reset your password.<br>" +
+                "Click the link below to set a new password:<br>" +
+                "<a href=\"" + resetLink + "\">Reset Password</a><br><br>" +
+                "If you did not request this, please ignore this email.";
+
+        try {
+            mailService.sendTemplatedHtml(email, title, title, content);
+        } catch (MessagingException | IOException e) {
+            log.error("Failed to send reset password email to {}", email, e);
+            throw new AppException(ErrorCode.EMAIL_SEND_FAILED);
+        }
     }
 }
