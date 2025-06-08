@@ -9,7 +9,6 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
@@ -20,25 +19,20 @@ public class SecurityConfig {
     };
 
     @Autowired
-    private JwtAuthenticationFilter jwtAuthenticationFilter;
-
-    @Autowired
     private JwtCustomDecoder jwtCustomDecoder;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.authorizeHttpRequests(request -> request
-            .requestMatchers(PUBLIC_ENDPOINTS).permitAll()
-            .anyRequest().permitAll()
-        )
-        .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
-        .csrf(AbstractHttpConfigurer::disable);
+                .requestMatchers(PUBLIC_ENDPOINTS).permitAll()
+                .anyRequest().permitAll()
+        );
 
         httpSecurity.oauth2ResourceServer(oauth2 -> oauth2
-            .jwt(jwtConfigurer -> jwtConfigurer
-                    .decoder(jwtCustomDecoder)
-                    .jwtAuthenticationConverter(jwtAuthenticationConverter()))
-            .authenticationEntryPoint(new JwtAuthenticationEntryPoint()));
+                .jwt(jwtConfigurer -> jwtConfigurer
+                        .decoder(jwtCustomDecoder)
+                        .jwtAuthenticationConverter(jwtAuthenticationConverter()))
+                .authenticationEntryPoint(new JwtAuthenticationEntryPoint()));
         httpSecurity.csrf(AbstractHttpConfigurer::disable);
 
         return httpSecurity.build();
