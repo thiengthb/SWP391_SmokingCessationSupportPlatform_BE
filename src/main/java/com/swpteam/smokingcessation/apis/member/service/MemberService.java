@@ -1,7 +1,7 @@
 package com.swpteam.smokingcessation.apis.member.service;
 
 import com.swpteam.smokingcessation.apis.account.entity.Account;
-import com.swpteam.smokingcessation.apis.account.repository.AccountRepository;
+import com.swpteam.smokingcessation.apis.account.AccountRepository;
 import com.swpteam.smokingcessation.apis.member.dto.request.MemberCreateRequest;
 import com.swpteam.smokingcessation.apis.member.dto.request.MemberUpdateRequest;
 import com.swpteam.smokingcessation.apis.member.dto.response.MemberResponse;

@@ -3,7 +3,7 @@ package com.swpteam.smokingcessation.apis.membership.controller;
 import com.swpteam.smokingcessation.apis.membership.dto.request.MembershipCreationRequest;
 import com.swpteam.smokingcessation.apis.membership.dto.request.MembershipUpdateRequest;
 import com.swpteam.smokingcessation.apis.membership.dto.response.MembershipResponse;
-import com.swpteam.smokingcessation.apis.membership.service.MemberService;
+import com.swpteam.smokingcessation.apis.membership.service.MembershipService;
 import com.swpteam.smokingcessation.common.response.ApiResponse;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
@@ -20,25 +20,25 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @Slf4j
 public class MembershipController {
-    MemberService memberService;
+    MembershipService membershipService;
 
     @PostMapping
     ApiResponse<MembershipResponse> createMembership(@RequestBody @Valid MembershipCreationRequest request) {
         return ApiResponse.<MembershipResponse>builder()
-                .result(memberService.createMembership(request))
+                .result(membershipService.createMembership(request))
                 .build();
     }
 
     @PutMapping("/{membershipName}")
     ApiResponse<MembershipResponse> updateMembership(@PathVariable String membershipName, @RequestBody @Valid MembershipUpdateRequest request) {
         return ApiResponse.<MembershipResponse>builder()
-                .result(memberService.updateMembership(membershipName, request))
+                .result(membershipService.updateMembership(membershipName, request))
                 .build();
     }
 
     @DeleteMapping("/{membershipName}")
     ApiResponse<String> createMembership(@PathVariable String membershipName) {
-        memberService.deleteMembership(membershipName);
+        membershipService.deleteMembership(membershipName);
         return ApiResponse.<String>builder()
                 .result("Membership has been deleted")
                 .build();
@@ -47,14 +47,14 @@ public class MembershipController {
     @GetMapping
     ApiResponse<List<MembershipResponse>> getMembershipList() {
         return ApiResponse.<List<MembershipResponse>>builder()
-                .result(memberService.getMembershipList())
+                .result(membershipService.getMembershipList())
                 .build();
     }
 
     @GetMapping("/{membershipName}")
     ApiResponse<MembershipResponse> getMembershipList(@PathVariable String membershipName) {
         return ApiResponse.<MembershipResponse>builder()
-                .result(memberService.getMembership(membershipName))
+                .result(membershipService.getMembership(membershipName))
                 .build();
     }
 }

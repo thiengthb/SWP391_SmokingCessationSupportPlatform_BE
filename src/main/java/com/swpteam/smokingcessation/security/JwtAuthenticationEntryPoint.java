@@ -1,20 +1,19 @@
 package com.swpteam.smokingcessation.security;
 
-import java.io.IOException;
-
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.swpteam.smokingcessation.common.response.ApiResponse;
 import com.swpteam.smokingcessation.exception.ErrorCode;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-
 import org.springframework.http.MediaType;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
+import org.springframework.stereotype.Component;
 
+import java.io.IOException;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-
+@Component
 public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
     @Override
     public void commence(

@@ -1,9 +1,6 @@
 package com.swpteam.smokingcessation.security;
 
-import java.text.ParseException;
-import java.util.Objects;
-import javax.crypto.spec.SecretKeySpec;
-
+import com.nimbusds.jose.JOSEException;
 import com.swpteam.smokingcessation.apis.authentication.dto.request.IntrospectRequest;
 import com.swpteam.smokingcessation.apis.authentication.service.AuthenticationService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +12,9 @@ import org.springframework.security.oauth2.jwt.JwtException;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
 import org.springframework.stereotype.Component;
 
-import com.nimbusds.jose.JOSEException;
+import javax.crypto.spec.SecretKeySpec;
+import java.text.ParseException;
+import java.util.Objects;
 
 @Component
 public class JwtCustomDecoder implements JwtDecoder {

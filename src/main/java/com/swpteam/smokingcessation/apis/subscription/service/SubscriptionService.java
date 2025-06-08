@@ -1,6 +1,6 @@
 package com.swpteam.smokingcessation.apis.subscription.service;
 
-import com.swpteam.smokingcessation.apis.account.repository.AccountRepository;
+import com.swpteam.smokingcessation.apis.account.AccountRepository;
 import com.swpteam.smokingcessation.apis.membership.repository.MembershipRepository;
 import com.swpteam.smokingcessation.apis.subscription.dto.request.SubscriptionRequest;
 import com.swpteam.smokingcessation.apis.subscription.dto.response.SubscriptionResponse;
