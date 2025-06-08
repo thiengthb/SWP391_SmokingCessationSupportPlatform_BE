@@ -19,6 +19,7 @@ public enum ErrorCode {
     START_DATE_REQUIRED(1003, "Start date is required", HttpStatus.BAD_REQUEST),
     END_DATE_REQUIRED(1004, "End date is required", HttpStatus.BAD_REQUEST),
     PAYMENT_STATUS_REQUIRED(1005, "Payment status is required", HttpStatus.BAD_REQUEST),
+    ACCOUNT_NOT_BLANK(1006, "Account ID cannot be blank", HttpStatus.BAD_REQUEST),
 
     // Authentication
     UNAUTHENTICATED(1000, "Unauthenticated", HttpStatus.UNAUTHORIZED),
@@ -49,6 +50,16 @@ public enum ErrorCode {
     SUBSCRIPTION_NOT_EXISTED(4000, "Subscription does not exist", HttpStatus.BAD_REQUEST),
     START_DATE_MUST_BE_TODAY_OR_FUTURE(6001, "Start date must be today or in the future", HttpStatus.BAD_REQUEST),
     END_DATE_MUST_BE_IN_FUTURE(6002, "End date must be today or in the future", HttpStatus.BAD_REQUEST),
+
+    // Setting
+    THEME_REQUIRED(7000, "Theme is required", HttpStatus.BAD_REQUEST),
+    LANGUAGE_REQUIRED(7001, "Language is required", HttpStatus.BAD_REQUEST),
+    TRACKING_MODE_REQUIRED(7002, "Tracking mode is required", HttpStatus.BAD_REQUEST),
+    MOTIVATION_REQUIRED(7003, "Motivation per day is required", HttpStatus.BAD_REQUEST),
+    MOTIVATION_MIN(7004, "Motivation per day must be at least 1", HttpStatus.BAD_REQUEST),
+    MOTIVATION_MAX(7005, "Motivation per day must be at most 100", HttpStatus.BAD_REQUEST),
+    DEADLINE_REQUIRED(7006, "Report deadline is required", HttpStatus.BAD_REQUEST),
+
 
     ;
     private final int code;

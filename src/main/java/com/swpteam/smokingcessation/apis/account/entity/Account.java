@@ -1,5 +1,6 @@
 package com.swpteam.smokingcessation.apis.account.entity;
 
+import com.swpteam.smokingcessation.apis.setting.Setting;
 import com.swpteam.smokingcessation.apis.subscription.entity.Subscription;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
@@ -46,6 +47,9 @@ public class Account {
 
     @OneToMany(mappedBy = "account")
     private List<Subscription> subscriptions;
+
+    @OneToOne(mappedBy = "account", cascade = CascadeType.ALL, optional = false)
+    private Setting setting;
 
     @Override
     public final boolean equals(Object o) {

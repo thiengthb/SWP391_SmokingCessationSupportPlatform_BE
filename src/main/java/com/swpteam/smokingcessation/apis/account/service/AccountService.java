@@ -7,6 +7,9 @@ import com.swpteam.smokingcessation.apis.account.dto.response.AccountResponse;
 import com.swpteam.smokingcessation.apis.account.entity.Account;
 import com.swpteam.smokingcessation.apis.account.mapper.AccountMapper;
 import com.swpteam.smokingcessation.apis.account.repository.AccountRepository;
+import com.swpteam.smokingcessation.apis.setting.Setting;
+import com.swpteam.smokingcessation.apis.setting.SettingRepository;
+import com.swpteam.smokingcessation.apis.setting.SettingService;
 import com.swpteam.smokingcessation.exception.AppException;
 import com.swpteam.smokingcessation.exception.ErrorCode;
 import jakarta.transaction.Transactional;
@@ -24,8 +27,10 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class AccountService {
 
-    private AccountRepository accountRepository;
-    private AccountMapper accountMapper;
+    AccountRepository accountRepository;
+    AccountMapper accountMapper;
+
+    SettingRepository settingRepository;
 
     public AccountResponse createAccount(AccountCreateRequest request) {
         if (accountRepository.existsByEmail(request.getEmail())) {
@@ -35,6 +40,11 @@ public class AccountService {
         Account account = accountMapper.toAccount(request);
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
         account.setPassword(passwordEncoder.encode(request.getPassword()));
+
+        Setting setting = new Setting().getDefaultSetting();
+        setting.setAccount(account);
+
+        settingRepository.save(setting);
 
         return accountMapper.toAccountResponse(accountRepository.save(account));
     }
