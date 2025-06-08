@@ -17,10 +17,11 @@ import java.time.LocalDateTime;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Member {
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
+    @JoinColumn(name = "account_id")
     String id;
 
     @OneToOne(fetch = FetchType.LAZY)
+    @MapsId
     @JoinColumn(name = "account_id")
     Account account;
 
