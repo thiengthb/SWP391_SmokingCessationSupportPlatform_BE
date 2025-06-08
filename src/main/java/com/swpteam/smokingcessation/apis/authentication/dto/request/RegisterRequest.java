@@ -14,7 +14,7 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class RegisterRequest {
     @NotBlank(message = "EMAIL_REQUIRED")
-    @Email(message = "EMAIL_INVALID")
+    @Email(message = "INVALID_EMAIL_FORMAT")
     String email;
 
     @NotBlank(message = "BLANK_INVALID")
