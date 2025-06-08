@@ -25,6 +25,11 @@ public enum ErrorCode {
     END_DATE_REQUIRED(1004, "End date is required", HttpStatus.BAD_REQUEST),
     PAYMENT_STATUS_REQUIRED(1005, "Payment status is required", HttpStatus.BAD_REQUEST),
     ACCOUNT_NOT_BLANK(1006, "Account ID cannot be blank", HttpStatus.BAD_REQUEST),
+    PASSWORD_REQUIRED(1007, "Password field cannot be empty", HttpStatus.BAD_REQUEST),
+    CODE_REQUIRED(1008, "Google code field cannot be empty", HttpStatus.BAD_REQUEST),
+    REFRESH_TOKEN_REQUIRED(1009, "Refresh token field cannot be empty", HttpStatus.BAD_REQUEST),
+    PASSWORD_INVALID(1010, "Password must be at least {min} characters", HttpStatus.BAD_REQUEST),
+    PHONE_NUMBER_INVALID(1011, "Phone number must be 10 digits and consists of numbers only", HttpStatus.BAD_REQUEST),
     ID_REQUIRED(1007, "ID is required", HttpStatus.BAD_REQUEST),
     ID_NOT_BLANK(1008, "ID cannot be blank", HttpStatus.BAD_REQUEST),
     PAGE_NO_MIN(1009, "Page number must be at least 0", HttpStatus.BAD_REQUEST),
@@ -33,15 +38,17 @@ public enum ErrorCode {
     INVALID_SORT_FIELD(1013, "Invalid sort field", HttpStatus.BAD_REQUEST),
 
     // Authentication
-    UNAUTHENTICATED(1000, "Unauthenticated", HttpStatus.UNAUTHORIZED),
-    UNAUTHORIZED(1001, "You do not have permission", HttpStatus.FORBIDDEN),
-    TOKEN_EXPIRED(1003, "Token is expired", HttpStatus.BAD_REQUEST),
-    WRONG_PASSWORD(1004, "Wrong password for email", HttpStatus.BAD_REQUEST),
+    UNAUTHENTICATED(2000, "Unauthenticated", HttpStatus.UNAUTHORIZED),
+    UNAUTHORIZED(2001, "You do not have permission", HttpStatus.FORBIDDEN),
+    TOKEN_EXPIRED(2002, "Token is expired", HttpStatus.BAD_REQUEST),
+    WRONG_PASSWORD(2003, "Wrong password for email", HttpStatus.BAD_REQUEST),
+    INVALID_SIGNATURE(2004, "Token signature is invalid", HttpStatus.BAD_REQUEST),
+    EMAIL_SEND_FAILED(2005, "Failed to send email. Please try again later.", HttpStatus.INTERNAL_SERVER_ERROR),
 
     // Account
-    ACCOUNT_NOT_EXISTED(1000, "Account does not exist", HttpStatus.BAD_REQUEST),
-    ACCOUNT_EXISTED(1001, "Account already existed", HttpStatus.BAD_REQUEST),
-    ACCOUNT_DELETED(1002, "Account has been deleted", HttpStatus.BAD_REQUEST),
+    ACCOUNT_NOT_EXISTED(3000, "Account does not exist", HttpStatus.BAD_REQUEST),
+    ACCOUNT_EXISTED(3001, "Account already existed", HttpStatus.BAD_REQUEST),
+    ACCOUNT_DELETED(3002, "Account has been deleted", HttpStatus.BAD_REQUEST),
 
     // Membership
     MEMBERSHIP_NOT_FOUND(4000, "Membership does not exist or have been deleted", HttpStatus.BAD_REQUEST),
@@ -73,10 +80,13 @@ public enum ErrorCode {
     MOTIVATION_MAX(7005, "Motivation per day must be at most 100", HttpStatus.BAD_REQUEST),
     DEADLINE_REQUIRED(7006, "Report deadline is required", HttpStatus.BAD_REQUEST),
 
+    //Member
+    MEMBER_EXISTED(8000, "Member fields already exist", HttpStatus.BAD_REQUEST),
+    MEMBER_NOT_EXISTED(8001, "Member doesn't exist", HttpStatus.BAD_REQUEST),
     // Message
     MESSAGE_NOT_FOUND(8001, "Message does not exist or have been deleted", HttpStatus.BAD_REQUEST),
     MESSAGE_CONTENT_REQUIRED(8002,"Message content is required",HttpStatus.BAD_REQUEST),
-   
+
     // Health
     HEALTH_RECORD_NOT_FOUND(4000, "Health record does not exist", HttpStatus.NOT_FOUND),
     CIGARETTES_PER_DAY_INVALID(4002, "Cigarettes per day must be non-negative", HttpStatus.BAD_REQUEST),
