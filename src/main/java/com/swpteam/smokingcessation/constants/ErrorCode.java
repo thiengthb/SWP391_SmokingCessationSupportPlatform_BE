@@ -32,7 +32,6 @@ public enum ErrorCode {
     PHONE_NUMBER_INVALID(1011, "Phone number must be 10 digits and consists of numbers only", HttpStatus.BAD_REQUEST),
     RESET_TOKEN_REQUIRED(1012, "Reset token cannot be empty", HttpStatus.BAD_REQUEST),
     INVALID_TOKEN(1013, "Token is invalid", HttpStatus.INTERNAL_SERVER_ERROR),
-
     ID_REQUIRED(1007, "ID is required", HttpStatus.BAD_REQUEST),
     ID_NOT_BLANK(1008, "ID cannot be blank", HttpStatus.BAD_REQUEST),
     PAGE_NO_MIN(1009, "Page number must be at least 0", HttpStatus.BAD_REQUEST),
