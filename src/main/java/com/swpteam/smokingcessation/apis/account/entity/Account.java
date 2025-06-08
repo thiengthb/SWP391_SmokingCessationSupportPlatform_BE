@@ -1,11 +1,14 @@
 package com.swpteam.smokingcessation.apis.account.entity;
 
+import com.swpteam.smokingcessation.apis.setting.Setting;
+import com.swpteam.smokingcessation.apis.subscription.entity.Subscription;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 import org.hibernate.proxy.HibernateProxy;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -41,6 +44,12 @@ public class Account {
     private LocalDateTime updatedAt;
 
     private boolean isDeleted;
+
+    @OneToMany(mappedBy = "account")
+    private List<Subscription> subscriptions;
+
+    @OneToOne(mappedBy = "account", cascade = CascadeType.ALL, optional = false)
+    private Setting setting;
 
     @Override
     public final boolean equals(Object o) {

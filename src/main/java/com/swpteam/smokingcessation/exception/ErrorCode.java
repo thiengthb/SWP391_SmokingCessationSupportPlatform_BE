@@ -1,43 +1,69 @@
 package com.swpteam.smokingcessation.exception;
 
-
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 
 @Getter
+@AllArgsConstructor
 public enum ErrorCode {
-    INVALID_KEY(999, "Uncategorized error", HttpStatus.BAD_REQUEST),
-    INVALID_ENUM(1009,"Message type cannot be empty",HttpStatus.INTERNAL_SERVER_ERROR),
-    //common
-    CONTENT_REQUIRED(1001,"Message content cannot be empty",HttpStatus.BAD_REQUEST),
-    MESSAGE_TYPE_REQUIRED(1006,"Message type cannot be empty",HttpStatus.BAD_REQUEST),
-    EMAIL_REQUIRED(1000, "Email field cannot be empty", HttpStatus.BAD_REQUEST),
 
-    //validation
-    EMAIL_INVALID(1002, "Invalid Email form", HttpStatus.BAD_REQUEST),
-    PASSWORD_INVALID(1003, "Password must be at least {min} characters", HttpStatus.BAD_REQUEST),
-    BLANK_INVALID(1004, "Field must not be blank", HttpStatus.BAD_REQUEST),
-    PHONE_NUMBER_INVALID(1005, "Phone number must be 10 digits and consists of numbers only", HttpStatus.BAD_REQUEST),
+    UNCATEGORIZED_EXCEPTION(9999, "Uncategorized error", HttpStatus.INTERNAL_SERVER_ERROR),
+    INVALID_MESSAGE_KEY(9999, "Invalid message key", HttpStatus.INTERNAL_SERVER_ERROR),
 
-    //authentication
-    ACCOUNT_NOT_EXISTED(2000, "Account does not exist in the system", HttpStatus.NOT_FOUND),
-    INVALID_SIGNATURE(2003, "Invalid JWT signature", HttpStatus.UNAUTHORIZED),
-    TOKEN_EXPIRED(2004, "Token is expired", HttpStatus.UNAUTHORIZED),
-    WRONG_PASSWORD(2005, "Wrong password for email", HttpStatus.BAD_REQUEST),
+    // Common
+    ACCOUNT_REQUIRED(1000, "Account is required", HttpStatus.BAD_REQUEST),
+    EMAIL_REQUIRED(1001, "Email is required", HttpStatus.BAD_REQUEST),
+    INVALID_EMAIL_FORMAT(1002, "Wrong email format", HttpStatus.BAD_REQUEST),
+    START_DATE_REQUIRED(1003, "Start date is required", HttpStatus.BAD_REQUEST),
+    END_DATE_REQUIRED(1004, "End date is required", HttpStatus.BAD_REQUEST),
+    PAYMENT_STATUS_REQUIRED(1005, "Payment status is required", HttpStatus.BAD_REQUEST),
+    ACCOUNT_NOT_BLANK(1006, "Account ID cannot be blank", HttpStatus.BAD_REQUEST),
 
-    //account
-    ACCOUNT_EXISTED(3000, "Account already exist in the system", HttpStatus.BAD_REQUEST),
-    ACCOUNT_DELETED(3001, "Account has been deleted", HttpStatus.BAD_REQUEST),
+    // Authentication
+    UNAUTHENTICATED(1000, "Unauthenticated", HttpStatus.UNAUTHORIZED),
+    UNAUTHORIZED(1001, "You do not have permission", HttpStatus.FORBIDDEN),
+    TOKEN_EXPIRED(1003, "Token is expired", HttpStatus.BAD_REQUEST),
+    WRONG_PASSWORD(1004, "Wrong password for email", HttpStatus.BAD_REQUEST),
+
+    // Account
+    ACCOUNT_NOT_EXISTED(1000, "Account does not exist", HttpStatus.BAD_REQUEST),
+    ACCOUNT_EXISTED(1001, "Account already existed", HttpStatus.BAD_REQUEST),
+    ACCOUNT_DELETED(1002, "Account has been deleted", HttpStatus.BAD_REQUEST),
+
+    // Membership
+    MEMBERSHIP_NOT_EXISTED(4000, "Membership does not exist", HttpStatus.BAD_REQUEST),
+    MEMBERSHIP_EXISTED(4001, "Membership already existed", HttpStatus.BAD_REQUEST),
+    MEMBERSHIP_NAME_NOT_EMPTY(4002, "Membership name must not be empty", HttpStatus.BAD_REQUEST),
+    MEMBERSHIP_MIN_SIZE(4003, "Membership name length must be at least {min} characters", HttpStatus.BAD_REQUEST),
+    DURATION_NEGATIVE(4004, "Duration must be a positive number", HttpStatus.BAD_REQUEST),
+    PRICE_NEGATIVE(4005, "Price must be a positive number", HttpStatus.BAD_REQUEST),
+
+    // Transaction
+    AMOUNT_REQUIRED(5001, "Transaction amount is required", HttpStatus.BAD_REQUEST),
+    NAME_REQUIRED(5002, "Name is required", HttpStatus.BAD_REQUEST),
+    CURRENCY_REQUIRED(5003, "Currency is required", HttpStatus.BAD_REQUEST),
+    AMOUNT_NEGATIVE(5004, "Transaction amount must be a positive number", HttpStatus.BAD_REQUEST),
+
+    // Subscription
+    SUBSCRIPTION_NOT_EXISTED(4000, "Subscription does not exist", HttpStatus.BAD_REQUEST),
+    START_DATE_MUST_BE_TODAY_OR_FUTURE(6001, "Start date must be today or in the future", HttpStatus.BAD_REQUEST),
+    END_DATE_MUST_BE_IN_FUTURE(6002, "End date must be today or in the future", HttpStatus.BAD_REQUEST),
+
+    // Setting
+    THEME_REQUIRED(7000, "Theme is required", HttpStatus.BAD_REQUEST),
+    LANGUAGE_REQUIRED(7001, "Language is required", HttpStatus.BAD_REQUEST),
+    TRACKING_MODE_REQUIRED(7002, "Tracking mode is required", HttpStatus.BAD_REQUEST),
+    MOTIVATION_REQUIRED(7003, "Motivation per day is required", HttpStatus.BAD_REQUEST),
+    MOTIVATION_MIN(7004, "Motivation per day must be at least 1", HttpStatus.BAD_REQUEST),
+    MOTIVATION_MAX(7005, "Motivation per day must be at most 100", HttpStatus.BAD_REQUEST),
+    DEADLINE_REQUIRED(7006, "Report deadline is required", HttpStatus.BAD_REQUEST),
+
+
     ;
+    private final int code;
+    private final String message;
+    private final HttpStatusCode httpCode;
 
-    private int code;
-    private String message;
-    private HttpStatusCode statusCode;
-
-    ErrorCode(int code, String message, HttpStatusCode statusCode) {
-        this.message = message;
-        this.code = code;
-        this.statusCode = statusCode;
-    }
 }

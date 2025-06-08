@@ -27,7 +27,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final AccountRepository accountRepository;
 
-    @Value("${spring.jwt.signerkey}")
+    @Value("${jwt.signer-key}")
     private String SIGNER_KEY;
 
     @Override
@@ -43,7 +43,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     String email = signedJWT.getJWTClaimsSet().getSubject();
                     Account account = accountRepository.findByEmail(email).orElse(null);
                     if (account != null) {
-                        String role = account.getRole().name(); // e.g., ADMIN, COACH, MEMBER
+                        String role = account.getRole().name();
                         User principal = new User(
                                 account.getEmail(),
                                 account.getPassword(),

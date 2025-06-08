@@ -11,12 +11,11 @@ import com.swpteam.smokingcessation.apis.account.entity.AccountStatus;
 import com.swpteam.smokingcessation.apis.account.entity.Role;
 import com.swpteam.smokingcessation.apis.account.mapper.AccountMapper;
 import com.swpteam.smokingcessation.apis.account.repository.AccountRepository;
-import com.swpteam.smokingcessation.apis.authentication.dto.request.AuthenticationRequest;
-import com.swpteam.smokingcessation.apis.authentication.dto.request.GoogleTokenRequest;
-import com.swpteam.smokingcessation.apis.authentication.dto.request.RefreshTokenRequest;
-import com.swpteam.smokingcessation.apis.authentication.dto.request.RegisterRequest;
+import com.swpteam.smokingcessation.apis.authentication.dto.request.*;
 import com.swpteam.smokingcessation.apis.authentication.dto.response.AuthenticationResponse;
 import com.swpteam.smokingcessation.apis.authentication.dto.response.GoogleTokenResponse;
+import com.swpteam.smokingcessation.apis.authentication.dto.response.IntrospectResponse;
+import com.swpteam.smokingcessation.apis.authentication.repository.InvalidatedTokenRepository;
 import com.swpteam.smokingcessation.exception.AppException;
 import com.swpteam.smokingcessation.exception.ErrorCode;
 import lombok.AccessLevel;
@@ -44,17 +43,29 @@ public class AuthenticationService {
 
     AccountRepository accountRepository;
     AccountMapper accountMapper;
+    InvalidatedTokenRepository invalidatedTokenRepository;
     WebClient webClient = WebClient.create();
 
     @NonFinal
-    @Value("${spring.jwt.signerkey}")
+    @Value("${jwt.signer-key}")
     protected String SIGNER_KEY;
+
+    @NonFinal
+    @Value("${jwt.valid-duration}")
+    protected long VALID_DURATION;
+
+    @NonFinal
+    @Value("${jwt.refreshable-duration}")
+    protected long REFRESHABLE_DURATION;
+
     @NonFinal
     @Value("${spring.security.oauth2.client.registration.google.client-id}")
     protected String CLIENT_ID;
+
     @NonFinal
     @Value("${spring.security.oauth2.client.registration.google.client-secret}")
     protected String CLIENT_SECRET;
+
     @NonFinal
     @Value("${spring.security.oauth2.client.registration.google.redirect-uri:http://localhost:8080/oauth2/callback}")
     protected String REDIRECT_URI;
@@ -150,7 +161,6 @@ public class AuthenticationService {
         }
     }
 
-    //Using refresh token to issue a new token
     public AuthenticationResponse refreshToken(RefreshTokenRequest request) throws ParseException, JOSEException {
         String refreshToken = request.getRefreshToken();
         SignedJWT signedJWT;
@@ -164,7 +174,7 @@ public class AuthenticationService {
 
         Date expiryTime = signedJWT.getJWTClaimsSet().getExpirationTime();
         if (expiryTime.before(new Date())) {
-            throw new AppException(ErrorCode.TOKEN_EXPIRED); // or a custom error
+            throw new AppException(ErrorCode.TOKEN_EXPIRED);
         }
 
         String email = signedJWT.getJWTClaimsSet().getSubject();
@@ -200,5 +210,42 @@ public class AuthenticationService {
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
         account.setPassword(passwordEncoder.encode(request.getPassword()));
         return accountMapper.toAccountResponse(accountRepository.save(account));
+    }
+
+    public IntrospectResponse introspect(IntrospectRequest request) throws JOSEException, ParseException {
+        var token = request.getToken();
+        boolean isValid = true;
+
+        try {
+            verifyToken(token, false);
+        } catch (AppException e) {
+            isValid = false;
+        }
+
+        return IntrospectResponse.builder().valid(isValid).build();
+    }
+
+    private SignedJWT verifyToken(String token, boolean isRefresh) throws JOSEException, ParseException {
+        JWSVerifier verifier = new MACVerifier(SIGNER_KEY.getBytes());
+
+        SignedJWT signedJWT = SignedJWT.parse(token);
+
+        Date expiryTime = (isRefresh)
+                ? new Date(signedJWT
+                .getJWTClaimsSet()
+                .getIssueTime()
+                .toInstant()
+                .plus(REFRESHABLE_DURATION, ChronoUnit.SECONDS)
+                .toEpochMilli())
+                : signedJWT.getJWTClaimsSet().getExpirationTime();
+
+        var verified = signedJWT.verify(verifier);
+
+        if (!(verified && expiryTime.after(new Date()))) throw new AppException(ErrorCode.UNAUTHENTICATED);
+
+        if (invalidatedTokenRepository.existsById(signedJWT.getJWTClaimsSet().getJWTID()))
+            throw new AppException(ErrorCode.UNAUTHENTICATED);
+
+        return signedJWT;
     }
 }

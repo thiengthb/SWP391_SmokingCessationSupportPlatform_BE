@@ -7,7 +7,7 @@ import jakarta.validation.ConstraintViolation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -22,77 +22,76 @@ import java.util.Objects;
 @Slf4j
 public class GlobalExceptionHandler {
 
-    private static final String MIN_ATTRIBUTE = "min";
+    @ExceptionHandler(value = Exception.class)
+    ResponseEntity<ApiResponse> handlingException(Exception exception) {
+        ApiResponse apiResponse = new ApiResponse<>().builder()
+                .code(ErrorCode.UNCATEGORIZED_EXCEPTION.getCode())
+                .message(ErrorCode.UNCATEGORIZED_EXCEPTION.getMessage())
+                .build();
+
+        return ResponseEntity.badRequest().body(apiResponse);
+    }
 
     @ExceptionHandler(value = AppException.class)
     ResponseEntity<ApiResponse> handlingAppException(AppException exception) {
         ErrorCode errorCode = exception.getErrorCode();
-        ApiResponse apiResponse = new ApiResponse<>();
+        ApiResponse apiResponse = new ApiResponse<>().builder()
+                .code(errorCode.getCode())
+                .message(errorCode.getMessage())
+                .build();
 
-        apiResponse.setCode(errorCode.getCode());
-        apiResponse.setMessage(errorCode.getMessage());
-        return ResponseEntity.badRequest().body(apiResponse);
+        return ResponseEntity
+                .status(errorCode.getHttpCode())
+                .body(apiResponse);
     }
 
     @ExceptionHandler(EntityNotFoundException.class)
-    public ResponseEntity<String> handleEntityNotFound(EntityNotFoundException ex) {
-        return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
+    ResponseEntity<String> handleEntityNotFoundException(EntityNotFoundException exception) {
+        return new ResponseEntity<>(exception.getMessage(), HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(value = AccessDeniedException.class)
+    ResponseEntity<ApiResponse> handlingAccessDeniedException(AppException exception) {
+        ErrorCode errorCode = ErrorCode.UNAUTHORIZED;
+
+        ApiResponse apiResponse = new ApiResponse<>().builder()
+                .code(errorCode.getCode())
+                .message(errorCode.getMessage())
+                .build();
+
+        return ResponseEntity
+                .status(errorCode.getHttpCode())
+                .body(apiResponse);
     }
 
     @ExceptionHandler(SecurityException.class)
-    public ResponseEntity<ApiResponse> handleSecurityException(SecurityException ex) {
-        ApiResponse apiResponse = new ApiResponse<>();
-        apiResponse.setCode(401);
-        apiResponse.setMessage(ex.getMessage());
+    ResponseEntity<ApiResponse> handleSecurityException(SecurityException exception) {
+        ApiResponse apiResponse = new ApiResponse<>().builder()
+                .code(401)
+                .message(exception.getMessage())
+                .build();
+
         return new ResponseEntity<>(apiResponse, HttpStatus.UNAUTHORIZED);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ApiResponse> handleValidationExceptions(MethodArgumentNotValidException exception) {
+    ResponseEntity<ApiResponse> handleValidationExceptions(MethodArgumentNotValidException exception) {
         String enumKey = exception.getFieldError().getDefaultMessage();
+        ErrorCode errorCode = ErrorCode.INVALID_MESSAGE_KEY;
 
-        //Default error code
-        ErrorCode errorCode = ErrorCode.INVALID_KEY;
-        Map<String, Object> attributes = null;
         try {
-            //Convert error message to enum
             errorCode = ErrorCode.valueOf(enumKey);
-
-            var constraintViolation =
-                    exception.getBindingResult().getAllErrors().getFirst().unwrap(ConstraintViolation.class);
-
-            attributes = constraintViolation.getConstraintDescriptor().getAttributes();
-
-            log.info(attributes.toString());
-
-        } catch (IllegalArgumentException e) {
-
+        } catch (IllegalArgumentException ignored) {
         }
 
-        ApiResponse apiResponse = new ApiResponse();
+        ApiResponse apiResponse = new ApiResponse().builder()
+                .code(errorCode.getCode())
+                .message(errorCode.getMessage())
+                .build();
 
-        apiResponse.setCode(errorCode.getCode());
-        apiResponse.setMessage(
-                Objects.nonNull(attributes)
-                        ? mapAttribute(errorCode.getMessage(), attributes)
-                        : errorCode.getMessage());
-
-        return ResponseEntity.badRequest().body(apiResponse);
-    }
-
-    private String mapAttribute(String message, Map<String, Object> attributes) {
-        String minValue = String.valueOf(attributes.get(MIN_ATTRIBUTE));
-
-        return message.replace("{" + MIN_ATTRIBUTE + "}", minValue);
-    }
-    @ExceptionHandler(value = HttpMessageNotReadableException.class)
-    ResponseEntity<ApiResponse> handlingHttpMessageNotReadableException(HttpMessageNotReadableException exception){
-        ErrorCode errorCode = ErrorCode.INVALID_ENUM;
-        ApiResponse apiResponse = new ApiResponse<>();
-
-        apiResponse.setCode(errorCode.getCode());
-        apiResponse.setMessage(errorCode.getMessage());
-        return ResponseEntity.badRequest().body(apiResponse);
+        return ResponseEntity
+                .status(errorCode.getHttpCode())
+                .body(apiResponse);
     }
 }
     
