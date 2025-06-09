@@ -1,4 +1,4 @@
-package com.swpteam.smokingcessation.common.entity;
+package com.swpteam.smokingcessation.common;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;

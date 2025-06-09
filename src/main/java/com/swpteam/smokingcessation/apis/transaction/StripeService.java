@@ -8,7 +8,7 @@ import com.swpteam.smokingcessation.apis.membership.MembershipRepository;
 import com.swpteam.smokingcessation.apis.transaction.dto.request.StripeSubscriptionRequest;
 import com.swpteam.smokingcessation.apis.transaction.dto.response.StripeResponse;
 import com.swpteam.smokingcessation.exception.AppException;
-import com.swpteam.smokingcessation.exception.ErrorCode;
+import com.swpteam.smokingcessation.constants.ErrorCode;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;

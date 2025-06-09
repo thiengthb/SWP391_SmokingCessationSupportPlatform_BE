@@ -16,7 +16,7 @@ import com.swpteam.smokingcessation.apis.authentication.dto.response.Authenticat
 import com.swpteam.smokingcessation.apis.authentication.dto.response.GoogleTokenResponse;
 import com.swpteam.smokingcessation.apis.authentication.dto.response.IntrospectResponse;
 import com.swpteam.smokingcessation.exception.AppException;
-import com.swpteam.smokingcessation.exception.ErrorCode;
+import com.swpteam.smokingcessation.constants.ErrorCode;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;

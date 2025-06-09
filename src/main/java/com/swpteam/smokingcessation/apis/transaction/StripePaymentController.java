@@ -2,7 +2,7 @@ package com.swpteam.smokingcessation.apis.transaction;
 
 import com.swpteam.smokingcessation.apis.transaction.dto.request.StripeSubscriptionRequest;
 import com.swpteam.smokingcessation.apis.transaction.dto.response.StripeResponse;
-import com.swpteam.smokingcessation.common.response.ApiResponse;
+import com.swpteam.smokingcessation.common.ApiResponse;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;

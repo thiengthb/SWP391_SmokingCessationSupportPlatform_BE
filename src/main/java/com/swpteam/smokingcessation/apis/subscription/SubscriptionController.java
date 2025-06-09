@@ -2,7 +2,7 @@ package com.swpteam.smokingcessation.apis.subscription;
 
 import com.swpteam.smokingcessation.apis.subscription.dto.SubscriptionRequest;
 import com.swpteam.smokingcessation.apis.subscription.dto.SubscriptionResponse;
-import com.swpteam.smokingcessation.common.response.ApiResponse;
+import com.swpteam.smokingcessation.common.ApiResponse;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;

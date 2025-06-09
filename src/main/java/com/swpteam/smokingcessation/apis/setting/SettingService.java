@@ -2,11 +2,8 @@ package com.swpteam.smokingcessation.apis.setting;
 
 import com.swpteam.smokingcessation.apis.setting.dto.SettingRequest;
 import com.swpteam.smokingcessation.apis.setting.dto.SettingResponse;
-import com.swpteam.smokingcessation.apis.setting.enums.Language;
-import com.swpteam.smokingcessation.apis.setting.enums.Theme;
-import com.swpteam.smokingcessation.apis.setting.enums.TrackingMode;
 import com.swpteam.smokingcessation.exception.AppException;
-import com.swpteam.smokingcessation.exception.ErrorCode;
+import com.swpteam.smokingcessation.constants.ErrorCode;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -14,7 +11,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.List;
 
 @Service

@@ -4,7 +4,7 @@ import com.swpteam.smokingcessation.apis.membership.dto.MembershipCreationReques
 import com.swpteam.smokingcessation.apis.membership.dto.MembershipUpdateRequest;
 import com.swpteam.smokingcessation.apis.membership.dto.MembershipResponse;
 import com.swpteam.smokingcessation.exception.AppException;
-import com.swpteam.smokingcessation.exception.ErrorCode;
+import com.swpteam.smokingcessation.constants.ErrorCode;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;

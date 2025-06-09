@@ -7,7 +7,7 @@ import com.swpteam.smokingcessation.apis.account.dto.response.AccountResponse;
 import com.swpteam.smokingcessation.apis.setting.Setting;
 import com.swpteam.smokingcessation.apis.setting.SettingRepository;
 import com.swpteam.smokingcessation.exception.AppException;
-import com.swpteam.smokingcessation.exception.ErrorCode;
+import com.swpteam.smokingcessation.constants.ErrorCode;
 import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;

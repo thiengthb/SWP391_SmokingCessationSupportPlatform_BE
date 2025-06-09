@@ -4,7 +4,7 @@ import com.swpteam.smokingcessation.apis.account.dto.request.AccountCreateReques
 import com.swpteam.smokingcessation.apis.account.dto.request.AccountUpdateRequest;
 import com.swpteam.smokingcessation.apis.account.dto.request.ChangePasswordRequest;
 import com.swpteam.smokingcessation.apis.account.dto.response.AccountResponse;
-import com.swpteam.smokingcessation.common.response.ApiResponse;
+import com.swpteam.smokingcessation.common.ApiResponse;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;

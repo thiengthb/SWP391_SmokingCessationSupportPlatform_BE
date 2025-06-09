@@ -8,7 +8,7 @@ import com.swpteam.smokingcessation.apis.authentication.dto.request.RefreshToken
 import com.swpteam.smokingcessation.apis.authentication.dto.request.RegisterRequest;
 import com.swpteam.smokingcessation.apis.authentication.dto.response.AuthenticationResponse;
 import com.swpteam.smokingcessation.apis.authentication.dto.response.GoogleTokenResponse;
-import com.swpteam.smokingcessation.common.response.ApiResponse;
+import com.swpteam.smokingcessation.common.ApiResponse;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;

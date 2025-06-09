@@ -1,15 +1,13 @@
 package com.swpteam.smokingcessation.apis.membership;
 
 import com.swpteam.smokingcessation.apis.subscription.Subscription;
-import com.swpteam.smokingcessation.common.entity.BaseEntity;
+import com.swpteam.smokingcessation.common.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
@@ -28,5 +26,5 @@ public class Membership extends BaseEntity {
     String description;
 
     @OneToMany(mappedBy = "membership")
-    private List<Subscription> subscriptions;
+    List<Subscription> subscriptions;
 }

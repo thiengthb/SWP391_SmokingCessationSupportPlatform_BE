@@ -1,5 +1,6 @@
 package com.swpteam.smokingcessation.exception;
 
+import com.swpteam.smokingcessation.constants.ErrorCode;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -12,5 +13,4 @@ public class AppException extends RuntimeException {
         super(errorCode.getMessage());
         this.errorCode = errorCode;
     }
-
 }

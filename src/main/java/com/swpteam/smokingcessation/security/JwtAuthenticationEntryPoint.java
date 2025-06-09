@@ -2,8 +2,8 @@ package com.swpteam.smokingcessation.security;
 
 import java.io.IOException;
 
-import com.swpteam.smokingcessation.common.response.ApiResponse;
-import com.swpteam.smokingcessation.exception.ErrorCode;
+import com.swpteam.smokingcessation.common.ApiResponse;
+import com.swpteam.smokingcessation.constants.ErrorCode;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
