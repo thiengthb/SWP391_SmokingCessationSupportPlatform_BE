@@ -26,6 +26,9 @@ public enum ErrorCode {
     REFRESH_TOKEN_REQUIRED(1009, "Refresh token field cannot be empty", HttpStatus.BAD_REQUEST),
     PASSWORD_INVALID(1010, "Password must be at least {min} characters", HttpStatus.BAD_REQUEST),
     PHONE_NUMBER_INVALID(1011, "Phone number must be 10 digits and consists of numbers only", HttpStatus.BAD_REQUEST),
+    RESET_TOKEN_REQUIRED(1012, "Reset token cannot be empty", HttpStatus.BAD_REQUEST),
+    INVALID_TOKEN(1013, "Token is invalid", HttpStatus.INTERNAL_SERVER_ERROR),
+
 
     // Authentication
     UNAUTHENTICATED(2000, "Unauthenticated", HttpStatus.UNAUTHORIZED),

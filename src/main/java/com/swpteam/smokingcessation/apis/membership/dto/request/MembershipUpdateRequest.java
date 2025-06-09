@@ -1,6 +1,5 @@
 package com.swpteam.smokingcessation.apis.membership.dto.request;
 
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Positive;
 import lombok.*;
 import lombok.experimental.FieldDefaults;

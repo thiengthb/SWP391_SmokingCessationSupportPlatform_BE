@@ -3,7 +3,6 @@ package com.swpteam.smokingcessation.apis.account;
 import com.swpteam.smokingcessation.apis.account.dto.request.AccountCreateRequest;
 import com.swpteam.smokingcessation.apis.account.dto.request.AccountUpdateRequest;
 import com.swpteam.smokingcessation.apis.account.dto.response.AccountResponse;
-import com.swpteam.smokingcessation.apis.account.entity.Account;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;

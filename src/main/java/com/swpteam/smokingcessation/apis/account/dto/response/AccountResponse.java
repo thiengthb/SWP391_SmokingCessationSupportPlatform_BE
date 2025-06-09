@@ -1,7 +1,7 @@
 package com.swpteam.smokingcessation.apis.account.dto.response;
 
-import com.swpteam.smokingcessation.apis.account.entity.AccountStatus;
-import com.swpteam.smokingcessation.apis.account.entity.Role;
+import com.swpteam.smokingcessation.apis.account.enums.AccountStatus;
+import com.swpteam.smokingcessation.apis.account.enums.Role;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 

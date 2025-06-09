@@ -1,4 +1,4 @@
-package com.swpteam.smokingcessation.apis.account.entity;
+package com.swpteam.smokingcessation.apis.account.enums;
 
 public enum AccountStatus {
     INACTIVE,

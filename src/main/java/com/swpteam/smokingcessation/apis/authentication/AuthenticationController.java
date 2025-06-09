@@ -1,11 +1,10 @@
-package com.swpteam.smokingcessation.apis.authentication.controller;
+package com.swpteam.smokingcessation.apis.authentication;
 
 import com.nimbusds.jose.JOSEException;
 import com.swpteam.smokingcessation.apis.account.dto.response.AccountResponse;
 import com.swpteam.smokingcessation.apis.authentication.dto.request.*;
 import com.swpteam.smokingcessation.apis.authentication.dto.response.AuthenticationResponse;
 import com.swpteam.smokingcessation.apis.authentication.dto.response.GoogleTokenResponse;
-import com.swpteam.smokingcessation.apis.authentication.service.AuthenticationService;
 import com.swpteam.smokingcessation.common.response.ApiResponse;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
@@ -83,4 +82,12 @@ public class AuthenticationController {
                 .build();
     }
 
+    @PostMapping("/reset-password")
+    public ApiResponse<String> resetPassword(@RequestBody @Valid ResetPasswordRequest request) {
+        authenticationService.resetPassword(request);
+
+        return ApiResponse.<String>builder()
+                .result("Password has been reset successfully.")
+                .build();
+    }
 }

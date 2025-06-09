@@ -53,7 +53,7 @@ public class MailService {
         return String.format(template, title, content);
     }
 
-    public void sendHtml(String to, String subject, String htmlContent) throws MessagingException {
+    private void sendHtml(String to, String subject, String htmlContent) throws MessagingException {
         var message = mailSender.createMimeMessage();
         var helper = new MimeMessageHelper(message, true, "UTF-8");
         helper.setTo(to);

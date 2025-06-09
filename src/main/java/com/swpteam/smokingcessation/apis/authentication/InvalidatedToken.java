@@ -1,4 +1,4 @@
-package com.swpteam.smokingcessation.apis.authentication.entity;
+package com.swpteam.smokingcessation.apis.authentication;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;

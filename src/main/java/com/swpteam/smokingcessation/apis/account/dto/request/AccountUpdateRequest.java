@@ -1,6 +1,6 @@
 package com.swpteam.smokingcessation.apis.account.dto.request;
 
-import com.swpteam.smokingcessation.apis.account.entity.Role;
+import com.swpteam.smokingcessation.apis.account.enums.Role;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;

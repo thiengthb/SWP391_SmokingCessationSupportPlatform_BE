@@ -34,7 +34,7 @@ public class MembershipService {
 
     public MembershipResponse updateMembership(String name, MembershipUpdateRequest request) {
         Membership membership = membershipRepository.findByName(name)
-                        .orElseThrow(() -> new AppException(ErrorCode.MEMBERSHIP_NOT_EXISTED));
+                .orElseThrow(() -> new AppException(ErrorCode.MEMBERSHIP_NOT_EXISTED));
 
         membershipMapper.updateMembership(membership, request);
         membership.setUpdatedAt(LocalDateTime.now());

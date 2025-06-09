@@ -1,6 +1,6 @@
 package com.swpteam.smokingcessation.apis.setting;
 
-import com.swpteam.smokingcessation.apis.account.entity.Account;
+import com.swpteam.smokingcessation.apis.account.Account;
 import com.swpteam.smokingcessation.apis.setting.enums.Language;
 import com.swpteam.smokingcessation.apis.setting.enums.Theme;
 import com.swpteam.smokingcessation.apis.setting.enums.TrackingMode;
