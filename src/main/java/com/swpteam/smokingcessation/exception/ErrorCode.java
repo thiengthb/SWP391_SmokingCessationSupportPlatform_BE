@@ -38,6 +38,7 @@ public enum ErrorCode {
     REASON_TO_QUIT_TOO_LONG(4008, "Reason to quit must not exceed 255 characters", HttpStatus.BAD_REQUEST),
     SMOKE_YEAR_INVALID(4009, "Smoke year must be non-negative", HttpStatus.BAD_REQUEST),
     ACCESS_DENIED(4001, "Access denied", HttpStatus.FORBIDDEN),
+    PACK_PRICE_TOO_HIGH(4010, "Pack price must not exceed 500.0", HttpStatus.BAD_REQUEST),
     //record
     RECORD_NOT_FOUND(5000, "Record does not exist", HttpStatus.NOT_FOUND),
     RECORD_ACCOUNT_ID_REQUIRED(5001, "Account ID is required", HttpStatus.BAD_REQUEST),
