@@ -1,9 +1,6 @@
 package com.swpteam.smokingcessation.apis.health.DTO.request;
 
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -24,7 +21,8 @@ public class HealthUpdate {
     @Max(value = 10, message = "FND_LEVEL_INVALID_MAX")
     int fndLevel;
 
-    @Min(value = 0, message = "PACK_PRICE_INVALID")
+    @DecimalMin(value = "0.0", message = "PACK_PRICE_INVALID")
+    @DecimalMax(value = "500.0", message = "PACK_PRICE_TOO_HIGH")
     double packPrice;
 
     @NotBlank(message = "REASON_TO_QUIT_REQUIRED")
