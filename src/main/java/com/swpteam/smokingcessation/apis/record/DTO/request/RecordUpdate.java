@@ -14,8 +14,4 @@ import java.time.LocalDate;
 public class RecordUpdate {
     @Min(value = 0, message = "RECORD_CIGARETTES_SMOKED_INVALID")
     int cigarettesSmoked;
-
-    @NotNull(message = "RECORD_DATE_REQUIRED")
-    @FutureOrPresent(message = "RECORD_DATE_INVALID")
-    LocalDate date;
 }
