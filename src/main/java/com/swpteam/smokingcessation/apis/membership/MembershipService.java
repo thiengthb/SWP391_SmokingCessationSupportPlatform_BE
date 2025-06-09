@@ -20,6 +20,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Slf4j
@@ -63,6 +64,7 @@ public class MembershipService {
             throw new AppException(ErrorCode.MEMBERSHIP_NAME_UNIQUE);
 
         Membership membership = membershipMapper.toEntity(request);
+        membership.setCreatedAt(LocalDateTime.now());
 
         return membershipMapper.toResponse(membershipRepository.save(membership));
     }

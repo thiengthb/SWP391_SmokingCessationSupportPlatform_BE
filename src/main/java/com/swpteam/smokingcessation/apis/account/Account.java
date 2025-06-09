@@ -2,10 +2,14 @@ package com.swpteam.smokingcessation.apis.account;
 
 import com.swpteam.smokingcessation.apis.account.enums.AccountStatus;
 import com.swpteam.smokingcessation.apis.account.enums.Role;
+import com.swpteam.smokingcessation.apis.account.enums.AccountStatus;
+import com.swpteam.smokingcessation.apis.account.enums.Role;
+import com.swpteam.smokingcessation.apis.member.Member;
 import com.swpteam.smokingcessation.apis.setting.Setting;
 import com.swpteam.smokingcessation.apis.subscription.Subscription;
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.FieldDefaults;
 import org.hibernate.proxy.HibernateProxy;
 
 import java.time.LocalDateTime;
@@ -19,39 +23,43 @@ import java.util.Objects;
 @AllArgsConstructor
 @Builder
 @Data
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class Account {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
-    private String id;
+    String id;
 
     private String username;
 
     @Column(nullable = false, unique = true, columnDefinition = "NVARCHAR(30)")
-    private String email;
+    String email;
 
     @Column(nullable = false, columnDefinition = "NVARCHAR(100)")
-    private String password;
+    String password;
 
     @Column(unique = true, columnDefinition = "NVARCHAR(10)")
-    private String phoneNumber;
+    String phoneNumber;
 
     @Enumerated(EnumType.STRING)
-    private Role role;
+    Role role;
 
     @Enumerated(EnumType.STRING)
-    private AccountStatus status;
+    AccountStatus status;
 
-    private LocalDateTime createdAt;
+    LocalDateTime createdAt;
 
-    private LocalDateTime updatedAt;
+    LocalDateTime updatedAt;
 
-    private boolean isDeleted;
+    boolean isDeleted;
 
     @OneToMany(mappedBy = "account")
-    private List<Subscription> subscriptions;
+    List<Subscription> subscriptions;
 
     @OneToOne(mappedBy = "account", cascade = CascadeType.ALL, optional = false)
-    private Setting setting;
+    Setting setting;
+
+    @OneToOne(mappedBy = "account", cascade = CascadeType.ALL, optional = false)
+    Member member;
 
     @Override
     public final boolean equals(Object o) {

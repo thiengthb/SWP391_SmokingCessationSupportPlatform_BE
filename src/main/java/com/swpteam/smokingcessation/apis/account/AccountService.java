@@ -6,6 +6,8 @@ import com.swpteam.smokingcessation.apis.account.dto.request.ChangePasswordReque
 import com.swpteam.smokingcessation.apis.account.dto.response.AccountResponse;
 import com.swpteam.smokingcessation.apis.health.Health;
 import com.swpteam.smokingcessation.apis.health.HealthRepository;
+import com.swpteam.smokingcessation.apis.member.Member;
+import com.swpteam.smokingcessation.apis.member.MemberRepository;
 import com.swpteam.smokingcessation.apis.setting.Setting;
 import com.swpteam.smokingcessation.apis.setting.SettingRepository;
 import com.swpteam.smokingcessation.exception.AppException;
@@ -26,23 +28,28 @@ import java.util.List;
 public class AccountService {
 
     AccountRepository accountRepository;
-    AccountMapper accountMapper;
-
     SettingRepository settingRepository;
     private final HealthRepository healthRepository;
+    MemberRepository memberRepository;
+    AccountMapper accountMapper;
+
 
     public AccountResponse createAccount(AccountCreateRequest request) {
         if (accountRepository.existsByEmail(request.getEmail())) {
             throw new AppException(ErrorCode.ACCOUNT_EXISTED);
         }
 
-        Account account = accountMapper.toAccount(request);
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
+
+        Account account = accountMapper.toAccount(request);
         account.setPassword(passwordEncoder.encode(request.getPassword()));
 
         settingRepository.save(Setting.getDefaultSetting(account));
 
         healthRepository.save(Health.getDefaultHealth(account));
+
+        member.setAccount(account);
+        memberRepository.save(Member().getDefaultMember());
 
         return accountMapper.toAccountResponse(accountRepository.save(account));
     }
