@@ -1,6 +1,7 @@
-package com.swpteam.smokingcessation.apis.member.entity;
+package com.swpteam.smokingcessation.apis.member;
 
-import com.swpteam.smokingcessation.apis.account.entity.Account;
+import com.swpteam.smokingcessation.apis.account.Account;
+import com.swpteam.smokingcessation.apis.member.enums.MemberGender;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -17,10 +18,9 @@ import java.time.LocalDateTime;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Member {
     @Id
-    @JoinColumn(name = "account_id")
     String id;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne
     @MapsId
     @JoinColumn(name = "account_id")
     Account account;
@@ -38,4 +38,16 @@ public class Member {
     int currentStreak;
     @Column(name = "last_counter_reset")
     LocalDateTime lastCounterReset;
+
+    public Member getDefaultMember() {
+        return Member.builder()
+                .fullName(null)
+                .dob(null)
+                .address(null)
+                .gender(null)
+                .score(0)
+                .currentStreak(0)
+                .lastCounterReset(null)
+                .build();
+    }
 }

@@ -1,6 +1,6 @@
 package com.swpteam.smokingcessation.apis.member.dto.response;
 
-import com.swpteam.smokingcessation.apis.member.entity.MemberGender;
+import com.swpteam.smokingcessation.apis.member.enums.MemberGender;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -14,7 +14,6 @@ import java.time.LocalDateTime;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class MemberResponse {
     String id;
-    String accountId;
     String fullName;
     LocalDate dob;
     String address;

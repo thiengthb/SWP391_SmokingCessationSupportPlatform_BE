@@ -1,6 +1,5 @@
-package com.swpteam.smokingcessation.apis.member.repository;
+package com.swpteam.smokingcessation.apis.member;
 
-import com.swpteam.smokingcessation.apis.member.entity.Member;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
