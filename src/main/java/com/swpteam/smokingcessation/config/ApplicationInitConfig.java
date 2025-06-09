@@ -3,6 +3,7 @@ package com.swpteam.smokingcessation.config;
 import com.swpteam.smokingcessation.apis.account.Account;
 import com.swpteam.smokingcessation.apis.account.AccountRepository;
 import com.swpteam.smokingcessation.apis.account.enums.Role;
+import com.swpteam.smokingcessation.apis.member.Member;
 import com.swpteam.smokingcessation.apis.member.MemberRepository;
 import com.swpteam.smokingcessation.apis.setting.Setting;
 import com.swpteam.smokingcessation.apis.setting.SettingRepository;
@@ -15,6 +16,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.password.PasswordEncoder;
+
+import java.time.LocalDateTime;
 
 @Configuration
 @RequiredArgsConstructor
@@ -39,6 +42,7 @@ public class ApplicationInitConfig {
                 Account account = Account.builder()
                         .email(ADMIN_EMAIL)
                         .password(passwordEncoder.encode(ADMIN_PASSWORD))
+                        .createdAt(LocalDateTime.now())
                         .role(Role.ADMIN)
                         .build();
 
@@ -46,8 +50,11 @@ public class ApplicationInitConfig {
                 Setting setting = new Setting().getDefaultSetting();
                 setting.setAccount(account);
 
+                Member member = new Member().getDefaultMember();
+                member.setAccount(account);
 
                 account.setSetting(setting);
+                account.setMember(member);
 
                 accountRepository.save(account);
 
