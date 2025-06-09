@@ -1,10 +1,8 @@
-package com.swpteam.smokingcessation.apis.member.controller;
+package com.swpteam.smokingcessation.apis.member;
 
 import com.swpteam.smokingcessation.apis.member.dto.request.MemberCreateRequest;
 import com.swpteam.smokingcessation.apis.member.dto.request.MemberUpdateRequest;
 import com.swpteam.smokingcessation.apis.member.dto.response.MemberResponse;
-import com.swpteam.smokingcessation.apis.member.entity.Member;
-import com.swpteam.smokingcessation.apis.member.service.MemberService;
 import com.swpteam.smokingcessation.common.response.ApiResponse;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;

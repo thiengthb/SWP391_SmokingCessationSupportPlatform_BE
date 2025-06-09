@@ -1,6 +1,6 @@
 package com.swpteam.smokingcessation.apis.member.dto.request;
 
-import com.swpteam.smokingcessation.apis.member.entity.MemberGender;
+import com.swpteam.smokingcessation.apis.member.enums.MemberGender;
 import jakarta.validation.constraints.Past;
 import lombok.*;
 import lombok.experimental.FieldDefaults;

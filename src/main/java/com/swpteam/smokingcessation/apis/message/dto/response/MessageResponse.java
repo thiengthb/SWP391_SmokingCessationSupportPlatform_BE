@@ -17,9 +17,9 @@ public class MessageResponse {
     String messageId;
     MessageType type;
     String content;
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss"	)
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     LocalDateTime createdAt;
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss"	)
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     LocalDateTime updatedAt;
     boolean isDeleted;
 

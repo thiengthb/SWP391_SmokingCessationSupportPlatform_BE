@@ -4,6 +4,8 @@ import com.swpteam.smokingcessation.apis.account.dto.request.AccountCreateReques
 import com.swpteam.smokingcessation.apis.account.dto.request.AccountUpdateRequest;
 import com.swpteam.smokingcessation.apis.account.dto.request.ChangePasswordRequest;
 import com.swpteam.smokingcessation.apis.account.dto.response.AccountResponse;
+import com.swpteam.smokingcessation.apis.member.Member;
+import com.swpteam.smokingcessation.apis.member.MemberRepository;
 import com.swpteam.smokingcessation.apis.setting.Setting;
 import com.swpteam.smokingcessation.apis.setting.SettingRepository;
 import com.swpteam.smokingcessation.exception.AppException;
@@ -24,23 +26,29 @@ import java.util.List;
 public class AccountService {
 
     AccountRepository accountRepository;
+    SettingRepository settingRepository;
+    MemberRepository memberRepository;
     AccountMapper accountMapper;
 
-    SettingRepository settingRepository;
 
     public AccountResponse createAccount(AccountCreateRequest request) {
         if (accountRepository.existsByEmail(request.getEmail())) {
             throw new AppException(ErrorCode.ACCOUNT_EXISTED);
         }
 
-        Account account = accountMapper.toAccount(request);
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
+
+        Account account = accountMapper.toAccount(request);
         account.setPassword(passwordEncoder.encode(request.getPassword()));
 
         Setting setting = new Setting().getDefaultSetting();
         setting.setAccount(account);
 
+        Member member = new Member().getDefaultMember();
+        member.setAccount(account);
+
         settingRepository.save(setting);
+        memberRepository.save(member);
 
         return accountMapper.toAccountResponse(accountRepository.save(account));
     }

@@ -17,6 +17,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -55,6 +56,7 @@ public class MembershipService {
             throw new AppException(ErrorCode.MEMBERSHIP_NAME_UNIQUE);
 
         Membership membership = membershipMapper.toEntity(request);
+        membership.setCreatedAt(LocalDateTime.now());
 
         return membershipMapper.toResponse(membershipRepository.save(membership));
     }

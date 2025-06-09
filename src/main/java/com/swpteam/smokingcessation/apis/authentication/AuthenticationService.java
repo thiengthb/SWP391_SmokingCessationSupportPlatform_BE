@@ -5,17 +5,18 @@ import com.nimbusds.jose.crypto.MACSigner;
 import com.nimbusds.jose.crypto.MACVerifier;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
+import com.swpteam.smokingcessation.apis.account.AccountMapper;
+import com.swpteam.smokingcessation.apis.account.AccountRepository;
 import com.swpteam.smokingcessation.apis.account.dto.request.AccountCreateRequest;
 import com.swpteam.smokingcessation.apis.account.dto.response.AccountResponse;
 import com.swpteam.smokingcessation.apis.account.Account;
 import com.swpteam.smokingcessation.apis.account.enums.AccountStatus;
 import com.swpteam.smokingcessation.apis.account.enums.Role;
-import com.swpteam.smokingcessation.apis.account.AccountMapper;
-import com.swpteam.smokingcessation.apis.account.AccountRepository;
 import com.swpteam.smokingcessation.apis.authentication.dto.request.*;
 import com.swpteam.smokingcessation.apis.authentication.dto.response.AuthenticationResponse;
 import com.swpteam.smokingcessation.apis.authentication.dto.response.GoogleTokenResponse;
 import com.swpteam.smokingcessation.apis.authentication.dto.response.IntrospectResponse;
+import com.swpteam.smokingcessation.apis.mail.MailService;
 import com.swpteam.smokingcessation.exception.AppException;
 import com.swpteam.smokingcessation.constants.ErrorCode;
 import lombok.AccessLevel;
@@ -36,6 +37,7 @@ import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.StringJoiner;
+import java.util.UUID;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -128,7 +130,7 @@ public class AuthenticationService {
                 .issuer("swpteam")
                 .issueTime(new Date())
                 .expirationTime(new Date(
-                        Instant.now().plus(VALID_DURATION, ChronoUnit.MINUTES).toEpochMilli()
+                        Instant.now().plus(VALID_DURATION, ChronoUnit.SECONDS).toEpochMilli()
                 ))
                 .claim("scope", buildScope(account))
                 .build();
@@ -156,7 +158,7 @@ public class AuthenticationService {
                 .issuer("swpteam")
                 .issueTime(new Date())
                 .expirationTime(new Date(
-                        Instant.now().plus(REFRESHABLE_DURATION, ChronoUnit.MINUTES).toEpochMilli() // 30 days validity
+                        Instant.now().plus(REFRESHABLE_DURATION, ChronoUnit.SECONDS).toEpochMilli() // 30 days validity
                 ))
                 .claim("type", "refresh")
                 .build();
@@ -177,11 +179,12 @@ public class AuthenticationService {
         JWSHeader jwsHeader = new JWSHeader(JWSAlgorithm.HS512);
 
         JWTClaimsSet jwtClaimsSet = new JWTClaimsSet.Builder()
+                .jwtID(UUID.randomUUID().toString())//unique ID to invalidate later on
                 .subject(account.getEmail())
                 .issuer("swpteam")
                 .issueTime(new Date())
                 .expirationTime(new Date(
-                        Instant.now().plus(RESET_DURATION, ChronoUnit.MINUTES).toEpochMilli() // 30 days validity
+                        Instant.now().plus(RESET_DURATION, ChronoUnit.SECONDS).toEpochMilli() // 30 days validity
                 ))
                 .claim("type", "reset")
                 .build();
@@ -254,6 +257,7 @@ public class AuthenticationService {
         );
 
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
+
         account.setPassword(passwordEncoder.encode(request.getPassword()));
         return accountMapper.toAccountResponse(accountRepository.save(account));
     }
@@ -276,14 +280,10 @@ public class AuthenticationService {
 
         SignedJWT signedJWT = SignedJWT.parse(token);
 
-        Date expiryTime = (isRefresh)
-                ? new Date(signedJWT
-                .getJWTClaimsSet()
-                .getIssueTime()
-                .toInstant()
-                .plus(REFRESHABLE_DURATION, ChronoUnit.SECONDS)
-                .toEpochMilli())
-                : signedJWT.getJWTClaimsSet().getExpirationTime();
+        Date expiryTime = signedJWT.getJWTClaimsSet().getExpirationTime();
+        if (expiryTime == null) {
+            throw new AppException(ErrorCode.INVALID_SIGNATURE);
+        }
 
         var verified = signedJWT.verify(verifier);
 
@@ -312,6 +312,42 @@ public class AuthenticationService {
         } catch (MessagingException | IOException e) {
             log.error("Failed to send reset password email to {}", email, e);
             throw new AppException(ErrorCode.EMAIL_SEND_FAILED);
+        }
+    }
+
+    public void resetPassword(ResetPasswordRequest request) {
+        String emailFromToken;
+        String jwtId;
+
+        try {
+            JWSObject jwsObject = JWSObject.parse(request.getToken());
+            JWTClaimsSet jwtClaimsSet = JWTClaimsSet.parse(jwsObject.getPayload().toJSONObject());
+            if (!jwtClaimsSet.getClaim("type").equals("reset")) {
+                throw new AppException(ErrorCode.INVALID_TOKEN);
+            }
+            if (jwtClaimsSet.getExpirationTime().before(new Date()) || invalidatedTokenRepository.existsById(jwtClaimsSet.getJWTID())) {
+                throw new AppException(ErrorCode.TOKEN_EXPIRED);
+            }
+            emailFromToken = jwtClaimsSet.getSubject();
+            jwtId = jwtClaimsSet.getJWTID();
+        } catch (Exception e) {
+            throw new AppException(ErrorCode.INVALID_TOKEN);
+        }
+
+        Account account = accountRepository.findByEmail(emailFromToken).orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_EXISTED));
+
+        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
+
+        account.setPassword(passwordEncoder.encode(request.getNewPassword()));
+        accountRepository.save(account);
+
+        if (jwtId != null) {
+            InvalidatedToken invalidatedToken = InvalidatedToken.builder()
+                    .id(jwtId)
+                    .expiryTime(null)
+                    .build();
+
+            invalidatedTokenRepository.save(invalidatedToken);
         }
     }
 }
