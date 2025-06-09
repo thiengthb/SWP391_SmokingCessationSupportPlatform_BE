@@ -27,7 +27,8 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(value = Exception.class)
     ResponseEntity<ApiResponse> handlingException(Exception exception) {
         log.error("Unhandled exception", exception);
-        ApiResponse apiResponse = new ApiResponse<>().builder()
+        new ApiResponse<>();
+        ApiResponse apiResponse = ApiResponse.builder()
                 .code(ErrorCode.UNCATEGORIZED_EXCEPTION.getCode())
                 .message(ErrorCode.UNCATEGORIZED_EXCEPTION.getMessage())
                 .build();
@@ -38,7 +39,8 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(value = AppException.class)
     ResponseEntity<ApiResponse> handlingAppException(AppException exception) {
         ErrorCode errorCode = exception.getErrorCode();
-        ApiResponse apiResponse = new ApiResponse<>().builder()
+        new ApiResponse<>();
+        ApiResponse apiResponse = ApiResponse.builder()
                 .code(errorCode.getCode())
                 .message(errorCode.getMessage())
                 .build();
@@ -57,7 +59,8 @@ public class GlobalExceptionHandler {
     ResponseEntity<ApiResponse> handlingAccessDeniedException(AppException exception) {
         ErrorCode errorCode = ErrorCode.UNAUTHORIZED;
 
-        ApiResponse apiResponse = new ApiResponse<>().builder()
+        new ApiResponse<>();
+        ApiResponse apiResponse = ApiResponse.builder()
                 .code(errorCode.getCode())
                 .message(errorCode.getMessage())
                 .build();
@@ -69,7 +72,8 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(SecurityException.class)
     ResponseEntity<ApiResponse> handleSecurityException(SecurityException exception) {
-        ApiResponse apiResponse = new ApiResponse<>().builder()
+        new ApiResponse<>();
+        ApiResponse apiResponse = ApiResponse.builder()
                 .code(401)
                 .message(exception.getMessage())
                 .build();
@@ -96,7 +100,8 @@ public class GlobalExceptionHandler {
         } catch (IllegalArgumentException ignored) {
         }
 
-        ApiResponse apiResponse = new ApiResponse().builder()
+        new ApiResponse();
+        ApiResponse apiResponse = ApiResponse.builder()
                 .code(errorCode.getCode())
                 .message(Objects.nonNull(attributes)
                         ? mapAttribute(errorCode.getMessage(), attributes)
