@@ -13,7 +13,6 @@ public interface AccountMapper {
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "createdAt", expression = "java(java.time.LocalDateTime.now())")
-    @Mapping(target = "updatedAt", expression = "java(java.time.LocalDateTime.now())")
     Account toAccount(AccountCreateRequest request);
 
     AccountResponse toAccountResponse(Account entity);
