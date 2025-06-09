@@ -1,6 +1,9 @@
 package com.swpteam.smokingcessation.apis.membership.dto;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -10,6 +13,14 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class MembershipUpdateRequest {
+    @NotNull(message = "ID_REQUIRED")
+    @NotBlank(message = "ID_NOT_BLANK")
+    String id;
+
+    @NotBlank(message = "MEMBERSHIP_NAME_NOT_EMPTY")
+    @Size(min = 1, message = "MEMBERSHIP_MIN_SIZE")
+    String name;
+
     @Positive(message = "DURATION_NEGATIVE")
     int duration;
 

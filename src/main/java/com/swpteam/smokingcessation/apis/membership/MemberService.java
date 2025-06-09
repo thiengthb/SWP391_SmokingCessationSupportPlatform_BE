@@ -11,7 +11,6 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -23,33 +22,40 @@ public class MemberService {
     MembershipMapper membershipMapper;
 
     public MembershipResponse createMembership(MembershipCreationRequest request) {
+        if (membershipRepository.existsByName(request.getName()))
+            throw new AppException(ErrorCode.MEMBERSHIP_NAME_UNIQUE);
+
         Membership membership = membershipMapper.toEntity(request);
-        membership.setCreatedAt(LocalDateTime.now());
 
         return membershipMapper.toResponse(membershipRepository.save(membership));
     }
 
-    public MembershipResponse updateMembership(String name, MembershipUpdateRequest request) {
-        Membership membership = membershipRepository.findByName(name)
-                        .orElseThrow(() -> new AppException(ErrorCode.MEMBERSHIP_NOT_EXISTED));
+    public MembershipResponse updateMembership(String id, MembershipUpdateRequest request) {
+        Membership membership = membershipRepository.findById(id)
+                .orElseThrow(() -> new AppException(ErrorCode.MEMBERSHIP_NOT_EXISTED));
 
         membershipMapper.updateMembership(membership, request);
-        membership.setUpdatedAt(LocalDateTime.now());
 
         return membershipMapper.toResponse(membershipRepository.save(membership));
     }
 
-    public void deleteMembership(String name) {
-        membershipRepository.deleteById(name);
+    public void deleteMembership(String id) {
+        membershipRepository.deleteById(id);
     }
 
     public List<MembershipResponse> getMembershipList() {
         return membershipRepository.findAll().stream().map(membershipMapper::toResponse).toList();
     }
 
-    public MembershipResponse getMembership(String name) {
+    public MembershipResponse getMembershipByName(String name) {
         return membershipMapper.toResponse(
                 membershipRepository.findByName(name)
+                        .orElseThrow(() -> new AppException(ErrorCode.MEMBERSHIP_NOT_EXISTED)));
+    }
+
+    public MembershipResponse getMembershipById(String id) {
+        return membershipMapper.toResponse(
+                membershipRepository.findById(id)
                         .orElseThrow(() -> new AppException(ErrorCode.MEMBERSHIP_NOT_EXISTED)));
     }
 }

@@ -24,22 +24,24 @@ public class MembershipController {
     @PostMapping
     ApiResponse<MembershipResponse> createMembership(@RequestBody @Valid MembershipCreationRequest request) {
         return ApiResponse.<MembershipResponse>builder()
+                .message("Membership has been created")
                 .result(memberService.createMembership(request))
                 .build();
     }
 
-    @PutMapping("/{membershipName}")
-    ApiResponse<MembershipResponse> updateMembership(@PathVariable String membershipName, @RequestBody @Valid MembershipUpdateRequest request) {
+    @PutMapping("/{id}")
+    ApiResponse<MembershipResponse> updateMembership(@PathVariable String id, @RequestBody @Valid MembershipUpdateRequest request) {
         return ApiResponse.<MembershipResponse>builder()
-                .result(memberService.updateMembership(membershipName, request))
+                .message("Membership has been updated")
+                .result(memberService.updateMembership(id, request))
                 .build();
     }
 
-    @DeleteMapping("/{membershipName}")
-    ApiResponse<String> createMembership(@PathVariable String membershipName) {
-        memberService.deleteMembership(membershipName);
+    @DeleteMapping("/{id}")
+    ApiResponse<String> createMembership(@PathVariable String id) {
+        memberService.deleteMembership(id);
         return ApiResponse.<String>builder()
-                .result("Membership has been deleted")
+                .message("Membership has been deleted")
                 .build();
     }
 
@@ -50,10 +52,17 @@ public class MembershipController {
                 .build();
     }
 
-    @GetMapping("/{membershipName}")
-    ApiResponse<MembershipResponse> getMembershipList(@PathVariable String membershipName) {
+    @GetMapping("/{name}")
+    ApiResponse<MembershipResponse> getMembershipByName(@PathVariable String membershipName) {
         return ApiResponse.<MembershipResponse>builder()
-                .result(memberService.getMembership(membershipName))
+                .result(memberService.getMembershipByName(membershipName))
+                .build();
+    }
+
+    @GetMapping("/{id}")
+    ApiResponse<MembershipResponse> getMembershipById(@PathVariable String id) {
+        return ApiResponse.<MembershipResponse>builder()
+                .result(memberService.getMembershipById(id))
                 .build();
     }
 }

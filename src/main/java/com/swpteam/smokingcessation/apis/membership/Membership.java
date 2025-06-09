@@ -1,6 +1,8 @@
 package com.swpteam.smokingcessation.apis.membership;
 
 import com.swpteam.smokingcessation.apis.subscription.Subscription;
+import com.swpteam.smokingcessation.common.entity.BaseEntity;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
@@ -17,14 +19,13 @@ import java.util.List;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
-public class Membership {
-    @Id
+public class Membership extends BaseEntity {
+    @Column(unique = true, nullable = false)
     String name;
+
     int duration;
     double price;
     String description;
-    LocalDateTime createdAt;
-    LocalDateTime updatedAt;
 
     @OneToMany(mappedBy = "membership")
     private List<Subscription> subscriptions;

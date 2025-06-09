@@ -20,6 +20,8 @@ public enum ErrorCode {
     END_DATE_REQUIRED(1004, "End date is required", HttpStatus.BAD_REQUEST),
     PAYMENT_STATUS_REQUIRED(1005, "Payment status is required", HttpStatus.BAD_REQUEST),
     ACCOUNT_NOT_BLANK(1006, "Account ID cannot be blank", HttpStatus.BAD_REQUEST),
+    ID_REQUIRED(1007, "ID is required", HttpStatus.BAD_REQUEST),
+    ID_NOT_BLANK(1007, "ID cannot be blank", HttpStatus.BAD_REQUEST),
 
     // Authentication
     UNAUTHENTICATED(1000, "Unauthenticated", HttpStatus.UNAUTHORIZED),
@@ -34,7 +36,7 @@ public enum ErrorCode {
 
     // Membership
     MEMBERSHIP_NOT_EXISTED(4000, "Membership does not exist", HttpStatus.BAD_REQUEST),
-    MEMBERSHIP_EXISTED(4001, "Membership already existed", HttpStatus.BAD_REQUEST),
+    MEMBERSHIP_NAME_UNIQUE(4001, "Membership name must be unique", HttpStatus.BAD_REQUEST),
     MEMBERSHIP_NAME_NOT_EMPTY(4002, "Membership name must not be empty", HttpStatus.BAD_REQUEST),
     MEMBERSHIP_MIN_SIZE(4003, "Membership name length must be at least {min} characters", HttpStatus.BAD_REQUEST),
     DURATION_NEGATIVE(4004, "Duration must be a positive number", HttpStatus.BAD_REQUEST),
