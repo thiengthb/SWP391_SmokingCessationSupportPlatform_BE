@@ -24,13 +24,14 @@ public class HealthRequest {
     @Max(value = 10, message = "FND_LEVEL_INVALID_MAX")
     int fndLevel;
 
-    @Min(value = 0, message = "PACK_PRICE_INVALID")
+    @DecimalMin(value = "0.0", message = "PACK_PRICE_INVALID")
+    @DecimalMax(value = "500.0", message = "PACK_PRICE_TOO_HIGH")
     double packPrice;
 
     @NotBlank(message = "REASON_TO_QUIT_REQUIRED")
     @Size(max = 255, message = "REASON_TO_QUIT_TOO_LONG")
     String reasonToQuit;
 
-    @Min(value = 0, message = "SMOKE_YEAR_INVALID")
+    @Min(value = 100, message = "SMOKE_YEAR_INVALID")
     int smokeYear;
 }
