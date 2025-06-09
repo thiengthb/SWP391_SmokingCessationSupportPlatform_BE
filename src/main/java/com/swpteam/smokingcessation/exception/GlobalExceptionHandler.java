@@ -24,7 +24,8 @@ public class GlobalExceptionHandler {
 
         apiResponse.setCode(errorCode.getCode());
         apiResponse.setMessage(errorCode.getMessage());
-        return ResponseEntity.badRequest().body(apiResponse);
+
+        return ResponseEntity.status(errorCode.getStatusCode()).body(apiResponse);
     }
 
     @ExceptionHandler(EntityNotFoundException.class)
@@ -41,22 +42,34 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ApiResponse<Map<String, String>>> handleValidationExceptions(MethodArgumentNotValidException ex) {
-        Map<String, String> errors = new HashMap<>();
-        // Field errors
-        for (FieldError error : ex.getBindingResult().getFieldErrors()) {
-            errors.put(error.getField(), error.getDefaultMessage());
+    public ResponseEntity<ApiResponse> handleValidationExceptions(MethodArgumentNotValidException ex) {
+        String errorMessage = getFirstErrorMessage(ex);
+
+        ErrorCode errorCode = findErrorCodeByMessage(errorMessage);
+
+        ApiResponse apiResponse = new ApiResponse<>();
+        apiResponse.setCode(errorCode.getCode());
+        apiResponse.setMessage(errorCode.getMessage());
+
+        return ResponseEntity.status(errorCode.getStatusCode()).body(apiResponse);
+    }
+
+    private String getFirstErrorMessage(MethodArgumentNotValidException ex) {
+        if (!ex.getBindingResult().getFieldErrors().isEmpty()) {
+            return ex.getBindingResult().getFieldErrors().get(0).getDefaultMessage();
+        } else if (!ex.getBindingResult().getGlobalErrors().isEmpty()) {
+            return ex.getBindingResult().getGlobalErrors().get(0).getDefaultMessage();
         }
-        // Global (object-level) errors
-        for (ObjectError error : ex.getBindingResult().getGlobalErrors()) {
-            errors.put(error.getObjectName(), error.getDefaultMessage());
+        return "INVALID_KEY";
+    }
+
+    private ErrorCode findErrorCodeByMessage(String message) {
+        for (ErrorCode errorCode : ErrorCode.values()) {
+            if (errorCode.name().equals(message)) {
+                return errorCode;
+            }
         }
-        ApiResponse<Map<String, String>> apiResponse = ApiResponse.<Map<String, String>>builder()
-                .code(HttpStatus.BAD_REQUEST.value())
-                .message("Validation failed")
-                .result(errors)
-                .build();
-        return new ResponseEntity<>(apiResponse, HttpStatus.BAD_REQUEST);
+        return ErrorCode.INVALID_KEY;
     }
 }
     

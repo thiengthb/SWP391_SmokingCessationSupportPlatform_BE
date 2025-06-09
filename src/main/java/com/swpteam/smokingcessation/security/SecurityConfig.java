@@ -22,8 +22,9 @@ public class SecurityConfig {
                         .requestMatchers("/api/auth/**", "/swagger-ui/**", "/v3/api-docs/**")
                         .permitAll()// Permit ALL requests
 
-                        .requestMatchers("/api/account/**")
+                        .requestMatchers("/api/account/**", "/api/health/**", "/api/record/**")
                         .authenticated()
+
                 )
                 .csrf(csrf -> csrf.disable())
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
