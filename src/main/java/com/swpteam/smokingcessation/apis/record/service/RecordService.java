@@ -58,16 +58,6 @@ public class RecordService {
         Record record = recordRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.RECORD_NOT_FOUND));
 
-        String accountId = record.getAccount().getId();
-
-        if (!record.getDate().equals(request.getDate())) {
-            Optional<Record> existingRecord = recordRepository.findByDateAndAccount_Id(request.getDate(), accountId);
-
-            if (existingRecord.isPresent() && !existingRecord.get().getId().equals(record.getId())) {
-                throw new AppException(ErrorCode.RECORD_ALREADY_EXISTS);
-            }
-        }
-
         recordMapper.updateRecord(record, request);
         return recordRepository.save(record);
     }
