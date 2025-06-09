@@ -44,7 +44,11 @@ public class AccountService {
 
         return accountMapper.toAccountResponse(accountRepository.save(account));
     }
-
+    public boolean isAccountOwnedByUser(String accountId, String email) {
+        return accountRepository.findById(accountId)
+                .map(account -> account.getEmail().equals(email) && !account.isDeleted())
+                .orElse(false);
+    }
     public List<Account> getAccounts() {
         return accountRepository.findAllByIsDeletedFalse();
     }
