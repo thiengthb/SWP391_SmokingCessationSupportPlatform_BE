@@ -83,6 +83,7 @@ public class AuthenticationService {
     @Value("${app.frontend-domain}")
     protected String FRONTEND_DOMAIN;
 
+    //
     public GoogleTokenResponse getGoogleToken(GoogleTokenRequest request) {
         String tokenEndpoint = "https://oauth2.googleapis.com/token";
         Mono<GoogleTokenResponse> responseMono = webClient.post()
@@ -249,7 +250,7 @@ public class AuthenticationService {
             throw new AppException(ErrorCode.ACCOUNT_EXISTED);
         }
 
-        Account account = accountMapper.toAccount(AccountCreateRequest.builder()
+        Account account = accountMapper.toEntity(AccountCreateRequest.builder()
                 .email(request.getEmail())
                 .password(request.getPassword())
                 .phoneNumber(request.getPhoneNumber())
@@ -261,7 +262,7 @@ public class AuthenticationService {
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
 
         account.setPassword(passwordEncoder.encode(request.getPassword()));
-        return accountMapper.toAccountResponse(accountRepository.save(account));
+        return accountMapper.toResponse(accountRepository.save(account));
     }
 
     public IntrospectResponse introspect(IntrospectRequest request) throws JOSEException, ParseException {

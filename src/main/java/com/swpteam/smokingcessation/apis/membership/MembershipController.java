@@ -1,8 +1,8 @@
 package com.swpteam.smokingcessation.apis.membership;
 
 import com.swpteam.smokingcessation.apis.membership.dto.MembershipCreationRequest;
-import com.swpteam.smokingcessation.apis.membership.dto.MembershipUpdateRequest;
 import com.swpteam.smokingcessation.apis.membership.dto.MembershipResponse;
+import com.swpteam.smokingcessation.apis.membership.dto.MembershipUpdateRequest;
 import com.swpteam.smokingcessation.common.ApiResponse;
 import com.swpteam.smokingcessation.common.PageableRequest;
 import com.swpteam.smokingcessation.constants.SuccessCode;
@@ -15,15 +15,13 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("/api/membership")
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @Slf4j
 public class MembershipController {
-    MemberService memberService;
+    MembershipService memberService;
 
     @GetMapping
     ResponseEntity<ApiResponse<Page<MembershipResponse>>> getMembershipPage(@Valid PageableRequest request) {
@@ -79,8 +77,8 @@ public class MembershipController {
         memberService.deleteMembership(id);
         return ResponseEntity.ok(
                 ApiResponse.<String>builder()
-                        .code(SuccessCode.MEMBERSHIP_DELETED.getCode())
-                        .message(SuccessCode.MEMBERSHIP_DELETED.getMessage())
+                        .code(SuccessCode.MEMBER_UPDATED.getCode())
+                        .message(SuccessCode.MEMBER_UPDATED.getMessage())
                         .build()
         );
     }

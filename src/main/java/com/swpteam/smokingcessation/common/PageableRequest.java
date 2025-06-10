@@ -27,7 +27,7 @@ public class PageableRequest {
 
     String sortBy = "id";
 
-    public static Pageable getPageable(PageableRequest request){
+    public static Pageable getPageable(PageableRequest request) {
         int page = Objects.nonNull(request.getPage()) ? request.getPage() : 0;
         int size = Objects.nonNull(request.getSize()) ? request.getSize() : 20;
         Sort.Direction direction = Objects.nonNull(request.getDirection()) ? request.getDirection() : Sort.Direction.ASC;

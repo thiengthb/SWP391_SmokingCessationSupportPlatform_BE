@@ -5,16 +5,17 @@ import com.swpteam.smokingcessation.apis.account.dto.AccountResponse;
 import com.swpteam.smokingcessation.apis.account.dto.AccountUpdateRequest;
 import com.swpteam.smokingcessation.apis.account.dto.ChangePasswordRequest;
 import com.swpteam.smokingcessation.common.ApiResponse;
+import com.swpteam.smokingcessation.common.PageableRequest;
+import com.swpteam.smokingcessation.constants.SuccessCode;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -24,65 +25,71 @@ class AccountController {
     AccountService accountService;
 
     @PostMapping
-    ApiResponse<AccountResponse> createAccount(@RequestBody @Valid AccountCreateRequest request) {
+    ResponseEntity<ApiResponse<AccountResponse>> createAccount(@RequestBody @Valid AccountCreateRequest request) {
         var result = accountService.createAccount(request);
 
-        return ApiResponse.<AccountResponse>builder()
-                .result(result)
-                .build();
+        return ResponseEntity.ok(
+                ApiResponse.<AccountResponse>builder()
+                        .code(SuccessCode.ACCOUNT_CREATED.getCode())
+                        .message(SuccessCode.ACCOUNT_CREATED.getMessage())
+                        .result(result)
+                        .build());
     }
 
     @GetMapping
-    ResponseEntity<ApiResponse<List<AccountResponse>>> getUsers() {
+    ResponseEntity<ApiResponse<Page<AccountResponse>>> getUsers(@Valid PageableRequest request) {
         return ResponseEntity.ok(
-                ApiResponse.<List<AccountResponse>>builder()
-                        .result(accountService.getAccounts())
+                ApiResponse.<Page<AccountResponse>>builder()
+                        .result(accountService.getAccounts(request))
                         .build());
     }
 
     @GetMapping("/{id}")
-    ApiResponse<AccountResponse> getAccountById(@PathVariable("id") String id) {
-        var result = accountService.getAccountById(id);
-
-        return ApiResponse.<AccountResponse>builder()
-                .result(result)
-                .build();
+    ResponseEntity<ApiResponse<AccountResponse>> getAccountById(@PathVariable("id") String id) {
+        return ResponseEntity.ok(
+                ApiResponse.<AccountResponse>builder()
+                        .result(accountService.getAccountById(id))
+                        .build());
     }
 
     @PutMapping("/{id}")
-    ApiResponse<AccountResponse> updateAccount(@PathVariable("id") String id, @RequestBody AccountUpdateRequest request) {
-        var result = accountService.updateAccount(request, id);
-
-        return ApiResponse.<AccountResponse>builder()
-                .result(result)
-                .build();
+    ResponseEntity<ApiResponse<AccountResponse>> updateAccount(@PathVariable("id") String id, @RequestBody AccountUpdateRequest request) {
+        return ResponseEntity.ok(
+                ApiResponse.<AccountResponse>builder()
+                        .code(SuccessCode.ACCOUNT_UPDATED.getCode())
+                        .message(SuccessCode.ACCOUNT_UPDATED.getMessage())
+                        .result(accountService.updateAccount(request, id))
+                        .build());
     }
 
     @DeleteMapping("/{id}")
-    ApiResponse<String> deleteAccount(@PathVariable("id") String id) {
+    ResponseEntity<ApiResponse> deleteAccount(@PathVariable("id") String id) {
         accountService.deleteAccount(id);
 
-        return ApiResponse.<String>builder()
-                .result("User is deleted")
-                .build();
+        return ResponseEntity.ok(
+                ApiResponse.<String>builder()
+                        .code(SuccessCode.ACCOUNT_DELETED.getCode())
+                        .message(SuccessCode.ACCOUNT_DELETED.getMessage())
+                        .build());
     }
 
     @PostMapping("/change-password")
-    ApiResponse<AccountResponse> changePassword(@RequestBody @Valid ChangePasswordRequest request) {
-        var result = accountService.changePassword(request);
-
-        return ApiResponse.<AccountResponse>builder()
-                .result(result)
-                .build();
+    ResponseEntity<ApiResponse<AccountResponse>> changePassword(@RequestBody @Valid ChangePasswordRequest request) {
+        return ResponseEntity.ok(
+                ApiResponse.<AccountResponse>builder()
+                        .code(SuccessCode.PASSWORD_CHANGE_SUCCESS.getCode())
+                        .message(SuccessCode.PASSWORD_CHANGE_SUCCESS.getMessage())
+                        .result(accountService.changePassword(request))
+                        .build());
     }
 
     @GetMapping("/me")
-    ApiResponse<AccountResponse> getMe(@AuthenticationPrincipal UserDetails userDetails) {
-        String email = userDetails.getUsername();
-        AccountResponse result = accountService.getAccountByEmail(email);
-        return ApiResponse.<AccountResponse>builder()
-                .result(result)
-                .build();
+    ResponseEntity<ApiResponse<AccountResponse>> getMe(@AuthenticationPrincipal Jwt jwt) {
+        String email = jwt.getClaimAsString("sub");
+        return ResponseEntity.ok(
+                ApiResponse.<AccountResponse>builder()
+                        .result(accountService.getAccountByEmail(email))
+                        .build());
     }
 
 }

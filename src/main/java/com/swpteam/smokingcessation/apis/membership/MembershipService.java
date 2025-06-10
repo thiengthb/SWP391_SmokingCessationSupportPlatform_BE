@@ -1,24 +1,21 @@
 package com.swpteam.smokingcessation.apis.membership;
 
 import com.swpteam.smokingcessation.apis.membership.dto.MembershipCreationRequest;
-import com.swpteam.smokingcessation.apis.membership.dto.MembershipUpdateRequest;
 import com.swpteam.smokingcessation.apis.membership.dto.MembershipResponse;
+import com.swpteam.smokingcessation.apis.membership.dto.MembershipUpdateRequest;
 import com.swpteam.smokingcessation.common.PageableRequest;
-import com.swpteam.smokingcessation.exception.AppException;
 import com.swpteam.smokingcessation.constants.ErrorCode;
+import com.swpteam.smokingcessation.exception.AppException;
 import com.swpteam.smokingcessation.utils.ValidationUtil;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
