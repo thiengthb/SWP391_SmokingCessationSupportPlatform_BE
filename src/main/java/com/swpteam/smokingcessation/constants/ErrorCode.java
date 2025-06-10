@@ -71,6 +71,29 @@ public enum ErrorCode {
     MOTIVATION_MAX(7005, "Motivation per day must be at most 100", HttpStatus.BAD_REQUEST),
     DEADLINE_REQUIRED(7006, "Report deadline is required", HttpStatus.BAD_REQUEST),
 
+    //Health
+    HEALTH_RECORD_NOT_FOUND(4000, "Health record does not exist", HttpStatus.NOT_FOUND),
+    CIGARETTES_PER_DAY_INVALID(4002, "Cigarettes per day must be non-negative", HttpStatus.BAD_REQUEST),
+    CIGARETTES_PER_PACK_INVALID(4003, "Cigarettes per pack must be non-negative", HttpStatus.BAD_REQUEST),
+    FND_LEVEL_INVALID_MIN(4004, "FND level must be >= 0", HttpStatus.BAD_REQUEST),
+    FND_LEVEL_INVALID_MAX(4005, "FND level must be <= 10", HttpStatus.BAD_REQUEST),
+    PACK_PRICE_INVALID(4006, "Pack price must be non-negative", HttpStatus.BAD_REQUEST),
+    REASON_TO_QUIT_REQUIRED(4007, "Reason to quit is required", HttpStatus.BAD_REQUEST),
+    REASON_TO_QUIT_TOO_LONG(4008, "Reason to quit must not exceed 255 characters", HttpStatus.BAD_REQUEST),
+    SMOKE_YEAR_INVALID(4009, "Smoke year must be non-negative", HttpStatus.BAD_REQUEST),
+    ACCESS_DENIED(4001, "Access denied", HttpStatus.FORBIDDEN),
+    PACK_PRICE_TOO_HIGH(4010, "Pack price must not exceed 500.0", HttpStatus.BAD_REQUEST),
+
+    //record
+    RECORD_NOT_FOUND(5000, "Record does not exist", HttpStatus.NOT_FOUND),
+    RECORD_ACCOUNT_ID_REQUIRED(5001, "Account ID is required", HttpStatus.BAD_REQUEST),
+    RECORD_CIGARETTES_SMOKED_INVALID(5002, "Cigarettes smoked must be non-negative", HttpStatus.BAD_REQUEST),
+    RECORD_DATE_REQUIRED(5003, "Date is required", HttpStatus.BAD_REQUEST),
+    RECORD_DATE_INVALID(5004, "Date must be today or in the future", HttpStatus.BAD_REQUEST),
+    RECORD_ALREADY_EXISTS(5005, "Record for this date already exists", HttpStatus.BAD_REQUEST),
+    RECORD_ACCESS_DENIED(5006, "Access denied to this record", HttpStatus.FORBIDDEN),
+    RECORD_UPDATE_FAILED(5007, "Failed to update record", HttpStatus.INTERNAL_SERVER_ERROR),
+    RECORD_DELETE_FAILED(5008, "Failed to delete record", HttpStatus.INTERNAL_SERVER_ERROR);
 
     ;
 

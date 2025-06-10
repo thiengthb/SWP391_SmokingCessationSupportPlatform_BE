@@ -1,11 +1,10 @@
-package com.swpteam.smokingcessation.apis.health.controller;
+package com.swpteam.smokingcessation.apis.health;
 
-import com.swpteam.smokingcessation.apis.health.DTO.request.HealthRequest;
-import com.swpteam.smokingcessation.apis.health.DTO.request.HealthUpdate;
-import com.swpteam.smokingcessation.apis.health.service.HealthService;
-import com.swpteam.smokingcessation.common.response.ApiResponse;
+import com.swpteam.smokingcessation.apis.health.dto.HealthRequest;
+import com.swpteam.smokingcessation.apis.health.dto.HealthUpdate;
+import com.swpteam.smokingcessation.common.ApiResponse;
+import com.swpteam.smokingcessation.constants.ErrorCode;
 import com.swpteam.smokingcessation.exception.AppException;
-import com.swpteam.smokingcessation.exception.ErrorCode;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -33,7 +32,7 @@ public class HealthController {
         String requestAccountId = request.getAccountId();
 
         if (!healthService.isAccountOwnedByUser(requestAccountId, currentUserEmail)) {
-            throw new AppException(ErrorCode.INVALID_ACCOUNT_ID);
+            throw new AppException(ErrorCode.ACCOUNT_NOT_EXISTED);
         }
 
         return ResponseEntity.ok(ApiResponse.builder()
@@ -76,7 +75,7 @@ public class HealthController {
         String currentUserEmail = userDetails.getUsername();
 
         if (!healthService.isHealthOwnedByUser(id, currentUserEmail)) {
-            throw new AppException(ErrorCode.INVALID_ACCOUNT_ID);
+            throw new AppException(ErrorCode.ACCOUNT_NOT_EXISTED);
         }
 
         return ResponseEntity.ok(ApiResponse.builder()
@@ -92,7 +91,7 @@ public class HealthController {
         String currentUserEmail = userDetails.getUsername();
 
         if (!healthService.isHealthOwnedByUser(id, currentUserEmail)) {
-            throw new AppException(ErrorCode.INVALID_ACCOUNT_ID);
+            throw new AppException(ErrorCode.ACCOUNT_NOT_EXISTED);
         }
 
         healthService.delete(id);

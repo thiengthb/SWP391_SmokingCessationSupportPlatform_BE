@@ -1,14 +1,11 @@
-package com.swpteam.smokingcessation.apis.health.service;
+package com.swpteam.smokingcessation.apis.health;
 
-import com.swpteam.smokingcessation.apis.account.entity.Account;
-import com.swpteam.smokingcessation.apis.account.repository.AccountRepository;
-import com.swpteam.smokingcessation.apis.health.DTO.request.HealthRequest;
-import com.swpteam.smokingcessation.apis.health.DTO.request.HealthUpdate;
-import com.swpteam.smokingcessation.apis.health.entity.Health;
-import com.swpteam.smokingcessation.apis.health.mapper.HealthMapper;
-import com.swpteam.smokingcessation.apis.health.repository.HealthRepository;
+import com.swpteam.smokingcessation.apis.account.Account;
+import com.swpteam.smokingcessation.apis.account.AccountRepository;
+import com.swpteam.smokingcessation.apis.health.dto.HealthRequest;
+import com.swpteam.smokingcessation.apis.health.dto.HealthUpdate;
+import com.swpteam.smokingcessation.constants.ErrorCode;
 import com.swpteam.smokingcessation.exception.AppException;
-import com.swpteam.smokingcessation.exception.ErrorCode;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -27,7 +24,7 @@ public class HealthService {
 
     public Health create(HealthRequest request) {
         Account account = accountRepository.findById(request.getAccountId())
-                .orElseThrow(() -> new AppException(ErrorCode.INVALID_ACCOUNT_ID));
+                .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_EXISTED));
 
         Health health = healthMapper.toHealth(request);
         health.setAccount(account);

@@ -1,8 +1,7 @@
-package com.swpteam.smokingcessation.apis.record.mapper;
+package com.swpteam.smokingcessation.apis.record;
 
-import com.swpteam.smokingcessation.apis.record.DTO.request.RecordRequest;
-import com.swpteam.smokingcessation.apis.record.DTO.request.RecordUpdate;
-import com.swpteam.smokingcessation.apis.record.entity.Record;
+import com.swpteam.smokingcessation.apis.record.dto.RecordRequest;
+import com.swpteam.smokingcessation.apis.record.dto.RecordUpdate;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;

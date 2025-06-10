@@ -1,10 +1,8 @@
-package com.swpteam.smokingcessation.apis.record.DTO.request;
+package com.swpteam.smokingcessation.apis.record.dto;
 
 import jakarta.validation.constraints.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-
-import java.time.LocalDate;
 
 @Data
 @NoArgsConstructor

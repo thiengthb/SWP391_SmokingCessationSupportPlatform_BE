@@ -1,14 +1,11 @@
-package com.swpteam.smokingcessation.apis.record.service;
+package com.swpteam.smokingcessation.apis.record;
 
-import com.swpteam.smokingcessation.apis.account.entity.Account;
-import com.swpteam.smokingcessation.apis.account.repository.AccountRepository;
-import com.swpteam.smokingcessation.apis.record.DTO.request.RecordRequest;
-import com.swpteam.smokingcessation.apis.record.DTO.request.RecordUpdate;
-import com.swpteam.smokingcessation.apis.record.entity.Record;
-import com.swpteam.smokingcessation.apis.record.mapper.RecordMapper;
-import com.swpteam.smokingcessation.apis.record.repository.RecordRepository;
+import com.swpteam.smokingcessation.apis.account.Account;
+import com.swpteam.smokingcessation.apis.account.AccountRepository;
+import com.swpteam.smokingcessation.apis.record.dto.RecordRequest;
+import com.swpteam.smokingcessation.apis.record.dto.RecordUpdate;
+import com.swpteam.smokingcessation.constants.ErrorCode;
 import com.swpteam.smokingcessation.exception.AppException;
-import com.swpteam.smokingcessation.exception.ErrorCode;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -30,7 +27,7 @@ public class RecordService {
         String accountId = request.getAccountId();
 
         Account account = accountRepository.findById(accountId)
-                .orElseThrow(() -> new AppException(ErrorCode.INVALID_ACCOUNT_ID));
+                .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_EXISTED));
 
         Optional<Record> existingRecord = recordRepository.findByDateAndAccount_Id(
                 request.getDate(), accountId
@@ -69,3 +66,4 @@ public class RecordService {
         recordRepository.deleteById(id);
     }
 }
+//
