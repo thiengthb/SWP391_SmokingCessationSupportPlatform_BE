@@ -36,6 +36,7 @@ public enum ErrorCode {
     PAGE_SIZE_MIN(1010, "Page size must be at least 1", HttpStatus.BAD_REQUEST),
     PAGE_SIZE_MAX(1011, "Page size can not pass 100", HttpStatus.BAD_REQUEST),
     INVALID_SORT_FIELD(1013, "Invalid sort field", HttpStatus.BAD_REQUEST),
+    INVALID_RESET_TOKEN(1012, "Reset token is invalid", HttpStatus.BAD_REQUEST),
 
     // Authentication
     UNAUTHENTICATED(2000, "Unauthenticated", HttpStatus.UNAUTHORIZED),

@@ -4,8 +4,6 @@ import com.swpteam.smokingcessation.apis.account.dto.request.AccountCreateReques
 import com.swpteam.smokingcessation.apis.account.dto.request.AccountUpdateRequest;
 import com.swpteam.smokingcessation.apis.account.dto.request.ChangePasswordRequest;
 import com.swpteam.smokingcessation.apis.account.dto.response.AccountResponse;
-import com.swpteam.smokingcessation.apis.health.Health;
-import com.swpteam.smokingcessation.apis.health.HealthRepository;
 import com.swpteam.smokingcessation.apis.member.Member;
 import com.swpteam.smokingcessation.apis.member.MemberRepository;
 import com.swpteam.smokingcessation.apis.setting.Setting;
@@ -29,7 +27,6 @@ public class AccountService {
 
     AccountRepository accountRepository;
     SettingRepository settingRepository;
-    private final HealthRepository healthRepository;
     MemberRepository memberRepository;
     AccountMapper accountMapper;
 

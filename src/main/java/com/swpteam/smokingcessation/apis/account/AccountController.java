@@ -1,14 +1,15 @@
 package com.swpteam.smokingcessation.apis.account;
 
-import com.swpteam.smokingcessation.apis.account.dto.request.AccountCreateRequest;
-import com.swpteam.smokingcessation.apis.account.dto.request.AccountUpdateRequest;
-import com.swpteam.smokingcessation.apis.account.dto.request.ChangePasswordRequest;
-import com.swpteam.smokingcessation.apis.account.dto.response.AccountResponse;
+import com.swpteam.smokingcessation.apis.account.dto.AccountCreateRequest;
+import com.swpteam.smokingcessation.apis.account.dto.AccountResponse;
+import com.swpteam.smokingcessation.apis.account.dto.AccountUpdateRequest;
+import com.swpteam.smokingcessation.apis.account.dto.ChangePasswordRequest;
 import com.swpteam.smokingcessation.common.ApiResponse;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
@@ -18,11 +19,11 @@ import java.util.List;
 @RestController
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-@RequestMapping("/api/account")
+@RequestMapping("/api/accounts")
 class AccountController {
     AccountService accountService;
 
-    @PostMapping("/create")
+    @PostMapping
     ApiResponse<AccountResponse> createAccount(@RequestBody @Valid AccountCreateRequest request) {
         var result = accountService.createAccount(request);
 
@@ -32,12 +33,15 @@ class AccountController {
     }
 
     @GetMapping
-    List<Account> getUsers() {
-        return accountService.getAccounts();
+    ResponseEntity<ApiResponse<List<AccountResponse>>> getUsers() {
+        return ResponseEntity.ok(
+                ApiResponse.<List<AccountResponse>>builder()
+                        .result(accountService.getAccounts())
+                        .build());
     }
 
-    @GetMapping("/{accountId}")
-    ApiResponse<AccountResponse> getAccountById(@PathVariable("accountId") String id) {
+    @GetMapping("/{id}")
+    ApiResponse<AccountResponse> getAccountById(@PathVariable("id") String id) {
         var result = accountService.getAccountById(id);
 
         return ApiResponse.<AccountResponse>builder()
@@ -45,8 +49,8 @@ class AccountController {
                 .build();
     }
 
-    @PutMapping("/update/{accountId}")
-    ApiResponse<AccountResponse> updateAccount(@PathVariable("accountId") String id, @RequestBody AccountUpdateRequest request) {
+    @PutMapping("/{id}")
+    ApiResponse<AccountResponse> updateAccount(@PathVariable("id") String id, @RequestBody AccountUpdateRequest request) {
         var result = accountService.updateAccount(request, id);
 
         return ApiResponse.<AccountResponse>builder()
@@ -54,8 +58,8 @@ class AccountController {
                 .build();
     }
 
-    @DeleteMapping("/delete/{accountId}")
-    ApiResponse<String> deleteAccount(@PathVariable("accountId") String id) {
+    @DeleteMapping("/{id}")
+    ApiResponse<String> deleteAccount(@PathVariable("id") String id) {
         accountService.deleteAccount(id);
 
         return ApiResponse.<String>builder()

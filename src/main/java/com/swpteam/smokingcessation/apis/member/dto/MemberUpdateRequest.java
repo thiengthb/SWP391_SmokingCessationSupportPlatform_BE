@@ -1,4 +1,4 @@
-package com.swpteam.smokingcessation.apis.member.dto.request;
+package com.swpteam.smokingcessation.apis.member.dto;
 
 import com.swpteam.smokingcessation.apis.member.enums.MemberGender;
 import jakarta.validation.constraints.Past;
@@ -12,7 +12,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class MemberCreateRequest {
+public class MemberUpdateRequest {
     String fullName;
     @Past(message = "DOB_INVALID")
     LocalDate dob;

@@ -5,11 +5,11 @@ import com.nimbusds.jose.crypto.MACSigner;
 import com.nimbusds.jose.crypto.MACVerifier;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
+import com.swpteam.smokingcessation.apis.account.Account;
 import com.swpteam.smokingcessation.apis.account.AccountMapper;
 import com.swpteam.smokingcessation.apis.account.AccountRepository;
-import com.swpteam.smokingcessation.apis.account.dto.request.AccountCreateRequest;
-import com.swpteam.smokingcessation.apis.account.dto.response.AccountResponse;
-import com.swpteam.smokingcessation.apis.account.Account;
+import com.swpteam.smokingcessation.apis.account.dto.AccountCreateRequest;
+import com.swpteam.smokingcessation.apis.account.dto.AccountResponse;
 import com.swpteam.smokingcessation.apis.account.enums.AccountStatus;
 import com.swpteam.smokingcessation.apis.account.enums.Role;
 import com.swpteam.smokingcessation.apis.authentication.dto.request.*;
@@ -17,8 +17,9 @@ import com.swpteam.smokingcessation.apis.authentication.dto.response.Authenticat
 import com.swpteam.smokingcessation.apis.authentication.dto.response.GoogleTokenResponse;
 import com.swpteam.smokingcessation.apis.authentication.dto.response.IntrospectResponse;
 import com.swpteam.smokingcessation.apis.mail.MailService;
-import com.swpteam.smokingcessation.exception.AppException;
 import com.swpteam.smokingcessation.constants.ErrorCode;
+import com.swpteam.smokingcessation.exception.AppException;
+import jakarta.mail.MessagingException;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -31,7 +32,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
-import java.io.IOException;
 import java.text.ParseException;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -298,18 +298,13 @@ public class AuthenticationService {
     public void sendResetPasswordEmail(String email) {
         Account account = accountRepository.findByEmail(email).orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_EXISTED));
 
+        //generate reset token
         String token = generateResetToken(account);
         String resetLink = FRONTEND_DOMAIN + "/reset-password?token=" + token;
 
-        String title = "Password Reset Request";
-        String content = "We received a request to reset your password.<br>" +
-                "Click the link below to set a new password:<br>" +
-                "<a href=\"" + resetLink + "\">Reset Password</a><br><br>" +
-                "If you did not request this, please ignore this email.";
-
         try {
-            mailService.sendTemplatedHtml(email, title, title, content);
-        } catch (MessagingException | IOException e) {
+            mailService.sendResetPasswordEmail(email, resetLink, account.getEmail());
+        } catch (MessagingException e) {
             log.error("Failed to send reset password email to {}", email, e);
             throw new AppException(ErrorCode.EMAIL_SEND_FAILED);
         }
@@ -323,7 +318,7 @@ public class AuthenticationService {
             JWSObject jwsObject = JWSObject.parse(request.getToken());
             JWTClaimsSet jwtClaimsSet = JWTClaimsSet.parse(jwsObject.getPayload().toJSONObject());
             if (!jwtClaimsSet.getClaim("type").equals("reset")) {
-                throw new AppException(ErrorCode.INVALID_TOKEN);
+                throw new AppException(ErrorCode.INVALID_RESET_TOKEN);
             }
             if (jwtClaimsSet.getExpirationTime().before(new Date()) || invalidatedTokenRepository.existsById(jwtClaimsSet.getJWTID())) {
                 throw new AppException(ErrorCode.TOKEN_EXPIRED);
@@ -331,7 +326,7 @@ public class AuthenticationService {
             emailFromToken = jwtClaimsSet.getSubject();
             jwtId = jwtClaimsSet.getJWTID();
         } catch (Exception e) {
-            throw new AppException(ErrorCode.INVALID_TOKEN);
+            throw new AppException(ErrorCode.INVALID_RESET_TOKEN);
         }
 
         Account account = accountRepository.findByEmail(emailFromToken).orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_EXISTED));

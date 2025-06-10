@@ -1,9 +1,9 @@
 package com.swpteam.smokingcessation.apis.member;
 
-import com.swpteam.smokingcessation.apis.member.dto.request.MemberCreateRequest;
-import com.swpteam.smokingcessation.apis.member.dto.request.MemberUpdateRequest;
-import com.swpteam.smokingcessation.apis.member.dto.response.MemberResponse;
-import com.swpteam.smokingcessation.common.response.ApiResponse;
+import com.swpteam.smokingcessation.apis.member.dto.MemberCreateRequest;
+import com.swpteam.smokingcessation.apis.member.dto.MemberResponse;
+import com.swpteam.smokingcessation.apis.member.dto.MemberUpdateRequest;
+import com.swpteam.smokingcessation.common.ApiResponse;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;

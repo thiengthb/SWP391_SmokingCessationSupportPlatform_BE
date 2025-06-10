@@ -1,7 +1,7 @@
 package com.swpteam.smokingcessation.apis.authentication;
 
 import com.nimbusds.jose.JOSEException;
-import com.swpteam.smokingcessation.apis.account.dto.response.AccountResponse;
+import com.swpteam.smokingcessation.apis.account.dto.AccountResponse;
 import com.swpteam.smokingcessation.apis.authentication.dto.request.*;
 import com.swpteam.smokingcessation.apis.authentication.dto.response.AuthenticationResponse;
 import com.swpteam.smokingcessation.apis.authentication.dto.response.GoogleTokenResponse;

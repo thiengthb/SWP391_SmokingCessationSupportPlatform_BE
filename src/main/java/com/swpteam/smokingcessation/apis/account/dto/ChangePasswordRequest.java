@@ -1,4 +1,4 @@
-package com.swpteam.smokingcessation.apis.account.dto.request;
+package com.swpteam.smokingcessation.apis.account.dto;
 
 import com.swpteam.smokingcessation.apis.account.validation.DifferentPasswords;
 import jakarta.validation.constraints.Email;

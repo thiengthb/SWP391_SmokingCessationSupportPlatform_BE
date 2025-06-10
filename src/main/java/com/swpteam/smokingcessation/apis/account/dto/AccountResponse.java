@@ -1,4 +1,4 @@
-package com.swpteam.smokingcessation.apis.account.dto.response;
+package com.swpteam.smokingcessation.apis.account.dto;
 
 import com.swpteam.smokingcessation.apis.account.enums.AccountStatus;
 import com.swpteam.smokingcessation.apis.account.enums.Role;
