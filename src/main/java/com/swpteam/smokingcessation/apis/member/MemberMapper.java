@@ -14,10 +14,10 @@ public interface MemberMapper {
     @Mapping(target = "score", ignore = true)
     @Mapping(target = "currentStreak", ignore = true)
     @Mapping(target = "lastCounterReset", ignore = true)
-    Member toMember(MemberCreateRequest request);
+    Member toEntity(MemberCreateRequest request);
 
     @Mapping(target = "id", source = "account.id")
-    MemberResponse toMemberResponse(Member entity);
+    MemberResponse toResponse(Member entity);
 
     void updateMember(@MappingTarget Member entity, MemberUpdateRequest request);
 }

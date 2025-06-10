@@ -5,15 +5,17 @@ import com.swpteam.smokingcessation.apis.account.AccountRepository;
 import com.swpteam.smokingcessation.apis.member.dto.MemberCreateRequest;
 import com.swpteam.smokingcessation.apis.member.dto.MemberResponse;
 import com.swpteam.smokingcessation.apis.member.dto.MemberUpdateRequest;
+import com.swpteam.smokingcessation.common.PageableRequest;
 import com.swpteam.smokingcessation.constants.ErrorCode;
 import com.swpteam.smokingcessation.exception.AppException;
+import com.swpteam.smokingcessation.utils.ValidationUtil;
 import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @RequiredArgsConstructor
 @Service
@@ -32,19 +34,26 @@ public class MemberService {
             throw new AppException(ErrorCode.MEMBER_EXISTED);
         }
 
-        Member member = memberMapper.toMember(request);
+        Member member = memberMapper.toEntity(request);
         member.setAccount(account);
 
-        return memberMapper.toMemberResponse(memberRepository.save(member));
+        return memberMapper.toResponse(memberRepository.save(member));
     }
 
 
-    public List<Member> getMembers() {
-        return memberRepository.findAll();
+    public Page<MemberResponse> getMembers(PageableRequest request) {
+        if (!ValidationUtil.isFieldExist(Member.class, request.getSortBy())) {
+            throw new AppException(ErrorCode.INVALID_SORT_FIELD);
+        }
+
+        Pageable pageable = PageableRequest.getPageable(request);
+        Page<Member> members = memberRepository.findAll(pageable);
+
+        return members.map(memberMapper::toResponse);
     }
 
     public MemberResponse getMemberById(String id) {
-        return memberMapper.toMemberResponse(findMemberById(id));
+        return memberMapper.toResponse(findMemberById(id));
     }
 
     private Member findMemberById(String id) {
@@ -63,6 +72,6 @@ public class MemberService {
         memberMapper.updateMember(member, request);
         memberRepository.save(member);
 
-        return memberMapper.toMemberResponse(member);
+        return memberMapper.toResponse(member);
     }
 }

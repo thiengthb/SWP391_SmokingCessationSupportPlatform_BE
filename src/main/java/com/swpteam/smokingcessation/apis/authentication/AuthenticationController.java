@@ -27,16 +27,15 @@ public class AuthenticationController {
     AuthenticationService authenticationService;
 
     @PostMapping("/google/login")
-    public ApiResponse<GoogleTokenResponse> getGoogleToken(@RequestBody GoogleTokenRequest request) {
-        var result = authenticationService.getGoogleToken(request);
-
-        return ApiResponse.<GoogleTokenResponse>builder()
-                .result(result)
-                .build();
+    ResponseEntity<ApiResponse<GoogleTokenResponse>> getGoogleToken(@RequestBody GoogleTokenRequest request) {
+        return ResponseEntity.ok(
+                ApiResponse.<GoogleTokenResponse>builder()
+                        .result(authenticationService.getGoogleToken(request))
+                        .build());
     }
 
     @PostMapping("/login")
-    public ResponseEntity<ApiResponse<AuthenticationResponse>> authenticate(@RequestBody @Valid AuthenticationRequest request) {
+    ResponseEntity<ApiResponse<AuthenticationResponse>> authenticate(@RequestBody @Valid AuthenticationRequest request) {
         var result = authenticationService.authenticate(request);
 
         // Remove refreshToken from body
@@ -51,7 +50,7 @@ public class AuthenticationController {
     }
 
     @PostMapping("/refresh")
-    public ResponseEntity<ApiResponse<AuthenticationResponse>> refreshToken(@RequestBody @Valid RefreshTokenRequest request) throws ParseException, JOSEException {
+    ResponseEntity<ApiResponse<AuthenticationResponse>> refreshToken(@RequestBody @Valid RefreshTokenRequest request) throws ParseException, JOSEException {
         var result = authenticationService.refreshToken(request);
 
         // Remove refreshToken from body
@@ -66,28 +65,30 @@ public class AuthenticationController {
     }
 
     @PostMapping("/register")
-    public ApiResponse<AccountResponse> register(@RequestBody @Valid RegisterRequest request) {
-        var result = authenticationService.register(request);
-        return ApiResponse.<AccountResponse>builder()
-                .result(result)
-                .build();
+    ResponseEntity<ApiResponse<AccountResponse>> register(@RequestBody @Valid RegisterRequest request) {
+        return ResponseEntity.ok(
+                ApiResponse.<AccountResponse>builder()
+                        .result(authenticationService.register(request))
+                        .build());
     }
 
 
     @PostMapping("/forgot-password")
-    public ApiResponse<String> forgotPassword(@RequestBody @Valid ForgotPasswordRequest request) {
+    ResponseEntity<ApiResponse<String>> forgotPassword(@RequestBody @Valid ForgotPasswordRequest request) {
         authenticationService.sendResetPasswordEmail(request.getEmail());
-        return ApiResponse.<String>builder()
-                .result("Reset password link sent to your email if it exists in our system.")
-                .build();
+        return ResponseEntity.ok(
+                ApiResponse.<String>builder()
+                        .result("Reset password link sent to your email if it exists in our system.")
+                        .build());
     }
 
     @PostMapping("/reset-password")
-    public ApiResponse<String> resetPassword(@RequestBody @Valid ResetPasswordRequest request) {
+    ResponseEntity<ApiResponse<String>> resetPassword(@RequestBody @Valid ResetPasswordRequest request) {
         authenticationService.resetPassword(request);
 
-        return ApiResponse.<String>builder()
-                .result("Password has been reset successfully.")
-                .build();
+        return ResponseEntity.ok(
+                ApiResponse.<String>builder()
+                        .result("Password has been reset successfully.")
+                        .build());
     }
 }
