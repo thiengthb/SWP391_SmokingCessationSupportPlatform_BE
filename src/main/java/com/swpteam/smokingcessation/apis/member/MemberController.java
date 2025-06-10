@@ -4,13 +4,15 @@ import com.swpteam.smokingcessation.apis.member.dto.MemberCreateRequest;
 import com.swpteam.smokingcessation.apis.member.dto.MemberResponse;
 import com.swpteam.smokingcessation.apis.member.dto.MemberUpdateRequest;
 import com.swpteam.smokingcessation.common.ApiResponse;
+import com.swpteam.smokingcessation.common.PageableRequest;
+import com.swpteam.smokingcessation.constants.SuccessCode;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.data.domain.Page;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/members")
@@ -19,35 +21,39 @@ import java.util.List;
 public class MemberController {
     MemberService memberService;
 
-    @PostMapping("/create/{accountId}")
-    ApiResponse<MemberResponse> createMember(@PathVariable("accountId") String accountId, @RequestBody @Valid MemberCreateRequest request) {
-        var result = memberService.createMember(request, accountId);
-
-        return ApiResponse.<MemberResponse>builder()
-                .result(result)
-                .build();
+    @PostMapping("/{accountId}")
+    ResponseEntity<ApiResponse<MemberResponse>> createMember(@PathVariable("accountId") String accountId, @RequestBody @Valid MemberCreateRequest request) {
+        return ResponseEntity.ok(
+                ApiResponse.<MemberResponse>builder()
+                        .code(SuccessCode.MEMBER_CREATED.getCode())
+                        .message(SuccessCode.MEMBER_CREATED.getMessage())
+                        .result(memberService.createMember(request, accountId))
+                        .build());
     }
 
     @GetMapping
-    List<Member> getMembers() {
-        return memberService.getMembers();
+    ResponseEntity<ApiResponse<Page<MemberResponse>>> getUsers(@Valid PageableRequest request) {
+        return ResponseEntity.ok(
+                ApiResponse.<Page<MemberResponse>>builder()
+                        .result(memberService.getMembers(request))
+                        .build());
     }
 
     @GetMapping("/{accountId}")
-    ApiResponse<MemberResponse> getMemberById(@PathVariable("accountId") String id) {
-        var result = memberService.getMemberById(id);
-
-        return ApiResponse.<MemberResponse>builder()
-                .result(result)
-                .build();
+    ResponseEntity<ApiResponse<MemberResponse>> getMemberById(@PathVariable("accountId") String id) {
+        return ResponseEntity.ok(
+                ApiResponse.<MemberResponse>builder()
+                        .result(memberService.getMemberById(id))
+                        .build());
     }
 
-    @PutMapping("/update/{accountId}")
-    ApiResponse<MemberResponse> updateAccount(@PathVariable("accountId") String id, @RequestBody MemberUpdateRequest request) {
-        var result = memberService.updateMember(request, id);
-
-        return ApiResponse.<MemberResponse>builder()
-                .result(result)
-                .build();
+    @PutMapping("/{accountId}")
+    ResponseEntity<ApiResponse<MemberResponse>> updateAccount(@PathVariable("accountId") String id, @RequestBody MemberUpdateRequest request) {
+        return ResponseEntity.ok(
+                ApiResponse.<MemberResponse>builder()
+                        .code(SuccessCode.ACCOUNT_UPDATED.getCode())
+                        .message(SuccessCode.ACCOUNT_UPDATED.getMessage())
+                        .result(memberService.updateMember(request, id))
+                        .build());
     }
 }

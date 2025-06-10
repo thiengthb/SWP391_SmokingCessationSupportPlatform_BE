@@ -8,17 +8,19 @@ import com.swpteam.smokingcessation.apis.member.Member;
 import com.swpteam.smokingcessation.apis.member.MemberRepository;
 import com.swpteam.smokingcessation.apis.setting.Setting;
 import com.swpteam.smokingcessation.apis.setting.SettingRepository;
-import com.swpteam.smokingcessation.exception.AppException;
+import com.swpteam.smokingcessation.common.PageableRequest;
 import com.swpteam.smokingcessation.constants.ErrorCode;
+import com.swpteam.smokingcessation.exception.AppException;
+import com.swpteam.smokingcessation.utils.ValidationUtil;
 import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @RequiredArgsConstructor
 @Service
@@ -41,9 +43,10 @@ public class AccountService {
         }
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
 
-        Account account = accountMapper.toAccount(request);
+        Account account = accountMapper.toEntity(request);
         account.setPassword(passwordEncoder.encode(request.getPassword()));
 
+        setting.setAccount(account);
         settingRepository.save(Setting.getDefaultSetting(account));
 
         healthRepository.save(Health.getDefaultHealth(account));
@@ -51,19 +54,27 @@ public class AccountService {
         member.setAccount(account);
         memberRepository.save(Member().getDefaultMember());
 
-        return accountMapper.toAccountResponse(accountRepository.save(account));
+        return accountMapper.toResponse(accountRepository.save(account));
     }
     public boolean isAccountOwnedByUser(String accountId, String email) {
         return accountRepository.findById(accountId)
                 .map(account -> account.getEmail().equals(email) && !account.isDeleted())
                 .orElse(false);
     }
-    public List<Account> getAccounts() {
-        return accountRepository.findAllByIsDeletedFalse();
+
+    public Page<AccountResponse> getAccounts(PageableRequest request) {
+        if (!ValidationUtil.isFieldExist(Account.class, request.getSortBy())) {
+            throw new AppException(ErrorCode.INVALID_SORT_FIELD);
+        }
+
+        Pageable pageable = PageableRequest.getPageable(request);
+        Page<Account> accounts = accountRepository.findAll(pageable);
+
+        return accounts.map(accountMapper::toResponse);
     }
 
     public AccountResponse getAccountById(String id) {
-        return accountMapper.toAccountResponse(findAccountById(id));
+        return accountMapper.toResponse(findAccountById(id));
     }
 
     private Account findAccountById(String id) {
@@ -83,7 +94,7 @@ public class AccountService {
         accountMapper.updateAccount(account, request);
         accountRepository.save(account);
 
-        return accountMapper.toAccountResponse(account);
+        return accountMapper.toResponse(account);
     }
 
     public void deleteAccount(String id) {
@@ -107,12 +118,12 @@ public class AccountService {
         account.setPassword(passwordEncoder.encode(request.getNewPassword()));
         accountRepository.save(account);
 
-        return accountMapper.toAccountResponse(account);
+        return accountMapper.toResponse(account);
     }
 
     public AccountResponse getAccountByEmail(String email) {
         Account account = accountRepository.findByEmail(email)
                 .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_EXISTED));
-        return accountMapper.toAccountResponse(account);
+        return accountMapper.toResponse(account);
     }
 }

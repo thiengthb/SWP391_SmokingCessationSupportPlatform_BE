@@ -22,8 +22,8 @@ public class AuditorAwareImpl implements AuditorAware<String> {
         Object principal = authentication.getPrincipal();
 
         if (principal instanceof Jwt jwt) {
-            String username = jwt.getClaimAsString("sub");
-            return Optional.ofNullable(username);
+            String email = jwt.getClaimAsString("sub");
+            return Optional.ofNullable(email);
         }
 
         return Optional.empty();

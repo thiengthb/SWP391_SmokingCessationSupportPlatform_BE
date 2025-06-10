@@ -10,9 +10,9 @@ import org.mapstruct.MappingTarget;
 @Mapper(componentModel = "spring")
 public interface AccountMapper {
 
-    Account toAccount(AccountCreateRequest request);
+    Account toEntity(AccountCreateRequest request);
 
-    AccountResponse toAccountResponse(Account entity);
+    AccountResponse toResponse(Account entity);
 
     void updateAccount(@MappingTarget Account entity, AccountUpdateRequest request);
 }

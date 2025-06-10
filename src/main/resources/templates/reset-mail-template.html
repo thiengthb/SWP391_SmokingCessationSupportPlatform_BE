@@ -206,14 +206,19 @@
             <div class="message">
                 If you have any questions or need assistance, please don't hesitate to contact our support team.
             </div>
+
+            <!-- Creating unique email -> bypass gmail collapsing -->
+            <p style="font-size:12px;color:#888;">
+                Requested at: <span th:text="${#dates.format(#dates.createNow(), 'yyyy-MM-dd HH:mm:ss')}">2024-06-11 10:00:00</span>
+            </p>
         </div>
 
         <!-- Footer -->
         <div class="footer">
-            <p class="company-info" th:text="${applicationName ?: 'Your Application'}">Your Application</p>
+            <p class="company-info" >Smoking Cessation Support Platform</p>
             <p th:if="${supportEmail}">
                 Need help? Contact us at
-                <a th:href="'mailto:' + ${supportEmail}" th:text="${supportEmail}" style="color: #333333;">support@yourapp.com</a>
+                <a th:href="'mailto:' + ${supportEmail}" th:text="${supportEmail}" style="color: #333333;">support@gmail.com</a>
             </p>
             <p>&copy; <span th:text="${#dates.year(#dates.createNow())}">2024</span> All rights reserved.</p>
         </div>
