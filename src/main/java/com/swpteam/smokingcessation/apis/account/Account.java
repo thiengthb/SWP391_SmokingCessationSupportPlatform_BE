@@ -2,8 +2,6 @@ package com.swpteam.smokingcessation.apis.account;
 
 import com.swpteam.smokingcessation.apis.account.enums.AccountStatus;
 import com.swpteam.smokingcessation.apis.account.enums.Role;
-import com.swpteam.smokingcessation.apis.account.enums.AccountStatus;
-import com.swpteam.smokingcessation.apis.account.enums.Role;
 import com.swpteam.smokingcessation.apis.member.Member;
 import com.swpteam.smokingcessation.apis.setting.Setting;
 import com.swpteam.smokingcessation.apis.subscription.Subscription;

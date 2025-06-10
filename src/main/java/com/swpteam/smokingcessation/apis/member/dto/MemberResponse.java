@@ -1,4 +1,4 @@
-package com.swpteam.smokingcessation.apis.member.dto.response;
+package com.swpteam.smokingcessation.apis.member.dto;
 
 import com.swpteam.smokingcessation.apis.member.enums.MemberGender;
 import lombok.*;

@@ -1,6 +1,5 @@
-package com.swpteam.smokingcessation.apis.account.dto.request;
+package com.swpteam.smokingcessation.apis.account.dto;
 
-import com.swpteam.smokingcessation.apis.account.enums.AccountStatus;
 import com.swpteam.smokingcessation.apis.account.enums.Role;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
@@ -14,17 +13,16 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class AccountCreateRequest {
+public class AccountUpdateRequest {
     @NotBlank(message = "EMAIL_REQUIRED")
     @Email(message = "EMAIL_INVALID")
     String email;
 
-    @NotBlank(message = "MESSAGE_REQUIRED")
+    @NotBlank(message = "PASSWORD_REQUIRED")
     @Size(min = 8, message = "PASSWORD_INVALID")
     String password;
 
     @Pattern(regexp = "\\d{10}", message = "PHONE_NUMBER_INVALID")
     String phoneNumber;
     Role role;
-    AccountStatus status;
 }

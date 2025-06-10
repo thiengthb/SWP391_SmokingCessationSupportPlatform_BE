@@ -1,15 +1,15 @@
 package com.swpteam.smokingcessation.apis.account;
 
-import com.swpteam.smokingcessation.apis.account.dto.request.AccountCreateRequest;
-import com.swpteam.smokingcessation.apis.account.dto.request.AccountUpdateRequest;
-import com.swpteam.smokingcessation.apis.account.dto.request.ChangePasswordRequest;
-import com.swpteam.smokingcessation.apis.account.dto.response.AccountResponse;
+import com.swpteam.smokingcessation.apis.account.dto.AccountCreateRequest;
+import com.swpteam.smokingcessation.apis.account.dto.AccountResponse;
+import com.swpteam.smokingcessation.apis.account.dto.AccountUpdateRequest;
+import com.swpteam.smokingcessation.apis.account.dto.ChangePasswordRequest;
 import com.swpteam.smokingcessation.apis.member.Member;
 import com.swpteam.smokingcessation.apis.member.MemberRepository;
 import com.swpteam.smokingcessation.apis.setting.Setting;
 import com.swpteam.smokingcessation.apis.setting.SettingRepository;
-import com.swpteam.smokingcessation.exception.AppException;
 import com.swpteam.smokingcessation.constants.ErrorCode;
+import com.swpteam.smokingcessation.exception.AppException;
 import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -53,8 +53,8 @@ public class AccountService {
         return accountMapper.toAccountResponse(accountRepository.save(account));
     }
 
-    public List<Account> getAccounts() {
-        return accountRepository.findAllByIsDeletedFalse();
+    public List<AccountResponse> getAccounts() {
+        return accountRepository.findAllByIsDeletedFalse().stream().map(accountMapper::toAccountResponse).toList();
     }
 
     public AccountResponse getAccountById(String id) {

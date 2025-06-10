@@ -2,8 +2,8 @@ package com.swpteam.smokingcessation.apis.setting;
 
 import com.swpteam.smokingcessation.apis.setting.dto.SettingRequest;
 import com.swpteam.smokingcessation.apis.setting.dto.SettingResponse;
-import com.swpteam.smokingcessation.exception.AppException;
 import com.swpteam.smokingcessation.constants.ErrorCode;
+import com.swpteam.smokingcessation.exception.AppException;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
