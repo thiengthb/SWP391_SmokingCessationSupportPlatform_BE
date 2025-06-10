@@ -12,5 +12,8 @@ public interface AccountRepository extends JpaRepository<Account, String> {
 
     boolean existsByEmail(String email);
 
+    boolean existsByPhoneNumber(String phoneNumber);
+
     List<Account> findAllByIsDeletedFalse();
+
 }

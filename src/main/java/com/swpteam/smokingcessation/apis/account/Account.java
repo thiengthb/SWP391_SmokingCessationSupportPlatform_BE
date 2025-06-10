@@ -5,12 +5,12 @@ import com.swpteam.smokingcessation.apis.account.enums.Role;
 import com.swpteam.smokingcessation.apis.member.Member;
 import com.swpteam.smokingcessation.apis.setting.Setting;
 import com.swpteam.smokingcessation.apis.subscription.Subscription;
+import com.swpteam.smokingcessation.common.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 import org.hibernate.proxy.HibernateProxy;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Objects;
 
@@ -22,10 +22,7 @@ import java.util.Objects;
 @Builder
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class Account {
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    String id;
+public class Account extends BaseEntity {
 
     @Column(nullable = false, unique = true, columnDefinition = "NVARCHAR(30)")
     String email;
@@ -42,10 +39,6 @@ public class Account {
     @Enumerated(EnumType.STRING)
     AccountStatus status;
 
-    LocalDateTime createdAt;
-
-    LocalDateTime updatedAt;
-
     boolean isDeleted;
 
     @OneToMany(mappedBy = "account")
@@ -54,7 +47,7 @@ public class Account {
     @OneToOne(mappedBy = "account", cascade = CascadeType.ALL, optional = false)
     Setting setting;
 
-    @OneToOne(mappedBy = "account", cascade = CascadeType.ALL, optional = false)
+    @OneToOne(mappedBy = "account", cascade = CascadeType.ALL)
     Member member;
 
     @Override

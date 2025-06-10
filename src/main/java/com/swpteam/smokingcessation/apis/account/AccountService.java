@@ -36,6 +36,9 @@ public class AccountService {
             throw new AppException(ErrorCode.ACCOUNT_EXISTED);
         }
 
+        if (accountRepository.existsByPhoneNumber(request.getPhoneNumber())) {
+            throw new AppException(ErrorCode.PHONE_NUMBER_EXISTED);
+        }
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
 
         Account account = accountMapper.toAccount(request);
