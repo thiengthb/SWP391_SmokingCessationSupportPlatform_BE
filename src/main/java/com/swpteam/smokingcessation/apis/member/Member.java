@@ -2,6 +2,7 @@ package com.swpteam.smokingcessation.apis.member;
 
 import com.swpteam.smokingcessation.apis.account.Account;
 import com.swpteam.smokingcessation.apis.member.enums.MemberGender;
+import com.swpteam.smokingcessation.common.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -9,16 +10,14 @@ import lombok.experimental.FieldDefaults;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-@Entity
-@Table(name = "member")
+@Getter
+@Setter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
-@Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class Member {
-    @Id
-    String id;
+@Entity
+public class Member extends BaseEntity {
 
     @OneToOne
     @MapsId

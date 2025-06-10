@@ -126,6 +126,7 @@ public class AuthenticationService {
         JWSHeader jwsHeader = new JWSHeader(JWSAlgorithm.HS512);
 
         JWTClaimsSet jwtClaimsSet = new JWTClaimsSet.Builder()
+                .jwtID(UUID.randomUUID().toString())
                 .subject(account.getEmail())
                 .issuer("swpteam")
                 .issueTime(new Date())
@@ -154,6 +155,7 @@ public class AuthenticationService {
         JWSHeader jwsHeader = new JWSHeader(JWSAlgorithm.HS512);
 
         JWTClaimsSet jwtClaimsSet = new JWTClaimsSet.Builder()
+                .jwtID(UUID.randomUUID().toString())
                 .subject(account.getEmail())
                 .issuer("swpteam")
                 .issueTime(new Date())
