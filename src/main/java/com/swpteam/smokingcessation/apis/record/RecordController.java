@@ -1,9 +1,8 @@
-package com.swpteam.smokingcessation.apis.record.controller;
+package com.swpteam.smokingcessation.apis.record;
 
-import com.swpteam.smokingcessation.apis.record.DTO.request.RecordRequest;
-import com.swpteam.smokingcessation.apis.record.DTO.request.RecordUpdate;
-import com.swpteam.smokingcessation.apis.record.service.RecordService;
-import com.swpteam.smokingcessation.common.response.ApiResponse;
+import com.swpteam.smokingcessation.apis.record.dto.RecordRequest;
+import com.swpteam.smokingcessation.apis.record.dto.RecordUpdate;
+import com.swpteam.smokingcessation.common.ApiResponse;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;

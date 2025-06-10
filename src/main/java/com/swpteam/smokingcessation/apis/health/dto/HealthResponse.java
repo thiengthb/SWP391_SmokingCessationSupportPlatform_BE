@@ -1,4 +1,4 @@
-package com.swpteam.smokingcessation.apis.health.DTO.response;
+package com.swpteam.smokingcessation.apis.health.dto;
 
 import lombok.*;
 

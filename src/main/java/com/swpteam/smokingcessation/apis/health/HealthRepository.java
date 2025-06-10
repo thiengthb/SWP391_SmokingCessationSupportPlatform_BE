@@ -1,6 +1,5 @@
-package com.swpteam.smokingcessation.apis.health.repository;
+package com.swpteam.smokingcessation.apis.health;
 
-import com.swpteam.smokingcessation.apis.health.entity.Health;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

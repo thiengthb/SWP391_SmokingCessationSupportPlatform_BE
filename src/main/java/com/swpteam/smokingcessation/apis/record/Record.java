@@ -1,6 +1,6 @@
-package com.swpteam.smokingcessation.apis.record.entity;
+package com.swpteam.smokingcessation.apis.record;
 
-import com.swpteam.smokingcessation.apis.account.entity.Account;
+import com.swpteam.smokingcessation.apis.account.Account;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;

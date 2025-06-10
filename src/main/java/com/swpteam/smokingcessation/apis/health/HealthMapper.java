@@ -1,8 +1,7 @@
-package com.swpteam.smokingcessation.apis.health.mapper;
+package com.swpteam.smokingcessation.apis.health;
 
-import com.swpteam.smokingcessation.apis.health.DTO.request.HealthRequest;
-import com.swpteam.smokingcessation.apis.health.DTO.request.HealthUpdate;
-import com.swpteam.smokingcessation.apis.health.entity.Health;
+import com.swpteam.smokingcessation.apis.health.dto.HealthRequest;
+import com.swpteam.smokingcessation.apis.health.dto.HealthUpdate;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
