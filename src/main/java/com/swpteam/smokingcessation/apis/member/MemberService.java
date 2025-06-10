@@ -2,11 +2,11 @@ package com.swpteam.smokingcessation.apis.member;
 
 import com.swpteam.smokingcessation.apis.account.Account;
 import com.swpteam.smokingcessation.apis.account.AccountRepository;
-import com.swpteam.smokingcessation.apis.member.dto.request.MemberCreateRequest;
-import com.swpteam.smokingcessation.apis.member.dto.request.MemberUpdateRequest;
-import com.swpteam.smokingcessation.apis.member.dto.response.MemberResponse;
+import com.swpteam.smokingcessation.apis.member.dto.MemberCreateRequest;
+import com.swpteam.smokingcessation.apis.member.dto.MemberResponse;
+import com.swpteam.smokingcessation.apis.member.dto.MemberUpdateRequest;
+import com.swpteam.smokingcessation.constants.ErrorCode;
 import com.swpteam.smokingcessation.exception.AppException;
-import com.swpteam.smokingcessation.exception.ErrorCode;
 import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;

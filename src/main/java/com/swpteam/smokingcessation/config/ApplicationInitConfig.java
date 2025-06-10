@@ -3,7 +3,6 @@ package com.swpteam.smokingcessation.config;
 import com.swpteam.smokingcessation.apis.account.Account;
 import com.swpteam.smokingcessation.apis.account.AccountRepository;
 import com.swpteam.smokingcessation.apis.account.enums.Role;
-import com.swpteam.smokingcessation.apis.member.Member;
 import com.swpteam.smokingcessation.apis.member.MemberRepository;
 import com.swpteam.smokingcessation.apis.setting.Setting;
 import com.swpteam.smokingcessation.apis.setting.SettingRepository;
@@ -50,11 +49,8 @@ public class ApplicationInitConfig {
                 Setting setting = new Setting().getDefaultSetting();
                 setting.setAccount(account);
 
-                Member member = new Member().getDefaultMember();
-                member.setAccount(account);
 
                 account.setSetting(setting);
-                account.setMember(member);
 
                 accountRepository.save(account);
 

@@ -1,8 +1,8 @@
 package com.swpteam.smokingcessation.apis.member;
 
-import com.swpteam.smokingcessation.apis.member.dto.request.MemberCreateRequest;
-import com.swpteam.smokingcessation.apis.member.dto.request.MemberUpdateRequest;
-import com.swpteam.smokingcessation.apis.member.dto.response.MemberResponse;
+import com.swpteam.smokingcessation.apis.member.dto.MemberCreateRequest;
+import com.swpteam.smokingcessation.apis.member.dto.MemberResponse;
+import com.swpteam.smokingcessation.apis.member.dto.MemberUpdateRequest;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
