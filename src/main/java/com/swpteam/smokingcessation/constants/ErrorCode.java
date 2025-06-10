@@ -50,6 +50,7 @@ public enum ErrorCode {
     ACCOUNT_NOT_EXISTED(3000, "Account does not exist", HttpStatus.BAD_REQUEST),
     ACCOUNT_EXISTED(3001, "Account already existed", HttpStatus.BAD_REQUEST),
     ACCOUNT_DELETED(3002, "Account has been deleted", HttpStatus.BAD_REQUEST),
+    PHONE_NUMBER_EXISTED(3003, "Phone number is registed to another account", HttpStatus.BAD_REQUEST),
 
     // Membership
     MEMBERSHIP_NOT_FOUND(4000, "Membership does not exist or have been deleted", HttpStatus.BAD_REQUEST),
