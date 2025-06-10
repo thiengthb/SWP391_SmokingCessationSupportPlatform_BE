@@ -1,6 +1,7 @@
 package com.swpteam.smokingcessation.apis.setting.dto;
 
 import com.swpteam.smokingcessation.apis.setting.enums.Language;
+import com.swpteam.smokingcessation.apis.setting.enums.MotivationFrequency;
 import com.swpteam.smokingcessation.apis.setting.enums.Theme;
 import com.swpteam.smokingcessation.apis.setting.enums.TrackingMode;
 import jakarta.validation.constraints.Max;
@@ -30,10 +31,8 @@ public class SettingRequest {
     @NotNull(message = "Tracking mode is required")
     private TrackingMode trackingMode;
 
-    @NotNull(message = "Motivation per day is required")
-    @Min(value = 1, message = "Motivation per day must be at least 1")
-    @Max(value = 100, message = "Motivation per day must be at most 100")
-    private Integer motivationPerDay;
+    @NotNull(message = "Motivation frequency is required")
+    private MotivationFrequency motivationFrequency;
 
     @NotNull(message = "Report deadline is required")
     private LocalTime reportDeadline;
