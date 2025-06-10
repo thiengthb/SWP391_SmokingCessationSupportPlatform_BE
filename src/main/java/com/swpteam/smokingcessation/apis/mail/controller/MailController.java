@@ -1,8 +1,7 @@
 package com.swpteam.smokingcessation.apis.mail.controller;
 
-import com.swpteam.smokingcessation.apis.mail.service.MailService;
+import com.swpteam.smokingcessation.apis.mail.MailService;
 import com.swpteam.smokingcessation.apis.message.entity.Message;
-import jakarta.mail.MessagingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -15,11 +14,6 @@ public class MailController {
 
     @PostMapping("/send-template")
     public String sendMailTemplate(@RequestParam String to, @RequestBody Message message) {
-        try {
-            mailService.sendSimpleMail(to, message);
-            return "Template mail sent successfully!";
-        } catch (Exception e) {
-            return "Error: " + e.getMessage();
-        }
+    return null;
     }
 }

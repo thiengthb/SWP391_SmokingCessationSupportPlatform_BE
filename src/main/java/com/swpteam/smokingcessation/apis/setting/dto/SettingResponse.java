@@ -2,6 +2,7 @@ package com.swpteam.smokingcessation.apis.setting.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.swpteam.smokingcessation.apis.setting.enums.Language;
+import com.swpteam.smokingcessation.apis.setting.enums.MotivationFrequency;
 import com.swpteam.smokingcessation.apis.setting.enums.Theme;
 import com.swpteam.smokingcessation.apis.setting.enums.TrackingMode;
 import lombok.*;
@@ -20,6 +21,6 @@ public class SettingResponse {
     private Theme theme;
     private Language language;
     private TrackingMode trackingMode;
-    private Integer motivationPerDay;
+    private MotivationFrequency motivationFrequency;
     private LocalTime reportDeadline;
 }
