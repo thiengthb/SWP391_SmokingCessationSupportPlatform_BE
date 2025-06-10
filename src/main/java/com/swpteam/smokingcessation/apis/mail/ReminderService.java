@@ -1,7 +1,7 @@
 // ReminderService.java - Complete Implementation
 package com.swpteam.smokingcessation.apis.mail;
 
-import com.swpteam.smokingcessation.apis.account.entity.Account;
+import com.swpteam.smokingcessation.apis.account.Account;
 import com.swpteam.smokingcessation.apis.message.Message;
 import com.swpteam.smokingcessation.apis.message.enums.MessageType;
 import com.swpteam.smokingcessation.apis.message.MessageRepository;
