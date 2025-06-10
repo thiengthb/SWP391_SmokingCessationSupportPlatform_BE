@@ -24,7 +24,11 @@ public enum ErrorCode {
     PAYMENT_STATUS_REQUIRED(1005, "Payment status is required", HttpStatus.BAD_REQUEST),
     ACCOUNT_NOT_BLANK(1006, "Account ID cannot be blank", HttpStatus.BAD_REQUEST),
     ID_REQUIRED(1007, "ID is required", HttpStatus.BAD_REQUEST),
-    ID_NOT_BLANK(1007, "ID cannot be blank", HttpStatus.BAD_REQUEST),
+    ID_NOT_BLANK(1008, "ID cannot be blank", HttpStatus.BAD_REQUEST),
+    PAGE_NO_MIN(1009, "Page number must be at least 0", HttpStatus.BAD_REQUEST),
+    PAGE_SIZE_MIN(1010, "Page size must be at least 1", HttpStatus.BAD_REQUEST),
+    PAGE_SIZE_MAX(1011, "Page size can not pass 100", HttpStatus.BAD_REQUEST),
+    INVALID_SORT_FIELD(1013, "Invalid sort field", HttpStatus.BAD_REQUEST),
 
     // Authentication
     UNAUTHENTICATED(1000, "Unauthenticated", HttpStatus.UNAUTHORIZED),
