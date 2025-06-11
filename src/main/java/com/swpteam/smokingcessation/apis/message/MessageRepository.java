@@ -1,6 +1,5 @@
-package com.swpteam.smokingcessation.apis.message.repository;
+package com.swpteam.smokingcessation.apis.message;
 
-import com.swpteam.smokingcessation.apis.message.entity.Message;
 import com.swpteam.smokingcessation.apis.message.enums.MessageType;
 import org.springframework.data.jpa.repository.JpaRepository;
 

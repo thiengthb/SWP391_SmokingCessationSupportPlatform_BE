@@ -1,7 +1,6 @@
 package com.swpteam.smokingcessation.apis.mail;
 
-import com.swpteam.smokingcessation.apis.mail.MailService;
-import com.swpteam.smokingcessation.apis.message.entity.Message;
+import com.swpteam.smokingcessation.apis.message.Message;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 

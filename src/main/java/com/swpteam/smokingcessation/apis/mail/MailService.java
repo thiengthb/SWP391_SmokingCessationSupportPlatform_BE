@@ -1,6 +1,6 @@
 package com.swpteam.smokingcessation.apis.mail;
 
-import com.swpteam.smokingcessation.apis.message.entity.Message;
+import com.swpteam.smokingcessation.apis.message.Message;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,7 +61,12 @@ public class MailService {
 
     }
 
+
+
+
     }
+
+
 
 
 

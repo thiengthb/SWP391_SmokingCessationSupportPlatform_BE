@@ -1,7 +1,6 @@
-package com.swpteam.smokingcessation.apis.message.dto.request;
+package com.swpteam.smokingcessation.apis.message.dto;
 
 import com.swpteam.smokingcessation.apis.message.enums.MessageType;
-import jakarta.persistence.Column;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;

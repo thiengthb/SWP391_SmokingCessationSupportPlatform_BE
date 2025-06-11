@@ -2,9 +2,9 @@
 package com.swpteam.smokingcessation.apis.mail;
 
 import com.swpteam.smokingcessation.apis.account.entity.Account;
-import com.swpteam.smokingcessation.apis.message.entity.Message;
+import com.swpteam.smokingcessation.apis.message.Message;
 import com.swpteam.smokingcessation.apis.message.enums.MessageType;
-import com.swpteam.smokingcessation.apis.message.repository.MessageRepository;
+import com.swpteam.smokingcessation.apis.message.MessageRepository;
 import com.swpteam.smokingcessation.apis.setting.Setting;
 import com.swpteam.smokingcessation.apis.setting.SettingRepository;
 import com.swpteam.smokingcessation.apis.setting.enums.MotivationFrequency;

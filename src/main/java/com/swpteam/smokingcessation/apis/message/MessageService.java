@@ -1,10 +1,7 @@
-package com.swpteam.smokingcessation.apis.message.service;
+package com.swpteam.smokingcessation.apis.message;
 
-import com.swpteam.smokingcessation.apis.message.dto.request.MessageRequest;
-import com.swpteam.smokingcessation.apis.message.dto.response.MessageResponse;
-import com.swpteam.smokingcessation.apis.message.entity.Message;
-import com.swpteam.smokingcessation.apis.message.mapper.MessageMapper;
-import com.swpteam.smokingcessation.apis.message.repository.MessageRepository;
+import com.swpteam.smokingcessation.apis.message.dto.MessageRequest;
+import com.swpteam.smokingcessation.apis.message.dto.MessageResponse;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -16,11 +13,10 @@ import java.util.List;
 @Service
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 @RequiredArgsConstructor
-public class MessageServiceImpl implements MessageService {
+public class MessageService {
     MessageRepository messageRepository;
     MessageMapper messageMapper;
 
-    @Override
     public MessageResponse createMessage(MessageRequest request) {
         Message message = messageMapper.toMessage(request);
         message.setCreatedAt(LocalDateTime.now());
@@ -28,7 +24,6 @@ public class MessageServiceImpl implements MessageService {
         return messageMapper.toMessageResponse(saved);
     }
 
-    @Override
     public MessageResponse updateMessage(String id, MessageRequest request) {
         Message existing = messageRepository.findById(id).orElseThrow(() -> new RuntimeException("Message not found with ID: " + id));
 
@@ -40,13 +35,11 @@ public class MessageServiceImpl implements MessageService {
     }
 
 
-    @Override
     public List<MessageResponse> getAllMessages() {
         List<Message> messages = messageRepository.findAll();
         return messageMapper.toListMessageResponse(messages);
     }
 
-    @Override
     public void deleteMessage(String id) {
         Message message = messageRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Message not found"));
@@ -56,7 +49,7 @@ public class MessageServiceImpl implements MessageService {
         messageRepository.save(message);
     }
 
-    @Override
+
     public MessageResponse searchById(String id) {
         Message message = messageRepository.findById(id).orElseThrow(() -> new RuntimeException("Message not found"));
         return messageMapper.toMessageResponse(message);

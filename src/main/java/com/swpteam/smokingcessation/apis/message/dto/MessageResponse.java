@@ -1,28 +1,25 @@
-package com.swpteam.smokingcessation.apis.message.entity;
+package com.swpteam.smokingcessation.apis.message.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.swpteam.smokingcessation.apis.message.enums.MessageType;
-import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDateTime;
 
-@Entity
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class Message {
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
+
+public class MessageResponse {
     String messageId;
-    @Enumerated(EnumType.STRING)
     MessageType type;
-    @Column(unique = true)
     String content;
-    @Column(updatable = false)
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss"	)
     LocalDateTime createdAt;
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss"	)
     LocalDateTime updatedAt;
     boolean isDeleted;
 

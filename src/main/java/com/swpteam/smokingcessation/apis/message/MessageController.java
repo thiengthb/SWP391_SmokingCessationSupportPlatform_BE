@@ -1,10 +1,9 @@
-package com.swpteam.smokingcessation.apis.message.controller;
+package com.swpteam.smokingcessation.apis.message;
 
 
-import com.swpteam.smokingcessation.apis.message.dto.request.MessageRequest;
-import com.swpteam.smokingcessation.apis.message.dto.response.MessageResponse;
-import com.swpteam.smokingcessation.apis.message.service.MessageService;
-import com.swpteam.smokingcessation.common.ApiResponse;
+import com.swpteam.smokingcessation.apis.message.dto.MessageRequest;
+import com.swpteam.smokingcessation.apis.message.dto.MessageResponse;
+import com.swpteam.smokingcessation.common.response.ApiResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
