@@ -2,7 +2,7 @@ package com.swpteam.smokingcessation.security;
 
 import com.nimbusds.jose.JOSEException;
 import com.swpteam.smokingcessation.apis.authentication.AuthenticationService;
-import com.swpteam.smokingcessation.apis.authentication.dto.request.IntrospectRequest;
+import com.swpteam.smokingcessation.apis.authentication.dto.request.TokenRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
@@ -31,7 +31,7 @@ public class JwtCustomDecoder implements JwtDecoder {
 
         try {
             var response = authenticationService.introspect(
-                    IntrospectRequest.builder().token(token).build());
+                    TokenRequest.builder().token(token).build());
 
             if (!response.isValid()) throw new JwtException("Token invalid");
         } catch (JOSEException | ParseException e) {

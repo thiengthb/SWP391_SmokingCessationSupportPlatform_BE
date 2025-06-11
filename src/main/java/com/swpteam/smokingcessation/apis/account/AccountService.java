@@ -1,9 +1,9 @@
 package com.swpteam.smokingcessation.apis.account;
 
-import com.swpteam.smokingcessation.apis.account.dto.request.AccountCreateRequest;
-import com.swpteam.smokingcessation.apis.account.dto.request.AccountUpdateRequest;
-import com.swpteam.smokingcessation.apis.account.dto.request.ChangePasswordRequest;
-import com.swpteam.smokingcessation.apis.account.dto.response.AccountResponse;
+import com.swpteam.smokingcessation.apis.account.dto.AccountCreateRequest;
+import com.swpteam.smokingcessation.apis.account.dto.AccountResponse;
+import com.swpteam.smokingcessation.apis.account.dto.AccountUpdateRequest;
+import com.swpteam.smokingcessation.apis.account.dto.ChangePasswordRequest;
 import com.swpteam.smokingcessation.apis.member.Member;
 import com.swpteam.smokingcessation.apis.member.MemberRepository;
 import com.swpteam.smokingcessation.apis.setting.Setting;
@@ -33,7 +33,7 @@ public class AccountService {
     AccountMapper accountMapper;
 
 
-    public AccountResponse createAccount(AccountCreateRequest request) {
+    public AccountResponse createAccount(AccountRequest request) {
         if (accountRepository.existsByEmail(request.getEmail())) {
             throw new AppException(ErrorCode.ACCOUNT_EXISTED);
         }
@@ -68,7 +68,7 @@ public class AccountService {
         }
 
         Pageable pageable = PageableRequest.getPageable(request);
-        Page<Account> accounts = accountRepository.findAll(pageable);
+        Page<Account> accounts = accountRepository.findAllByIsDeletedFalse(pageable);
 
         return accounts.map(accountMapper::toResponse);
     }
@@ -88,10 +88,10 @@ public class AccountService {
 
 
     @Transactional
-    public AccountResponse updateAccount(AccountUpdateRequest request, String id) {
+    public AccountResponse updateAccount(String id, AccountRequest request) {
         Account account = findAccountById(id);
 
-        accountMapper.updateAccount(account, request);
+        accountMapper.update(account, request);
         accountRepository.save(account);
 
         return accountMapper.toResponse(account);

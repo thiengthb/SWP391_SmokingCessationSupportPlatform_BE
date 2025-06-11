@@ -12,6 +12,8 @@ import java.util.Optional;
 public interface AccountRepository extends JpaRepository<Account, String> {
     Optional<Account> findByEmail(String email);
 
+    Optional<Account> findById(String s);
+
     boolean existsByEmail(String email);
 
     List<Account> findAllByIsDeletedFalse();

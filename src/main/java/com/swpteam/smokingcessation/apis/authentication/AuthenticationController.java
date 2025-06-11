@@ -36,31 +36,17 @@ public class AuthenticationController {
 
     @PostMapping("/login")
     ResponseEntity<ApiResponse<AuthenticationResponse>> authenticate(@RequestBody @Valid AuthenticationRequest request) {
-        var result = authenticationService.authenticate(request);
-
-        // Remove refreshToken from body
-        String refreshToken = result.getRefreshToken();
-        result.setRefreshToken(null);
-
         return ResponseEntity.ok()
-                .header("X-Refresh-Token", refreshToken)
                 .body(ApiResponse.<AuthenticationResponse>builder()
-                        .result(result)
+                        .result(authenticationService.authenticate(request))
                         .build());
     }
 
     @PostMapping("/refresh")
-    ResponseEntity<ApiResponse<AuthenticationResponse>> refreshToken(@RequestBody @Valid RefreshTokenRequest request) throws ParseException, JOSEException {
-        var result = authenticationService.refreshToken(request);
-
-        // Remove refreshToken from body
-        String refreshToken = result.getRefreshToken();
-        result.setRefreshToken(null);
-
+    ResponseEntity<ApiResponse<AuthenticationResponse>> refreshToken(@RequestBody @Valid TokenRequest request) throws ParseException, JOSEException {
         return ResponseEntity.ok()
-                .header("X-Refresh-Token", refreshToken)
                 .body(ApiResponse.<AuthenticationResponse>builder()
-                        .result(result)
+                        .result(authenticationService.refreshToken(request))
                         .build());
     }
 
@@ -90,5 +76,15 @@ public class AuthenticationController {
                 ApiResponse.<String>builder()
                         .result("Password has been reset successfully.")
                         .build());
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<ApiResponse<String>> logout(@RequestBody @Valid TokenRequest request) throws JOSEException, ParseException {
+        authenticationService.logout(request);
+        return ResponseEntity.ok(
+                ApiResponse.<String>builder()
+                        .result("Logout successful")
+                        .build()
+        );
     }
 }

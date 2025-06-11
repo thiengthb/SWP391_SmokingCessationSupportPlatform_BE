@@ -10,7 +10,7 @@ import java.lang.annotation.*;
 @Target({ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
 public @interface DifferentPasswords {
-    String message() default "New password must be different from old password";
+    String message() default "IDENTICAL_PASSWORD";
 
     Class<?>[] groups() default {};
 
