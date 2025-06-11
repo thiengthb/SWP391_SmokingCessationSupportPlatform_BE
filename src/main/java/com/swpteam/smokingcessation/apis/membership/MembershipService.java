@@ -1,7 +1,10 @@
 package com.swpteam.smokingcessation.apis.membership;
 
-import com.swpteam.smokingcessation.apis.membership.dto.MembershipRequest;
+import com.swpteam.smokingcessation.apis.currency.CurrencyRateService;
+import com.swpteam.smokingcessation.apis.membership.dto.MembershipCurrencyUpdateRequest;
+import com.swpteam.smokingcessation.apis.membership.dto.MembershipCreateRequest;
 import com.swpteam.smokingcessation.apis.membership.dto.MembershipResponse;
+import com.swpteam.smokingcessation.apis.membership.dto.MembershipUpdateRequest;
 import com.swpteam.smokingcessation.apis.subscription.Subscription;
 import com.swpteam.smokingcessation.apis.subscription.SubscriptionRepository;
 import com.swpteam.smokingcessation.common.PageableRequest;
@@ -27,8 +30,9 @@ public class MembershipService {
 
     MembershipRepository membershipRepository;
     MembershipMapper membershipMapper;
-
     SubscriptionRepository subscriptionRepository;
+    CurrencyRateService currencyRateService;
+
 
     public Page<MembershipResponse> getMembershipPage(PageableRequest request) {
         if (!ValidationUtil.isFieldExist(Membership.class, request.getSortBy())) {
@@ -54,7 +58,7 @@ public class MembershipService {
     }
 
     @Transactional
-    public MembershipResponse createMembership(MembershipRequest request) {
+    public MembershipResponse createMembership(MembershipCreateRequest request) {
         if (membershipRepository.existsByNameAndIsDeletedFalse(request.getName()))
             throw new AppException(ErrorCode.MEMBERSHIP_NAME_UNIQUE);
 
@@ -64,7 +68,7 @@ public class MembershipService {
     }
 
     @Transactional
-    public MembershipResponse updateMembership(String id, MembershipRequest request) {
+    public MembershipResponse updateMembership(String id, MembershipUpdateRequest request) {
         Membership membership = membershipRepository.findByIdAndIsDeletedFalse(id)
                 .orElseThrow(() -> new AppException(ErrorCode.MEMBERSHIP_NOT_FOUND));
 
@@ -85,6 +89,27 @@ public class MembershipService {
 
         subscriptionRepository.saveAll(subscriptions);
         membershipRepository.save(membership);
+    }
+
+    @Transactional
+    public MembershipResponse updateMembershipCurrency(String id, MembershipCurrencyUpdateRequest request) {
+        Double rate = currencyRateService.getRate(request.getCurrency().name().toUpperCase());
+        if (rate == null)
+            throw new AppException(ErrorCode.INVALID_CURRENCY);
+
+        Membership membership = membershipRepository.findByIdAndIsDeletedFalse(id)
+                .orElseThrow(() -> new AppException(ErrorCode.MEMBERSHIP_NOT_FOUND));
+
+        double newPrice = currencyRateService.getNewPrice(
+                membership.getPrice(),
+                membership.getCurrency().name().toUpperCase(),
+                request.getCurrency().name().toUpperCase()
+        );
+
+        membership.setCurrency(request.getCurrency());
+        membership.setPrice(newPrice);
+
+        return membershipMapper.toResponse(membershipRepository.save(membership));
     }
 
 }
