@@ -1,13 +1,12 @@
 package com.swpteam.smokingcessation.apis.record;
 
-import com.swpteam.smokingcessation.apis.record.dto.RecordRequest;
+import com.swpteam.smokingcessation.apis.health.dto.HealthResponse;
+import com.swpteam.smokingcessation.apis.record.dto.RecordCreateRequest;
 import com.swpteam.smokingcessation.apis.record.dto.RecordResponse;
-import com.swpteam.smokingcessation.apis.record.dto.RecordUpdate;
+import com.swpteam.smokingcessation.apis.record.dto.RecordUpdateRequest;
 import com.swpteam.smokingcessation.common.ApiResponse;
 import com.swpteam.smokingcessation.common.PageableRequest;
-import com.swpteam.smokingcessation.constants.ErrorCode;
 import com.swpteam.smokingcessation.constants.SuccessCode;
-import com.swpteam.smokingcessation.exception.AppException;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -15,105 +14,75 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.UUID;
-
 @RestController
-@RequestMapping("/api/record")
+@RequestMapping("/api/records")
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @Slf4j
 public class RecordController {
+
     RecordService recordService;
 
-    @PostMapping
-    ResponseEntity<ApiResponse<RecordResponse>> create(
-            @RequestBody @Valid RecordRequest request,
-            @AuthenticationPrincipal UserDetails userDetails) {
-
-        String currentUserEmail = userDetails.getUsername();
-        String requestAccountId = request.getAccountId();
-
-        if (!recordService.isAccountOwnedByUser(requestAccountId, currentUserEmail)) {
-            throw new AppException(ErrorCode.ACCOUNT_NOT_EXISTED);
-        }
-
-        return ResponseEntity.ok(
-                ApiResponse.<RecordResponse>builder()
-                        .code(SuccessCode.RECORD_CREATED.getCode())
-                        .message(SuccessCode.RECORD_CREATED.getMessage())
-                        .result(recordService.create(request))
-                        .build()
-        );
-    }
-
     @GetMapping
-    ResponseEntity<ApiResponse<Page<RecordResponse>>> getAll(
-            @Valid PageableRequest request,
-            @AuthenticationPrincipal UserDetails userDetails) {
-        String currentUserEmail = userDetails.getUsername();
-
+    ResponseEntity<ApiResponse<Page<RecordResponse>>> getRecordPage(@Valid PageableRequest request) {
         return ResponseEntity.ok(
                 ApiResponse.<Page<RecordResponse>>builder()
-                        .result(recordService.getAllByUserEmail(request, currentUserEmail))
+                        .code(SuccessCode.RECORD_GET_ALL.getCode())
+                        .message(SuccessCode.RECORD_GET_ALL.getMessage())
+                        .result(recordService.getRecordPage(request))
                         .build()
         );
     }
 
     @GetMapping("/{id}")
-    ResponseEntity<ApiResponse<RecordResponse>> getById(
-            @PathVariable UUID id,
-            @AuthenticationPrincipal UserDetails userDetails) {
-
-        String currentUserEmail = userDetails.getUsername();
-
-        if (!recordService.isRecordOwnedByUser(id, currentUserEmail)) {
-            throw new AppException(ErrorCode.ACCESS_DENIED);
-        }
-
+    ResponseEntity<ApiResponse<RecordResponse>> getRecordById(@PathVariable String id) {
         return ResponseEntity.ok(
                 ApiResponse.<RecordResponse>builder()
-                        .result(recordService.getById(id))
+                        .code(SuccessCode.RECORD_GET_BY_ID.getCode())
+                        .message(SuccessCode.RECORD_GET_BY_ID.getMessage())
+                        .result(recordService.getRecordById(id))
+                        .build()
+        );
+    }
+
+    @GetMapping("/account/{id}")
+    ResponseEntity<ApiResponse<Page<RecordResponse>>> getRecordPageByAccountId(@PathVariable String id, @Valid PageableRequest request) {
+        return ResponseEntity.ok(
+                ApiResponse.<Page<RecordResponse>>builder()
+                        .code(SuccessCode.RECORD_GET_BY_ACCOUNT.getCode())
+                        .message(SuccessCode.RECORD_GET_BY_ACCOUNT.getMessage())
+                        .result(recordService.getRecordPageByAccountId(id, request))
+                        .build()
+        );
+    }
+
+    @PostMapping
+    ResponseEntity<ApiResponse<RecordResponse>> createRecord(@RequestBody @Valid RecordCreateRequest request) {
+        return ResponseEntity.ok(
+                ApiResponse.<RecordResponse>builder()
+                        .code(SuccessCode.RECORD_CREATED.getCode())
+                        .message(SuccessCode.RECORD_CREATED.getMessage())
+                        .result(recordService.createRecord(request))
                         .build()
         );
     }
 
     @PutMapping("/{id}")
-    ResponseEntity<ApiResponse<RecordResponse>> update(
-            @PathVariable UUID id,
-            @RequestBody @Valid RecordUpdate request,
-            @AuthenticationPrincipal UserDetails userDetails) {
-
-        String currentUserEmail = userDetails.getUsername();
-
-        if (!recordService.isRecordOwnedByUser(id, currentUserEmail)) {
-            throw new AppException(ErrorCode.ACCOUNT_NOT_EXISTED);
-        }
-
+    ResponseEntity<ApiResponse<RecordResponse>> updateRecord(@PathVariable String id, @RequestBody @Valid RecordUpdateRequest request) {
         return ResponseEntity.ok(
                 ApiResponse.<RecordResponse>builder()
                         .code(SuccessCode.RECORD_UPDATED.getCode())
                         .message(SuccessCode.RECORD_UPDATED.getMessage())
-                        .result(recordService.update(id, request))
+                        .result(recordService.updateRecord(id, request))
                         .build()
         );
     }
 
     @DeleteMapping("/{id}")
-    ResponseEntity<ApiResponse<String>> delete(
-            @PathVariable UUID id,
-            @AuthenticationPrincipal UserDetails userDetails) {
-
-        String currentUserEmail = userDetails.getUsername();
-
-        if (!recordService.isRecordOwnedByUser(id, currentUserEmail)) {
-            throw new AppException(ErrorCode.ACCOUNT_NOT_EXISTED);
-        }
-
-        recordService.delete(id);
+    ResponseEntity<ApiResponse<String>> delete(@PathVariable String id) {
+        recordService.softDeleteRecordById(id);
         return ResponseEntity.ok(
                 ApiResponse.<String>builder()
                         .code(SuccessCode.RECORD_DELETED.getCode())

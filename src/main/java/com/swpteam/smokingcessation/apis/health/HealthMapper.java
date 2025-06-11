@@ -1,20 +1,19 @@
 package com.swpteam.smokingcessation.apis.health;
 
-import com.swpteam.smokingcessation.apis.health.dto.HealthRequest;
+import com.swpteam.smokingcessation.apis.health.dto.HealthCreateRequest;
 import com.swpteam.smokingcessation.apis.health.dto.HealthResponse;
-import com.swpteam.smokingcessation.apis.health.dto.HealthUpdate;
+import com.swpteam.smokingcessation.apis.health.dto.HealthUpdateRequest;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 
 @Mapper(componentModel = "spring")
 public interface HealthMapper {
-    @Mapping(target = "account.id", source = "accountId")
-    Health toHealth(HealthRequest request);
 
-    @Mapping(target = "accountId", source = "account.id")
+    Health toEntity(HealthCreateRequest request);
+
+    @Mapping(source = "account.id", target = "accountId")
     HealthResponse toResponse(Health health);
-    @Mapping(target = "id", ignore = true)
-    @Mapping(target = "account", ignore = true)
-    void updateHealth(@MappingTarget Health entity, HealthUpdate request);
+
+    void updateHealth(@MappingTarget Health entity, HealthUpdateRequest request);
 }

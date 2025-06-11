@@ -4,6 +4,8 @@ import com.swpteam.smokingcessation.apis.account.dto.request.AccountCreateReques
 import com.swpteam.smokingcessation.apis.account.dto.request.AccountUpdateRequest;
 import com.swpteam.smokingcessation.apis.account.dto.request.ChangePasswordRequest;
 import com.swpteam.smokingcessation.apis.account.dto.response.AccountResponse;
+import com.swpteam.smokingcessation.apis.health.Health;
+import com.swpteam.smokingcessation.apis.health.HealthRepository;
 import com.swpteam.smokingcessation.apis.setting.Setting;
 import com.swpteam.smokingcessation.apis.setting.SettingRepository;
 import com.swpteam.smokingcessation.exception.AppException;
@@ -27,6 +29,7 @@ public class AccountService {
     AccountMapper accountMapper;
 
     SettingRepository settingRepository;
+    private final HealthRepository healthRepository;
 
     public AccountResponse createAccount(AccountCreateRequest request) {
         if (accountRepository.existsByEmail(request.getEmail())) {
@@ -37,10 +40,9 @@ public class AccountService {
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
         account.setPassword(passwordEncoder.encode(request.getPassword()));
 
-        Setting setting = new Setting().getDefaultSetting();
-        setting.setAccount(account);
+        settingRepository.save(Setting.getDefaultSetting(account));
 
-        settingRepository.save(setting);
+        healthRepository.save(Health.getDefaultHealth(account));
 
         return accountMapper.toAccountResponse(accountRepository.save(account));
     }

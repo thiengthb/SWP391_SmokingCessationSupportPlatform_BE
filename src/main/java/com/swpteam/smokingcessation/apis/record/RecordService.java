@@ -2,9 +2,11 @@ package com.swpteam.smokingcessation.apis.record;
 
 import com.swpteam.smokingcessation.apis.account.Account;
 import com.swpteam.smokingcessation.apis.account.AccountRepository;
-import com.swpteam.smokingcessation.apis.record.dto.RecordRequest;
+import com.swpteam.smokingcessation.apis.health.Health;
+import com.swpteam.smokingcessation.apis.health.dto.HealthResponse;
+import com.swpteam.smokingcessation.apis.record.dto.RecordCreateRequest;
 import com.swpteam.smokingcessation.apis.record.dto.RecordResponse;
-import com.swpteam.smokingcessation.apis.record.dto.RecordUpdate;
+import com.swpteam.smokingcessation.apis.record.dto.RecordUpdateRequest;
 import com.swpteam.smokingcessation.common.PageableRequest;
 import com.swpteam.smokingcessation.constants.ErrorCode;
 import com.swpteam.smokingcessation.exception.AppException;
@@ -16,63 +18,78 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.UUID;
-
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-@Slf4j
 public class RecordService {
+
     RecordRepository recordRepository;
     AccountRepository accountRepository;
     RecordMapper recordMapper;
 
-    public RecordResponse create(RecordRequest request) {
-        Account account = accountRepository.findById(request.getAccountId())
-                .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_EXISTED));
-
-        Record record = recordMapper.toRecord(request);
-        record.setAccount(account);
-        return recordMapper.toResponse(recordRepository.save(record));
-    }
-
-    public Page<RecordResponse> getAllByUserEmail(PageableRequest request, String email) {
+    public Page<RecordResponse> getRecordPage(PageableRequest request) {
         if (!ValidationUtil.isFieldExist(Record.class, request.getSortBy())) {
             throw new AppException(ErrorCode.INVALID_SORT_FIELD);
         }
 
         Pageable pageable = PageableRequest.getPageable(request);
-        Page<Record> records = recordRepository.findByAccount_Email(email, pageable);
+        Page<Record> records = recordRepository.findAllByIsDeletedFalse(pageable);
+
         return records.map(recordMapper::toResponse);
     }
 
-    public RecordResponse getById(UUID id) {
+    public RecordResponse getRecordById(String id) {
         return recordMapper.toResponse(
-                recordRepository.findById(id)
+                recordRepository.findByIdAndIsDeletedFalse(id)
                         .orElseThrow(() -> new AppException(ErrorCode.RECORD_NOT_FOUND)));
     }
 
-    public boolean isRecordOwnedByUser(UUID recordId, String email) {
-        return recordRepository.existsByIdAndAccount_Email(recordId, email);
+    public Page<RecordResponse> getRecordPageByAccountId(String accountId, PageableRequest request) {
+        if (!ValidationUtil.isFieldExist(Record.class, request.getSortBy())) {
+            throw new AppException(ErrorCode.INVALID_SORT_FIELD);
+        }
+
+        accountRepository.findById(accountId)
+                .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_EXISTED));
+
+        Pageable pageable = PageableRequest.getPageable(request);
+        Page<Record> records = recordRepository.findByAccountIdAndIsDeletedFalse(accountId, pageable);
+
+        return records.map(recordMapper::toResponse);
     }
 
-    public boolean isAccountOwnedByUser(String accountId, String email) {
-        return recordRepository.existsAccountByIdAndEmail(accountId, email);
-    }
+    @Transactional
+    public RecordResponse createRecord(RecordCreateRequest request) {
+        Account account = accountRepository.findById(request.getAccountId())
+                .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_EXISTED));
 
-    public RecordResponse update(UUID id, RecordUpdate request) {
-        Record record = recordRepository.findById(id)
-                .orElseThrow(() -> new AppException(ErrorCode.RECORD_NOT_FOUND));
+        Record record = recordMapper.toEntity(request);
 
-        recordMapper.updateRecord(record, request);
+        record.setAccount(account);
+
         return recordMapper.toResponse(recordRepository.save(record));
     }
 
-    public void delete(UUID id) {
-        if (!recordRepository.existsById(id)) {
-            throw new AppException(ErrorCode.RECORD_NOT_FOUND);
-        }
-        recordRepository.deleteById(id);
+    @Transactional
+    public RecordResponse updateRecord(String id, RecordUpdateRequest request) {
+        Record record = recordRepository.findByIdAndIsDeletedFalse(id)
+                .orElseThrow(() -> new AppException(ErrorCode.RECORD_NOT_FOUND));
+
+        recordMapper.updateRecord(record, request);
+
+        return recordMapper.toResponse(recordRepository.save(record));
+    }
+
+    @Transactional
+    public void softDeleteRecordById(String id) {
+        Record record = recordRepository.findByIdAndIsDeletedFalse(id)
+                .orElseThrow(() -> new AppException(ErrorCode.RECORD_NOT_FOUND));
+
+        record.setDeleted(true);
+
+        recordRepository.save(record);
     }
 }

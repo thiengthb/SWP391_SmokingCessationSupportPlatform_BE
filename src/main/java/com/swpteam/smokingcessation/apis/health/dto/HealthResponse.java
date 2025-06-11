@@ -2,6 +2,7 @@ package com.swpteam.smokingcessation.apis.health.dto;
 
 import lombok.*;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Getter
@@ -9,7 +10,6 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 public class HealthResponse {
-     String id;
      String accountId;
      int cigarettesPerDay;
      int cigarettesPerPack;
@@ -17,4 +17,6 @@ public class HealthResponse {
      double packPrice;
      String reasonToQuit;
      int smokeYear;
+     LocalDateTime updatedAt;
+     LocalDateTime createdAt;
 }

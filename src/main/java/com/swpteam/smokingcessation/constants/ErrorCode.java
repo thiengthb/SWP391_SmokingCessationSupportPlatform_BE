@@ -86,16 +86,12 @@ public enum ErrorCode {
 
     // Record
     RECORD_NOT_FOUND(5000, "Record does not exist", HttpStatus.NOT_FOUND),
-    RECORD_ACCOUNT_ID_REQUIRED(5001, "Account ID is required", HttpStatus.BAD_REQUEST),
-    RECORD_CIGARETTES_SMOKED_INVALID(5002, "Cigarettes smoked must be non-negative", HttpStatus.BAD_REQUEST),
+    CIGARETTES_SMOKED_INVALID(5002, "Cigarettes smoked must be non-negative", HttpStatus.BAD_REQUEST),
     RECORD_DATE_REQUIRED(5003, "Date is required", HttpStatus.BAD_REQUEST),
     RECORD_DATE_INVALID(5004, "Date must be today or in the future", HttpStatus.BAD_REQUEST),
-    RECORD_ALREADY_EXISTS(5005, "Record for this date already exists", HttpStatus.BAD_REQUEST),
-    RECORD_ACCESS_DENIED(5006, "Access denied to this record", HttpStatus.FORBIDDEN),
-    RECORD_UPDATE_FAILED(5007, "Failed to update record", HttpStatus.INTERNAL_SERVER_ERROR),
-    RECORD_DELETE_FAILED(5008, "Failed to delete record", HttpStatus.INTERNAL_SERVER_ERROR);
+    RECORD_ALREADY_EXISTS(5005, "Record for this date already exists", HttpStatus.BAD_REQUEST)
 
-
+    ;
     int code;
     String message;
     HttpStatusCode httpCode;

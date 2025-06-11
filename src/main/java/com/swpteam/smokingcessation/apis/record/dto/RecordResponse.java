@@ -11,7 +11,8 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 public class RecordResponse {
-    private UUID id;
+
+    private String id;
     private String accountId;
     private int cigarettesSmoked;
     private LocalDate date;

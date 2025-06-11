@@ -12,15 +12,9 @@ import java.util.Optional;
 @Repository
 public interface HealthRepository extends JpaRepository<Health, String> {
 
-    Page<Health> findByAccountIdAndIsDeletedFalse(String accountId, Pageable pageable);
-
-    boolean existsByAccountIdAndIsDeletedFalse(String accountId);
-
-    Optional<Health> findFirstByAccountIdAndIsDeletedFalse(String accountId);
-
-    Page<Health> findAllByIsDeletedFalse(Pageable pageable);
-
     Optional<Health> findByIdAndIsDeletedFalse(String id);
 
-    String account(Account account);
+    Page<Health> findByAccountIdAndIsDeletedFalse(String accountId, Pageable pageable);
+
+    Page<Health> findAllByIsDeletedFalse(Pageable pageable);
 }
