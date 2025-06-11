@@ -13,9 +13,10 @@ import java.time.LocalDateTime;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class MembershipResponse {
+
     String id;
     String name;
-    int duration;
+    int durationDays;
     double price;
     String description;
     LocalDateTime createdAt;

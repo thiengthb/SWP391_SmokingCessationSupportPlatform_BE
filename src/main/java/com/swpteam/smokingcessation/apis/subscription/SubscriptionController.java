@@ -3,56 +3,78 @@ package com.swpteam.smokingcessation.apis.subscription;
 import com.swpteam.smokingcessation.apis.subscription.dto.SubscriptionRequest;
 import com.swpteam.smokingcessation.apis.subscription.dto.SubscriptionResponse;
 import com.swpteam.smokingcessation.common.ApiResponse;
+import com.swpteam.smokingcessation.common.PageableRequest;
+import com.swpteam.smokingcessation.constants.SuccessCode;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
+@Slf4j
 @RestController
-@RequestMapping("/api/subscription")
+@RequestMapping("/api/subscriptions")
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-@Slf4j
 public class SubscriptionController {
+
     SubscriptionService subscriptionService;
 
-    @PostMapping
-    ApiResponse<SubscriptionResponse> createSubscription(@RequestBody @Valid SubscriptionRequest request) {
-        return ApiResponse.<SubscriptionResponse>builder()
-                .result(subscriptionService.createSubscription(request))
-                .build();
-    }
-
-    @PutMapping("/{subscriptionId}")
-    ApiResponse<SubscriptionResponse> updateSubscription(@PathVariable String subscriptionId, @RequestBody @Valid SubscriptionRequest request) {
-        return ApiResponse.<SubscriptionResponse>builder()
-                .result(subscriptionService.updateSubscription(subscriptionId, request))
-                .build();
-    }
-
-    @DeleteMapping("/{subscriptionId}")
-    ApiResponse<String> createSubscription(@PathVariable String membershipName) {
-        subscriptionService.deleteSubscription(membershipName);
-        return ApiResponse.<String>builder()
-                .result("Subscription has been deleted")
-                .build();
-    }
-
     @GetMapping
-    ApiResponse<List<SubscriptionResponse>> getSubscriptionList() {
-        return ApiResponse.<List<SubscriptionResponse>>builder()
-                .result(subscriptionService.getSubscriptionList())
-                .build();
+    ResponseEntity<ApiResponse<Page<SubscriptionResponse>>> getSubscriptionPage(@Valid PageableRequest request) {
+        return ResponseEntity.ok().body(
+                ApiResponse.<Page<SubscriptionResponse>>builder()
+                        .code(SuccessCode.SUBSCRIPTION_GET_ALL.getCode())
+                        .message(SuccessCode.SUBSCRIPTION_GET_ALL.getMessage())
+                        .result(subscriptionService.getSubscriptionPage(request))
+                        .build()
+        );
     }
 
-    @GetMapping("/{subscriptionId}")
-    ApiResponse<SubscriptionResponse> getSubscriptionList(@PathVariable String subscriptionId) {
-        return ApiResponse.<SubscriptionResponse>builder()
-                .result(subscriptionService.getSubscription(subscriptionId))
-                .build();
+    @GetMapping("/{id}")
+    ResponseEntity<ApiResponse<SubscriptionResponse>> getSubscriptionById(@PathVariable String id) {
+        return ResponseEntity.ok().body(
+                ApiResponse.<SubscriptionResponse>builder()
+                        .code(SuccessCode.SUBSCRIPTION_GET_BY_ID.getCode())
+                        .message(SuccessCode.SUBSCRIPTION_GET_BY_ID.getMessage())
+                        .result(subscriptionService.getSubscription(id))
+                        .build()
+        );
+    }
+
+    @PostMapping
+    ResponseEntity<ApiResponse<SubscriptionResponse>> createSubscription(@RequestBody @Valid SubscriptionRequest request) {
+        return ResponseEntity.ok().body(
+                ApiResponse.<SubscriptionResponse>builder()
+                        .code(SuccessCode.SUBSCRIPTION_CREATED.getCode())
+                        .message(SuccessCode.SUBSCRIPTION_CREATED.getMessage())
+                        .result(subscriptionService.createSubscription(request))
+                        .build()
+        );
+    }
+
+    @PutMapping("/{id}")
+    ResponseEntity<ApiResponse<SubscriptionResponse>> updateSubscription(@PathVariable String id, @RequestBody @Valid SubscriptionRequest request) {
+        return ResponseEntity.ok().body(
+                ApiResponse.<SubscriptionResponse>builder()
+                        .code(SuccessCode.SUBSCRIPTION_UPDATED.getCode())
+                        .message(SuccessCode.SUBSCRIPTION_UPDATED.getMessage())
+                        .result(subscriptionService.updateSubscription(id, request))
+                        .build()
+        );
+    }
+
+    @DeleteMapping("/{id}")
+    ResponseEntity<ApiResponse<String>> deleteSubscription(@PathVariable String id) {
+        subscriptionService.deleteSubscription(id);
+        return ResponseEntity.ok().body(
+                ApiResponse.<String>builder()
+                        .code(SuccessCode.SUBSCRIPTION_DELETED.getCode())
+                        .message(SuccessCode.SUBSCRIPTION_DELETED.getMessage())
+                        .build()
+        );
     }
 }

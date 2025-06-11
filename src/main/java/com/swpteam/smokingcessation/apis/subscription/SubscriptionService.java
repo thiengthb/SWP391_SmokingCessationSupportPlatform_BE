@@ -1,23 +1,29 @@
 package com.swpteam.smokingcessation.apis.subscription;
 
+import com.swpteam.smokingcessation.apis.account.Account;
 import com.swpteam.smokingcessation.apis.account.AccountRepository;
+import com.swpteam.smokingcessation.apis.membership.Membership;
 import com.swpteam.smokingcessation.apis.membership.MembershipRepository;
 import com.swpteam.smokingcessation.apis.subscription.dto.SubscriptionRequest;
 import com.swpteam.smokingcessation.apis.subscription.dto.SubscriptionResponse;
+import com.swpteam.smokingcessation.apis.subscription.enums.PaymentStatus;
+import com.swpteam.smokingcessation.common.PageableRequest;
 import com.swpteam.smokingcessation.exception.AppException;
 import com.swpteam.smokingcessation.constants.ErrorCode;
+import com.swpteam.smokingcessation.utils.ValidationUtil;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-@Slf4j
 public class SubscriptionService {
     SubscriptionRepository subscriptionRepository;
     SubscriptionMapper subscriptionMapper;
@@ -25,36 +31,58 @@ public class SubscriptionService {
     AccountRepository accountRepository;
     MembershipRepository membershipRepository;
 
-    public SubscriptionResponse createSubscription(SubscriptionRequest request) {
-        Subscription subscription = subscriptionMapper.toEntity(request);
+    public Page<SubscriptionResponse> getSubscriptionPage(PageableRequest request) {
+        if (!ValidationUtil.isFieldExist(Subscription.class, request.getSortBy())) {
+            throw new AppException(ErrorCode.INVALID_SORT_FIELD);
+        }
 
-        accountRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_EXISTED));
+        Pageable pageable = PageableRequest.getPageable(request);
+        Page<Subscription> subscriptions = subscriptionRepository.findAllByIsDeletedFalse(pageable);
 
-        membershipRepository.findByName(request.getMembershipName())
-                .orElseThrow(() -> new AppException(ErrorCode.MEMBERSHIP_NOT_EXISTED));
-
-        return subscriptionMapper.toResponse(subscriptionRepository.save(subscription));
-    }
-
-    public SubscriptionResponse updateSubscription(String id, SubscriptionRequest request) {
-        Subscription subscription = subscriptionRepository.findById(id)
-                .orElseThrow(() -> new AppException(ErrorCode.SUBSCRIPTION_NOT_EXISTED));
-
-        return subscriptionMapper.toResponse(subscriptionRepository.save(subscription));
-    }
-
-    public void deleteSubscription(String id) {
-        subscriptionRepository.deleteById(id);
-    }
-
-    public List<SubscriptionResponse> getSubscriptionList() {
-        return subscriptionRepository.findAll().stream().map(subscriptionMapper::toResponse).toList();
+        return subscriptions.map(subscriptionMapper::toResponse);
     }
 
     public SubscriptionResponse getSubscription(String id) {
         return subscriptionMapper.toResponse(
-                subscriptionRepository.findById(id)
-                        .orElseThrow(() -> new AppException(ErrorCode.SUBSCRIPTION_NOT_EXISTED)));
+                subscriptionRepository.findByIdAndIsDeletedFalse(id)
+                        .orElseThrow(() -> new AppException(ErrorCode.SUBSCRIPTION_NOT_FOUND)));
+    }
+
+    @Transactional
+    public SubscriptionResponse createSubscription(SubscriptionRequest request) {
+        Subscription subscription = subscriptionMapper.toEntity(request);
+
+        Account account = accountRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_EXISTED));
+
+        Membership membership = membershipRepository.findByNameAndIsDeletedFalse(request.getMembershipName())
+                .orElseThrow(() -> new AppException(ErrorCode.MEMBERSHIP_NOT_FOUND));
+
+        subscription.setAccount(account);
+        subscription.setMembership(membership);
+
+        subscription.setPaymentStatus(PaymentStatus.COMPLETED);
+
+        return subscriptionMapper.toResponse(subscriptionRepository.save(subscription));
+    }
+
+    @Transactional
+    public SubscriptionResponse updateSubscription(String id, SubscriptionRequest request) {
+        Subscription subscription = subscriptionRepository.findByIdAndIsDeletedFalse(id)
+                .orElseThrow(() -> new AppException(ErrorCode.SUBSCRIPTION_NOT_FOUND));
+
+        subscriptionMapper.update(subscription, request);
+
+        return subscriptionMapper.toResponse(subscriptionRepository.save(subscription));
+    }
+
+    @Transactional
+    public void deleteSubscription(String id) {
+        Subscription subscription = subscriptionRepository.findByIdAndIsDeletedFalse(id)
+                .orElseThrow(() -> new AppException(ErrorCode.SUBSCRIPTION_NOT_FOUND));
+
+        subscription.setDeleted(true);
+
+        subscriptionRepository.save(subscription);
     }
 }

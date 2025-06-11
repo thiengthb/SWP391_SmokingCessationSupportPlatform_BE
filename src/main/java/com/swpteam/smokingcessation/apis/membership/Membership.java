@@ -7,21 +7,22 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.OneToMany;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import org.hibernate.annotations.Where;
 
 import java.util.List;
 
+@Entity
 @Getter
 @Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@Entity
 public class Membership extends BaseEntity {
-    @Column(unique = true, nullable = false)
+
     String name;
 
-    int duration;
+    int durationDays;
     double price;
     String description;
 

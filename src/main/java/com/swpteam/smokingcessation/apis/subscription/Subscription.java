@@ -2,34 +2,35 @@ package com.swpteam.smokingcessation.apis.subscription;
 
 import com.swpteam.smokingcessation.apis.account.Account;
 import com.swpteam.smokingcessation.apis.membership.Membership;
+import com.swpteam.smokingcessation.apis.subscription.enums.PaymentStatus;
+import com.swpteam.smokingcessation.common.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+import org.hibernate.annotations.Where;
 
 import java.time.LocalDate;
 
+@Entity
 @Getter
 @Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@Entity
-public class Subscription {
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private String id;
-
-    private String membershipName;
-    private LocalDate startDate;
-    private LocalDate endDate;
-    private String paymentStatus;
+public class Subscription extends BaseEntity {
 
     @ManyToOne
     @JoinColumn(name = "accountId")
-    private Account account;
+    Account account;
 
     @ManyToOne
     @JoinColumn(name = "membershipId")
-    private Membership membership;
+    Membership membership;
+
+    LocalDate startDate;
+    LocalDate endDate;
+
+    @Enumerated(EnumType.STRING)
+    PaymentStatus paymentStatus;
 }

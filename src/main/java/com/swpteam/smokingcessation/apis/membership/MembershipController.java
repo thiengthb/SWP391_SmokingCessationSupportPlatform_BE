@@ -1,7 +1,6 @@
 package com.swpteam.smokingcessation.apis.membership;
 
-import com.swpteam.smokingcessation.apis.membership.dto.MembershipCreationRequest;
-import com.swpteam.smokingcessation.apis.membership.dto.MembershipUpdateRequest;
+import com.swpteam.smokingcessation.apis.membership.dto.MembershipRequest;
 import com.swpteam.smokingcessation.apis.membership.dto.MembershipResponse;
 import com.swpteam.smokingcessation.common.ApiResponse;
 import com.swpteam.smokingcessation.common.PageableRequest;
@@ -15,30 +14,22 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
+@Slf4j
 @RestController
-@RequestMapping("/api/membership")
+@RequestMapping("/api/memberships")
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-@Slf4j
 public class MembershipController {
-    MemberService memberService;
+
+    MembershipService membershipService;
 
     @GetMapping
     ResponseEntity<ApiResponse<Page<MembershipResponse>>> getMembershipPage(@Valid PageableRequest request) {
         return ResponseEntity.ok(
                 ApiResponse.<Page<MembershipResponse>>builder()
-                        .result(memberService.getMembershipPage(request))
-                        .build()
-        );
-    }
-
-    @GetMapping("/{name}")
-    ResponseEntity<ApiResponse<MembershipResponse>> getMembershipByName(@PathVariable String membershipName) {
-        return ResponseEntity.ok(
-                ApiResponse.<MembershipResponse>builder()
-                        .result(memberService.getMembershipByName(membershipName))
+                        .code(SuccessCode.MEMBERSHIP_GET_ALL.getCode())
+                        .message(SuccessCode.MEMBERSHIP_GET_ALL.getMessage())
+                        .result(membershipService.getMembershipPage(request))
                         .build()
         );
     }
@@ -47,36 +38,38 @@ public class MembershipController {
     ResponseEntity<ApiResponse<MembershipResponse>> getMembershipById(@PathVariable String id) {
         return ResponseEntity.ok(
                 ApiResponse.<MembershipResponse>builder()
-                        .result(memberService.getMembershipById(id))
+                        .code(SuccessCode.MEMBERSHIP_GET_BY_ID.getCode())
+                        .message(SuccessCode.MEMBERSHIP_GET_BY_ID.getMessage())
+                        .result(membershipService.getMembershipById(id))
                         .build()
         );
     }
 
     @PostMapping
-    ResponseEntity<ApiResponse<MembershipResponse>> createMembership(@RequestBody @Valid MembershipCreationRequest request) {
+    ResponseEntity<ApiResponse<MembershipResponse>> createMembership(@RequestBody @Valid MembershipRequest request) {
         return ResponseEntity.ok(
                 ApiResponse.<MembershipResponse>builder()
                         .code(SuccessCode.MEMBERSHIP_CREATED.getCode())
                         .message(SuccessCode.MEMBERSHIP_CREATED.getMessage())
-                        .result(memberService.createMembership(request))
+                        .result(membershipService.createMembership(request))
                         .build()
         );
     }
 
     @PutMapping("/{id}")
-    ResponseEntity<ApiResponse<MembershipResponse>> updateMembership(@PathVariable String id, @RequestBody @Valid MembershipUpdateRequest request) {
+    ResponseEntity<ApiResponse<MembershipResponse>> updateMembership(@PathVariable String id, @RequestBody @Valid MembershipRequest request) {
         return ResponseEntity.ok(
                 ApiResponse.<MembershipResponse>builder()
                         .code(SuccessCode.MEMBERSHIP_UPDATED.getCode())
                         .message(SuccessCode.MEMBERSHIP_UPDATED.getMessage())
-                        .result(memberService.updateMembership(id, request))
+                        .result(membershipService.updateMembership(id, request))
                         .build()
         );
     }
 
     @DeleteMapping("/{id}")
     ResponseEntity<ApiResponse<String>> deleteMembership(@PathVariable String id) {
-        memberService.deleteMembership(id);
+        membershipService.softDeleteMembershipById(id);
         return ResponseEntity.ok(
                 ApiResponse.<String>builder()
                         .code(SuccessCode.MEMBERSHIP_DELETED.getCode())

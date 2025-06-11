@@ -9,8 +9,12 @@ import java.util.Optional;
 
 @Repository
 public interface MembershipRepository extends JpaRepository<Membership, String> {
-    boolean existsByName(String name);
-    Optional<Membership> findByName(String name);
 
-    Page<Membership> findAll(Pageable pageable);
+    Optional<Membership> findByIdAndIsDeletedFalse(String id);
+
+    Optional<Membership> findByNameAndIsDeletedFalse(String name);
+
+    Page<Membership> findAllByIsDeletedFalse(Pageable pageable);
+
+    boolean existsByNameAndIsDeletedFalse(String name);
 }

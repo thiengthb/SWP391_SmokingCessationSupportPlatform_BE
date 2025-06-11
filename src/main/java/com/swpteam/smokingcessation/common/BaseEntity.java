@@ -2,10 +2,9 @@ package com.swpteam.smokingcessation.common;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
+import org.hibernate.proxy.HibernateProxy;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedBy;
@@ -14,6 +13,7 @@ import org.springframework.data.annotation.LastModifiedDate;
 import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.Objects;
 
 @Data
 @SuperBuilder
@@ -47,6 +47,8 @@ public abstract class BaseEntity implements Serializable {
     @JsonFormat(pattern = DATE_TIME_FORMAT_MILLISECOND)
     private LocalDateTime updatedAt;
 
+    boolean isDeleted;
+
     @PrePersist
     protected void onCreate() {
         this.createdAt = LocalDateTime.now();
@@ -57,5 +59,4 @@ public abstract class BaseEntity implements Serializable {
     protected void onUpdate() {
         this.updatedAt = LocalDateTime.now();
     }
-
 }

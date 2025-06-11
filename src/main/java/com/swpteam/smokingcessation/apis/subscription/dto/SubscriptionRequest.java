@@ -13,6 +13,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class SubscriptionRequest {
+
     @Email(message = "INVALID_EMAIL_FORMAT")
     @NotBlank(message = "EMAIL_REQUIRED")
     String email;

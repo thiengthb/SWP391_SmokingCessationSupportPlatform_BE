@@ -23,8 +23,8 @@ public class StripeService {
     MembershipRepository membershipRepository;
 
     public StripeResponse checkoutSubscription(StripeSubscriptionRequest request) {
-        Membership membership = membershipRepository.findByName(request.getName())
-                .orElseThrow(() -> new AppException(ErrorCode.MEMBERSHIP_NOT_EXISTED));
+        Membership membership = membershipRepository.findByNameAndIsDeletedFalse(request.getName())
+                .orElseThrow(() -> new AppException(ErrorCode.MEMBERSHIP_NOT_FOUND));
 
         SessionCreateParams.LineItem.PriceData.ProductData productData =
                 SessionCreateParams.LineItem.PriceData.ProductData.builder()

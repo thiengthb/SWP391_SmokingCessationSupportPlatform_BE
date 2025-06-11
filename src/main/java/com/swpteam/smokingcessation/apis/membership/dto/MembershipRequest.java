@@ -12,20 +12,19 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class MembershipUpdateRequest {
-    @NotNull(message = "ID_REQUIRED")
-    @NotBlank(message = "ID_NOT_BLANK")
-    String id;
+public class MembershipRequest {
 
     @NotBlank(message = "MEMBERSHIP_NAME_NOT_EMPTY")
     @Size(min = 1, message = "MEMBERSHIP_MIN_SIZE")
     String name;
 
+    @NotNull(message = "DURATION_REQUIRED")
     @Positive(message = "DURATION_NEGATIVE")
-    int duration;
+    Integer durationDays;
 
+    @NotNull(message = "PRICE_REQUIRED")
     @Positive(message = "PRICE_NEGATIVE")
-    double price;
+    Double price;
 
     String description;
 }
