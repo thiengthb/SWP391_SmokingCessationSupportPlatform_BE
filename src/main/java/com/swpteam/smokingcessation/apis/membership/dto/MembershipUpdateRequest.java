@@ -1,26 +1,28 @@
 package com.swpteam.smokingcessation.apis.membership.dto;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import com.swpteam.smokingcessation.apis.currency.Currency;
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-
-import java.time.LocalDateTime;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@JsonInclude(JsonInclude.Include.NON_NULL)
-public class MembershipResponse {
+public class MembershipUpdateRequest {
 
-    String id;
+    @Size(min = 1, message = "MEMBERSHIP_MIN_SIZE")
     String name;
-    int durationDays;
-    double price;
+
+    @Positive(message = "DURATION_NEGATIVE")
+    Integer durationDays;
+
+    @Positive(message = "PRICE_NEGATIVE")
+    Double price;
+
     Currency currency;
+
     String description;
-    LocalDateTime createdAt;
-    LocalDateTime updatedAt;
 }
