@@ -2,6 +2,8 @@ package com.swpteam.smokingcessation.apis.subscription;
 
 import com.swpteam.smokingcessation.apis.account.Account;
 import com.swpteam.smokingcessation.apis.account.AccountRepository;
+import com.swpteam.smokingcessation.apis.health.Health;
+import com.swpteam.smokingcessation.apis.health.dto.HealthResponse;
 import com.swpteam.smokingcessation.apis.membership.Membership;
 import com.swpteam.smokingcessation.apis.membership.MembershipRepository;
 import com.swpteam.smokingcessation.apis.subscription.dto.SubscriptionRequest;
@@ -42,10 +44,24 @@ public class SubscriptionService {
         return subscriptions.map(subscriptionMapper::toResponse);
     }
 
-    public SubscriptionResponse getSubscription(String id) {
+    public SubscriptionResponse getSubscriptionById(String id) {
         return subscriptionMapper.toResponse(
                 subscriptionRepository.findByIdAndIsDeletedFalse(id)
                         .orElseThrow(() -> new AppException(ErrorCode.SUBSCRIPTION_NOT_FOUND)));
+    }
+
+    public Page<SubscriptionResponse> getSubscriptionPageByAccountId(String accountId, PageableRequest request) {
+        if (!ValidationUtil.isFieldExist(Subscription.class, request.getSortBy())) {
+            throw new AppException(ErrorCode.INVALID_SORT_FIELD);
+        }
+
+        accountRepository.findById(accountId)
+                .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_EXISTED));
+
+        Pageable pageable = PageableRequest.getPageable(request);
+        Page<Subscription> subscriptions = subscriptionRepository.findByAccountIdAndIsDeletedFalse(accountId, pageable);
+
+        return subscriptions.map(subscriptionMapper::toResponse);
     }
 
     @Transactional

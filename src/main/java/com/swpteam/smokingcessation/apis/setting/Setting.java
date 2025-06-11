@@ -34,8 +34,9 @@ public class Setting {
     @JoinColumn(name = "account_id")
     private Account account;
 
-    public Setting getDefaultSetting() {
+    public static Setting getDefaultSetting(Account account) {
         return Setting.builder()
+                .account(account)
                 .theme(Theme.LIGHT)
                 .language(Language.EN)
                 .motivationPerDay(2)
