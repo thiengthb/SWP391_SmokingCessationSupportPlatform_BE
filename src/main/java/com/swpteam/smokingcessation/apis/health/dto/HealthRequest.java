@@ -32,6 +32,6 @@ public class HealthRequest {
     @Size(max = 255, message = "REASON_TO_QUIT_TOO_LONG")
     String reasonToQuit;
 
-    @Min(value = 100, message = "SMOKE_YEAR_INVALID")
+    @Max(value = 100, message = "SMOKE_YEAR_INVALID")
     int smokeYear;
 }

@@ -24,7 +24,15 @@ public enum SuccessCode {
     SUBSCRIPTION_GET_ALL(1003, "Success returning a page of subscription"),
     SUBSCRIPTION_GET_BY_ID(1004, "Success returning a subscription with given id"),
 
-    ;
+    // Health
+    HEALTH_CREATED(2000, "Health record has been created"),
+    HEALTH_UPDATED(2001, "Health record has been updated"),
+    HEALTH_DELETED(2002, "Health record has been deleted"),
+
+    // Record
+    RECORD_CREATED(3000, "Record has been created"),
+    RECORD_UPDATED(3001, "Record has been updated"),
+    RECORD_DELETED(3002, "Record has been deleted");
 
     int code;
     String message;

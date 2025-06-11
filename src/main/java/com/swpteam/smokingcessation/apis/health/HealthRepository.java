@@ -1,20 +1,26 @@
 package com.swpteam.smokingcessation.apis.health;
 
+import com.swpteam.smokingcessation.apis.account.Account;
+import com.swpteam.smokingcessation.apis.membership.Membership;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
-import java.util.UUID;
+import java.util.Optional;
 
 @Repository
-public interface HealthRepository extends JpaRepository<Health, UUID> {
+public interface HealthRepository extends JpaRepository<Health, String> {
 
-    List<Health> findByAccount_Email(String email);
+    Page<Health> findByAccountIdAndIsDeletedFalse(String accountId, Pageable pageable);
 
-    boolean existsByIdAndAccount_Email(UUID healthId, String email);
+    boolean existsByAccountIdAndIsDeletedFalse(String accountId);
 
-    @Query("SELECT COUNT(a) > 0 FROM Account a WHERE a.id = :accountId AND a.email = :email AND a.isDeleted = false")
-    boolean existsAccountByIdAndEmail(@Param("accountId") String accountId, @Param("email") String email);
+    Optional<Health> findFirstByAccountIdAndIsDeletedFalse(String accountId);
+
+    Page<Health> findAllByIsDeletedFalse(Pageable pageable);
+
+    Optional<Health> findByIdAndIsDeletedFalse(String id);
+
+    String account(Account account);
 }

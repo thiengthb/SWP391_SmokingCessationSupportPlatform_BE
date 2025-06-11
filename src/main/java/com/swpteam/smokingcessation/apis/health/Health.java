@@ -1,23 +1,22 @@
 package com.swpteam.smokingcessation.apis.health;
 
 import com.swpteam.smokingcessation.apis.account.Account;
+import com.swpteam.smokingcessation.common.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.util.UUID;
-
 @Entity
-@Table(name = "health")
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class Health {
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    UUID id;
+public class Health extends BaseEntity {
+
+    @ManyToOne
+    @JoinColumn(name = "account_id", nullable = false)
+    Account account;
 
     int cigarettesPerDay;
     int cigarettesPerPack;
@@ -25,8 +24,4 @@ public class Health {
     double packPrice;
     String reasonToQuit;
     int smokeYear;
-
-    @ManyToOne
-    @JoinColumn(name = "account_id", nullable = false)
-    Account account;
 }

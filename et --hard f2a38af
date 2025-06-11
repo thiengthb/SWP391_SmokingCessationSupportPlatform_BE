@@ -1,0 +1,33 @@
+[33mf2a38af[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mfeature/tracking[m[33m, [m[1;31morigin/feature/tracking[m[33m)[m fix: merge
+[33mcbb45db[m chore: refactor and fix after rebase
+[33mccc6352[m fix(health): restrict packPrice to max 500 with proper validation message
+[33md28a000[m feat(health): add CRUD APIs for Record entity
+[33m6a33f2a[m feat(health): add CRUD APIs for Health entity
+[33m51a262e[m[33m ([m[1;31morigin/develop[m[33m, [m[1;32mdevelop[m[33m)[m feat: add pagination, sort and test in membership feature
+[33me286c61[m chore: refatoring to add success code and do it in membership feature
+[33m110cd67[m feat: add base entity and test on membership feature
+[33m93e2a7e[m chore: refactor folder structure
+[33medf2369[m build: add thymeleaf dependency
+[33ma775bcd[m fix(health): restrict packPrice to max 500 with proper validation message
+[33m1c420e1[m feat(health): add CRUD APIs for Record entity
+[33m80c853a[m feat(health): add CRUD APIs for Health entity
+[33m7118e6c[m Merge pull request #6 from thiengthb/feature/membership
+[33m8f9051f[m[33m ([m[1;31morigin/feature/membership[m[33m)[m Merge branch 'develop' into feature/membership
+[33m895be59[m fix: fix merge
+[33m6b90bf8[m feat: adding account setting
+[33m3b51007[m chore: add subscription entity and removing stripe webhook
+[33mabc18f5[m Merge pull request #4 from thiengthb/feature/message
+[33m783c513[m[33m ([m[1;31morigin/feature/message[m[33m)[m Merge branch 'develop' into feature/message
+[33m215eeb6[m feat(message): add mailsender
+[33mfb52140[m feat(message): add message CRUD
+[33m4512fb9[m refactor: handle error code, and error response
+[33m3998616[m feat: add stripe subscription
+[33m82fedcc[m feat: add stripe payment
+[33m357d8b1[m feat: make membership CRUD
+[33ma870c5f[m Merge pull request #2 from thiengthb/feature/account-authen
+[33m3f8ea09[m[33m ([m[1;31morigin/feature/account-authen[m[33m)[m feat(account): add CRUD for account entity, add change password feature. feat(auth): add Google oauth2, JWT authorization, token refresh, and registration. feat(security): add initial SecurityConfig and JWTFilter feat(core): add global exception handler, standardized API response wrapper and Swagger config
+[33mee8e177[m feat: add stripe payment
+[33m39ddc74[m feat: make membership CRUD
+[33m30b615a[m feat(core): add global exception handler and standardized API response wrapper
+[33m65b27b5[m[33m ([m[1;32mmain[m[33m)[m feat(security): add initial SecurityConfig with open access for all endpoints
+[33m38d9fd0[m build: initialize springboot project

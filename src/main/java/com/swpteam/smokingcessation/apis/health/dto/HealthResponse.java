@@ -9,12 +9,12 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 public class HealthResponse {
-    private UUID id;
-    private String accountId;
-    private int cigarettesPerDay;
-    private int cigarettesPerPack;
-    private int fndLevel;
-    private double packPrice;
-    private String reasonToQuit;
-    private int smokeYear;
+     String id;
+     String accountId;
+     int cigarettesPerDay;
+     int cigarettesPerPack;
+     int fndLevel;
+     double packPrice;
+     String reasonToQuit;
+     int smokeYear;
 }

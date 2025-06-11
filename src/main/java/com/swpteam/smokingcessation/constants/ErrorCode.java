@@ -71,7 +71,7 @@ public enum ErrorCode {
     MOTIVATION_MAX(7005, "Motivation per day must be at most 100", HttpStatus.BAD_REQUEST),
     DEADLINE_REQUIRED(7006, "Report deadline is required", HttpStatus.BAD_REQUEST),
 
-    //Health
+    // Health
     HEALTH_RECORD_NOT_FOUND(4000, "Health record does not exist", HttpStatus.NOT_FOUND),
     CIGARETTES_PER_DAY_INVALID(4002, "Cigarettes per day must be non-negative", HttpStatus.BAD_REQUEST),
     CIGARETTES_PER_PACK_INVALID(4003, "Cigarettes per pack must be non-negative", HttpStatus.BAD_REQUEST),
@@ -84,7 +84,7 @@ public enum ErrorCode {
     ACCESS_DENIED(4001, "Access denied", HttpStatus.FORBIDDEN),
     PACK_PRICE_TOO_HIGH(4010, "Pack price must not exceed 500.0", HttpStatus.BAD_REQUEST),
 
-    //record
+    // Record
     RECORD_NOT_FOUND(5000, "Record does not exist", HttpStatus.NOT_FOUND),
     RECORD_ACCOUNT_ID_REQUIRED(5001, "Account ID is required", HttpStatus.BAD_REQUEST),
     RECORD_CIGARETTES_SMOKED_INVALID(5002, "Cigarettes smoked must be non-negative", HttpStatus.BAD_REQUEST),
@@ -95,7 +95,6 @@ public enum ErrorCode {
     RECORD_UPDATE_FAILED(5007, "Failed to update record", HttpStatus.INTERNAL_SERVER_ERROR),
     RECORD_DELETE_FAILED(5008, "Failed to delete record", HttpStatus.INTERNAL_SERVER_ERROR);
 
-    ;
 
     int code;
     String message;
