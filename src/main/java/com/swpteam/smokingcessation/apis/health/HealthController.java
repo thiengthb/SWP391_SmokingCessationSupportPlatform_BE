@@ -88,7 +88,6 @@ public class HealthController {
         }
 
         healthService.softDeleteHealthById(id);
-
         return ResponseEntity.ok(
                 ApiResponse.<String>builder()
                         .code(SuccessCode.HEALTH_DELETED.getCode())
