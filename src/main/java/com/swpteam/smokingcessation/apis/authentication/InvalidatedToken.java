@@ -5,7 +5,7 @@ import jakarta.persistence.Id;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.time.LocalDateTime;
+import java.util.Date;
 
 @Getter
 @Setter
@@ -18,5 +18,5 @@ public class InvalidatedToken {
     @Id
     String id;
 
-    LocalDateTime expiryTime;
+    Date expiryTime;
 }

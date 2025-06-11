@@ -1,8 +1,8 @@
 package com.swpteam.smokingcessation.apis.account;
 
-import com.swpteam.smokingcessation.apis.account.dto.AccountCreateRequest;
+import com.swpteam.smokingcessation.apis.account.dto.AccountRequest;
 import com.swpteam.smokingcessation.apis.account.dto.AccountResponse;
-import com.swpteam.smokingcessation.apis.account.dto.AccountUpdateRequest;
+import com.swpteam.smokingcessation.apis.authentication.dto.request.RegisterRequest;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;
 
@@ -10,9 +10,11 @@ import org.mapstruct.MappingTarget;
 @Mapper(componentModel = "spring")
 public interface AccountMapper {
 
-    Account toEntity(AccountCreateRequest request);
+    Account toEntity(AccountRequest request);
+
+    Account toEntityFromRegister(RegisterRequest request);
 
     AccountResponse toResponse(Account entity);
 
-    void updateAccount(@MappingTarget Account entity, AccountUpdateRequest request);
+    void update(@MappingTarget Account entity, AccountRequest request);
 }

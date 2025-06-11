@@ -48,12 +48,14 @@ public enum ErrorCode {
     WRONG_PASSWORD(2003, "Wrong password for email", HttpStatus.BAD_REQUEST),
     INVALID_SIGNATURE(2004, "Token signature is invalid", HttpStatus.BAD_REQUEST),
     EMAIL_SEND_FAILED(2005, "Failed to send email. Please try again later.", HttpStatus.INTERNAL_SERVER_ERROR),
+    USED_TOKEN(2006, "Token has expired or has been used", HttpStatus.BAD_REQUEST),
 
     // Account
     ACCOUNT_NOT_EXISTED(3000, "Account does not exist", HttpStatus.BAD_REQUEST),
     ACCOUNT_EXISTED(3001, "Account already existed", HttpStatus.BAD_REQUEST),
     ACCOUNT_DELETED(3002, "Account has been deleted", HttpStatus.BAD_REQUEST),
-    PHONE_NUMBER_EXISTED(3003, "Phone number is registed to another account", HttpStatus.BAD_REQUEST),
+    PHONE_NUMBER_EXISTED(3003, "Phone number is registered to another account", HttpStatus.BAD_REQUEST),
+    IDENTICAL_PASSWORD(3004, "The new password must be different from the old password", HttpStatus.BAD_REQUEST),
 
     // Membership
     MEMBERSHIP_NOT_FOUND(4000, "Membership does not exist or have been deleted", HttpStatus.BAD_REQUEST),

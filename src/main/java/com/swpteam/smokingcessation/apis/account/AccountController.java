@@ -1,8 +1,7 @@
 package com.swpteam.smokingcessation.apis.account;
 
-import com.swpteam.smokingcessation.apis.account.dto.AccountCreateRequest;
+import com.swpteam.smokingcessation.apis.account.dto.AccountRequest;
 import com.swpteam.smokingcessation.apis.account.dto.AccountResponse;
-import com.swpteam.smokingcessation.apis.account.dto.AccountUpdateRequest;
 import com.swpteam.smokingcessation.apis.account.dto.ChangePasswordRequest;
 import com.swpteam.smokingcessation.common.ApiResponse;
 import com.swpteam.smokingcessation.common.PageableRequest;
@@ -25,7 +24,7 @@ class AccountController {
     AccountService accountService;
 
     @PostMapping
-    ResponseEntity<ApiResponse<AccountResponse>> createAccount(@RequestBody @Valid AccountCreateRequest request) {
+    ResponseEntity<ApiResponse<AccountResponse>> createAccount(@RequestBody @Valid AccountRequest request) {
         var result = accountService.createAccount(request);
 
         return ResponseEntity.ok(
@@ -53,17 +52,17 @@ class AccountController {
     }
 
     @PutMapping("/{id}")
-    ResponseEntity<ApiResponse<AccountResponse>> updateAccount(@PathVariable("id") String id, @RequestBody AccountUpdateRequest request) {
+    ResponseEntity<ApiResponse<AccountResponse>> updateAccount(@PathVariable("id") String id, @RequestBody AccountRequest request) {
         return ResponseEntity.ok(
                 ApiResponse.<AccountResponse>builder()
                         .code(SuccessCode.ACCOUNT_UPDATED.getCode())
                         .message(SuccessCode.ACCOUNT_UPDATED.getMessage())
-                        .result(accountService.updateAccount(request, id))
+                        .result(accountService.updateAccount(id, request))
                         .build());
     }
 
     @DeleteMapping("/{id}")
-    ResponseEntity<ApiResponse> deleteAccount(@PathVariable("id") String id) {
+    ResponseEntity<ApiResponse<String>> deleteAccount(@PathVariable("id") String id) {
         accountService.deleteAccount(id);
 
         return ResponseEntity.ok(
@@ -91,5 +90,8 @@ class AccountController {
                         .result(accountService.getAccountByEmail(email))
                         .build());
     }
+
+    //@PostMapping("/ban/{id}")
+    //ResponseEntity<ApiResponse<AccountResponse>> banAccount() {
 
 }
