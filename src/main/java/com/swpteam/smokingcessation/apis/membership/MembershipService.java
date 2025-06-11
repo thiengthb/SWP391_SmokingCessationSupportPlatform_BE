@@ -79,12 +79,9 @@ public class MembershipService {
                 .orElseThrow(() -> new AppException(ErrorCode.MEMBERSHIP_NOT_FOUND));
 
         membership.setDeleted(true);
-        System.out.println("run1");
+
         List<Subscription> subscriptions = membership.getSubscriptions();
-        subscriptions.forEach(subscription -> {
-            subscription.setDeleted(true);
-            System.out.println("Run");
-        });
+        subscriptions.forEach(subscription -> subscription.setDeleted(true));
 
         subscriptionRepository.saveAll(subscriptions);
         membershipRepository.save(membership);
