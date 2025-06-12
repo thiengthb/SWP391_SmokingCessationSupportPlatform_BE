@@ -2,6 +2,7 @@ package com.swpteam.smokingcessation.apis.account;
 
 import com.swpteam.smokingcessation.apis.account.dto.AccountRequest;
 import com.swpteam.smokingcessation.apis.account.dto.AccountResponse;
+import com.swpteam.smokingcessation.apis.account.dto.AccountUpdateRequest;
 import com.swpteam.smokingcessation.apis.account.dto.ChangePasswordRequest;
 import com.swpteam.smokingcessation.common.ApiResponse;
 import com.swpteam.smokingcessation.common.PageableRequest;
@@ -50,17 +51,12 @@ class AccountController {
     }
 
     @PutMapping("/{id}")
-    ResponseEntity<ApiResponse<AccountResponse>> updateAccount(@PathVariable("id") String id, @RequestBody AccountRequest request, @AuthenticationPrincipal Jwt jwt) {
-        AccountResponse accountResponse =
-                jwt.getClaimAsString("scope").equals("ROLE_ADMIN") ?
-                        accountService.updateAccountRole(id, request)
-                        : accountService.updateAccount(id, request);
-
+    ResponseEntity<ApiResponse<AccountResponse>> updateAccount(@PathVariable("id") String id, @RequestBody AccountUpdateRequest request, @AuthenticationPrincipal Jwt jwt) {
         return ResponseEntity.ok(
                 ApiResponse.<AccountResponse>builder()
                         .code(SuccessCode.ACCOUNT_UPDATED.getCode())
                         .message(SuccessCode.ACCOUNT_UPDATED.getMessage())
-                        .result(accountResponse)
+                        .result(accountService.updateAccount(id, request, jwt))
                         .build());
     }
 
@@ -87,9 +83,6 @@ class AccountController {
 
     @GetMapping("/me")
     ResponseEntity<ApiResponse<AccountResponse>> getMe(@AuthenticationPrincipal Jwt jwt) {
-        if (jwt == null) {
-            throw new SecurityException("No user is logged in or token is invalid");
-        }
         String email = jwt.getClaimAsString("sub");
         return ResponseEntity.ok(
                 ApiResponse.<AccountResponse>builder()

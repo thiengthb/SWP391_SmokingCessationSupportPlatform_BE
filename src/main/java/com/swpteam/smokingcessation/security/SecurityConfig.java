@@ -19,7 +19,7 @@ import org.springframework.security.web.SecurityFilterChain;
 public class SecurityConfig {
 
     private final String[] PUBLIC_ENDPOINTS = {
-            "/api/auth/**", "/swagger-ui/**", "/v3/api-docs/**"
+            "/api/auth/login", "/api/auth/register", "/api/auth/google/login", "/swagger-ui/**", "/v3/api-docs/**"
     };
 
     @Autowired
@@ -29,7 +29,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.authorizeHttpRequests(request -> request
                 .requestMatchers(PUBLIC_ENDPOINTS).permitAll()
-                .anyRequest().permitAll()
+                .anyRequest().authenticated()
         );
 
         httpSecurity.oauth2ResourceServer(oauth2 -> oauth2

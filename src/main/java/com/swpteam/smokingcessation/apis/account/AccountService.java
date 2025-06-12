@@ -2,6 +2,7 @@ package com.swpteam.smokingcessation.apis.account;
 
 import com.swpteam.smokingcessation.apis.account.dto.AccountRequest;
 import com.swpteam.smokingcessation.apis.account.dto.AccountResponse;
+import com.swpteam.smokingcessation.apis.account.dto.AccountUpdateRequest;
 import com.swpteam.smokingcessation.apis.account.dto.ChangePasswordRequest;
 import com.swpteam.smokingcessation.apis.account.enums.AccountStatus;
 import com.swpteam.smokingcessation.apis.account.enums.Role;
@@ -98,12 +99,21 @@ public class AccountService {
     }
 
 
+    public AccountResponse updateAccount(String id, AccountUpdateRequest request, Jwt jwt) {
+        return jwt.getClaimAsString("scope").equals("ROLE_ADMIN") ?
+                updateAccountRole(id, request) : updateAccountWithoutRole(id, request);
+    }
+
     @Transactional
-    public AccountResponse updateAccount(String id, AccountRequest request) {
+    private AccountResponse updateAccountWithoutRole(String id, AccountUpdateRequest request) {
         Account account = accountRepository.findByIdAndIsDeletedFalse(id)
                 .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FOUND));
 
         accountMapper.updateWithoutRole(account, request);
+        if(request.getPassword() != null){
+            PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
+            account.setPassword(passwordEncoder.encode(request.getPassword()));
+        }
         accountRepository.save(account);
 
         return accountMapper.toResponse(account);
@@ -111,10 +121,14 @@ public class AccountService {
 
     @PreAuthorize("hasRole('ADMIN')")
     @Transactional
-    public AccountResponse updateAccountRole(String id, AccountRequest request) {
+    private AccountResponse updateAccountRole(String id, AccountUpdateRequest request) {
         Account account = findAccountById(id);
 
         accountMapper.update(account, request);
+        if(request.getPassword() != null){
+            PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
+            account.setPassword(passwordEncoder.encode(request.getPassword()));
+        }
         accountRepository.save(account);
 
         return accountMapper.toResponse(account);
@@ -123,7 +137,6 @@ public class AccountService {
     @PreAuthorize("hasRole('ADMIN')")
     public void deleteAccount(String id) {
         Account account = findAccountById(id);
-
         account.setDeleted(true);
         accountRepository.save(account);
     }

@@ -20,13 +20,27 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
             HttpServletRequest request, HttpServletResponse response, AuthenticationException authException)
             throws IOException, ServletException {
         ErrorCode errorCode = ErrorCode.UNAUTHENTICATED;
+        String message = errorCode.getMessage();
+
+        String causeMsg = null;
+        if (authException.getCause() != null && authException.getCause().getMessage() != null) {
+            causeMsg = authException.getCause().getMessage();
+        } else if (authException.getMessage() != null) {
+            causeMsg = authException.getMessage();
+        }
+
+        // check for expired tokens
+        if (causeMsg != null && causeMsg.toLowerCase().contains("expired")) {
+            errorCode = ErrorCode.EXPIRED_TOKEN;
+            message = errorCode.getMessage();
+        }
 
         response.setStatus(errorCode.getHttpCode().value());
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
 
         ApiResponse<?> apiResponse = ApiResponse.builder()
                 .code(errorCode.getCode())
-                .message(errorCode.getMessage())
+                .message(message)
                 .build();
 
         ObjectMapper objectMapper = new ObjectMapper();
