@@ -1,6 +1,6 @@
 package com.swpteam.smokingcessation.exception;
 
-import com.swpteam.smokingcessation.constants.ErrorCode;
+import com.swpteam.smokingcessation.constant.ErrorCode;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;

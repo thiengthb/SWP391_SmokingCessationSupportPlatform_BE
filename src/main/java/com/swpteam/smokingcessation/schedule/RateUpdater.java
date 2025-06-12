@@ -1,6 +1,6 @@
 package com.swpteam.smokingcessation.schedule;
 
-import com.swpteam.smokingcessation.apis.currency.CurrencyRateService;
+import com.swpteam.smokingcessation.feature.integration.currency.CurrencyRateService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;

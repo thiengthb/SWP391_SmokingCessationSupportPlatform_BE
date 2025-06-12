@@ -4,7 +4,7 @@ package com.swpteam.smokingcessation.exception;
 import com.nimbusds.jose.JOSEException;
 import com.nimbusds.oauth2.sdk.ParseException;
 import com.swpteam.smokingcessation.common.ApiResponse;
-import com.swpteam.smokingcessation.constants.ErrorCode;
+import com.swpteam.smokingcessation.constant.ErrorCode;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.ConstraintViolation;
 import lombok.extern.slf4j.Slf4j;

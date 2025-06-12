@@ -1,6 +1,6 @@
 package com.swpteam.smokingcessation.validation;
 
-import com.swpteam.smokingcessation.apis.account.dto.ChangePasswordRequest;
+import com.swpteam.smokingcessation.domain.dto.account.ChangePasswordRequest;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 
