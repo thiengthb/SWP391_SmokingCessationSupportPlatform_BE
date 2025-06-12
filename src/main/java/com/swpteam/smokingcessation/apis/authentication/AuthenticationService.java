@@ -108,7 +108,7 @@ public class AuthenticationService {
     }
 
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
-        var account = accountRepository.findByEmail(request.getEmail()).orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_EXISTED));
+        var account = accountRepository.findByEmailAndIsDeletedFalse(request.getEmail()).orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FOUND));
 
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
 
@@ -190,8 +190,8 @@ public class AuthenticationService {
         return stringJoiner.toString();
     }
 
-    public AuthenticationResponse refreshToken(TokenRequest request) throws ParseException, JOSEException {
-        var signedJWT = verifyToken(request.getToken(), true);
+    public AuthenticationResponse refreshToken(String token) throws ParseException, JOSEException {
+        var signedJWT = verifyToken(token, true);
 
         var jit = signedJWT.getJWTClaimsSet().getJWTID();
         Date expiryTime = signedJWT.getJWTClaimsSet().getExpirationTime();
@@ -203,12 +203,12 @@ public class AuthenticationService {
 
         var email = signedJWT.getJWTClaimsSet().getSubject();
 
-        Account account = accountRepository.findByEmail(email).orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_EXISTED));
+        Account account = accountRepository.findByEmailAndIsDeletedFalse(email).orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FOUND));
 
-        var token = generateAccessToken(account);
+        var newToken = generateAccessToken(account);
 
         return AuthenticationResponse.builder()
-                .accessToken(token)
+                .accessToken(newToken)
                 .authenticated(true)
                 .build();
     }
@@ -223,14 +223,8 @@ public class AuthenticationService {
         account.setRole(Role.MEMBER);
         account.setStatus(AccountStatus.ACTIVE);
 
-        Setting setting = new Setting().getDefaultSetting();
-        setting.setAccount(account);
-
-        Member member = new Member().getDefaultMember();
-        member.setAccount(account);
-
-        settingRepository.save(setting);
-        memberRepository.save(member);
+        settingRepository.save(Setting.getDefaultSetting(account));
+        memberRepository.save(Member.getDefaultMember(account));
 
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
 
@@ -276,7 +270,7 @@ public class AuthenticationService {
     }
 
     public void sendResetPasswordEmail(String email) {
-        Account account = accountRepository.findByEmail(email).orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_EXISTED));
+        Account account = accountRepository.findByEmailAndIsDeletedFalse(email).orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FOUND));
 
         //generate reset token
         String token = generateResetToken(account);
@@ -301,7 +295,7 @@ public class AuthenticationService {
                 throw new AppException(ErrorCode.INVALID_RESET_TOKEN);
             }
             if (jwtClaimsSet.getExpirationTime().before(new Date()) || invalidatedTokenRepository.existsById(jwtClaimsSet.getJWTID())) {
-                throw new AppException(ErrorCode.TOKEN_EXPIRED);
+                throw new AppException(ErrorCode.EXPIRED_TOKEN);
             }
             emailFromToken = jwtClaimsSet.getSubject();
             jwtId = jwtClaimsSet.getJWTID();
@@ -309,7 +303,7 @@ public class AuthenticationService {
             throw new AppException(ErrorCode.INVALID_RESET_TOKEN);
         }
 
-        Account account = accountRepository.findByEmail(emailFromToken).orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_EXISTED));
+        Account account = accountRepository.findByEmailAndIsDeletedFalse(emailFromToken).orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FOUND));
 
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
 
@@ -326,8 +320,8 @@ public class AuthenticationService {
         }
     }
 
-    public void logout(TokenRequest request) throws ParseException, JOSEException {
-        SignedJWT signedJWT = verifyToken(request.getToken(), true);
+    public void logout(String token) throws ParseException, JOSEException {
+        SignedJWT signedJWT = verifyToken(token, true);
 
         String jwtId = signedJWT.getJWTClaimsSet().getJWTID();
         Date expiryTime = signedJWT.getJWTClaimsSet().getExpirationTime();

@@ -50,9 +50,10 @@ public enum ErrorCode {
     EMAIL_SEND_FAILED(2005, "Failed to send email. Please try again later.", HttpStatus.INTERNAL_SERVER_ERROR),
     USED_TOKEN(2006, "Token has expired or has been used", HttpStatus.BAD_REQUEST),
     SELF_BAN(2007, "You cannot ban yourself", HttpStatus.BAD_REQUEST),
+    FORBIDDEN(403, "You do not have permission to access this resource", HttpStatus.FORBIDDEN),
 
     // Account
-    ACCOUNT_NOT_EXISTED(3000, "Account does not exist", HttpStatus.BAD_REQUEST),
+    ACCOUNT_NOT_FOUND(3000, "Account does not exist", HttpStatus.BAD_REQUEST),
     ACCOUNT_EXISTED(3001, "Account already existed", HttpStatus.BAD_REQUEST),
     ACCOUNT_DELETED(3002, "Account has been deleted", HttpStatus.BAD_REQUEST),
     PHONE_NUMBER_EXISTED(3003, "Phone number is registered to another account", HttpStatus.BAD_REQUEST),
@@ -90,10 +91,10 @@ public enum ErrorCode {
 
     //Member
     MEMBER_EXISTED(8000, "Member fields already exist", HttpStatus.BAD_REQUEST),
-    MEMBER_NOT_EXISTED(8001, "Member doesn't exist", HttpStatus.BAD_REQUEST),
+    MEMBER_NOT_FOUND(8001, "Member doesn't exist", HttpStatus.BAD_REQUEST),
     // Message
     MESSAGE_NOT_FOUND(8001, "Message does not exist or have been deleted", HttpStatus.BAD_REQUEST),
-    MESSAGE_CONTENT_REQUIRED(8002,"Message content is required",HttpStatus.BAD_REQUEST),
+    MESSAGE_CONTENT_REQUIRED(8002, "Message content is required", HttpStatus.BAD_REQUEST),
 
     // Health
     HEALTH_RECORD_NOT_FOUND(4000, "Health record does not exist", HttpStatus.NOT_FOUND),
@@ -108,13 +109,17 @@ public enum ErrorCode {
     ACCESS_DENIED(4001, "Access denied", HttpStatus.FORBIDDEN),
     PACK_PRICE_TOO_HIGH(4010, "Pack price must not exceed 500.0", HttpStatus.BAD_REQUEST),
 
+    // Record
+    RECORD_NOT_FOUND(5000, "Record does not exist", HttpStatus.NOT_FOUND),
+    CIGARETTES_SMOKED_INVALID(5002, "Cigarettes smoked must be non-negative", HttpStatus.BAD_REQUEST),
+    RECORD_DATE_REQUIRED(5003, "Date is required", HttpStatus.BAD_REQUEST),
+    RECORD_DATE_INVALID(5004, "Date must be today or in the future", HttpStatus.BAD_REQUEST),
+    RECORD_ALREADY_EXISTS(5005, "Record for this date already exists", HttpStatus.BAD_REQUEST),
     // Currency
     INVALID_CURRENCY(8000, "Invalid currency", HttpStatus.BAD_REQUEST),
 
     // Transaction
     TRANSACTION_NOT_FOUND(4000, "Transaction does not exist or have been deleted", HttpStatus.NOT_FOUND),
-
-
     ;
 
     int code;

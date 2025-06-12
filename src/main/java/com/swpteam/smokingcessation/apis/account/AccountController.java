@@ -25,13 +25,11 @@ class AccountController {
 
     @PostMapping
     ResponseEntity<ApiResponse<AccountResponse>> createAccount(@RequestBody @Valid AccountRequest request) {
-        var result = accountService.createAccount(request);
-
         return ResponseEntity.ok(
                 ApiResponse.<AccountResponse>builder()
                         .code(SuccessCode.ACCOUNT_CREATED.getCode())
                         .message(SuccessCode.ACCOUNT_CREATED.getMessage())
-                        .result(result)
+                        .result(accountService.createAccount(request))
                         .build());
     }
 

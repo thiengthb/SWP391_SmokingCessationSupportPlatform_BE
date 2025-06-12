@@ -41,8 +41,6 @@ public class Account extends BaseEntity {
     @Enumerated(EnumType.STRING)
     AccountStatus status;
 
-    boolean isDeleted;
-
     @OneToMany(mappedBy = "account")
     List<Subscription> subscriptions;
 

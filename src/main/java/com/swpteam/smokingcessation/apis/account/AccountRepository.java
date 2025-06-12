@@ -5,12 +5,13 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
 import java.util.Optional;
 
 @Repository
 public interface AccountRepository extends JpaRepository<Account, String> {
     Optional<Account> findByEmail(String email);
+
+    Optional<Account> findByEmailAndIsDeletedFalse(String email);
 
     Optional<Account> findById(String s);
 
@@ -18,7 +19,9 @@ public interface AccountRepository extends JpaRepository<Account, String> {
 
     boolean existsByEmail(String email);
 
-    List<Account> findAllByIsDeletedFalse();
+    boolean existsByPhoneNumber(String phoneNumber);
+
+    Page<Account> findAllByIsDeletedFalse(Pageable pageable);
 
     Page<Account> findAll(Pageable pageable);
 }

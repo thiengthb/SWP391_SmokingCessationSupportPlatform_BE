@@ -38,7 +38,7 @@ public class Member extends BaseEntity {
     @Column(name = "last_counter_reset")
     LocalDateTime lastCounterReset;
 
-    public Member getDefaultMember() {
+    public static Member getDefaultMember(Account account) {
         return Member.builder()
                 .fullName(null)
                 .dob(null)

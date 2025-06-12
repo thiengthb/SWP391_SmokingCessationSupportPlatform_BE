@@ -1,6 +1,8 @@
 package com.swpteam.smokingcessation.exception;
 
 
+import com.nimbusds.jose.JOSEException;
+import com.nimbusds.oauth2.sdk.ParseException;
 import com.swpteam.smokingcessation.common.ApiResponse;
 import com.swpteam.smokingcessation.constants.ErrorCode;
 import jakarta.persistence.EntityNotFoundException;
@@ -51,16 +53,11 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(value = AccessDeniedException.class)
     ResponseEntity<ApiResponse> handlingAccessDeniedException(AccessDeniedException exception) {
-        ErrorCode errorCode = ErrorCode.UNAUTHORIZED;
-
-        ApiResponse apiResponse = new ApiResponse<>().builder()
-                .code(errorCode.getCode())
-                .message(errorCode.getMessage())
+        ApiResponse<?> apiResponse = ApiResponse.builder()
+                .code(ErrorCode.FORBIDDEN.getCode())
+                .message(ErrorCode.FORBIDDEN.getMessage())
                 .build();
-
-        return ResponseEntity
-                .status(errorCode.getHttpCode())
-                .body(apiResponse);
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(apiResponse);
     }
 
     @ExceptionHandler(SecurityException.class)
@@ -73,7 +70,7 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(apiResponse, HttpStatus.UNAUTHORIZED);
     }
 
-    @ExceptionHandler({JwtException.class, JOSEException.class, ParseException.class})
+    @ExceptionHandler({JOSEException.class, ParseException.class})
     public ResponseEntity<ApiResponse<?>> handleJwtParsingException(Exception exception) {
         log.warn("Token parsing/validation failed: {}", exception.getMessage());
         ApiResponse<?> apiResponse = ApiResponse.builder()

@@ -11,6 +11,8 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -43,10 +45,11 @@ public class AuthenticationController {
     }
 
     @PostMapping("/refresh")
-    ResponseEntity<ApiResponse<AuthenticationResponse>> refreshToken(@RequestBody @Valid TokenRequest request) throws ParseException, JOSEException {
+    ResponseEntity<ApiResponse<AuthenticationResponse>> refreshToken(@AuthenticationPrincipal Jwt jwt) throws ParseException, JOSEException {
+        String token = jwt.getTokenValue();
         return ResponseEntity.ok()
                 .body(ApiResponse.<AuthenticationResponse>builder()
-                        .result(authenticationService.refreshToken(request))
+                        .result(authenticationService.refreshToken(token))
                         .build());
     }
 
@@ -79,8 +82,9 @@ public class AuthenticationController {
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<ApiResponse<String>> logout(@RequestBody @Valid TokenRequest request) throws JOSEException, ParseException {
-        authenticationService.logout(request);
+    public ResponseEntity<ApiResponse<String>> logout(@AuthenticationPrincipal Jwt jwt) throws JOSEException, ParseException {
+        String token = jwt.getTokenValue();
+        authenticationService.logout(token);
         return ResponseEntity.ok(
                 ApiResponse.<String>builder()
                         .result("Logout successful")
