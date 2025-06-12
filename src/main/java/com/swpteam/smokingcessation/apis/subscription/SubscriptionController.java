@@ -1,5 +1,6 @@
 package com.swpteam.smokingcessation.apis.subscription;
 
+import com.swpteam.smokingcessation.apis.health.dto.HealthResponse;
 import com.swpteam.smokingcessation.apis.subscription.dto.SubscriptionRequest;
 import com.swpteam.smokingcessation.apis.subscription.dto.SubscriptionResponse;
 import com.swpteam.smokingcessation.common.ApiResponse;
@@ -40,7 +41,18 @@ public class SubscriptionController {
                 ApiResponse.<SubscriptionResponse>builder()
                         .code(SuccessCode.SUBSCRIPTION_GET_BY_ID.getCode())
                         .message(SuccessCode.SUBSCRIPTION_GET_BY_ID.getMessage())
-                        .result(subscriptionService.getSubscription(id))
+                        .result(subscriptionService.getSubscriptionById(id))
+                        .build()
+        );
+    }
+
+    @GetMapping("/account/{id}")
+    ResponseEntity<ApiResponse<Page<SubscriptionResponse>>> getSubscriptionPageByAccountId(@PathVariable String id, @Valid PageableRequest request) {
+        return ResponseEntity.ok(
+                ApiResponse.<Page<SubscriptionResponse>>builder()
+                        .code(SuccessCode.SUBSCRIPTION_GET_BY_ACCOUNT.getCode())
+                        .message(SuccessCode.SUBSCRIPTION_GET_BY_ACCOUNT.getMessage())
+                        .result(subscriptionService.getSubscriptionPageByAccountId(id, request))
                         .build()
         );
     }
