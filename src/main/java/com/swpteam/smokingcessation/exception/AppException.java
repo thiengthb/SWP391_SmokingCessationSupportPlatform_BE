@@ -1,18 +1,20 @@
 package com.swpteam.smokingcessation.exception;
 
+import com.swpteam.smokingcessation.constant.ErrorCode;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.experimental.FieldDefaults;
+
+@Setter
+@Getter
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class AppException extends RuntimeException {
-    private ErrorCode errorCode;
+
+    ErrorCode errorCode;
 
     public AppException(ErrorCode errorCode) {
         super(errorCode.getMessage());
-        this.errorCode = errorCode;
-    }
-
-    public ErrorCode getErrorCode() {
-        return errorCode;
-    }
-
-    public void setErrorCode(ErrorCode errorCode) {
         this.errorCode = errorCode;
     }
 }
