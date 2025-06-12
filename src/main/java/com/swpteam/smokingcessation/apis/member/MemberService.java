@@ -28,7 +28,7 @@ public class MemberService {
     AccountRepository accountRepository;
 
     public MemberResponse createMember(MemberCreateRequest request, String id) {
-        Account account = accountRepository.findById(id).orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_EXISTED));
+        Account account = accountRepository.findByIdAndIsDeletedFalse(id).orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FOUND    ));
 
 
         if (memberRepository.existsByFullName(request.getFullName())) {
@@ -49,7 +49,7 @@ public class MemberService {
         }
 
         Pageable pageable = PageableRequest.getPageable(request);
-        Page<Member> members = memberRepository.findAll(pageable);
+        Page<Member> members = memberRepository.findAllByIsDeletedFalse(pageable);
 
         return members.map(memberMapper::toResponse);
     }
@@ -59,8 +59,8 @@ public class MemberService {
     }
 
     private Member findMemberById(String id) {
-        Member member = memberRepository.findById(id)
-                .orElseThrow(() -> new AppException(ErrorCode.MEMBER_NOT_EXISTED));
+        Member member = memberRepository.findByIdAndIsDeletedFalse(id)
+                .orElseThrow(() -> new AppException(ErrorCode.MEMBER_NOT_FOUND));
         if (member.getAccount().isDeleted()) {
             throw new AppException(ErrorCode.ACCOUNT_DELETED);
         }

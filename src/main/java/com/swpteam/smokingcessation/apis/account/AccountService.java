@@ -1,10 +1,12 @@
 package com.swpteam.smokingcessation.apis.account;
 
-import com.swpteam.smokingcessation.apis.account.dto.AccountCreateRequest;
+import com.swpteam.smokingcessation.apis.account.dto.AccountRequest;
 import com.swpteam.smokingcessation.apis.account.dto.AccountResponse;
-import com.swpteam.smokingcessation.apis.account.dto.AccountUpdateRequest;
 import com.swpteam.smokingcessation.apis.account.dto.ChangePasswordRequest;
 import com.swpteam.smokingcessation.apis.account.enums.AccountStatus;
+import com.swpteam.smokingcessation.apis.account.enums.Role;
+import com.swpteam.smokingcessation.apis.health.Health;
+import com.swpteam.smokingcessation.apis.health.HealthRepository;
 import com.swpteam.smokingcessation.apis.member.Member;
 import com.swpteam.smokingcessation.apis.member.MemberRepository;
 import com.swpteam.smokingcessation.apis.setting.Setting;
@@ -32,6 +34,7 @@ public class AccountService {
 
     AccountRepository accountRepository;
     SettingRepository settingRepository;
+    HealthRepository healthRepository;
     MemberRepository memberRepository;
     AccountMapper accountMapper;
 
@@ -50,20 +53,22 @@ public class AccountService {
         Account account = accountMapper.toEntity(request);
         account.setPassword(passwordEncoder.encode(request.getPassword()));
 
-        setting.setAccount(account);
+        switch (account.getRole()) {
+            case Role.MEMBER -> {
+                healthRepository.save(Health.getDefaultHealth(account));
+                memberRepository.save(Member.getDefaultMember(account));
+            }
+            case Role.COACH -> {
+
+            }
+            default -> {
+
+            }
+        }
+
         settingRepository.save(Setting.getDefaultSetting(account));
 
-        healthRepository.save(Health.getDefaultHealth(account));
-
-        member.setAccount(account);
-        memberRepository.save(Member().getDefaultMember());
-
         return accountMapper.toResponse(accountRepository.save(account));
-    }
-    public boolean isAccountOwnedByUser(String accountId, String email) {
-        return accountRepository.findById(accountId)
-                .map(account -> account.getEmail().equals(email) && !account.isDeleted())
-                .orElse(false);
     }
 
     @PreAuthorize("hasRole('ADMIN')")
@@ -84,8 +89,8 @@ public class AccountService {
     }
 
     private Account findAccountById(String id) {
-        Account account = accountRepository.findById(id)
-                .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_EXISTED));
+        Account account = accountRepository.findByIdAndIsDeletedFalse(id)
+                .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FOUND));
         if (account.isDeleted()) {
             throw new AppException(ErrorCode.ACCOUNT_DELETED);
         }
@@ -95,7 +100,8 @@ public class AccountService {
 
     @Transactional
     public AccountResponse updateAccount(String id, AccountRequest request) {
-        Account account = findAccountById(id);
+        Account account = accountRepository.findByIdAndIsDeletedFalse(id)
+                .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FOUND));
 
         accountMapper.updateWithoutRole(account, request);
         accountRepository.save(account);
@@ -124,8 +130,8 @@ public class AccountService {
 
     @Transactional
     public AccountResponse changePassword(ChangePasswordRequest request) {
-        Account account = accountRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_EXISTED));
+        Account account = accountRepository.findByEmailAndIsDeletedFalse(request.getEmail())
+                .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FOUND));
 
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
 
@@ -140,14 +146,14 @@ public class AccountService {
     }
 
     public AccountResponse getAccountByEmail(String email) {
-        Account account = accountRepository.findByEmail(email)
-                .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_EXISTED));
+        Account account = accountRepository.findByEmailAndIsDeletedFalse(email)
+                .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FOUND));
         return accountMapper.toResponse(account);
     }
 
     @PreAuthorize("hasRole('ADMIN')")
     public void banAccount(String id, Jwt jwt) {
-        Account account = accountRepository.findByIdAndIsDeletedFalse(id).orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_EXISTED));
+        Account account = accountRepository.findByIdAndIsDeletedFalse(id).orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FOUND));
 
         if (jwt.getClaimAsString("sub").equals(account.getEmail())) {
             throw new AppException(ErrorCode.SELF_BAN);
