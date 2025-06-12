@@ -15,5 +15,5 @@ public interface RecordMapper {
     @Mapping(source = "account.id", target = "accountId")
     RecordResponse toResponse(Record record);
 
-    void updateRecord(@MappingTarget Record entity, RecordUpdateRequest request);
+    void update(@MappingTarget Record entity, RecordUpdateRequest request);
 }

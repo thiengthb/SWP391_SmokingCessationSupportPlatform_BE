@@ -65,7 +65,7 @@ public class SubscriptionService {
 
     @Transactional
     public Subscription createSubscription(String accountId, String membershipName) {
-        Account account = accountRepository.findByEmail(accountId)
+        Account account = accountRepository.findById(accountId)
                 .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_EXISTED));
 
         Membership membership = membershipRepository.findByNameAndIsDeletedFalse(membershipName)

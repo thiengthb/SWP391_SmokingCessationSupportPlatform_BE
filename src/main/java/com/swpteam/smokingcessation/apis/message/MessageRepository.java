@@ -10,7 +10,7 @@ import java.util.Optional;
 
 public interface MessageRepository extends JpaRepository<Message, String> {
 
-    List<Message> IsDeletedFalse();
+    List<Message> findAllByIsDeletedFalse();
 
     Optional<Message> findByIdAndIsDeletedFalse(String id);
 

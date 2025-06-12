@@ -32,7 +32,7 @@ public class Reminder {
         LocalTime currentTime = LocalTime.now().withSecond(0).withNano(0);
         LocalTime deadlineIn30Minutes = currentTime.plusMinutes(30);
 
-        List<Setting> settings = settingRepository.findByReportDeadline(deadlineIn30Minutes);
+        List<Setting> settings = settingRepository.findByReportDeadlineAndIsDeletedFalse(deadlineIn30Minutes);
 
         for (Setting setting : settings) {
             try {
@@ -97,7 +97,7 @@ public class Reminder {
     }
 
     private Message getRandomMotivationMessage() {
-        List<Message> motivationMessages = messageRepository.IsDeletedFalse();
+        List<Message> motivationMessages = messageRepository.findAllByIsDeletedFalse();
         int randomIndex = random.nextInt(motivationMessages.size());
         return motivationMessages.get(randomIndex);
     }

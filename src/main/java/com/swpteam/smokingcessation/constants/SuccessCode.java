@@ -47,6 +47,9 @@ public enum SuccessCode {
     MESSAGE_DELETED(2002, "Message has been deleted"),
     MESSAGE_GET_BY_ID(2003, "Success returning a membership with given id"),
 
+    // Mail
+    SEND_MAIL_SUCCESS(1004, "Success sending mail")
+
     ;
     int code;
     String message;

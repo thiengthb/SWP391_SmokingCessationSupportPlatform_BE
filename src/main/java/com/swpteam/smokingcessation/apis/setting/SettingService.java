@@ -10,14 +10,14 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-@Slf4j
 public class SettingService {
+
     SettingRepository settingRepository;
     SettingMapper settingMapper;
 
@@ -28,10 +28,10 @@ public class SettingService {
     }
 
     public SettingResponse updateSetting(String accountId, SettingRequest request) {
-        Setting setting = settingRepository.findById(accountId)
+        Setting setting = settingRepository.findByAccountIdAndIsDeletedFalse(accountId)
                 .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_EXISTED));
 
-        setting.setUpdatedAt(LocalDateTime.now());
+        settingMapper.update(setting, request);
 
         return settingMapper.toResponse(settingRepository.save(setting));
     }

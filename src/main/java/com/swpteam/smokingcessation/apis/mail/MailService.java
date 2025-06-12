@@ -1,9 +1,12 @@
 package com.swpteam.smokingcessation.apis.mail;
 
 import com.swpteam.smokingcessation.apis.account.Account;
-import com.swpteam.smokingcessation.apis.message.entity.Message;
-import com.swpteam.smokingcessation.apis.message.enums.MessageType;
+import com.swpteam.smokingcessation.apis.account.AccountRepository;
+import com.swpteam.smokingcessation.apis.message.Message;
 import com.swpteam.smokingcessation.apis.subscription.Subscription;
+import com.swpteam.smokingcessation.apis.subscription.SubscriptionRepository;
+import com.swpteam.smokingcessation.constants.ErrorCode;
+import com.swpteam.smokingcessation.exception.AppException;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.AccessLevel;
@@ -11,18 +14,14 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
-import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
+import org.thymeleaf.spring6.SpringTemplateEngine;
 
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 @Slf4j
@@ -32,20 +31,28 @@ import java.time.format.DateTimeFormatter;
 public class MailService {
 
     JavaMailSender mailSender;
+    SpringTemplateEngine templateEngine;
 
-    TemplateEngine templateEngine;
+    AccountRepository accountRepository;
+    SubscriptionRepository subscriptionRepository;
 
     @NonFinal
     @Value("${spring.mail.username}")
     String hostEmail;
 
-    public void sendPaymentSuccessEmail(Account account, Subscription subscription, double amount) {
+    public void sendPaymentSuccessEmail(String accountId, String subscriptionId, double amount) {
+        Account account = accountRepository.findById(accountId)
+                .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_EXISTED));
+
+        Subscription subscription = subscriptionRepository.findByIdAndIsDeletedFalse(subscriptionId)
+                .orElseThrow(() -> new AppException(ErrorCode.SUBSCRIPTION_NOT_FOUND));
+
         try {
             MimeMessage message = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(message, MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED, "UTF-8");
 
             Context context = new Context();
-            context.setVariable("userName", account.getUsername());
+            context.setVariable("username", account.getUsername() != null ? account.getUsername() : "User");
             context.setVariable("amount", String.format("%.2f", amount / 100.0));
             context.setVariable("startDate", subscription.getStartDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
             context.setVariable("endDate", subscription.getEndDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
@@ -60,38 +67,55 @@ public class MailService {
             mailSender.send(message);
 
         } catch (MessagingException e) {
+            log.error(e.getMessage());
             e.printStackTrace();
+            throw new AppException(ErrorCode.UNCATEGORIZED_EXCEPTION);
         }
     }
 
-    public void sendSimpleMail(String to, Message message) throws MessagingException, IOException {
-        //to người nhận, subject tiêu đề, content: nội dung
-        MimeMessage mimeMessage = mailSender.createMimeMessage();
-        MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
+    public void sendMotivationMail(String to, Message message) {
+        try {
+            MimeMessage mimeMessage = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
 
-        String subject = getSubjectByType(message.getType());
-        String htmlBody = buildTemplateHtml(subject, message.getContent());
+            Context context = new Context();
+            String content = message.getContent();
+            context.setVariable("quote", content);
+            context.setVariable("sendTime", LocalDateTime.now());
 
-        helper.setTo(to);
-        helper.setSubject(subject);
-        helper.setText(htmlBody, true); // true: cho phép HTML
+            String htmlContent = templateEngine.process("motivation-template", context);
+            helper.setText(htmlContent, true); // true chỉ định nội dung là HTML
+            helper.setSubject("💪 Daily Motivation");
+            helper.setTo(to);
 
-        mailSender.send(mimeMessage);
+            mailSender.send(mimeMessage);
+        } catch (MessagingException e) {
+            log.error(e.getMessage());
+            e.printStackTrace();
+            throw new AppException(ErrorCode.UNCATEGORIZED_EXCEPTION);
+        }
     }
 
-    private String getSubjectByType(MessageType type) {
-        return switch (type) {
-            case REMINDER -> "⏰ Friendly Reminder";
-            case MOTIVATION -> "💪 Daily Motivation";
-            case ADVICE -> "🧠 Health Advice";
-        };
-    }
-    private String buildTemplateHtml(String title, String content) throws IOException {
-        String template = new String(
-                Files.readAllBytes(Paths.get("src/main/resources/mail-template.html")),
-                StandardCharsets.UTF_8
-        );
-        return String.format(template, title, content);
+    public void sendReminderMail(String to) throws MessagingException {
+        try {
+            MimeMessage mimeMessage = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
+
+            Context context = new Context();
+            context.setVariable("deadline", LocalDateTime.now().plusMinutes(30));
+            context.setVariable("sendTime", LocalDateTime.now());
+            String htmlContent = templateEngine.process("reminder-template", context);
+
+            helper.setText(htmlContent, true);
+            helper.setSubject("⏰ Friendly Reminder");
+            helper.setTo(to);
+
+            mailSender.send(mimeMessage);
+        } catch (MessagingException e) {
+            log.error(e.getMessage());
+            e.printStackTrace();
+            throw new AppException(ErrorCode.UNCATEGORIZED_EXCEPTION);
+        }
     }
 }
 

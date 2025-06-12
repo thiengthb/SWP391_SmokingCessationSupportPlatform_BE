@@ -94,7 +94,9 @@ public class StripeService {
         try {
             session = Session.create(params);
         } catch (StripeException e) {
+            log.error(e.getMessage());
             e.printStackTrace();
+            throw new AppException(ErrorCode.UNCATEGORIZED_EXCEPTION);
         }
 
         assert session != null;
@@ -105,8 +107,6 @@ public class StripeService {
     }
 
     public void handleCheckoutSessionCompleted(Event event) {
-        log.info("Received event: {}", event.toJson());
-
         EventDataObjectDeserializer deserializer = event.getDataObjectDeserializer();
         if (deserializer.getObject().isPresent()) {
             Object raw = deserializer.getObject().get();
@@ -134,16 +134,14 @@ public class StripeService {
                     return;
                 }
 
-                Account account = accountRepository.findById(accountId)
-                        .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_EXISTED));
-
                 Membership membership = membershipRepository.findByNameAndIsDeletedFalse(membershipName)
                         .orElseThrow(() -> new AppException(ErrorCode.MEMBERSHIP_NOT_FOUND));
 
                 transactionService.makeAsPaid(transactionId);
+
                 Subscription subscription = subscriptionService.createSubscription(accountId, membershipName);
 
-                mailService.sendPaymentSuccessEmail(account, subscription, membership.getPrice());
+                mailService.sendPaymentSuccessEmail(accountId, subscription.getId(), membership.getPrice());
             } else {
                 log.error("Unexpected object type in checkout.session.completed: {}", raw.getClass());
             }
@@ -153,8 +151,6 @@ public class StripeService {
     }
 
     public void handlePaymentIntentSucceeded(Event event) {
-        log.info("Received event: {}", event.toJson());
-
         EventDataObjectDeserializer deserializer = event.getDataObjectDeserializer();
         if (deserializer.getObject().isPresent()) {
             Object raw = deserializer.getObject().get();
@@ -191,7 +187,7 @@ public class StripeService {
                 transactionService.makeAsPaid(transactionId);
                 Subscription subscription = subscriptionService.createSubscription(accountId, membershipName);
 
-                mailService.sendPaymentSuccessEmail(account, subscription, membership.getPrice());
+                mailService.sendPaymentSuccessEmail(accountId, subscription.getId(), membership.getPrice());
             } else {
                 log.error("Unexpected object type in payment_intent.succeeded: {}", raw.getClass());
             }

@@ -2,8 +2,6 @@ package com.swpteam.smokingcessation.apis.record;
 
 import com.swpteam.smokingcessation.apis.account.Account;
 import com.swpteam.smokingcessation.apis.account.AccountRepository;
-import com.swpteam.smokingcessation.apis.health.Health;
-import com.swpteam.smokingcessation.apis.health.dto.HealthResponse;
 import com.swpteam.smokingcessation.apis.record.dto.RecordCreateRequest;
 import com.swpteam.smokingcessation.apis.record.dto.RecordResponse;
 import com.swpteam.smokingcessation.apis.record.dto.RecordUpdateRequest;
@@ -78,7 +76,7 @@ public class RecordService {
         Record record = recordRepository.findByIdAndIsDeletedFalse(id)
                 .orElseThrow(() -> new AppException(ErrorCode.HEALTH_RECORD_NOT_FOUND));
 
-        recordMapper.updateRecord(record, request);
+        recordMapper.update(record, request);
 
         return recordMapper.toResponse(recordRepository.save(record));
     }

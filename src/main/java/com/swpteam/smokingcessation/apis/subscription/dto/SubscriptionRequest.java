@@ -17,7 +17,7 @@ public class SubscriptionRequest {
     @NotBlank(message = "EMAIL_REQUIRED")
     String email;
 
-    @NotNull(message = "MEMBERSHIP_REQUIRED")
+    @NotBlank(message = "MEMBERSHIP_REQUIRED")
     @Size(min = 1, message = "MEMBERSHIP_MIN_SIZE")
     String membershipName;
 
