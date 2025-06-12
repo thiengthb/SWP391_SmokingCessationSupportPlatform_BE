@@ -15,7 +15,7 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class MembershipCreateRequest {
 
-    @NotBlank(message = "MEMBERSHIP_NAME_NOT_EMPTY")
+    @NotBlank(message = "MEMBERSHIP_NAME_REQUIRE")
     @Size(min = 1, message = "MEMBERSHIP_MIN_SIZE")
     String name;
 

@@ -46,7 +46,7 @@ public enum ErrorCode {
     // Membership
     MEMBERSHIP_NOT_FOUND(4000, "Membership does not exist or have been deleted", HttpStatus.BAD_REQUEST),
     MEMBERSHIP_NAME_UNIQUE(4001, "Membership name must be unique", HttpStatus.BAD_REQUEST),
-    MEMBERSHIP_NAME_NOT_EMPTY(4002, "Membership name must not be empty", HttpStatus.BAD_REQUEST),
+    MEMBERSHIP_NAME_REQUIRE(4002, "Membership name must not be empty", HttpStatus.BAD_REQUEST),
     MEMBERSHIP_MIN_SIZE(4003, "Membership name length must be at least {min} characters", HttpStatus.BAD_REQUEST),
     DURATION_NEGATIVE(4004, "Duration must be a positive number", HttpStatus.BAD_REQUEST),
     PRICE_NEGATIVE(4005, "Price must be a positive number", HttpStatus.BAD_REQUEST),

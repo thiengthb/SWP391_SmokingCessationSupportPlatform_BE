@@ -1,4 +1,4 @@
-package com.swpteam.smokingcessation.apis.transaction.dto.response;
+package com.swpteam.smokingcessation.apis.transaction.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
