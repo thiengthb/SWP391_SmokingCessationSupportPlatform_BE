@@ -49,6 +49,7 @@ public enum ErrorCode {
     INVALID_SIGNATURE(2004, "Token signature is invalid", HttpStatus.BAD_REQUEST),
     EMAIL_SEND_FAILED(2005, "Failed to send email. Please try again later.", HttpStatus.INTERNAL_SERVER_ERROR),
     USED_TOKEN(2006, "Token has expired or has been used", HttpStatus.BAD_REQUEST),
+    SELF_BAN(2007, "You cannot ban yourself", HttpStatus.BAD_REQUEST),
 
     // Account
     ACCOUNT_NOT_EXISTED(3000, "Account does not exist", HttpStatus.BAD_REQUEST),

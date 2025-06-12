@@ -15,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 @RequiredArgsConstructor
@@ -41,6 +42,7 @@ public class MemberService {
     }
 
 
+    @PreAuthorize("hasRole('ADMIN')")
     public Page<MemberResponse> getMembers(PageableRequest request) {
         if (!ValidationUtil.isFieldExist(Member.class, request.getSortBy())) {
             throw new AppException(ErrorCode.INVALID_SORT_FIELD);

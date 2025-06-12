@@ -50,7 +50,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(value = AccessDeniedException.class)
-    ResponseEntity<ApiResponse> handlingAccessDeniedException(AppException exception) {
+    ResponseEntity<ApiResponse> handlingAccessDeniedException(AccessDeniedException exception) {
         ErrorCode errorCode = ErrorCode.UNAUTHORIZED;
 
         ApiResponse apiResponse = new ApiResponse<>().builder()
@@ -71,6 +71,16 @@ public class GlobalExceptionHandler {
                 .build();
 
         return new ResponseEntity<>(apiResponse, HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler({JwtException.class, JOSEException.class, ParseException.class})
+    public ResponseEntity<ApiResponse<?>> handleJwtParsingException(Exception exception) {
+        log.warn("Token parsing/validation failed: {}", exception.getMessage());
+        ApiResponse<?> apiResponse = ApiResponse.builder()
+                .code(ErrorCode.UNAUTHENTICATED.getCode())
+                .message(exception.getMessage())
+                .build();
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(apiResponse);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
