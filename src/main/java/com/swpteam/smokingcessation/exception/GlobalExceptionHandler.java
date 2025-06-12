@@ -1,20 +1,18 @@
 package com.swpteam.smokingcessation.exception;
 
 
-import com.swpteam.smokingcessation.common.response.ApiResponse;
+import com.swpteam.smokingcessation.common.ApiResponse;
+import com.swpteam.smokingcessation.constants.ErrorCode;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.ConstraintViolation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
-import org.springframework.validation.FieldError;
-import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 
@@ -26,7 +24,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(value = Exception.class)
     ResponseEntity<ApiResponse> handlingException(Exception exception) {
-        log.error("Unhandled exception", exception);
+        exception.printStackTrace();
         new ApiResponse<>();
         ApiResponse apiResponse = ApiResponse.builder()
                 .code(ErrorCode.UNCATEGORIZED_EXCEPTION.getCode())
@@ -56,7 +54,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(value = AccessDeniedException.class)
-    ResponseEntity<ApiResponse> handlingAccessDeniedException(AppException exception) {
+    ResponseEntity<ApiResponse> handlingAccessDeniedException(AccessDeniedException exception) {
         ErrorCode errorCode = ErrorCode.UNAUTHORIZED;
 
         new ApiResponse<>();
@@ -79,6 +77,16 @@ public class GlobalExceptionHandler {
                 .build();
 
         return new ResponseEntity<>(apiResponse, HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler({JwtException.class, JOSEException.class, ParseException.class})
+    public ResponseEntity<ApiResponse<?>> handleJwtParsingException(Exception exception) {
+        log.warn("Token parsing/validation failed: {}", exception.getMessage());
+        ApiResponse<?> apiResponse = ApiResponse.builder()
+                .code(ErrorCode.UNAUTHENTICATED.getCode())
+                .message(exception.getMessage())
+                .build();
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(apiResponse);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)

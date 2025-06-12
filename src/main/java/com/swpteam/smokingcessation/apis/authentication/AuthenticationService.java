@@ -88,7 +88,7 @@ public class AuthenticationService {
     @Value("${app.frontend-domain}")
     protected String FRONTEND_DOMAIN;
 
-    //
+
     public GoogleTokenResponse getGoogleToken(GoogleTokenRequest request) {
         String tokenEndpoint = "https://oauth2.googleapis.com/token";
         Mono<GoogleTokenResponse> responseMono = webClient.post()

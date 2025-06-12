@@ -4,6 +4,7 @@ import com.swpteam.smokingcessation.apis.account.dto.AccountCreateRequest;
 import com.swpteam.smokingcessation.apis.account.dto.AccountResponse;
 import com.swpteam.smokingcessation.apis.account.dto.AccountUpdateRequest;
 import com.swpteam.smokingcessation.apis.account.dto.ChangePasswordRequest;
+import com.swpteam.smokingcessation.apis.account.enums.AccountStatus;
 import com.swpteam.smokingcessation.apis.member.Member;
 import com.swpteam.smokingcessation.apis.member.MemberRepository;
 import com.swpteam.smokingcessation.apis.setting.Setting;
@@ -18,8 +19,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 
 @RequiredArgsConstructor
@@ -33,6 +36,7 @@ public class AccountService {
     AccountMapper accountMapper;
 
 
+    @PreAuthorize("hasRole('ADMIN')")
     public AccountResponse createAccount(AccountRequest request) {
         if (accountRepository.existsByEmail(request.getEmail())) {
             throw new AppException(ErrorCode.ACCOUNT_EXISTED);
@@ -62,6 +66,7 @@ public class AccountService {
                 .orElse(false);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     public Page<AccountResponse> getAccounts(PageableRequest request) {
         if (!ValidationUtil.isFieldExist(Account.class, request.getSortBy())) {
             throw new AppException(ErrorCode.INVALID_SORT_FIELD);
@@ -73,6 +78,7 @@ public class AccountService {
         return accounts.map(accountMapper::toResponse);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     public AccountResponse getAccountById(String id) {
         return accountMapper.toResponse(findAccountById(id));
     }
@@ -91,12 +97,24 @@ public class AccountService {
     public AccountResponse updateAccount(String id, AccountRequest request) {
         Account account = findAccountById(id);
 
+        accountMapper.updateWithoutRole(account, request);
+        accountRepository.save(account);
+
+        return accountMapper.toResponse(account);
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @Transactional
+    public AccountResponse updateAccountRole(String id, AccountRequest request) {
+        Account account = findAccountById(id);
+
         accountMapper.update(account, request);
         accountRepository.save(account);
 
         return accountMapper.toResponse(account);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     public void deleteAccount(String id) {
         Account account = findAccountById(id);
 
@@ -125,5 +143,16 @@ public class AccountService {
         Account account = accountRepository.findByEmail(email)
                 .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_EXISTED));
         return accountMapper.toResponse(account);
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    public void banAccount(String id, Jwt jwt) {
+        Account account = accountRepository.findByIdAndIsDeletedFalse(id).orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_EXISTED));
+
+        if (jwt.getClaimAsString("sub").equals(account.getEmail())) {
+            throw new AppException(ErrorCode.SELF_BAN);
+        }
+        account.setStatus(AccountStatus.BANNED);
+        accountRepository.save(account);
     }
 }

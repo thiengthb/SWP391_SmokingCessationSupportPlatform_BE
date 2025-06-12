@@ -52,12 +52,17 @@ class AccountController {
     }
 
     @PutMapping("/{id}")
-    ResponseEntity<ApiResponse<AccountResponse>> updateAccount(@PathVariable("id") String id, @RequestBody AccountRequest request) {
+    ResponseEntity<ApiResponse<AccountResponse>> updateAccount(@PathVariable("id") String id, @RequestBody AccountRequest request, @AuthenticationPrincipal Jwt jwt) {
+        AccountResponse accountResponse =
+                jwt.getClaimAsString("scope").equals("ROLE_ADMIN") ?
+                        accountService.updateAccountRole(id, request)
+                        : accountService.updateAccount(id, request);
+
         return ResponseEntity.ok(
                 ApiResponse.<AccountResponse>builder()
                         .code(SuccessCode.ACCOUNT_UPDATED.getCode())
                         .message(SuccessCode.ACCOUNT_UPDATED.getMessage())
-                        .result(accountService.updateAccount(id, request))
+                        .result(accountResponse)
                         .build());
     }
 
@@ -84,6 +89,9 @@ class AccountController {
 
     @GetMapping("/me")
     ResponseEntity<ApiResponse<AccountResponse>> getMe(@AuthenticationPrincipal Jwt jwt) {
+        if (jwt == null) {
+            throw new SecurityException("No user is logged in or token is invalid");
+        }
         String email = jwt.getClaimAsString("sub");
         return ResponseEntity.ok(
                 ApiResponse.<AccountResponse>builder()
@@ -91,7 +99,13 @@ class AccountController {
                         .build());
     }
 
-    //@PostMapping("/ban/{id}")
-    //ResponseEntity<ApiResponse<AccountResponse>> banAccount() {
-
+    @PostMapping("/ban/{id}")
+    ResponseEntity<ApiResponse<Void>> banAccount(@PathVariable("id") String id, @AuthenticationPrincipal Jwt jwt) {
+        accountService.banAccount(id, jwt);
+        return ResponseEntity.ok(
+                ApiResponse.<Void>builder()
+                        .code(SuccessCode.ACCOUNT_BANNED.getCode())
+                        .message(SuccessCode.ACCOUNT_BANNED.getMessage())
+                        .build());
+    }
 }

@@ -51,7 +51,8 @@ public enum SuccessCode {
     ACCOUNT_CREATED(3000, "Account has been created"),
     ACCOUNT_UPDATED(3001, "Account has been updated"),
     ACCOUNT_DELETED(3002, "Account has been deleted"),
-    PASSWORD_CHANGE_SUCCESS(3003, "Password is changed successfully"),
+    ACCOUNT_BANNED(3003, "Account has been banned"),
+    PASSWORD_CHANGE_SUCCESS(3004, "Password is changed successfully"),
 
     // Member
     MEMBER_CREATED(3000, "Member has been created"),
