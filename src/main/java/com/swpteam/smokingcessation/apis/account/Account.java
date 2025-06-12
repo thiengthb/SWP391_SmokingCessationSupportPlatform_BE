@@ -9,18 +9,15 @@ import com.swpteam.smokingcessation.common.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-import org.hibernate.proxy.HibernateProxy;
 
 import java.util.List;
-import java.util.Objects;
 
 @Entity
-@Table(name = "account")
-@ToString
+@Getter
+@Setter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
-@Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Account extends BaseEntity {
 
@@ -39,6 +36,8 @@ public class Account extends BaseEntity {
     @Enumerated(EnumType.STRING)
     AccountStatus status;
 
+    String avatar;
+
     @OneToMany(mappedBy = "account")
     List<Subscription> subscriptions;
 
@@ -47,20 +46,4 @@ public class Account extends BaseEntity {
 
     @OneToOne(mappedBy = "account", cascade = CascadeType.ALL)
     Member member;
-
-    @Override
-    public final boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null) return false;
-        Class<?> oEffectiveClass = o instanceof HibernateProxy ? ((HibernateProxy) o).getHibernateLazyInitializer().getPersistentClass() : o.getClass();
-        Class<?> thisEffectiveClass = this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass() : this.getClass();
-        if (thisEffectiveClass != oEffectiveClass) return false;
-        Account account = (Account) o;
-        return getId() != null && Objects.equals(getId(), account.getId());
-    }
-
-    @Override
-    public final int hashCode() {
-        return this instanceof HibernateProxy ? ((HibernateProxy) this).getHibernateLazyInitializer().getPersistentClass().hashCode() : getClass().hashCode();
-    }
 }

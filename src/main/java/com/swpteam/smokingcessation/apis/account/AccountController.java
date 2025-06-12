@@ -4,6 +4,7 @@ import com.swpteam.smokingcessation.apis.account.dto.AccountRequest;
 import com.swpteam.smokingcessation.apis.account.dto.AccountResponse;
 import com.swpteam.smokingcessation.apis.account.dto.AccountUpdateRequest;
 import com.swpteam.smokingcessation.apis.account.dto.ChangePasswordRequest;
+import com.swpteam.smokingcessation.apis.account.enums.Role;
 import com.swpteam.smokingcessation.common.ApiResponse;
 import com.swpteam.smokingcessation.common.PageableRequest;
 import com.swpteam.smokingcessation.constants.SuccessCode;
@@ -43,25 +44,35 @@ class AccountController {
     }
 
     @GetMapping("/{id}")
-    ResponseEntity<ApiResponse<AccountResponse>> getAccountById(@PathVariable("id") String id) {
+    ResponseEntity<ApiResponse<AccountResponse>> getAccountById(@PathVariable String id) {
         return ResponseEntity.ok(
                 ApiResponse.<AccountResponse>builder()
                         .result(accountService.getAccountById(id))
                         .build());
     }
 
+    @PutMapping("/{id}/role")
+    ResponseEntity<ApiResponse<AccountResponse>> updateAccountRole(@PathVariable String id, @RequestParam Role role) {
+        return ResponseEntity.ok(
+                ApiResponse.<AccountResponse>builder()
+                        .code(SuccessCode.ROLE_UPDATED.getCode())
+                        .message(SuccessCode.ROLE_UPDATED.getMessage())
+                        .result(accountService.updateAccountRole(id, role))
+                        .build());
+    }
+
     @PutMapping("/{id}")
-    ResponseEntity<ApiResponse<AccountResponse>> updateAccount(@PathVariable("id") String id, @RequestBody AccountUpdateRequest request, @AuthenticationPrincipal Jwt jwt) {
+    ResponseEntity<ApiResponse<AccountResponse>> updateAccount(@PathVariable String id, @RequestBody AccountUpdateRequest request) {
         return ResponseEntity.ok(
                 ApiResponse.<AccountResponse>builder()
                         .code(SuccessCode.ACCOUNT_UPDATED.getCode())
                         .message(SuccessCode.ACCOUNT_UPDATED.getMessage())
-                        .result(accountService.updateAccount(id, request, jwt))
+                        .result(accountService.updateAccountWithoutRole(id, request))
                         .build());
     }
 
     @DeleteMapping("/{id}")
-    ResponseEntity<ApiResponse<String>> deleteAccount(@PathVariable("id") String id) {
+    ResponseEntity<ApiResponse<String>> deleteAccount(@PathVariable String id) {
         accountService.deleteAccount(id);
 
         return ResponseEntity.ok(
@@ -90,8 +101,8 @@ class AccountController {
                         .build());
     }
 
-    @PostMapping("/ban/{id}")
-    ResponseEntity<ApiResponse<Void>> banAccount(@PathVariable("id") String id, @AuthenticationPrincipal Jwt jwt) {
+    @PutMapping("/ban/{id}")
+    ResponseEntity<ApiResponse<Void>> banAccount(@PathVariable String id, @AuthenticationPrincipal Jwt jwt) {
         accountService.banAccount(id, jwt);
         return ResponseEntity.ok(
                 ApiResponse.<Void>builder()
