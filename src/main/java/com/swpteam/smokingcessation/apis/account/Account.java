@@ -25,6 +25,8 @@ public class Account {
     @GeneratedValue(strategy = GenerationType.UUID)
     private String id;
 
+    private String username;
+
     @Column(nullable = false, unique = true, columnDefinition = "NVARCHAR(30)")
     private String email;
 

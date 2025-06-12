@@ -1,5 +1,6 @@
-package com.swpteam.smokingcessation.apis.transaction;
+package com.swpteam.smokingcessation.apis.transaction.controllers;
 
+import com.swpteam.smokingcessation.apis.transaction.services.StripeService;
 import com.swpteam.smokingcessation.apis.transaction.dto.StripeSubscriptionRequest;
 import com.swpteam.smokingcessation.apis.transaction.dto.StripeResponse;
 import com.swpteam.smokingcessation.common.ApiResponse;

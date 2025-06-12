@@ -1,68 +1,99 @@
 package com.swpteam.smokingcessation.apis.mail;
 
-import com.swpteam.smokingcessation.apis.message.Message;
+import com.swpteam.smokingcessation.apis.account.Account;
+import com.swpteam.smokingcessation.apis.message.entity.Message;
+import com.swpteam.smokingcessation.apis.message.enums.MessageType;
+import com.swpteam.smokingcessation.apis.subscription.Subscription;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
+import lombok.experimental.NonFinal;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
+import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
-import org.thymeleaf.spring6.SpringTemplateEngine;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
+@Slf4j
 @Service
+@RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class MailService {
 
-    @Autowired
-    //inject cấu hinh
-    private JavaMailSender mailSender;
-    //interface mặc định của spring để gửi mail
-    @Autowired
-    private SpringTemplateEngine templateEngine;
+    JavaMailSender mailSender;
 
-    public void sendMotivationMail(String to, Message message) throws MessagingException, IOException {
-        // Create MimeMessage
+    TemplateEngine templateEngine;
+
+    @NonFinal
+    @Value("${spring.mail.username}")
+    String hostEmail;
+
+    public void sendPaymentSuccessEmail(Account account, Subscription subscription, double amount) {
+        try {
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED, "UTF-8");
+
+            Context context = new Context();
+            context.setVariable("userName", account.getUsername());
+            context.setVariable("amount", String.format("%.2f", amount / 100.0));
+            context.setVariable("startDate", subscription.getStartDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+            context.setVariable("endDate", subscription.getEndDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+
+            String html = templateEngine.process("payment-success", context);
+
+            helper.setTo(account.getEmail());
+            helper.setSubject("Payment Successful - Subscription ID " + subscription.getId());
+            helper.setText(html, true);
+            helper.setFrom(hostEmail);
+
+            mailSender.send(message);
+
+        } catch (MessagingException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void sendSimpleMail(String to, Message message) throws MessagingException, IOException {
+        //to người nhận, subject tiêu đề, content: nội dung
         MimeMessage mimeMessage = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
 
-        Context context = new Context();
-        String content = message.getContent();
-        context.setVariable("quote", content);
-        context.setVariable("sendTime", LocalDateTime.now());
+        String subject = getSubjectByType(message.getType());
+        String htmlBody = buildTemplateHtml(subject, message.getContent());
 
-        String htmlContent = templateEngine.process("motivation-template", context);
-        helper.setText(htmlContent, true); // true chỉ định nội dung là HTML
-        helper.setSubject("💪 Daily Motivation");
         helper.setTo(to);
-        // Gửi email
+        helper.setSubject(subject);
+        helper.setText(htmlBody, true); // true: cho phép HTML
+
         mailSender.send(mimeMessage);
     }
 
-    public void sendReminderMail(String to) throws MessagingException, IOException {
-        MimeMessage mimeMessage = mailSender.createMimeMessage();
-        MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
-
-        Context context = new Context();
-        context.setVariable("deadline", LocalDateTime.now().plusMinutes(30));
-        context.setVariable("sendTime", LocalDateTime.now());
-        String htmlContent = templateEngine.process("reminder-template", context);
-
-        helper.setText(htmlContent, true); // true chỉ định nội dung là HTML
-        helper.setSubject("⏰ Friendly Reminder");
-        helper.setTo(to);
-        // Gửi email
-        mailSender.send(mimeMessage);
+    private String getSubjectByType(MessageType type) {
+        return switch (type) {
+            case REMINDER -> "⏰ Friendly Reminder";
+            case MOTIVATION -> "💪 Daily Motivation";
+            case ADVICE -> "🧠 Health Advice";
+        };
+    }
+    private String buildTemplateHtml(String title, String content) throws IOException {
+        String template = new String(
+                Files.readAllBytes(Paths.get("src/main/resources/mail-template.html")),
+                StandardCharsets.UTF_8
+        );
+        return String.format(template, title, content);
     }
 }
-
-
-
 
 
 

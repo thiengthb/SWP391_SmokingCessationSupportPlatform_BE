@@ -44,7 +44,7 @@ public class RecordService {
     public RecordResponse getRecordById(String id) {
         return recordMapper.toResponse(
                 recordRepository.findByIdAndIsDeletedFalse(id)
-                        .orElseThrow(() -> new AppException(ErrorCode.RECORD_NOT_FOUND)));
+                        .orElseThrow(() -> new AppException(ErrorCode.HEALTH_RECORD_NOT_FOUND)));
     }
 
     public Page<RecordResponse> getRecordPageByAccountId(String accountId, PageableRequest request) {
@@ -76,7 +76,7 @@ public class RecordService {
     @Transactional
     public RecordResponse updateRecord(String id, RecordUpdateRequest request) {
         Record record = recordRepository.findByIdAndIsDeletedFalse(id)
-                .orElseThrow(() -> new AppException(ErrorCode.RECORD_NOT_FOUND));
+                .orElseThrow(() -> new AppException(ErrorCode.HEALTH_RECORD_NOT_FOUND));
 
         recordMapper.updateRecord(record, request);
 
@@ -86,7 +86,7 @@ public class RecordService {
     @Transactional
     public void softDeleteRecordById(String id) {
         Record record = recordRepository.findByIdAndIsDeletedFalse(id)
-                .orElseThrow(() -> new AppException(ErrorCode.RECORD_NOT_FOUND));
+                .orElseThrow(() -> new AppException(ErrorCode.HEALTH_RECORD_NOT_FOUND));
 
         record.setDeleted(true);
 

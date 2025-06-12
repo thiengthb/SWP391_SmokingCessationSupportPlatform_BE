@@ -1,6 +1,5 @@
 package com.swpteam.smokingcessation.apis.subscription.dto;
 
-import com.swpteam.smokingcessation.apis.subscription.enums.PaymentStatus;
 import jakarta.validation.constraints.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -29,7 +28,4 @@ public class SubscriptionRequest {
     @NotNull(message = "END_DATE_REQUIRED")
     @Future(message = "END_DATE_MUST_BE_IN_FUTURE")
     LocalDate endDate;
-
-    @NotNull(message = "PAYMENT_STATUS_REQUIRED")
-    PaymentStatus paymentStatus;
 }

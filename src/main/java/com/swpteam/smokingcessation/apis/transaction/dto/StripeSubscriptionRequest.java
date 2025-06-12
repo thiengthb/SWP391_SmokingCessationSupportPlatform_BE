@@ -14,6 +14,9 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class StripeSubscriptionRequest {
 
+    @NotBlank(message = "ACCOUNT_REQUIRED")
+    String accountId;
+
     @NotBlank(message = "MEMBERSHIP_NAME_REQUIRE")
     @Size(min = 1, message = "MEMBERSHIP_MIN_SIZE")
     String membershipName;

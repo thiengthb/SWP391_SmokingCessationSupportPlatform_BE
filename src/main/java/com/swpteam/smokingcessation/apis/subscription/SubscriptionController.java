@@ -1,6 +1,5 @@
 package com.swpteam.smokingcessation.apis.subscription;
 
-import com.swpteam.smokingcessation.apis.health.dto.HealthResponse;
 import com.swpteam.smokingcessation.apis.subscription.dto.SubscriptionRequest;
 import com.swpteam.smokingcessation.apis.subscription.dto.SubscriptionResponse;
 import com.swpteam.smokingcessation.common.ApiResponse;
