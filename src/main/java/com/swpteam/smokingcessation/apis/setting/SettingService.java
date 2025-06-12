@@ -29,7 +29,7 @@ public class SettingService {
 
     public SettingResponse updateSetting(String accountId, SettingRequest request) {
         Setting setting = settingRepository.findById(accountId)
-                .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_EXISTED));
+                .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FOUND));
 
         setting.setUpdatedAt(LocalDateTime.now());
 
@@ -47,6 +47,6 @@ public class SettingService {
     public SettingResponse getSetting(String accountId) {
         return settingMapper.toResponse(
                 settingRepository.findById(accountId)
-                        .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_EXISTED)));
+                        .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FOUND)));
     }
 }

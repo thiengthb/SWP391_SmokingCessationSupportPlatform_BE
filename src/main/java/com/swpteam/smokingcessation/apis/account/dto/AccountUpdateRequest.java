@@ -13,12 +13,10 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class AccountRequest {
-    @NotBlank(message = "EMAIL_REQUIRED")
+public class AccountUpdateRequest {
     @Email(message = "EMAIL_INVALID")
     String email;
 
-    @NotBlank(message = "MESSAGE_REQUIRED")
     @Size(min = 8, message = "PASSWORD_INVALID")
     String password;
 

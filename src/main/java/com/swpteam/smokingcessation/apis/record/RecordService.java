@@ -53,7 +53,7 @@ public class RecordService {
         }
 
         accountRepository.findById(accountId)
-                .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_EXISTED));
+                .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FOUND));
 
         Pageable pageable = PageableRequest.getPageable(request);
         Page<Record> records = recordRepository.findByAccountIdAndIsDeletedFalse(accountId, pageable);
@@ -64,7 +64,7 @@ public class RecordService {
     @Transactional
     public RecordResponse createRecord(RecordCreateRequest request) {
         Account account = accountRepository.findById(request.getAccountId())
-                .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_EXISTED));
+                .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FOUND));
 
         Record record = recordMapper.toEntity(request);
 
