@@ -5,42 +5,40 @@ import com.swpteam.smokingcessation.apis.setting.enums.Language;
 import com.swpteam.smokingcessation.apis.setting.enums.MotivationFrequency;
 import com.swpteam.smokingcessation.apis.setting.enums.Theme;
 import com.swpteam.smokingcessation.apis.setting.enums.TrackingMode;
+import com.swpteam.smokingcessation.common.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 
+@Entity
 @Getter
 @Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@Entity
-public class Setting {
-    @Id
-    private String accountId;
-    @Enumerated(EnumType.STRING)
-    private Theme theme;
+public class Setting extends BaseEntity {
 
-    @Enumerated(EnumType.STRING)
-    private Language language;
-
-    @Enumerated(EnumType.STRING)
-    private TrackingMode trackingMode;
-
-    @Enumerated(EnumType.STRING)
-    private MotivationFrequency motivationFrequency;
-
-    private LocalTime reportDeadline;
-    private LocalDateTime updatedAt;
-
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @MapsId
     @JoinColumn(name = "account_id")
-    private Account account;
+    Account account;
+
+    @Enumerated(EnumType.STRING)
+    Theme theme;
+
+    @Enumerated(EnumType.STRING)
+    Language language;
+
+    @Enumerated(EnumType.STRING)
+    TrackingMode trackingMode;
+
+    @Enumerated(EnumType.STRING)
+    MotivationFrequency motivationFrequency;
+
+    LocalTime reportDeadline;
 
     public static Setting getDefaultSetting(Account account) {
         return Setting.builder()

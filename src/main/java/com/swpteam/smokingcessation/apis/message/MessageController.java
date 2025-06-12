@@ -59,9 +59,7 @@ public class MessageController {
     }
 
     @PutMapping("/{id}")
-    ResponseEntity<ApiResponse<MessageResponse>> updateMessage(
-            @PathVariable String id,
-            @Valid @RequestBody MessageRequest request) {
+    ResponseEntity<ApiResponse<MessageResponse>> updateMessage(@PathVariable String id, @Valid @RequestBody MessageRequest request) {
         MessageResponse response = messageService.updateMessage(id, request);
         return ResponseEntity.ok(
                 ApiResponse.<MessageResponse>builder()

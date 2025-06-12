@@ -1,4 +1,4 @@
-package com.swpteam.smokingcessation.apis.transaction.dto.request;
+package com.swpteam.smokingcessation.apis.mail;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -8,8 +8,8 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class SubscriptionRequest {
-    Long amount;
-    String name;
-    String currency;
+public class MailRequest {
+    String accountId;
+    String subscriptionId;
+    double amount;
 }

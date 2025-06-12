@@ -1,5 +1,6 @@
 package com.swpteam.smokingcessation.apis.membership.dto;
 
+import com.swpteam.smokingcessation.apis.currency.Currency;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
@@ -12,9 +13,9 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class MembershipRequest {
+public class MembershipCreateRequest {
 
-    @NotBlank(message = "MEMBERSHIP_NAME_NOT_EMPTY")
+    @NotBlank(message = "MEMBERSHIP_NAME_REQUIRE")
     @Size(min = 1, message = "MEMBERSHIP_MIN_SIZE")
     String name;
 
@@ -25,6 +26,9 @@ public class MembershipRequest {
     @NotNull(message = "PRICE_REQUIRED")
     @Positive(message = "PRICE_NEGATIVE")
     Double price;
+
+    @NotNull(message = "CURRENCY_REQUIRED")
+    Currency currency;
 
     String description;
 }

@@ -37,16 +37,15 @@ public class MessageService {
     public MessageResponse getById(String id) {
         Message message = messageRepository.findByIdAndIsDeletedFalse(id)
                 .orElseThrow(() -> new AppException(ErrorCode.MESSAGE_NOT_FOUND));
+
         return messageMapper.toMessageResponse(message);
     }
 
     @Transactional
     public MessageResponse createMessage(MessageRequest request) {
         Message message = messageMapper.toMessage(request);
-        message.setCreatedAt(LocalDateTime.now());
 
-        Message saved = messageRepository.save(message);
-        return messageMapper.toMessageResponse(saved);
+        return messageMapper.toMessageResponse(messageRepository.save(message));
     }
 
     @Transactional
@@ -54,11 +53,9 @@ public class MessageService {
         Message message = messageRepository.findByIdAndIsDeletedFalse(id)
                 .orElseThrow(() -> new AppException(ErrorCode.MESSAGE_NOT_FOUND));
 
-        message.setContent(request.getContent());
-        message.setUpdatedAt(LocalDateTime.now());
+        messageMapper.update(message, request);
 
-        Message updated = messageRepository.save(message);
-        return messageMapper.toMessageResponse(updated);
+        return messageMapper.toMessageResponse(messageRepository.save(message));
     }
 
     @Transactional

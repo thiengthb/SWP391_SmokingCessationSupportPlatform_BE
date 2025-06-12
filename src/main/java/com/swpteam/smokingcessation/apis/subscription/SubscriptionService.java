@@ -2,13 +2,10 @@ package com.swpteam.smokingcessation.apis.subscription;
 
 import com.swpteam.smokingcessation.apis.account.Account;
 import com.swpteam.smokingcessation.apis.account.AccountRepository;
-import com.swpteam.smokingcessation.apis.health.Health;
-import com.swpteam.smokingcessation.apis.health.dto.HealthResponse;
 import com.swpteam.smokingcessation.apis.membership.Membership;
 import com.swpteam.smokingcessation.apis.membership.MembershipRepository;
 import com.swpteam.smokingcessation.apis.subscription.dto.SubscriptionRequest;
 import com.swpteam.smokingcessation.apis.subscription.dto.SubscriptionResponse;
-import com.swpteam.smokingcessation.apis.subscription.enums.PaymentStatus;
 import com.swpteam.smokingcessation.common.PageableRequest;
 import com.swpteam.smokingcessation.exception.AppException;
 import com.swpteam.smokingcessation.constants.ErrorCode;
@@ -21,6 +18,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDate;
 
 @Slf4j
 @Service
@@ -65,6 +64,24 @@ public class SubscriptionService {
     }
 
     @Transactional
+    public Subscription createSubscription(String accountId, String membershipName) {
+        Account account = accountRepository.findById(accountId)
+                .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_EXISTED));
+
+        Membership membership = membershipRepository.findByNameAndIsDeletedFalse(membershipName)
+                .orElseThrow(() -> new AppException(ErrorCode.MEMBERSHIP_NOT_FOUND));
+
+        Subscription subscription = Subscription.builder()
+                .account(account)
+                .membership(membership)
+                .startDate(LocalDate.now())
+                .endDate(LocalDate.now().plusDays(membership.getDurationDays()))
+                .build();
+
+        return subscriptionRepository.save(subscription);
+    }
+
+    @Transactional
     public SubscriptionResponse createSubscription(SubscriptionRequest request) {
         Subscription subscription = subscriptionMapper.toEntity(request);
 
@@ -76,8 +93,6 @@ public class SubscriptionService {
 
         subscription.setAccount(account);
         subscription.setMembership(membership);
-
-        subscription.setPaymentStatus(PaymentStatus.COMPLETED);
 
         return subscriptionMapper.toResponse(subscriptionRepository.save(subscription));
     }

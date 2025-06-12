@@ -17,27 +17,25 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(value = Exception.class)
-    ResponseEntity<ApiResponse> handlingException(Exception exception) {
+    ResponseEntity<ApiResponse<Void>> handlingException(Exception exception) {
         exception.printStackTrace();
-        ApiResponse apiResponse = new ApiResponse<>().builder()
-                .code(ErrorCode.UNCATEGORIZED_EXCEPTION.getCode())
-                .message(ErrorCode.UNCATEGORIZED_EXCEPTION.getMessage())
-                .build();
-
-        return ResponseEntity.badRequest().body(apiResponse);
+        return ResponseEntity.badRequest().body(
+                ApiResponse.<Void>builder()
+                        .code(ErrorCode.UNCATEGORIZED_EXCEPTION.getCode())
+                        .message(ErrorCode.UNCATEGORIZED_EXCEPTION.getMessage())
+                        .build()
+        );
     }
 
     @ExceptionHandler(value = AppException.class)
-    ResponseEntity<ApiResponse> handlingAppException(AppException exception) {
+    ResponseEntity<ApiResponse<Void>> handlingAppException(AppException exception) {
         ErrorCode errorCode = exception.getErrorCode();
-        ApiResponse apiResponse = new ApiResponse<>().builder()
-                .code(errorCode.getCode())
-                .message(errorCode.getMessage())
-                .build();
-
-        return ResponseEntity
-                .status(errorCode.getHttpCode())
-                .body(apiResponse);
+        return ResponseEntity.status(errorCode.getHttpCode()).body(
+                ApiResponse.<Void>builder()
+                        .code(errorCode.getCode())
+                        .message(errorCode.getMessage())
+                        .build()
+        );
     }
 
     @ExceptionHandler(EntityNotFoundException.class)

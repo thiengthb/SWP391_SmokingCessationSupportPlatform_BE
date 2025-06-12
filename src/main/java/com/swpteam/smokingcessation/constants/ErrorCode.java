@@ -15,7 +15,7 @@ import org.springframework.http.HttpStatusCode;
 public enum ErrorCode {
 
     UNCATEGORIZED_EXCEPTION(9999, "Uncategorized error", HttpStatus.INTERNAL_SERVER_ERROR),
-    INVALID_MESSAGE_KEY(9999, "Invalid message key", HttpStatus.INTERNAL_SERVER_ERROR),
+    INVALID_MESSAGE_KEY(9999, "Invalid message key", HttpStatus.BAD_REQUEST),
 
     // Common
     ACCOUNT_REQUIRED(1000, "Account is required", HttpStatus.BAD_REQUEST),
@@ -46,7 +46,7 @@ public enum ErrorCode {
     // Membership
     MEMBERSHIP_NOT_FOUND(4000, "Membership does not exist or have been deleted", HttpStatus.BAD_REQUEST),
     MEMBERSHIP_NAME_UNIQUE(4001, "Membership name must be unique", HttpStatus.BAD_REQUEST),
-    MEMBERSHIP_NAME_NOT_EMPTY(4002, "Membership name must not be empty", HttpStatus.BAD_REQUEST),
+    MEMBERSHIP_NAME_REQUIRE(4002, "Membership name must not be empty", HttpStatus.BAD_REQUEST),
     MEMBERSHIP_MIN_SIZE(4003, "Membership name length must be at least {min} characters", HttpStatus.BAD_REQUEST),
     DURATION_NEGATIVE(4004, "Duration must be a positive number", HttpStatus.BAD_REQUEST),
     PRICE_NEGATIVE(4005, "Price must be a positive number", HttpStatus.BAD_REQUEST),
@@ -90,14 +90,15 @@ public enum ErrorCode {
     ACCESS_DENIED(4001, "Access denied", HttpStatus.FORBIDDEN),
     PACK_PRICE_TOO_HIGH(4010, "Pack price must not exceed 500.0", HttpStatus.BAD_REQUEST),
 
-    // Record
-    RECORD_NOT_FOUND(5000, "Record does not exist", HttpStatus.NOT_FOUND),
-    CIGARETTES_SMOKED_INVALID(5002, "Cigarettes smoked must be non-negative", HttpStatus.BAD_REQUEST),
-    RECORD_DATE_REQUIRED(5003, "Date is required", HttpStatus.BAD_REQUEST),
-    RECORD_DATE_INVALID(5004, "Date must be today or in the future", HttpStatus.BAD_REQUEST),
-    RECORD_ALREADY_EXISTS(5005, "Record for this date already exists", HttpStatus.BAD_REQUEST)
+    // Currency
+    INVALID_CURRENCY(8000, "Invalid currency", HttpStatus.BAD_REQUEST),
+
+    // Transaction
+    TRANSACTION_NOT_FOUND(4000, "Transaction does not exist or have been deleted", HttpStatus.NOT_FOUND),
+
 
     ;
+
     int code;
     String message;
     HttpStatusCode httpCode;

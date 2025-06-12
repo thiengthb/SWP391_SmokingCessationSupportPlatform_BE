@@ -1,7 +1,9 @@
 package com.swpteam.smokingcessation.apis.membership;
 
-import com.swpteam.smokingcessation.apis.membership.dto.MembershipRequest;
+import com.swpteam.smokingcessation.apis.membership.dto.MembershipCurrencyUpdateRequest;
+import com.swpteam.smokingcessation.apis.membership.dto.MembershipCreateRequest;
 import com.swpteam.smokingcessation.apis.membership.dto.MembershipResponse;
+import com.swpteam.smokingcessation.apis.membership.dto.MembershipUpdateRequest;
 import com.swpteam.smokingcessation.common.ApiResponse;
 import com.swpteam.smokingcessation.common.PageableRequest;
 import com.swpteam.smokingcessation.constants.SuccessCode;
@@ -46,7 +48,7 @@ public class MembershipController {
     }
 
     @PostMapping
-    ResponseEntity<ApiResponse<MembershipResponse>> createMembership(@RequestBody @Valid MembershipRequest request) {
+    ResponseEntity<ApiResponse<MembershipResponse>> createMembership(@RequestBody @Valid MembershipCreateRequest request) {
         return ResponseEntity.ok(
                 ApiResponse.<MembershipResponse>builder()
                         .code(SuccessCode.MEMBERSHIP_CREATED.getCode())
@@ -57,7 +59,7 @@ public class MembershipController {
     }
 
     @PutMapping("/{id}")
-    ResponseEntity<ApiResponse<MembershipResponse>> updateMembership(@PathVariable String id, @RequestBody @Valid MembershipRequest request) {
+    ResponseEntity<ApiResponse<MembershipResponse>> updateMembership(@PathVariable String id, @RequestBody @Valid MembershipUpdateRequest request) {
         return ResponseEntity.ok(
                 ApiResponse.<MembershipResponse>builder()
                         .code(SuccessCode.MEMBERSHIP_UPDATED.getCode())
@@ -74,6 +76,17 @@ public class MembershipController {
                 ApiResponse.<String>builder()
                         .code(SuccessCode.MEMBERSHIP_DELETED.getCode())
                         .message(SuccessCode.MEMBERSHIP_DELETED.getMessage())
+                        .build()
+        );
+    }
+
+    @PutMapping("/currency/{id}")
+    ResponseEntity<ApiResponse<MembershipResponse>> updateMembershipCurrency(@PathVariable String id, @RequestBody @Valid MembershipCurrencyUpdateRequest request) {
+        return ResponseEntity.ok(
+                ApiResponse.<MembershipResponse>builder()
+                        .code(SuccessCode.MEMBERSHIP_UPDATED.getCode())
+                        .message(SuccessCode.MEMBERSHIP_UPDATED.getMessage())
+                        .result(membershipService.updateMembershipCurrency(id, request))
                         .build()
         );
     }
