@@ -33,9 +33,7 @@ public class Setting {
 
     @Enumerated(EnumType.STRING)
     private MotivationFrequency motivationFrequency;
-    //sửa thành enum
-    //mốc sau 8h sáng
-    //switch case
+
     private LocalTime reportDeadline;
     private LocalDateTime updatedAt;
 

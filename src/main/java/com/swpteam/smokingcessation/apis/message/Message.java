@@ -1,6 +1,7 @@
 package com.swpteam.smokingcessation.apis.message;
 
-import com.swpteam.smokingcessation.apis.message.enums.MessageType;
+
+import com.swpteam.smokingcessation.common.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -13,17 +14,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class Message {
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    String messageId;
-    @Enumerated(EnumType.STRING)
-    MessageType type;
+public class Message extends BaseEntity {
     @Column(unique = true)
     String content;
-    @Column(updatable = false)
-    LocalDateTime createdAt;
-    LocalDateTime updatedAt;
-    boolean isDeleted;
-
 }

@@ -9,6 +9,8 @@ import java.util.List;
 @Mapper(componentModel = "spring")
 public interface MessageMapper {
     MessageResponse toMessageResponse(Message message);
+
     Message toMessage(MessageRequest request);
+
     List<MessageResponse> toListMessageResponse(List<Message> messages);
 }

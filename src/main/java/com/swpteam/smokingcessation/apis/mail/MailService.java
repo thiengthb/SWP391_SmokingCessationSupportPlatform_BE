@@ -26,45 +26,40 @@ public class MailService {
     @Autowired
     private SpringTemplateEngine templateEngine;
 
-    public void sendMotivationMail(String to,Message message) throws  MessagingException, IOException{
+    public void sendMotivationMail(String to, Message message) throws MessagingException, IOException {
         // Create MimeMessage
         MimeMessage mimeMessage = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
-        String content=message.getContent();
-        helper.setSubject("💪 Daily Motivation");
-        helper.setTo(to);
-        Context context=new Context();
+
+        Context context = new Context();
+        String content = message.getContent();
         context.setVariable("quote", content);
         context.setVariable("sendTime", LocalDateTime.now());
-        String htmlContent= templateEngine.process("motivation-template", context);
+
+        String htmlContent = templateEngine.process("motivation-template", context);
         helper.setText(htmlContent, true); // true chỉ định nội dung là HTML
+        helper.setSubject("💪 Daily Motivation");
+        helper.setTo(to);
         // Gửi email
         mailSender.send(mimeMessage);
     }
 
-    public void sendReminderMail(String to,Message message) throws MessagingException, IOException {
+    public void sendReminderMail(String to) throws MessagingException, IOException {
         MimeMessage mimeMessage = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
-        String content=message.getContent();
+
+        Context context = new Context();
+        context.setVariable("deadline", LocalDateTime.now().plusMinutes(30));
+        context.setVariable("sendTime", LocalDateTime.now());
+        String htmlContent = templateEngine.process("reminder-template", context);
+
+        helper.setText(htmlContent, true); // true chỉ định nội dung là HTML
         helper.setSubject("⏰ Friendly Reminder");
         helper.setTo(to);
-        Context context=new Context();
-        context.setVariable("reminder", content);
-        context.setVariable("deadline",LocalDateTime.now().plusMinutes(30));
-        context.setVariable("sendTime", LocalDateTime.now());
-        String htmlContent= templateEngine.process("reminder-template", context);
-        helper.setText(htmlContent, true); // true chỉ định nội dung là HTML
         // Gửi email
         mailSender.send(mimeMessage);
-
-
-
     }
-
-
-
-
-    }
+}
 
 
 

@@ -1,6 +1,5 @@
 package com.swpteam.smokingcessation.apis.message.dto;
 
-import com.swpteam.smokingcessation.apis.message.enums.MessageType;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
@@ -12,11 +11,6 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class MessageRequest {
-    @NotNull(message = "MESSAGE_TYPE_REQUIRED")
-    MessageType type;
-    @NotBlank(message="CONTENT_REQUIRED")
+    @NotBlank(message="MESSAGE_CONTENT_REQUIRED")
     String content;
-    @Builder.Default
-    boolean isDeleted=false;
-
 }

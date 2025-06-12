@@ -1,70 +1,85 @@
 package com.swpteam.smokingcessation.apis.message;
 
-
 import com.swpteam.smokingcessation.apis.message.dto.MessageRequest;
 import com.swpteam.smokingcessation.apis.message.dto.MessageResponse;
-import com.swpteam.smokingcessation.common.response.ApiResponse;
+import com.swpteam.smokingcessation.common.ApiResponse;
+import com.swpteam.smokingcessation.common.PageableRequest;
+import com.swpteam.smokingcessation.constants.SuccessCode;
 import jakarta.validation.Valid;
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
+@Slf4j
 @RestController
-@RequestMapping("/api/message")
+@RequestMapping("/api/messages")
 @RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class MessageController {
 
-    private final MessageService messageService;
-
-    @PostMapping
-    public ApiResponse<MessageResponse> createMessage(@Valid @RequestBody MessageRequest request) {
-        MessageResponse response = messageService.createMessage(request);
-        return ApiResponse.<MessageResponse>builder()
-                .code(201)
-                .message("Message created successfully")
-                .result(response)
-                .build();
-    }
-
-    @PutMapping("/{id}")
-    public ApiResponse<MessageResponse> updateMessage(
-            @PathVariable String id,
-            @Valid @RequestBody MessageRequest request) {
-        MessageResponse response = messageService.updateMessage(id, request);
-        return ApiResponse.<MessageResponse>builder()
-                .code(200)
-                .message("Message updated successfully")
-                .result(response)
-                .build();
-    }
+    MessageService messageService;
 
     @GetMapping
-    public ApiResponse<List<MessageResponse>> getAllMessages() {
-        List<MessageResponse> responses = messageService.getAllMessages();
-        return ApiResponse.<List<MessageResponse>>builder()
-                .code(200)
-                .message("All messages retrieved")
-                .result(responses)
-                .build();
+    ResponseEntity<ApiResponse<Page<MessageResponse>>> getMessagePage(@Valid PageableRequest request) {
+        return ResponseEntity.ok(
+                ApiResponse.<Page<MessageResponse>>builder()
+                        .code(SuccessCode.MEMBERSHIP_GET_ALL.getCode())
+                        .message(SuccessCode.MEMBERSHIP_GET_ALL.getMessage())
+                        .result(messageService.getMessagePage(request))
+                        .build()
+        );
     }
 
     @GetMapping("/{id}")
-    public ApiResponse<MessageResponse> getMessageById(@PathVariable String id) {
-        MessageResponse response = messageService.searchById(id);
-        return ApiResponse.<MessageResponse>builder()
-                .code(200)
-                .message("Message retrieved")
-                .result(response)
-                .build();
+    ResponseEntity<ApiResponse<MessageResponse>> getMessageById(@PathVariable String id) {
+        MessageResponse response = messageService.getById(id);
+        return ResponseEntity.ok(
+                ApiResponse.<MessageResponse>builder()
+                        .code(SuccessCode.MESSAGE_GET_BY_ID.getCode())
+                        .message(SuccessCode.MESSAGE_GET_BY_ID.getMessage())
+                        .result(response)
+                        .build()
+        );
+    }
+
+    @PostMapping
+    ResponseEntity<ApiResponse<MessageResponse>> createMessage(@Valid @RequestBody MessageRequest request) {
+        MessageResponse response = messageService.createMessage(request);
+        return ResponseEntity.ok(
+                ApiResponse.<MessageResponse>builder()
+                        .code(SuccessCode.MESSAGE_CREATED.getCode())
+                        .message(SuccessCode.MESSAGE_CREATED.getMessage())
+                        .result(response)
+                        .build()
+        );
+    }
+
+    @PutMapping("/{id}")
+    ResponseEntity<ApiResponse<MessageResponse>> updateMessage(
+            @PathVariable String id,
+            @Valid @RequestBody MessageRequest request) {
+        MessageResponse response = messageService.updateMessage(id, request);
+        return ResponseEntity.ok(
+                ApiResponse.<MessageResponse>builder()
+                        .code(SuccessCode.MESSAGE_UPDATED.getCode())
+                        .message(SuccessCode.MESSAGE_UPDATED.getMessage())
+                        .result(response)
+                        .build()
+        );
     }
 
     @DeleteMapping("/{id}")
-    public ApiResponse<Void> deleteMessage(@PathVariable String id) {
-        messageService.deleteMessage(id);
-        return ApiResponse.<Void>builder()
-                .code(200)
-                .message("Message deleted successfully")
-                .build();
+    ResponseEntity<ApiResponse<Void>> deleteMessage(@PathVariable String id) {
+        messageService.softDeleteMessageById(id);
+        return ResponseEntity.ok(
+                ApiResponse.<Void>builder()
+                        .code(SuccessCode.MESSAGE_DELETED.getCode())
+                        .message(SuccessCode.MEMBERSHIP_DELETED.getMessage())
+                        .build()
+        );
     }
 }
