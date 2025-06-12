@@ -26,8 +26,7 @@ public class Reminder {
     private final SettingRepository settingRepository;
     private final Random random = new Random();
 
-    // REMINDER DEADLINE - Gửi 30 phút trước deadline
-    @Scheduled(cron = "0 * * * * *") // Chạy mỗi phút
+    @Scheduled(cron = "0 * * * * *")
     public void sendReminders() {
         LocalTime currentTime = LocalTime.now().withSecond(0).withNano(0);
         LocalTime deadlineIn30Minutes = currentTime.plusMinutes(30);
@@ -40,58 +39,44 @@ public class Reminder {
                 String userEmail = account.getEmail();
                 mailService.sendReminderMail(userEmail);
             } catch (Exception e) {
-                log.error("Failed to send reminder for setting accountId: {}", setting.getAccountId(), e);
+                log.error("Failed to send reminder for setting accountId: {}", setting.getAccount().getId(), e);
             }
         }
     }
 
-    // MOTIVATION MESSAGES - Daily (8AM)
-    @Scheduled(cron = "0 0 8 * * *") // 8AM every day
-    public void sendDailyMotivation() {
+    @Scheduled(cron = "0 0 8 * * *")
+    void sendDailyMotivation() {
         sendMotivation(MotivationFrequency.DAILY);
     }
 
-    // MOTIVATION MESSAGES - Every 6 Hours (8AM, 14PM, 20PM)
-    @Scheduled(cron = "0 0 8,14,20,0 * * *") // Every 6 hours
-    public void sendEvery6HoursMotivation() {
+    @Scheduled(cron = "0 0 8,14,20,0 * * *")
+    void sendEvery6HoursMotivation() {
         sendMotivation(MotivationFrequency.EVERY6HOURS);
     }
 
-    // MOTIVATION MESSAGES - Every 12 Hours (8AM, 20PM)
-    @Scheduled(cron = "0 0 8,20 * * *") // 8AM and 8PM
-    public void sendEvery12HoursMotivation() {
+    @Scheduled(cron = "0 0 8,20 * * *")
+    void sendEvery12HoursMotivation() {
         sendMotivation(MotivationFrequency.EVERY12HOURS);
     }
 
-    // MOTIVATION MESSAGES - Weekly (Sunday 8AM)
-    @Scheduled(cron = "0 0 8 * * SUN") // 8AM every Sunday
-    public void sendWeeklyMotivation() {
+    @Scheduled(cron = "0 0 8 * * SUN")
+    void sendWeeklyMotivation() {
         sendMotivation(MotivationFrequency.WEEKLY);
     }
 
-    // MOTIVATION MESSAGES - Monthly (1st day of month, 8AM)
-    @Scheduled(cron = "0 0 8 1 * *") // 8AM on 1s   t day of every month
-    public void sendMonthlyMotivation() {
+    @Scheduled(cron = "0 0 8 1 * *")
+    void sendMonthlyMotivation() {
         sendMotivation(MotivationFrequency.MONTHLY);
     }
 
     private void sendMotivationMessages(List<Setting> settings) {
-
-        int successCount = 0;
         for (Setting setting : settings) {
             try {
-                Account account = setting.getAccount();
-                String userEmail = account.getEmail();
-
-                // Get random motivation message
                 Message randomMotivationMessage = getRandomMotivationMessage();
 
-                // Send motivation email
-                mailService.sendMotivationMail(userEmail, randomMotivationMessage);
-
+                mailService.sendMotivationMail(setting.getAccount().getEmail(), randomMotivationMessage);
             } catch (Exception e) {
-                log.error("Failed to send motivation for setting accountId: {}"
-                        , setting.getAccountId(), e);
+                log.error("Failed to send motivation for setting accountId: {}", setting.getAccount().getId(), e);
             }
         }
     }
@@ -105,11 +90,11 @@ public class Reminder {
     private void sendMotivation(MotivationFrequency motivationFrequency) {
 
         List<Setting> dailySettings = settingRepository.findByMotivationFrequency(motivationFrequency);
-
         if (dailySettings.isEmpty()) {
-            log.debug("No users found with DAILY motivation setting");
+            log.info("No users found with DAILY motivation setting");
             return;
         }
+
         sendMotivationMessages(dailySettings);
     }
 }
