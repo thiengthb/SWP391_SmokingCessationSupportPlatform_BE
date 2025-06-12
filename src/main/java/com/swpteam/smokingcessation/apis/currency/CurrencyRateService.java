@@ -3,6 +3,7 @@ package com.swpteam.smokingcessation.apis.currency;
 import com.swpteam.smokingcessation.config.CurrencyApiConfig;
 import com.swpteam.smokingcessation.constants.ErrorCode;
 import com.swpteam.smokingcessation.exception.AppException;
+import com.swpteam.smokingcessation.exception.CurrencyRateException;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
@@ -42,7 +43,8 @@ public class CurrencyRateService {
                 double rate;
                 if (value instanceof Number) {
                     rate = ((Number) value).doubleValue();
-                } else throw new AppException(ErrorCode.INVALID_CURRENCY);
+                } else
+                    throw new CurrencyRateException("Failed to update currency rates for: " + baseCurrency);
 
                 latestRates.put(currency, rate);
             }

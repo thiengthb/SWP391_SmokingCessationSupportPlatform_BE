@@ -17,6 +17,5 @@ public class AuthenticationRequest {
     String email;
 
     @NotBlank(message = "PASSWORD_REQUIRED")
-    @Size(min = 8, message = "PASSWORD_INVALID")
     String password;
 }

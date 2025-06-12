@@ -112,13 +112,16 @@ public enum ErrorCode {
     RECORD_DATE_REQUIRED(5003, "Date is required", HttpStatus.BAD_REQUEST),
     RECORD_DATE_INVALID(5004, "Date must be today or in the future", HttpStatus.BAD_REQUEST),
     RECORD_ALREADY_EXISTS(5005, "Record for this date already exists", HttpStatus.BAD_REQUEST),
+
     // Currency
+    CURRENCY_RATE_ERROR(8000, "Error while updating currency rates", HttpStatus.BAD_REQUEST),
     INVALID_CURRENCY(8000, "Invalid currency", HttpStatus.BAD_REQUEST),
 
     // Transaction
     TRANSACTION_NOT_FOUND(4000, "Transaction does not exist or have been deleted", HttpStatus.NOT_FOUND),
-    ;
 
+
+    ;
     int code;
     String message;
     HttpStatusCode httpCode;

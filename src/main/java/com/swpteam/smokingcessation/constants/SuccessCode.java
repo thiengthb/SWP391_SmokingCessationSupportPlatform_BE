@@ -58,8 +58,11 @@ public enum SuccessCode {
     // Member
     MEMBER_CREATED(3000, "Member has been created"),
     MEMBER_UPDATED(3001, "Member has been updated"),
+
     // Mail
     SEND_MAIL_SUCCESS(1004, "Success sending mail"),
+
+
     ;
     int code;
     String message;

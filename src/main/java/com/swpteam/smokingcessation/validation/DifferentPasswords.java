@@ -1,4 +1,4 @@
-package com.swpteam.smokingcessation.apis.account.validation;
+package com.swpteam.smokingcessation.validation;
 
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;

@@ -3,6 +3,11 @@ package com.swpteam.smokingcessation.security;
 import com.nimbusds.jose.JOSEException;
 import com.swpteam.smokingcessation.apis.authentication.AuthenticationService;
 import com.swpteam.smokingcessation.apis.authentication.dto.request.TokenRequest;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
+import lombok.experimental.NonFinal;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.oauth2.jose.jws.MacAlgorithm;
@@ -16,15 +21,20 @@ import javax.crypto.spec.SecretKeySpec;
 import java.text.ParseException;
 import java.util.Objects;
 
+@Slf4j
 @Component
+@RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class JwtCustomDecoder implements JwtDecoder {
+
+    @NonFinal
     @Value("${jwt.signer-key}")
-    private String signerKey;
+    String signerKey;
 
-    @Autowired
-    private AuthenticationService authenticationService;
+    AuthenticationService authenticationService;
 
-    private NimbusJwtDecoder nimbusJwtDecoder = null;
+    @NonFinal
+    NimbusJwtDecoder nimbusJwtDecoder = null;
 
     @Override
     public Jwt decode(String token) throws JwtException {

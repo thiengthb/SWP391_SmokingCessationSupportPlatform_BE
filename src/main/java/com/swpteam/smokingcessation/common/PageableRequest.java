@@ -16,6 +16,7 @@ import java.util.Objects;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class PageableRequest {
+
     @Min(value = 0, message = "PAGE_NO_MIN")
     Integer page;
 
@@ -35,5 +36,4 @@ public class PageableRequest {
 
         return PageRequest.of(page, size, direction, sortBy);
     }
-
 }

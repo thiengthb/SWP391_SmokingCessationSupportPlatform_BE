@@ -7,7 +7,9 @@ import com.swpteam.smokingcessation.apis.message.MessageRepository;
 import com.swpteam.smokingcessation.apis.setting.Setting;
 import com.swpteam.smokingcessation.apis.setting.SettingRepository;
 import com.swpteam.smokingcessation.apis.setting.enums.MotivationFrequency;
+import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -16,15 +18,16 @@ import java.time.LocalTime;
 import java.util.List;
 import java.util.Random;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
-@Slf4j
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class Reminder {
 
-    private final MessageRepository messageRepository;
-    private final MailService mailService;
-    private final SettingRepository settingRepository;
-    private final Random random = new Random();
+    MessageRepository messageRepository;
+    MailService mailService;
+    SettingRepository settingRepository;
+    Random random = new Random();
 
     @Scheduled(cron = "0 * * * * *")
     public void sendReminders() {
@@ -37,6 +40,9 @@ public class Reminder {
             try {
                 Account account = setting.getAccount();
                 String userEmail = account.getEmail();
+
+                log.info("Sending reminder to user with email: {}", userEmail);
+
                 mailService.sendReminderMail(userEmail);
             } catch (Exception e) {
                 log.error("Failed to send reminder for setting accountId: {}", setting.getAccount().getId(), e);
@@ -45,56 +51,56 @@ public class Reminder {
     }
 
     @Scheduled(cron = "0 0 8 * * *")
-    void sendDailyMotivation() {
+    public void sendDailyMotivation() {
         sendMotivation(MotivationFrequency.DAILY);
     }
 
     @Scheduled(cron = "0 0 8,14,20,0 * * *")
-    void sendEvery6HoursMotivation() {
+    public void sendEvery6HoursMotivation() {
         sendMotivation(MotivationFrequency.EVERY6HOURS);
     }
 
     @Scheduled(cron = "0 0 8,20 * * *")
-    void sendEvery12HoursMotivation() {
+    public void sendEvery12HoursMotivation() {
         sendMotivation(MotivationFrequency.EVERY12HOURS);
     }
 
     @Scheduled(cron = "0 0 8 * * SUN")
-    void sendWeeklyMotivation() {
+    public void sendWeeklyMotivation() {
         sendMotivation(MotivationFrequency.WEEKLY);
     }
 
     @Scheduled(cron = "0 0 8 1 * *")
-    void sendMonthlyMotivation() {
+    public void sendMonthlyMotivation() {
         sendMotivation(MotivationFrequency.MONTHLY);
-    }
-
-    private void sendMotivationMessages(List<Setting> settings) {
-        for (Setting setting : settings) {
-            try {
-                Message randomMotivationMessage = getRandomMotivationMessage();
-
-                mailService.sendMotivationMail(setting.getAccount().getEmail(), randomMotivationMessage);
-            } catch (Exception e) {
-                log.error("Failed to send motivation for setting accountId: {}", setting.getAccount().getId(), e);
-            }
-        }
     }
 
     private Message getRandomMotivationMessage() {
         List<Message> motivationMessages = messageRepository.findAllByIsDeletedFalse();
+
         int randomIndex = random.nextInt(motivationMessages.size());
+
         return motivationMessages.get(randomIndex);
     }
 
     private void sendMotivation(MotivationFrequency motivationFrequency) {
+        log.info("Sending motivation with frequency: {}", motivationFrequency);
 
         List<Setting> dailySettings = settingRepository.findByMotivationFrequency(motivationFrequency);
         if (dailySettings.isEmpty()) {
-            log.info("No users found with DAILY motivation setting");
+            log.info("No users found with {} motivation setting", motivationFrequency);
             return;
         }
 
-        sendMotivationMessages(dailySettings);
+        log.info("Sending motivation messages to {} user(s)", dailySettings.size());
+        for (Setting setting : dailySettings) {
+            String email = setting.getAccount().getEmail();
+            Message randomMotivationMessage = getRandomMotivationMessage();
+            try {
+                mailService.sendMotivationMail(email, randomMotivationMessage);
+            } catch (Exception e) {
+                log.error("Failed to send motivation to email: {}", email, e);
+            }
+        }
     }
 }
