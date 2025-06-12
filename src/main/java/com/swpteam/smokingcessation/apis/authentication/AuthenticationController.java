@@ -81,6 +81,7 @@ public class AuthenticationController {
                         .build());
     }
 
+    //front-end job
     @PostMapping("/logout")
     public ResponseEntity<ApiResponse<String>> logout(@AuthenticationPrincipal Jwt jwt) throws JOSEException, ParseException {
         String token = jwt.getTokenValue();

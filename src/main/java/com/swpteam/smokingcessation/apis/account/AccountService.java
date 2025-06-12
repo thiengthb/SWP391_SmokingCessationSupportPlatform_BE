@@ -98,37 +98,26 @@ public class AccountService {
         return account;
     }
 
-
-    public AccountResponse updateAccount(String id, AccountUpdateRequest request, Jwt jwt) {
-        return jwt.getClaimAsString("scope").equals("ROLE_ADMIN") ?
-                updateAccountRole(id, request) : updateAccountWithoutRole(id, request);
-    }
-
+    @PreAuthorize("hasRole('ADMIN')")
     @Transactional
-    private AccountResponse updateAccountWithoutRole(String id, AccountUpdateRequest request) {
-        Account account = accountRepository.findByIdAndIsDeletedFalse(id)
-                .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FOUND));
-
-        accountMapper.updateWithoutRole(account, request);
-        if(request.getPassword() != null){
-            PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
-            account.setPassword(passwordEncoder.encode(request.getPassword()));
-        }
+    public AccountResponse updateAccountRole(String id, Role role) {
+        Account account = findAccountById(id);
+        account.setRole(role);
         accountRepository.save(account);
-
         return accountMapper.toResponse(account);
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
     @Transactional
-    private AccountResponse updateAccountRole(String id, AccountUpdateRequest request) {
+    public AccountResponse updateAccountWithoutRole(String id, AccountUpdateRequest request) {
         Account account = findAccountById(id);
 
-        accountMapper.update(account, request);
-        if(request.getPassword() != null){
+        accountMapper.updateWithoutRole(account, request);
+
+        if (request.getPassword() != null) {
             PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
             account.setPassword(passwordEncoder.encode(request.getPassword()));
         }
+
         accountRepository.save(account);
 
         return accountMapper.toResponse(account);

@@ -28,7 +28,7 @@ public class MemberService {
     AccountRepository accountRepository;
 
     public MemberResponse createMember(MemberCreateRequest request, String id) {
-        Account account = accountRepository.findByIdAndIsDeletedFalse(id).orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FOUND    ));
+        Account account = accountRepository.findByIdAndIsDeletedFalse(id).orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FOUND));
 
 
         if (memberRepository.existsByFullName(request.getFullName())) {

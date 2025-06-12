@@ -1,8 +1,6 @@
 package com.swpteam.smokingcessation.apis.account.dto;
 
-import com.swpteam.smokingcessation.apis.account.enums.Role;
 import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.*;
@@ -22,5 +20,4 @@ public class AccountUpdateRequest {
 
     @Pattern(regexp = "\\d{10}", message = "PHONE_NUMBER_INVALID")
     String phoneNumber;
-    Role role;
 }
