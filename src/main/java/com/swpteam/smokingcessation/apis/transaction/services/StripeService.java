@@ -105,17 +105,34 @@ public class StripeService {
     }
 
     public void handleCheckoutSessionCompleted(Event event) {
-        EventDataObjectDeserializer deserializer = event.getDataObjectDeserializer();
+        log.info("Received event: {}", event.toJson());
 
+        EventDataObjectDeserializer deserializer = event.getDataObjectDeserializer();
         if (deserializer.getObject().isPresent()) {
             Object raw = deserializer.getObject().get();
 
             if (raw instanceof Session session) {
-                if (!"paid".equals(session.getPaymentStatus())) return;
+                log.info("Deserialized object type: {}", session.getClass());
 
-                String accountId = session.getMetadata().get("accountId");
-                String membershipName = session.getMetadata().get("membershipName");
-                String transactionId = session.getMetadata().get("transactionId");
+                if (!"paid".equalsIgnoreCase(session.getPaymentStatus())) {
+                    log.warn("Session payment_status is not 'paid': {}", session.getPaymentStatus());
+                    return;
+                }
+
+                Map<String, String> metadata = session.getMetadata();
+                if (metadata == null || metadata.isEmpty()) {
+                    log.warn("Session metadata is empty");
+                    return;
+                }
+
+                String accountId = metadata.get("accountId");
+                String membershipName = metadata.get("membershipName");
+                String transactionId = metadata.get("transactionId");
+
+                if (accountId == null || membershipName == null || transactionId == null) {
+                    log.error("Missing required metadata: {}", metadata);
+                    return;
+                }
 
                 Account account = accountRepository.findById(accountId)
                         .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_EXISTED));
@@ -136,23 +153,34 @@ public class StripeService {
     }
 
     public void handlePaymentIntentSucceeded(Event event) {
-        EventDataObjectDeserializer deserializer = event.getDataObjectDeserializer();
+        log.info("Received event: {}", event.toJson());
 
+        EventDataObjectDeserializer deserializer = event.getDataObjectDeserializer();
         if (deserializer.getObject().isPresent()) {
             Object raw = deserializer.getObject().get();
 
             if (raw instanceof PaymentIntent paymentIntent) {
-                if (!"succeeded".equals(paymentIntent.getStatus())) return;
+                log.info("Deserialized object type: {}", paymentIntent.getClass());
+
+                if (!"succeeded".equalsIgnoreCase(paymentIntent.getStatus())) {
+                    log.warn("PaymentIntent status is not 'succeeded': {}", paymentIntent.getStatus());
+                    return;
+                }
 
                 Map<String, String> metadata = paymentIntent.getMetadata();
-                if (metadata == null) {
-                    log.warn("PaymentIntent has no metadata");
+                if (metadata == null || metadata.isEmpty()) {
+                    log.warn("PaymentIntent metadata is missing");
                     return;
                 }
 
                 String accountId = metadata.get("accountId");
                 String membershipName = metadata.get("membershipName");
                 String transactionId = metadata.get("transactionId");
+
+                if (accountId == null || membershipName == null || transactionId == null) {
+                    log.error("Missing required metadata: {}", metadata);
+                    return;
+                }
 
                 Account account = accountRepository.findById(accountId)
                         .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_EXISTED));
@@ -171,4 +199,5 @@ public class StripeService {
             log.warn("Unable to deserialize payment_intent.succeeded event.");
         }
     }
+
 }
