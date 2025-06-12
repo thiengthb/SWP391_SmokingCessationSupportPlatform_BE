@@ -41,6 +41,12 @@ public enum SuccessCode {
     RECORD_GET_BY_ID(1004, "Success returning a record with given id"),
     RECORD_GET_BY_ACCOUNT(1004, "Success returning a record with given account id"),
 
+    //Message
+    MESSAGE_CREATED(2000, "Message has been created"),
+    MESSAGE_UPDATED(2001, "Message has been updated"),
+    MESSAGE_DELETED(2002, "Message has been deleted"),
+    MESSAGE_GET_BY_ID(2003, "Success returning a membership with given id"),
+
     ;
     int code;
     String message;

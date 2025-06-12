@@ -1,5 +1,7 @@
 package com.swpteam.smokingcessation.constants;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -71,6 +73,10 @@ public enum ErrorCode {
     MOTIVATION_MAX(7005, "Motivation per day must be at most 100", HttpStatus.BAD_REQUEST),
     DEADLINE_REQUIRED(7006, "Report deadline is required", HttpStatus.BAD_REQUEST),
 
+    // Message
+    MESSAGE_NOT_FOUND(8001, "Message does not exist or have been deleted", HttpStatus.BAD_REQUEST),
+    MESSAGE_CONTENT_REQUIRED(8002,"Message content is required",HttpStatus.BAD_REQUEST),
+   
     // Health
     HEALTH_RECORD_NOT_FOUND(4000, "Health record does not exist", HttpStatus.NOT_FOUND),
     CIGARETTES_PER_DAY_INVALID(4002, "Cigarettes per day must be non-negative", HttpStatus.BAD_REQUEST),
