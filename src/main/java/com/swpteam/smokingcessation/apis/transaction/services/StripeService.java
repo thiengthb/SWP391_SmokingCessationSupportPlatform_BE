@@ -15,10 +15,10 @@ import com.swpteam.smokingcessation.apis.subscription.Subscription;
 import com.swpteam.smokingcessation.apis.subscription.SubscriptionRepository;
 import com.swpteam.smokingcessation.apis.subscription.SubscriptionService;
 import com.swpteam.smokingcessation.apis.transaction.Transaction;
-import com.swpteam.smokingcessation.apis.transaction.dto.StripeSubscriptionRequest;
 import com.swpteam.smokingcessation.apis.transaction.dto.StripeResponse;
-import com.swpteam.smokingcessation.exception.AppException;
+import com.swpteam.smokingcessation.apis.transaction.dto.StripeSubscriptionRequest;
 import com.swpteam.smokingcessation.constants.ErrorCode;
+import com.swpteam.smokingcessation.exception.AppException;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -35,21 +35,17 @@ import java.util.Map;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class StripeService {
     private final SubscriptionRepository subscriptionRepository;
-
-    @NonFinal
-    @Value("${stripe.success-url}")
-    protected String successUrl;
-
-    @NonFinal
-    @Value("${stripe.cancel-url}")
-    protected String cancelUrl;
-
     AccountRepository accountRepository;
     MembershipRepository membershipRepository;
-
     TransactionService transactionService;
     SubscriptionService subscriptionService;
     MailService mailService;
+    @NonFinal
+    @Value("${stripe.success-url}")
+    protected String successUrl;
+    @NonFinal
+    @Value("${stripe.cancel-url}")
+    protected String cancelUrl;
 
     public StripeResponse checkoutSubscription(StripeSubscriptionRequest request) {
         Membership membership = membershipRepository.findByNameAndIsDeletedFalse(request.getMembershipName())
@@ -67,7 +63,7 @@ public class StripeService {
 
         SessionCreateParams.LineItem.PriceData priceData =
                 SessionCreateParams.LineItem.PriceData.builder()
-                        .setCurrency(membership.getCurrency() != null ? membership.getCurrency().name().toUpperCase()  : "USD")
+                        .setCurrency(membership.getCurrency() != null ? membership.getCurrency().name().toUpperCase() : "USD")
                         .setUnitAmount((long) membership.getPrice())
                         .setProductData(productData)
                         .build();

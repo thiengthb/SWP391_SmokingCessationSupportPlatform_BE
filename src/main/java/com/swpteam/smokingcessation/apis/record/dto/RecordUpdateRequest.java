@@ -1,6 +1,6 @@
 package com.swpteam.smokingcessation.apis.record.dto;
 
-import jakarta.validation.constraints.*;
+import jakarta.validation.constraints.Min;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 

@@ -44,10 +44,12 @@ public class ApplicationInitConfig {
                         .build();
 
 
-                Setting setting = new Setting().getDefaultSetting();
+                new Setting();
+                Setting setting = Setting.getDefaultSetting();
                 setting.setAccount(account);
 
-                Member member = new Member().getDefaultMember();
+                new Member();
+                Member member = Member.getDefaultMember();
                 member.setAccount(account);
 
                 account.setSetting(setting);

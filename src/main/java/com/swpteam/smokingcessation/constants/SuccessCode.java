@@ -61,16 +61,21 @@ public enum SuccessCode {
     // Mail
     SEND_MAIL_SUCCESS(1004, "Success sending mail")
 
-    // Account
-    ACCOUNT_CREATED(3000, "Account has been created"),
-    ACCOUNT_UPDATED(3001, "Account has been updated"),
-    ACCOUNT_DELETED(3002, "Account has been deleted"),
-    PASSWORD_CHANGE_SUCCESS(3003, "Password is changed successfully"),
-
-    // Member
-    MEMBER_CREATED(3000, "Member has been created"),
-    MEMBER_UPDATED(3001, "Member has been updated"),
-    ;
     int code;
     String message;
-}
+
+    // Account
+    ACCOUNT_CREATED(3000,"Account has been created"),
+
+    ACCOUNT_UPDATED(3001,"Account has been updated"),
+
+    ACCOUNT_DELETED(3002,"Account has been deleted"),
+
+    PASSWORD_CHANGE_SUCCESS(3003,"Password is changed successfully"),
+
+    // Member
+    MEMBER_CREATED(3000,"Member has been created"),
+
+    MEMBER_UPDATED(3001,"Member has been updated"),
+            ;
+    }

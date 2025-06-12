@@ -6,6 +6,6 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface TransactionRepository extends JpaRepository<Transaction, String>  {
+public interface TransactionRepository extends JpaRepository<Transaction, String> {
     Optional<Transaction> findByIdAndIsDeletedFalse(String id);
 }

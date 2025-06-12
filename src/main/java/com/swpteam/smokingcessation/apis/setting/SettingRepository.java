@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface SettingRepository extends JpaRepository<Setting, String>  {
+public interface SettingRepository extends JpaRepository<Setting, String> {
 
     List<Setting> findByReportDeadlineAndIsDeletedFalse(LocalTime deadlineTime);
 

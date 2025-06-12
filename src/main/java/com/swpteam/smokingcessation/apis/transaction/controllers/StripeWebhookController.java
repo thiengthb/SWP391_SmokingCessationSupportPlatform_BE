@@ -11,7 +11,10 @@ import lombok.experimental.FieldDefaults;
 import lombok.experimental.NonFinal;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -24,11 +27,10 @@ import java.util.Scanner;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class StripeWebhookController {
 
+    StripeService stripeService;
     @NonFinal
     @Value("${stripe.webhook.secret}")
     protected String endpointSecret;
-
-    StripeService stripeService;
 
     @PostMapping("/stripe")
     String handleStripeEvent(HttpServletRequest request, @RequestHeader("Stripe-Signature") String sigHeader) {

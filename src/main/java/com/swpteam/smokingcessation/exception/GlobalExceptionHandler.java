@@ -62,7 +62,8 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(SecurityException.class)
     ResponseEntity<ApiResponse> handleSecurityException(SecurityException exception) {
-        ApiResponse apiResponse = new ApiResponse<>().builder()
+        new ApiResponse<>();
+        ApiResponse apiResponse = ApiResponse.builder()
                 .code(401)
                 .message(exception.getMessage())
                 .build();
@@ -105,7 +106,8 @@ public class GlobalExceptionHandler {
         } catch (IllegalArgumentException ignored) {
         }
 
-        ApiResponse apiResponse = new ApiResponse().builder()
+        new ApiResponse();
+        ApiResponse apiResponse = ApiResponse.builder()
                 .code(errorCode.getCode())
                 .message(Objects.nonNull(attributes)
                         ? mapAttribute(errorCode.getMessage(), attributes)

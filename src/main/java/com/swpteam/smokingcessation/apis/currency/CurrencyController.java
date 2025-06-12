@@ -24,8 +24,7 @@ public class CurrencyController {
     @GetMapping("/convert")
     public ResponseEntity<Double> convert(
             @RequestParam double amount,
-            @RequestParam String to)
-    {
+            @RequestParam String to) {
         Double rate = currencyRateService.getRate(to.toUpperCase());
         if (rate == null)
             throw new AppException(ErrorCode.INVALID_CURRENCY);
