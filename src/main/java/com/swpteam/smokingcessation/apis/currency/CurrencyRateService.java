@@ -20,13 +20,12 @@ public class CurrencyRateService {
 
     RestTemplate restTemplate;
     CurrencyApiConfig currencyApiConfig;
+    Map<String, Double> latestRates = new ConcurrentHashMap<>();
 
     public CurrencyRateService(CurrencyApiConfig config) {
         this.restTemplate = new RestTemplate();
         this.currencyApiConfig = config;
     }
-
-    Map<String, Double> latestRates = new ConcurrentHashMap<>();
 
     public void updateRates(String baseCurrency) {
         String url = currencyApiConfig.getApiEndpoint(baseCurrency);
@@ -43,8 +42,7 @@ public class CurrencyRateService {
                 double rate;
                 if (value instanceof Number) {
                     rate = ((Number) value).doubleValue();
-                }
-                else throw new AppException(ErrorCode.INVALID_CURRENCY);
+                } else throw new AppException(ErrorCode.INVALID_CURRENCY);
 
                 latestRates.put(currency, rate);
             }

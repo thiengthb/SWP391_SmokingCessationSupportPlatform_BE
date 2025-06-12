@@ -1,6 +1,5 @@
 package com.swpteam.smokingcessation.apis.record;
 
-import com.swpteam.smokingcessation.apis.health.dto.HealthResponse;
 import com.swpteam.smokingcessation.apis.record.dto.RecordCreateRequest;
 import com.swpteam.smokingcessation.apis.record.dto.RecordResponse;
 import com.swpteam.smokingcessation.apis.record.dto.RecordUpdateRequest;

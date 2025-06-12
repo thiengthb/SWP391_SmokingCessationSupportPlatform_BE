@@ -3,7 +3,9 @@ package com.swpteam.smokingcessation.apis.subscription;
 import com.swpteam.smokingcessation.apis.account.Account;
 import com.swpteam.smokingcessation.apis.membership.Membership;
 import com.swpteam.smokingcessation.common.BaseEntity;
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 

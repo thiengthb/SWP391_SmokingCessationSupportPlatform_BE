@@ -42,7 +42,7 @@ public class MailService {
 
     public void sendPaymentSuccessEmail(String accountId, String subscriptionId, double amount) {
         Account account = accountRepository.findById(accountId)
-                .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_EXISTED));
+                .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FOUND));
 
         Subscription subscription = subscriptionRepository.findByIdAndIsDeletedFalse(subscriptionId)
                 .orElseThrow(() -> new AppException(ErrorCode.SUBSCRIPTION_NOT_FOUND));
@@ -116,6 +116,26 @@ public class MailService {
             e.printStackTrace();
             throw new AppException(ErrorCode.UNCATEGORIZED_EXCEPTION);
         }
+    }
+
+    public void sendResetPasswordEmail(String to, String resetLink, String userName) throws MessagingException {
+        // Prepare the Thymeleaf context
+        Context context = new Context();
+        context.setVariable("userName", userName);
+        context.setVariable("resetLink", resetLink);
+        context.setVariable("expirationTime", "15 minutes");
+
+        // Generate the email content using Thymeleaf
+        String htmlContent = templateEngine.process("reset-mail-template", context);
+
+        // Create and send the email
+        MimeMessage mimeMessage = mailSender.createMimeMessage();
+        MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
+        helper.setTo(to);
+        helper.setSubject("Password Reset Request");
+        helper.setText(htmlContent, true); // true indicates HTML content
+
+        mailSender.send(mimeMessage);
     }
 }
 

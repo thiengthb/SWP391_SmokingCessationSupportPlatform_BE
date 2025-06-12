@@ -8,8 +8,8 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableScheduling
 public class Swp391SmokingCessationSupportPlatformBeApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(Swp391SmokingCessationSupportPlatformBeApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(Swp391SmokingCessationSupportPlatformBeApplication.class, args);
+    }
 
 }

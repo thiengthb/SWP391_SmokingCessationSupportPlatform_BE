@@ -1,27 +1,31 @@
 package com.swpteam.smokingcessation.apis.account;
 
-import com.swpteam.smokingcessation.apis.account.dto.request.AccountCreateRequest;
-import com.swpteam.smokingcessation.apis.account.dto.request.AccountUpdateRequest;
-import com.swpteam.smokingcessation.apis.account.dto.response.AccountResponse;
-import org.mapstruct.Mapper;
-import org.mapstruct.Mapping;
-import org.mapstruct.MappingTarget;
+import com.swpteam.smokingcessation.apis.account.dto.AccountRequest;
+import com.swpteam.smokingcessation.apis.account.dto.AccountResponse;
+import com.swpteam.smokingcessation.apis.account.dto.AccountUpdateRequest;
+import com.swpteam.smokingcessation.apis.authentication.dto.request.RegisterRequest;
+import org.mapstruct.*;
 
 
 @Mapper(componentModel = "spring")
 public interface AccountMapper {
 
-    @Mapping(target = "id", ignore = true)
-    @Mapping(target = "createdAt", expression = "java(java.time.LocalDateTime.now())")
-    @Mapping(target = "updatedAt", expression = "java(java.time.LocalDateTime.now())")
-    Account toAccount(AccountCreateRequest request);
+    Account toEntity(AccountRequest request);
 
-    AccountResponse toAccountResponse(Account entity);
+    Account toEntityFromRegister(RegisterRequest request);
 
+    AccountResponse toResponse(Account entity);
+
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
     @Mapping(target = "id", ignore = true)
-    //@Mapping(target = "email", ignore = true)
-    //@Mapping(target = "password", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
     @Mapping(target = "updatedAt", expression = "java(java.time.LocalDateTime.now())")
-    void updateAccount(@MappingTarget Account entity, AccountUpdateRequest request);
+    void update(@MappingTarget Account entity, AccountUpdateRequest request);
+
+    @BeanMapping(nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.IGNORE)
+    @Mapping(target = "id", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "updatedAt", expression = "java(java.time.LocalDateTime.now())")
+    @Mapping(target = "role", ignore = true)
+    void updateWithoutRole(@MappingTarget Account entity, AccountUpdateRequest request);
 }

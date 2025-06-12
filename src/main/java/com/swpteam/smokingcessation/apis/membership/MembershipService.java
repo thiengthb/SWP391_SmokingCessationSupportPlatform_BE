@@ -1,15 +1,15 @@
 package com.swpteam.smokingcessation.apis.membership;
 
 import com.swpteam.smokingcessation.apis.currency.CurrencyRateService;
-import com.swpteam.smokingcessation.apis.membership.dto.MembershipCurrencyUpdateRequest;
 import com.swpteam.smokingcessation.apis.membership.dto.MembershipCreateRequest;
+import com.swpteam.smokingcessation.apis.membership.dto.MembershipCurrencyUpdateRequest;
 import com.swpteam.smokingcessation.apis.membership.dto.MembershipResponse;
 import com.swpteam.smokingcessation.apis.membership.dto.MembershipUpdateRequest;
 import com.swpteam.smokingcessation.apis.subscription.Subscription;
 import com.swpteam.smokingcessation.apis.subscription.SubscriptionRepository;
 import com.swpteam.smokingcessation.common.PageableRequest;
-import com.swpteam.smokingcessation.exception.AppException;
 import com.swpteam.smokingcessation.constants.ErrorCode;
+import com.swpteam.smokingcessation.exception.AppException;
 import com.swpteam.smokingcessation.utils.ValidationUtil;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +20,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Slf4j
@@ -63,6 +64,7 @@ public class MembershipService {
             throw new AppException(ErrorCode.MEMBERSHIP_NAME_UNIQUE);
 
         Membership membership = membershipMapper.toEntity(request);
+        membership.setCreatedAt(LocalDateTime.now());
 
         return membershipMapper.toResponse(membershipRepository.save(membership));
     }

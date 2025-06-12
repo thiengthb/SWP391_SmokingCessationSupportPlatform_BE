@@ -2,7 +2,7 @@ package com.swpteam.smokingcessation.apis.message;
 
 
 import com.swpteam.smokingcessation.common.BaseEntity;
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 

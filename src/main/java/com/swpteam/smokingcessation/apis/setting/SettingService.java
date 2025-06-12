@@ -2,8 +2,8 @@ package com.swpteam.smokingcessation.apis.setting;
 
 import com.swpteam.smokingcessation.apis.setting.dto.SettingRequest;
 import com.swpteam.smokingcessation.apis.setting.dto.SettingResponse;
-import com.swpteam.smokingcessation.exception.AppException;
 import com.swpteam.smokingcessation.constants.ErrorCode;
+import com.swpteam.smokingcessation.exception.AppException;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -29,7 +29,7 @@ public class SettingService {
 
     public SettingResponse updateSetting(String accountId, SettingRequest request) {
         Setting setting = settingRepository.findByAccountIdAndIsDeletedFalse(accountId)
-                .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_EXISTED));
+                .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FOUND));
 
         settingMapper.update(setting, request);
 
@@ -47,6 +47,6 @@ public class SettingService {
     public SettingResponse getSetting(String accountId) {
         return settingMapper.toResponse(
                 settingRepository.findById(accountId)
-                        .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_EXISTED)));
+                        .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FOUND)));
     }
 }

@@ -1,7 +1,5 @@
 package com.swpteam.smokingcessation.apis.health;
 
-import com.swpteam.smokingcessation.apis.account.Account;
-import com.swpteam.smokingcessation.apis.membership.Membership;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

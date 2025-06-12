@@ -50,7 +50,7 @@ public class HealthService {
         }
 
         accountRepository.findById(accountId)
-                .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_EXISTED));
+                .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FOUND));
 
         Pageable pageable = PageableRequest.getPageable(request);
         Page<Health> healths = healthRepository.findByAccountIdAndIsDeletedFalse(accountId, pageable);
@@ -61,7 +61,7 @@ public class HealthService {
     @Transactional
     public HealthResponse createHealth(HealthCreateRequest request) {
         Account account = accountRepository.findById(request.getAccountId())
-                .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_EXISTED));
+                .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FOUND));
 
         Health health = healthMapper.toEntity(request);
 

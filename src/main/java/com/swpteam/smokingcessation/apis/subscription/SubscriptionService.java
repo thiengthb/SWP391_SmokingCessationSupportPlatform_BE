@@ -7,8 +7,8 @@ import com.swpteam.smokingcessation.apis.membership.MembershipRepository;
 import com.swpteam.smokingcessation.apis.subscription.dto.SubscriptionRequest;
 import com.swpteam.smokingcessation.apis.subscription.dto.SubscriptionResponse;
 import com.swpteam.smokingcessation.common.PageableRequest;
-import com.swpteam.smokingcessation.exception.AppException;
 import com.swpteam.smokingcessation.constants.ErrorCode;
+import com.swpteam.smokingcessation.exception.AppException;
 import com.swpteam.smokingcessation.utils.ValidationUtil;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -55,7 +55,7 @@ public class SubscriptionService {
         }
 
         accountRepository.findById(accountId)
-                .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_EXISTED));
+                .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FOUND));
 
         Pageable pageable = PageableRequest.getPageable(request);
         Page<Subscription> subscriptions = subscriptionRepository.findByAccountIdAndIsDeletedFalse(accountId, pageable);
@@ -66,7 +66,7 @@ public class SubscriptionService {
     @Transactional
     public Subscription createSubscription(String accountId, String membershipName) {
         Account account = accountRepository.findById(accountId)
-                .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_EXISTED));
+                .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FOUND));
 
         Membership membership = membershipRepository.findByNameAndIsDeletedFalse(membershipName)
                 .orElseThrow(() -> new AppException(ErrorCode.MEMBERSHIP_NOT_FOUND));
@@ -86,7 +86,7 @@ public class SubscriptionService {
         Subscription subscription = subscriptionMapper.toEntity(request);
 
         Account account = accountRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_EXISTED));
+                .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FOUND));
 
         Membership membership = membershipRepository.findByNameAndIsDeletedFalse(request.getMembershipName())
                 .orElseThrow(() -> new AppException(ErrorCode.MEMBERSHIP_NOT_FOUND));
