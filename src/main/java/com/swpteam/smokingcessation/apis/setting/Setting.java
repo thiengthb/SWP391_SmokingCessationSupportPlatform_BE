@@ -5,6 +5,7 @@ import com.swpteam.smokingcessation.apis.setting.enums.Language;
 import com.swpteam.smokingcessation.apis.setting.enums.MotivationFrequency;
 import com.swpteam.smokingcessation.apis.setting.enums.Theme;
 import com.swpteam.smokingcessation.apis.setting.enums.TrackingMode;
+import com.swpteam.smokingcessation.common.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -18,7 +19,7 @@ import java.time.LocalTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class Setting {
+public class Setting extends BaseEntity {
 
     @OneToOne(fetch = FetchType.LAZY)
     @MapsId

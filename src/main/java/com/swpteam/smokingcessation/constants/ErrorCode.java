@@ -15,7 +15,7 @@ import org.springframework.http.HttpStatusCode;
 public enum ErrorCode {
 
     UNCATEGORIZED_EXCEPTION(9999, "Uncategorized error", HttpStatus.INTERNAL_SERVER_ERROR),
-    INVALID_MESSAGE_KEY(9999, "Invalid message key", HttpStatus.INTERNAL_SERVER_ERROR),
+    INVALID_MESSAGE_KEY(9999, "Invalid message key", HttpStatus.BAD_REQUEST),
 
     // Common
     ACCOUNT_REQUIRED(1000, "Account is required", HttpStatus.BAD_REQUEST),
