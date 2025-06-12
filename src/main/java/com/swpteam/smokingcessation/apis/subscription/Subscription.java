@@ -2,12 +2,10 @@ package com.swpteam.smokingcessation.apis.subscription;
 
 import com.swpteam.smokingcessation.apis.account.Account;
 import com.swpteam.smokingcessation.apis.membership.Membership;
-import com.swpteam.smokingcessation.apis.subscription.enums.PaymentStatus;
 import com.swpteam.smokingcessation.common.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-import org.hibernate.annotations.Where;
 
 import java.time.LocalDate;
 
@@ -30,7 +28,4 @@ public class Subscription extends BaseEntity {
 
     LocalDate startDate;
     LocalDate endDate;
-
-    @Enumerated(EnumType.STRING)
-    PaymentStatus paymentStatus;
 }

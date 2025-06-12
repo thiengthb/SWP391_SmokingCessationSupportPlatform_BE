@@ -83,8 +83,12 @@ public enum ErrorCode {
     SMOKE_YEAR_INVALID(4009, "Smoke year must be non-negative", HttpStatus.BAD_REQUEST),
     ACCESS_DENIED(4001, "Access denied", HttpStatus.FORBIDDEN),
     PACK_PRICE_TOO_HIGH(4010, "Pack price must not exceed 500.0", HttpStatus.BAD_REQUEST),
+
     // Currency
     INVALID_CURRENCY(8000, "Invalid currency", HttpStatus.BAD_REQUEST),
+
+    // Transaction
+    TRANSACTION_NOT_FOUND(4000, "Transaction does not exist or have been deleted", HttpStatus.NOT_FOUND),
 
 
     ;
