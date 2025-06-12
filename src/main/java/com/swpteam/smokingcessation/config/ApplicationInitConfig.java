@@ -45,12 +45,10 @@ public class ApplicationInitConfig {
 
 
                 new Setting();
-                Setting setting = Setting.getDefaultSetting();
-                setting.setAccount(account);
+                Setting setting = Setting.getDefaultSetting(account);
 
                 new Member();
-                Member member = Member.getDefaultMember();
-                member.setAccount(account);
+                Member member = Member.getDefaultMember(account);
 
                 account.setSetting(setting);
                 account.setMember(member);

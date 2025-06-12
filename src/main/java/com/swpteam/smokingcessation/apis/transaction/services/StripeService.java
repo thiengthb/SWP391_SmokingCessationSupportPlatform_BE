@@ -52,7 +52,7 @@ public class StripeService {
                 .orElseThrow(() -> new AppException(ErrorCode.MEMBERSHIP_NOT_FOUND));
 
         Account account = accountRepository.findById(request.getAccountId())
-                .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_EXISTED));
+                .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FOUND));
 
         Transaction transaction = transactionService.createTransaction(account, membership.getPrice());
 
@@ -175,7 +175,7 @@ public class StripeService {
                 }
 
                 Account account = accountRepository.findById(accountId)
-                        .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_EXISTED));
+                        .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FOUND));
 
                 Membership membership = membershipRepository.findByNameAndIsDeletedFalse(membershipName)
                         .orElseThrow(() -> new AppException(ErrorCode.MEMBERSHIP_NOT_FOUND));

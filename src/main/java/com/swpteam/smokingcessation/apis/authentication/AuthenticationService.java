@@ -295,7 +295,7 @@ public class AuthenticationService {
                 throw new AppException(ErrorCode.INVALID_RESET_TOKEN);
             }
             if (jwtClaimsSet.getExpirationTime().before(new Date()) || invalidatedTokenRepository.existsById(jwtClaimsSet.getJWTID())) {
-                throw new AppException(ErrorCode.EXPIRED_TOKEN);
+                throw new AppException(ErrorCode.TOKEN_EXPIRED);
             }
             emailFromToken = jwtClaimsSet.getSubject();
             jwtId = jwtClaimsSet.getJWTID();

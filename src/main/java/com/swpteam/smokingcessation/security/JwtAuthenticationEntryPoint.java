@@ -31,7 +31,7 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
         // check for expired tokens
         if (causeMsg != null && causeMsg.toLowerCase().contains("expired")) {
-            errorCode = ErrorCode.EXPIRED_TOKEN;
+            errorCode = ErrorCode.TOKEN_EXPIRED;
             message = errorCode.getMessage();
         }
 

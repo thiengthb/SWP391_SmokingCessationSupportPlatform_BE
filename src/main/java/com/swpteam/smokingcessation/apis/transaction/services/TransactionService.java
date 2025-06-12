@@ -26,7 +26,7 @@ public class TransactionService {
     @Transactional
     public Transaction createTransaction(Account account, double amount) {
         accountRepository.findById(account.getId())
-                .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_EXISTED));
+                .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FOUND));
 
         Transaction transaction = Transaction.startTransaction(account);
 
