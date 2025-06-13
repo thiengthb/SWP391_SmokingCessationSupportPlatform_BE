@@ -63,9 +63,15 @@ public enum SuccessCode {
     SEND_MAIL_SUCCESS(1004, "Success sending mail"),
 
     // Chatbot
-    RETURN_MESSAGE(1000, "Success returning response")
+    RETURN_MESSAGE(1000, "Success returning response"),
 
-
+    // Feedback
+    FEEDBACK_CREATED(2000, "Feedback has been created"),
+    FEEDBACK_UPDATED(2001, "Feedback has been updated"),
+    FEEDBACK_DELETED(2002, "Feedback has been deleted"),
+    FEEDBACK_GET_ALL(1003, "Success returning a page of health"),
+    FEEDBACK_GET_BY_ID(1004, "Success returning a health with given id"),
+    FEEDBACK_GET_BY_ACCOUNT(1004, "Success returning a health with given account id"),
     ;
     int code;
     String message;

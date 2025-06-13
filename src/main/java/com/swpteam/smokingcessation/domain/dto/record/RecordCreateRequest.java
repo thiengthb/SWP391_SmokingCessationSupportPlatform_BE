@@ -19,9 +19,8 @@ public class RecordCreateRequest {
     @NotBlank(message = "ACCOUNT_REQUIRED")
     String accountId;
 
-    @NotBlank(message = "CIGARETTES_SMOKED_REQUIRED")
     @Min(value = 0, message = "CIGARETTES_SMOKED_INVALID")
-    Integer cigarettesSmoked;
+    int cigarettesSmoked;
 
     @NotNull(message = "RECORD_DATE_REQUIRED")
     @FutureOrPresent(message = "RECORD_DATE_INVALID")

@@ -125,6 +125,11 @@ public enum ErrorCode {
     PROMPT_MAX_SIZE(4000, "Prompt must not exceed 200 characters", HttpStatus.BAD_REQUEST),
     OUT_OF_LIMIT(4000, "Out of limit of today", HttpStatus.TOO_MANY_REQUESTS),
 
+    // Feedback
+    FEEDBACK_NOT_FOUND(9000, "Feedback does not exist", HttpStatus.NOT_FOUND),
+    FEEDBACK_COMMENT_REQUIRED(9001, "Feedback comment is required", HttpStatus.BAD_REQUEST),
+    FEEDBACK_RATING_MIN(9002, "Rating must be at least 1", HttpStatus.BAD_REQUEST),
+    FEEDBACK_RATING_MAX(9003, "Rating must be at most 5", HttpStatus.BAD_REQUEST),
     ;
     int code;
     String message;
