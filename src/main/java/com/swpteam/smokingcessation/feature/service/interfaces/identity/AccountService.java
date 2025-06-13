@@ -7,7 +7,6 @@ import com.swpteam.smokingcessation.domain.dto.account.AccountUpdateRequest;
 import com.swpteam.smokingcessation.domain.dto.account.ChangePasswordRequest;
 import com.swpteam.smokingcessation.domain.enums.Role;
 import org.springframework.data.domain.Page;
-import org.springframework.security.oauth2.jwt.Jwt;
 
 public interface AccountService {
 
@@ -25,7 +24,7 @@ public interface AccountService {
 
     public AccountResponse changePassword(ChangePasswordRequest request);
 
-    public AccountResponse getAccountByEmail(String email);
+    public AccountResponse getAccountByEmail();
 
-    public void banAccount(String id, Jwt jwt);
+    public void banAccount(String id);
 }

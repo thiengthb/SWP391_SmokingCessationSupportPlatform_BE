@@ -25,5 +25,5 @@ public interface AuthenticationService {
 
     public void resetPassword(ResetPasswordRequest request);
 
-    public void logout(String token) throws ParseException, JOSEException;
+    public void logout() throws ParseException, JOSEException;
 }

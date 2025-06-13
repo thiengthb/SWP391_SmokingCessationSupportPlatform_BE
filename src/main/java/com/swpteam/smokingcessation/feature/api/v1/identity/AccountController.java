@@ -1,14 +1,15 @@
 package com.swpteam.smokingcessation.feature.api.v1.identity;
 
+import com.swpteam.smokingcessation.common.ApiResponse;
+import com.swpteam.smokingcessation.common.PageableRequest;
+import com.swpteam.smokingcessation.constant.SuccessCode;
 import com.swpteam.smokingcessation.domain.dto.account.AccountRequest;
 import com.swpteam.smokingcessation.domain.dto.account.AccountResponse;
 import com.swpteam.smokingcessation.domain.dto.account.AccountUpdateRequest;
 import com.swpteam.smokingcessation.domain.dto.account.ChangePasswordRequest;
 import com.swpteam.smokingcessation.domain.enums.Role;
-import com.swpteam.smokingcessation.common.ApiResponse;
-import com.swpteam.smokingcessation.common.PageableRequest;
-import com.swpteam.smokingcessation.constant.SuccessCode;
 import com.swpteam.smokingcessation.feature.service.interfaces.identity.AccountService;
+import com.swpteam.smokingcessation.utils.AccountUtil;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +27,7 @@ import org.springframework.web.bind.annotation.*;
 public class AccountController {
 
     AccountService accountService;
+    AccountUtil accountUtil;
 
     @PostMapping
     ResponseEntity<ApiResponse<AccountResponse>> createAccount(@RequestBody @Valid AccountRequest request) {
@@ -38,7 +40,7 @@ public class AccountController {
     }
 
     @GetMapping
-    ResponseEntity<ApiResponse<Page<AccountResponse>>> getUsers(@Valid PageableRequest request) {
+    ResponseEntity<ApiResponse<Page<AccountResponse>>> getAccounts(@Valid PageableRequest request) {
         return ResponseEntity.ok(
                 ApiResponse.<Page<AccountResponse>>builder()
                         .result(accountService.getAccounts(request))
@@ -96,16 +98,17 @@ public class AccountController {
 
     @GetMapping("/me")
     ResponseEntity<ApiResponse<AccountResponse>> getMe(@AuthenticationPrincipal Jwt jwt) {
-        String email = jwt.getClaimAsString("sub");
         return ResponseEntity.ok(
                 ApiResponse.<AccountResponse>builder()
-                        .result(accountService.getAccountByEmail(email))
+                        .code(SuccessCode.GET_ME.getCode())
+                        .message(SuccessCode.GET_ME.getMessage())
+                        .result(accountService.getAccountByEmail())
                         .build());
     }
 
     @PutMapping("/ban/{id}")
-    ResponseEntity<ApiResponse<Void>> banAccount(@PathVariable String id, @AuthenticationPrincipal Jwt jwt) {
-        accountService.banAccount(id, jwt);
+    ResponseEntity<ApiResponse<Void>> banAccount(@PathVariable String id) {
+        accountService.banAccount(id);
         return ResponseEntity.ok(
                 ApiResponse.<Void>builder()
                         .code(SuccessCode.ACCOUNT_BANNED.getCode())
