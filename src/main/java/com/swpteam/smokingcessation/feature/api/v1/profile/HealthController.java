@@ -6,7 +6,6 @@ import com.swpteam.smokingcessation.domain.dto.health.HealthUpdateRequest;
 import com.swpteam.smokingcessation.common.ApiResponse;
 import com.swpteam.smokingcessation.common.PageableRequest;
 import com.swpteam.smokingcessation.constant.SuccessCode;
-import com.swpteam.smokingcessation.feature.service.impl.profile.HealthServiceImpl;
 import com.swpteam.smokingcessation.feature.service.interfaces.profile.HealthService;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;

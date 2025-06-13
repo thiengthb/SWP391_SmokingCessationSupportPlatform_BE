@@ -1,4 +1,4 @@
-package com.swpteam.smokingcessation.feature.service.impl.membership;
+package com.swpteam.smokingcessation.feature.service.impl;
 
 import com.swpteam.smokingcessation.feature.integration.currency.CurrencyRateService;
 import com.swpteam.smokingcessation.domain.dto.membership.MembershipCreateRequest;
@@ -15,7 +15,6 @@ import com.swpteam.smokingcessation.domain.entity.Membership;
 import com.swpteam.smokingcessation.exception.AppException;
 import com.swpteam.smokingcessation.feature.service.interfaces.membership.MembershipService;
 import com.swpteam.smokingcessation.utils.ValidationUtil;
-import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;

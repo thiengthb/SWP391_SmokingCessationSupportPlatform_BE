@@ -1,4 +1,4 @@
-package com.swpteam.smokingcessation.feature.service.impl.profile;
+package com.swpteam.smokingcessation.feature.service.impl;
 
 import com.swpteam.smokingcessation.domain.entity.Account;
 import com.swpteam.smokingcessation.domain.mapper.MemberMapper;

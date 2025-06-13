@@ -1,4 +1,4 @@
-package com.swpteam.smokingcessation.feature.service.impl.identity;
+package com.swpteam.smokingcessation.feature.service.impl;
 
 import com.nimbusds.jose.*;
 import com.nimbusds.jose.crypto.MACSigner;

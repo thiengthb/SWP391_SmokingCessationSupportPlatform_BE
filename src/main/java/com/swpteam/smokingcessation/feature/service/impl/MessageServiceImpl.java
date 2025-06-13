@@ -1,4 +1,4 @@
-package com.swpteam.smokingcessation.feature.service.impl.notification;
+package com.swpteam.smokingcessation.feature.service.impl;
 
 import com.swpteam.smokingcessation.domain.dto.message.MessageRequest;
 import com.swpteam.smokingcessation.domain.dto.message.MessageResponse;

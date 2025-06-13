@@ -1,4 +1,4 @@
-package com.swpteam.smokingcessation.feature.service.impl.tracking;
+package com.swpteam.smokingcessation.feature.service.impl;
 
 import com.swpteam.smokingcessation.domain.entity.Account;
 import com.swpteam.smokingcessation.domain.mapper.RecordMapper;

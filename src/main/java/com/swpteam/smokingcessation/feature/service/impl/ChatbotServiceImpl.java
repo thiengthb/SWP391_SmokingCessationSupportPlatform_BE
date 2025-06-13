@@ -1,4 +1,4 @@
-package com.swpteam.smokingcessation.feature.service.impl.chatbot;
+package com.swpteam.smokingcessation.feature.service.impl;
 
 import com.swpteam.smokingcessation.constant.AIToken;
 import com.swpteam.smokingcessation.constant.ErrorCode;

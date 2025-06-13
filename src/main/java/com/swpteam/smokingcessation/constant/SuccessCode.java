@@ -72,7 +72,10 @@ public enum SuccessCode {
     SEND_MAIL_SUCCESS(1004, "Success sending mail"),
 
     // Chatbot
-    RETURN_MESSAGE(1000, "Success returning response")
+    RETURN_MESSAGE(1000, "Success returning response"),
+
+    // Cloudinary Image Upload
+    UPLOAD_IMAGE(1000, "Success uploading image"),
 
 
     ;

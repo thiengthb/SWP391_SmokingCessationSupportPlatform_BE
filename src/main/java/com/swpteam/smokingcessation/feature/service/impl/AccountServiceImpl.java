@@ -1,4 +1,4 @@
-package com.swpteam.smokingcessation.feature.service.impl.identity;
+package com.swpteam.smokingcessation.feature.service.impl;
 
 import com.swpteam.smokingcessation.domain.dto.account.AccountRequest;
 import com.swpteam.smokingcessation.domain.dto.account.AccountResponse;

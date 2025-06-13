@@ -1,4 +1,4 @@
-package com.swpteam.smokingcessation.feature.service.impl.profile;
+package com.swpteam.smokingcessation.feature.service.impl;
 
 import com.swpteam.smokingcessation.domain.dto.setting.SettingRequest;
 import com.swpteam.smokingcessation.domain.dto.setting.SettingResponse;
