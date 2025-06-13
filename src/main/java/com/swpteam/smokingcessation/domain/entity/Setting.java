@@ -1,6 +1,5 @@
 package com.swpteam.smokingcessation.domain.entity;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.swpteam.smokingcessation.domain.enums.Language;
 import com.swpteam.smokingcessation.domain.enums.MotivationFrequency;
 import com.swpteam.smokingcessation.domain.enums.Theme;
