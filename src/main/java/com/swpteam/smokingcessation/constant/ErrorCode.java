@@ -89,6 +89,7 @@ public enum ErrorCode {
     //Member
     MEMBER_EXISTED(8000, "Member fields already exist", HttpStatus.BAD_REQUEST),
     MEMBER_NOT_FOUND(8001, "Member doesn't exist", HttpStatus.BAD_REQUEST),
+
     // Message
     MESSAGE_NOT_FOUND(8001, "Message does not exist or have been deleted", HttpStatus.BAD_REQUEST),
     MESSAGE_CONTENT_REQUIRED(8002, "Message content is required", HttpStatus.BAD_REQUEST),
@@ -124,6 +125,30 @@ public enum ErrorCode {
     PROMPT_NOT_BLANK(4000, "Prompt cannot be blank", HttpStatus.BAD_REQUEST),
     PROMPT_MAX_SIZE(4000, "Prompt must not exceed 200 characters", HttpStatus.BAD_REQUEST),
     OUT_OF_LIMIT(4000, "Out of limit of today", HttpStatus.TOO_MANY_REQUESTS),
+
+    // Category
+    CATEGORY_NAME_REQUIRED(4000, "Category name must not be blank", HttpStatus.BAD_REQUEST),
+    CATEGORY_MAX_LENGTH(4000, "Category name must not exceed 100 characters", HttpStatus.BAD_REQUEST),
+
+    // Comment
+    COMMENT_CONTENT_REQUIRED(4000, "Content must not be blank", HttpStatus.BAD_REQUEST),
+    LEVEL_POSITIVE(4000, "Level must be zero or positive", HttpStatus.BAD_REQUEST),
+    COMMENT_BLOG_REQUIRED(4000, "Blog ID must not be blank", HttpStatus.BAD_REQUEST),
+    COMMENT_USER_REQUIRED(4000, "User ID must not be blank", HttpStatus.BAD_REQUEST),
+
+    // Comment
+    BLOG_TITLE_REQUIRED(4000, "Title is required", HttpStatus.BAD_REQUEST),
+    BLOG_TITLE_LIMIT(4000, "Title must not exceed 255 characters", HttpStatus.BAD_REQUEST),
+    BLOG_SLUG_REQUIRED(4000, "Slug is required", HttpStatus.BAD_REQUEST),
+    SLUG_PATTERN(4000, "Slug must be lowercase and can contain hyphens", HttpStatus.BAD_REQUEST),
+    SLUG_LENGTH_LIMIT(4000, "Slug must not exceed 255 characters", HttpStatus.BAD_REQUEST),
+    COVER_IMAGE_LENGTH_LIMIT(4000, "Cover image URL must not exceed 1000 characters", HttpStatus.BAD_REQUEST),
+    COVER_IMAGE_INVALID_URL(4000, "Cover image URL must be a valid URL", HttpStatus.BAD_REQUEST),
+    EXCERPT_LENGTH_LIMIT(4000, "Excerpt must not exceed 500 characters", HttpStatus.BAD_REQUEST),
+    BLOG_STATUS_REQUIRED(4000, "Status is required", HttpStatus.BAD_REQUEST),
+
+
+
 
     ;
     int code;

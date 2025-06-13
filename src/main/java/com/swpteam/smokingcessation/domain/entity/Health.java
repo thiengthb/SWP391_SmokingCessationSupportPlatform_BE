@@ -1,5 +1,6 @@
 package com.swpteam.smokingcessation.domain.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.swpteam.smokingcessation.common.BaseEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
@@ -17,6 +18,7 @@ import lombok.experimental.FieldDefaults;
 public class Health extends BaseEntity {
 
     @ManyToOne
+    @JsonIgnore
     @JoinColumn(name = "accountId", nullable = false)
     Account account;
 

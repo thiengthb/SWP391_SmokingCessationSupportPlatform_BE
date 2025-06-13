@@ -1,5 +1,6 @@
 package com.swpteam.smokingcessation.domain.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.swpteam.smokingcessation.common.BaseEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
@@ -20,10 +21,12 @@ public class Subscription extends BaseEntity {
 
     @ManyToOne
     @JoinColumn(name = "accountId", nullable = false)
+    @JsonBackReference
     Account account;
 
     @ManyToOne
     @JoinColumn(name = "membershipId", nullable = false)
+    @JsonBackReference
     Membership membership;
 
     LocalDate startDate;

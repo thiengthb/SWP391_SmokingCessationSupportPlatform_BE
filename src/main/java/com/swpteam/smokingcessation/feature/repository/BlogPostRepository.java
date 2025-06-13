@@ -1,6 +1,6 @@
 package com.swpteam.smokingcessation.feature.repository;
 
-import com.swpteam.smokingcessation.domain.entity.BlogPost;
+import com.swpteam.smokingcessation.domain.entity.Blog;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -9,13 +9,13 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface BlogPostRepository extends JpaRepository<BlogPost, String> {
+public interface BlogPostRepository extends JpaRepository<Blog, String> {
 
-    Optional<BlogPost> findByIdAndIsDeletedFalse(String id);
+    Optional<Blog> findByIdAndIsDeletedFalse(String id);
 
-    Page<BlogPost> findByCreatedByAndIsDeletedFalse(String createdBy, Pageable pageable);
+    Page<Blog> findByCreatedByAndIsDeletedFalse(String createdBy, Pageable pageable);
 
-    Page<BlogPost> findByAuthorNameAndIsDeletedFalse(String authorName, Pageable pageable);
+    Page<Blog> findByAuthorNameAndIsDeletedFalse(String authorName, Pageable pageable);
 
-    Page<BlogPost> findAllByIsDeletedFalse(Pageable pageable);
+    Page<Blog> findAllByIsDeletedFalse(Pageable pageable);
 }
