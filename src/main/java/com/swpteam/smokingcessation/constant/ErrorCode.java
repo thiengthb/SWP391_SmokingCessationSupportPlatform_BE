@@ -120,6 +120,10 @@ public enum ErrorCode {
     // Transaction
     TRANSACTION_NOT_FOUND(4000, "Transaction does not exist or have been deleted", HttpStatus.NOT_FOUND),
 
+    // Chatbot
+    PROMPT_NOT_BLANK(4000, "Prompt cannot be blank", HttpStatus.BAD_REQUEST),
+    PROMPT_MAX_SIZE(4000, "Prompt must not exceed 200 characters", HttpStatus.BAD_REQUEST),
+    OUT_OF_LIMIT(4000, "Out of limit of today", HttpStatus.TOO_MANY_REQUESTS),
 
     ;
     int code;

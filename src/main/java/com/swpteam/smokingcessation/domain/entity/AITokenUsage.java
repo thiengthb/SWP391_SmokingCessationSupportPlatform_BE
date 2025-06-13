@@ -1,6 +1,7 @@
 package com.swpteam.smokingcessation.domain.entity;
 
 import com.swpteam.smokingcessation.common.BaseEntity;
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -16,22 +17,14 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class Subscription extends BaseEntity {
+public class AITokenUsage extends BaseEntity {
 
     @ManyToOne
     @JoinColumn(name = "accountId", nullable = false)
     Account account;
 
-    @ManyToOne
-    @JoinColumn(name = "membershipId", nullable = false)
-    Membership membership;
+    @Column(nullable = false, unique = true)
+    LocalDate date;
 
-    LocalDate startDate;
-    LocalDate endDate;
-
-    public boolean isActive() {
-        LocalDate today = LocalDate.now();
-        return (startDate == null || !today.isBefore(startDate)) &&
-                (endDate == null || !today.isAfter(endDate));
-    }
+    int tokensUsed;
 }

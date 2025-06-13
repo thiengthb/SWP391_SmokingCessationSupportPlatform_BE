@@ -20,25 +20,22 @@ public class Member extends BaseEntity {
 
     @OneToOne
     @MapsId
-    @JoinColumn(name = "account_id")
+    @JoinColumn(name = "accountId")
     Account account;
 
-    @Column(name = "full_name")
     String fullName;
-
     LocalDate dob;
     String address;
+    int score;
+    int currentStreak;
+    LocalDateTime lastCounterReset;
+
     @Enumerated(EnumType.STRING)
     MemberGender gender;
-    int score;
-
-    @Column(name = "current_streak")
-    int currentStreak;
-    @Column(name = "last_counter_reset")
-    LocalDateTime lastCounterReset;
 
     public static Member getDefaultMember(Account account) {
         return Member.builder()
+                .account(account)
                 .fullName(null)
                 .dob(null)
                 .address(null)
