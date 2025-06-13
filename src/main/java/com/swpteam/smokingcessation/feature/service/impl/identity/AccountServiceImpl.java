@@ -19,6 +19,7 @@ import com.swpteam.smokingcessation.constant.ErrorCode;
 import com.swpteam.smokingcessation.domain.entity.Account;
 import com.swpteam.smokingcessation.exception.AppException;
 import com.swpteam.smokingcessation.feature.service.interfaces.identity.AccountService;
+import com.swpteam.smokingcessation.utils.AccountUtil;
 import com.swpteam.smokingcessation.utils.ValidationUtil;
 import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
@@ -29,7 +30,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 
 @RequiredArgsConstructor
@@ -42,6 +42,7 @@ public class AccountServiceImpl implements AccountService {
     HealthRepository healthRepository;
     MemberRepository memberRepository;
     AccountMapper accountMapper;
+    AccountUtil accountUtil;
 
 
     @Override
@@ -143,8 +144,7 @@ public class AccountServiceImpl implements AccountService {
     @Override
     @Transactional
     public AccountResponse changePassword(ChangePasswordRequest request) {
-        Account account = accountRepository.findByEmailAndIsDeletedFalse(request.getEmail())
-                .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FOUND));
+        Account account = accountUtil.getCurrentAccount();
 
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
 
@@ -159,18 +159,18 @@ public class AccountServiceImpl implements AccountService {
     }
 
     @Override
-    public AccountResponse getAccountByEmail(String email) {
-        Account account = accountRepository.findByEmailAndIsDeletedFalse(email)
-                .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FOUND));
+    public AccountResponse getAccountByEmail() {
+        Account account = accountUtil.getCurrentAccount();
         return accountMapper.toResponse(account);
     }
 
     @Override
     @PreAuthorize("hasRole('ADMIN')")
-    public void banAccount(String id, Jwt jwt) {
+    public void banAccount(String id) {
         Account account = accountRepository.findByIdAndIsDeletedFalse(id).orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FOUND));
 
-        if (jwt.getClaimAsString("sub").equals(account.getEmail())) {
+        String emailFromToken = accountUtil.getCurrentEmail();
+        if (emailFromToken.equals(account.getEmail())) {
             throw new AppException(ErrorCode.SELF_BAN);
         }
         account.setStatus(AccountStatus.BANNED);

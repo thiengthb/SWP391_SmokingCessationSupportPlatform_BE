@@ -25,6 +25,7 @@ import com.swpteam.smokingcessation.constant.ErrorCode;
 import com.swpteam.smokingcessation.domain.entity.InvalidatedToken;
 import com.swpteam.smokingcessation.exception.AppException;
 import com.swpteam.smokingcessation.feature.service.interfaces.identity.AuthenticationService;
+import com.swpteam.smokingcessation.utils.AccountUtil;
 import jakarta.mail.MessagingException;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -57,6 +58,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     AccountMapper accountMapper;
     InvalidatedTokenRepository invalidatedTokenRepository;
     MailService mailService;
+    AccountUtil accountUtil;
     WebClient webClient = WebClient.create();
 
     @NonFinal
@@ -331,7 +333,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     }
 
     @Override
-    public void logout(String token) throws ParseException, JOSEException {
+    public void logout() throws ParseException, JOSEException {
+        String token = accountUtil.getCurrentToken();
         SignedJWT signedJWT = verifyToken(token, true);
 
         String jwtId = signedJWT.getJWTClaimsSet().getJWTID();
