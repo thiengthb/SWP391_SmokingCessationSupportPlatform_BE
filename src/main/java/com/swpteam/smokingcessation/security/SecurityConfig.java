@@ -19,7 +19,12 @@ import org.springframework.security.web.SecurityFilterChain;
 public class SecurityConfig {
 
     private final String[] PUBLIC_ENDPOINTS = {
-            "/api/auth/login", "/api/auth/register", "/api/auth/google/login", "/swagger-ui/**", "/v3/api-docs/**"
+            "/api/auth/login",
+            "/api/auth/register",
+            "/api/auth/google/login",
+            "/swagger-ui/**",
+            "/v3/api-docs/**",
+            "/api/test",
     };
 
     @Autowired
