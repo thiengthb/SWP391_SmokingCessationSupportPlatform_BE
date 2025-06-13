@@ -62,6 +62,9 @@ public enum SuccessCode {
     // Mail
     SEND_MAIL_SUCCESS(1004, "Success sending mail"),
 
+    // Chatbot
+    RETURN_MESSAGE(1000, "Success returning response")
+
 
     ;
     int code;

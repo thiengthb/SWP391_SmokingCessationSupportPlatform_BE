@@ -22,7 +22,7 @@ public class Setting extends BaseEntity {
 
     @OneToOne(fetch = FetchType.LAZY)
     @MapsId
-    @JoinColumn(name = "account_id")
+    @JoinColumn(name = "accountId")
     Account account;
 
     @Enumerated(EnumType.STRING)
@@ -44,7 +44,7 @@ public class Setting extends BaseEntity {
                 .account(account)
                 .theme(Theme.LIGHT)
                 .language(Language.EN)
-                .motivationFrequency(MotivationFrequency.NEVER)
+                .motivationFrequency(MotivationFrequency.DAILY)
                 .trackingMode(TrackingMode.AUTO_COUNTER)
                 .reportDeadline(LocalTime.of(22, 0))
                 .build();

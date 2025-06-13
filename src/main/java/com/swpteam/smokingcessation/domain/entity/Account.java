@@ -18,7 +18,8 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Account extends BaseEntity {
 
-    private String username;
+    @Column(unique = true, columnDefinition = "NVARCHAR(30)")
+    String username;
 
     @Column(nullable = false, unique = true, columnDefinition = "NVARCHAR(30)")
     String email;
@@ -40,9 +41,17 @@ public class Account extends BaseEntity {
     @OneToMany(mappedBy = "account")
     List<Subscription> subscriptions;
 
+    @OneToMany(mappedBy = "account")
+    List<AITokenUsage> aiTokenUsages;
+
     @OneToOne(mappedBy = "account", cascade = CascadeType.ALL, optional = false)
     Setting setting;
 
     @OneToOne(mappedBy = "account", cascade = CascadeType.ALL)
     Member member;
+
+    public boolean isHavingSubscription() {
+        return subscriptions != null &&
+                subscriptions.stream().anyMatch(Subscription::isActive);
+    }
 }
