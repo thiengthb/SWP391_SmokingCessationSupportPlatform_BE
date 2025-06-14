@@ -28,4 +28,10 @@ public class WebSocketExceptionHandler {
         }
         return errorCode.getMessage();
     }
+
+    @MessageExceptionHandler(AppException.class)
+    @SendToUser("/queue/errors")
+    public String handleAppException(AppException exception) {
+        return exception.getMessage();
+    }
 }

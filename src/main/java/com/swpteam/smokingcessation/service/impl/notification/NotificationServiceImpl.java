@@ -1,6 +1,7 @@
 package com.swpteam.smokingcessation.service.impl.notification;
 
 import com.swpteam.smokingcessation.constant.ErrorCode;
+import com.swpteam.smokingcessation.domain.dto.notification.MarkAsReadRequest;
 import com.swpteam.smokingcessation.domain.dto.notification.NotificationRequest;
 import com.swpteam.smokingcessation.domain.dto.notification.NotificationResponse;
 import com.swpteam.smokingcessation.domain.entity.Account;
@@ -29,7 +30,7 @@ public class NotificationServiceImpl implements INotificationService {
     AccountRepository accountRepository;
 
     @Override
-    public NotificationResponse sendNotification(NotificationRequest request) {
+    public void sendNotification(NotificationRequest request) {
         Notification notification = notificationMapper.toEntity(request);
         Account account = null;
         if (request.getAccountId() != null) {
@@ -43,13 +44,21 @@ public class NotificationServiceImpl implements INotificationService {
 
         NotificationResponse response = notificationMapper.toResponse(notification);
 
+        if (request.getAccountId() == null) {
+            simpMessagingTemplate.convertAndSend("/topic/notifications/", response);
+        } else {
+            simpMessagingTemplate.convertAndSend("/topic/notifications/" + request.getAccountId(), response);
+        }
+    }
 
-        String destination = (request.getAccountId() == null)
-                ? "topic/notifications/all"
-                : "topic/notifications" + request.getAccountId();
+    @Override
+    public void markAsRead(MarkAsReadRequest request) {
+        Notification notification = notificationRepository.findByIdAndIsDeletedFalse(request.getNotificationId())
+                .orElseThrow(() -> new AppException(ErrorCode.NOTIFICATION_NOT_FOUND));
 
-        simpMessagingTemplate.convertAndSend(destination, response);
-
-        return response;
+        if (!notification.isRead()) {
+            notification.setRead(true);
+            notificationRepository.save(notification);
+        }
     }
 }

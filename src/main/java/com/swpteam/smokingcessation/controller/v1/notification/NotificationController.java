@@ -1,8 +1,8 @@
 package com.swpteam.smokingcessation.controller.v1.notification;
 
 
+import com.swpteam.smokingcessation.domain.dto.notification.MarkAsReadRequest;
 import com.swpteam.smokingcessation.domain.dto.notification.NotificationRequest;
-import com.swpteam.smokingcessation.domain.dto.notification.NotificationResponse;
 import com.swpteam.smokingcessation.service.impl.notification.NotificationServiceImpl;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
@@ -10,7 +10,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
-import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,12 +22,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 public class NotificationController {
     NotificationServiceImpl notificationService;
 
-
     // /app/notify
     @MessageMapping("/notify")
-    @SendTo("/topic/notifications")
-    public NotificationResponse sendNotification(@Valid @Payload NotificationRequest request) {
-        System.out.println("WebSocket received: " + request);
-        return notificationService.sendNotification(request);
+    public void sendNotification(@Valid @Payload NotificationRequest request) {
+        notificationService.sendNotification(request);
+    }
+
+    @MessageMapping("/mark-as-read")
+    public void markAsRead(@Valid @Payload MarkAsReadRequest request){
+        notificationService.markAsRead(request);
     }
 }

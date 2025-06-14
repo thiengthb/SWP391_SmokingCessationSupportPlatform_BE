@@ -1,8 +1,10 @@
 package com.swpteam.smokingcessation.service.interfaces.notification;
 
+import com.swpteam.smokingcessation.domain.dto.notification.MarkAsReadRequest;
 import com.swpteam.smokingcessation.domain.dto.notification.NotificationRequest;
-import com.swpteam.smokingcessation.domain.dto.notification.NotificationResponse;
 
 public interface INotificationService {
-    NotificationResponse sendNotification(NotificationRequest request);
+    void sendNotification(NotificationRequest request);
+
+    void markAsRead(MarkAsReadRequest request);
 }

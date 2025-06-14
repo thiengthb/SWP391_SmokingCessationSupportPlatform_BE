@@ -37,7 +37,7 @@ public class WebSocketPresenceEventListener {
             sessionAccountMap.put(sessionId, accountId);
             Account account = accountRepository.findByIdAndIsDeletedFalse(accountId)
                     .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FOUND));
-            account.setStatus(AccountStatus.ACTIVE);
+            account.setStatus(AccountStatus.ONLINE);
             accountRepository.save(account);
             log.info("Account {} connected (session: {})", accountId, sessionId);
         }
@@ -50,9 +50,9 @@ public class WebSocketPresenceEventListener {
         String accountId = sessionAccountMap.remove(sessionId);
         if (accountId != null) {
             accountRepository.findByIdAndIsDeletedFalse(accountId).ifPresent(account -> {
-                account.setStatus(AccountStatus.INACTIVE);
+                account.setStatus(AccountStatus.OFFLINE);
                 accountRepository.save(account);
-                log.info("Account {} is now INACTIVE", accountId);
+                log.info("Account {} is now OFFLINE", accountId);
             });
         }
     }
