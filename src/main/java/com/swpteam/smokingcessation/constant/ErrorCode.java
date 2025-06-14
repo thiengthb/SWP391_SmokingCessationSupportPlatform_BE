@@ -37,6 +37,7 @@ public enum ErrorCode {
     PAGE_SIZE_MAX(1011, "Page size can not pass 100", HttpStatus.BAD_REQUEST),
     INVALID_SORT_FIELD(1013, "Invalid sort field", HttpStatus.BAD_REQUEST),
     INVALID_RESET_TOKEN(1012, "Reset token is invalid", HttpStatus.BAD_REQUEST),
+    NOTIFICATION_CONTENT_REQUIRED(9000, "Content for notification is required", HttpStatus.BAD_REQUEST),
 
     // Authentication
     UNAUTHENTICATED(2000, "Unauthenticated", HttpStatus.UNAUTHORIZED),
@@ -154,10 +155,6 @@ public enum ErrorCode {
     PROMPT_NOT_BLANK(4000, "Prompt cannot be blank", HttpStatus.BAD_REQUEST),
     PROMPT_MAX_SIZE(4000, "Prompt must not exceed 200 characters", HttpStatus.BAD_REQUEST),
     OUT_OF_LIMIT(4000, "Out of limit of today", HttpStatus.TOO_MANY_REQUESTS),
-
-    // Notification
-    NOTIFICATION_CONTENT_REQUIRED(9000, "Content for notification is required", HttpStatus.BAD_REQUEST),
-
 
     // Coach
     COACH_NOT_FOUND(1040,"Coach not found",HttpStatus.BAD_REQUEST),

@@ -11,6 +11,7 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class NotificationRequest {
+    @NotBlank(message = "ACCOUNT_ID_REQUIRED")
     String accountId;
 
     @NotBlank(message = "NOTIFICATION_CONTENT_REQUIRED")

@@ -32,7 +32,7 @@ public class NotificationServiceImpl implements INotificationService {
     public NotificationResponse sendNotification(NotificationRequest request) {
         Notification notification = notificationMapper.toEntity(request);
         Account account = null;
-        if(request.getAccountId() != null){
+        if (request.getAccountId() != null) {
             account = accountRepository.findByIdAndIsDeletedFalse(request.getAccountId()).orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FOUND));
         }
         notification.setAccount(account);
