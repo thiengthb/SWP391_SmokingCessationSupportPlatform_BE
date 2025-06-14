@@ -1,11 +1,11 @@
 package com.swpteam.smokingcessation.schedule;
 
 import com.swpteam.smokingcessation.domain.entity.Account;
-import com.swpteam.smokingcessation.feature.integration.mail.MailService;
+import com.swpteam.smokingcessation.integration.mail.MailServiceImpl;
 import com.swpteam.smokingcessation.domain.entity.Message;
-import com.swpteam.smokingcessation.feature.repository.MessageRepository;
+import com.swpteam.smokingcessation.repository.MessageRepository;
 import com.swpteam.smokingcessation.domain.entity.Setting;
-import com.swpteam.smokingcessation.feature.repository.SettingRepository;
+import com.swpteam.smokingcessation.repository.SettingRepository;
 import com.swpteam.smokingcessation.domain.enums.MotivationFrequency;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +25,7 @@ import java.util.Random;
 public class Reminder {
 
     MessageRepository messageRepository;
-    MailService mailService;
+    MailServiceImpl mailServiceImpl;
     SettingRepository settingRepository;
     Random random = new Random();
 
@@ -43,7 +43,7 @@ public class Reminder {
 
                 log.info("Sending reminder to user with email: {}", userEmail);
 
-                mailService.sendReminderMail(userEmail);
+                mailServiceImpl.sendReminderMail(userEmail);
             } catch (Exception e) {
                 log.error("Failed to send reminder for setting accountId: {}", setting.getAccount().getId(), e);
             }
@@ -97,7 +97,7 @@ public class Reminder {
             String email = setting.getAccount().getEmail();
             Message randomMotivationMessage = getRandomMotivationMessage();
             try {
-                mailService.sendMotivationMail(email, randomMotivationMessage);
+                mailServiceImpl.sendMotivationMail(email, randomMotivationMessage);
             } catch (Exception e) {
                 log.error("Failed to send motivation to email: {}", email, e);
             }

@@ -1,7 +1,7 @@
 package com.swpteam.smokingcessation.security;
 
 import com.nimbusds.jose.JOSEException;
-import com.swpteam.smokingcessation.feature.service.impl.identity.AuthenticationServiceImpl;
+import com.swpteam.smokingcessation.service.impl.identity.AuthenticationServiceImpl;
 import com.swpteam.smokingcessation.domain.dto.auth.request.TokenRequest;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;

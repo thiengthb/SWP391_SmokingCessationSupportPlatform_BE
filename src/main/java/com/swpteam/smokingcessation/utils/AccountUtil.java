@@ -1,7 +1,7 @@
 package com.swpteam.smokingcessation.utils;
 
 import com.swpteam.smokingcessation.domain.entity.Account;
-import com.swpteam.smokingcessation.feature.repository.AccountRepository;
+import com.swpteam.smokingcessation.repository.AccountRepository;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
