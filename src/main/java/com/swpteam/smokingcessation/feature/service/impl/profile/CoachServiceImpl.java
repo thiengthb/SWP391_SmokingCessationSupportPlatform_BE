@@ -1,0 +1,83 @@
+package com.swpteam.smokingcessation.feature.service.impl.profile;
+
+import com.swpteam.smokingcessation.common.PageableRequest;
+import com.swpteam.smokingcessation.constant.ErrorCode;
+import com.swpteam.smokingcessation.domain.dto.coach.CoachRequest;
+import com.swpteam.smokingcessation.domain.dto.coach.CoachResponse;
+import com.swpteam.smokingcessation.domain.entity.Account;
+import com.swpteam.smokingcessation.domain.entity.Coach;
+import com.swpteam.smokingcessation.domain.mapper.CoachMapper;
+import com.swpteam.smokingcessation.exception.AppException;
+import com.swpteam.smokingcessation.feature.repository.AccountRepository;
+import com.swpteam.smokingcessation.feature.repository.CoachRepository;
+import com.swpteam.smokingcessation.feature.service.interfaces.profile.CoachService;
+import com.swpteam.smokingcessation.utils.ValidationUtil;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+@Service
+@FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
+@RequiredArgsConstructor
+public class CoachServiceImpl implements CoachService {
+    CoachRepository coachRepository;
+    CoachMapper coachMapper;
+    AccountRepository accountRepository;
+
+    @Override
+    public Page<CoachResponse> getCoachPage(PageableRequest request) {
+        if (!ValidationUtil.isFieldExist(Coach.class, request.getSortBy())) {
+            throw new AppException(ErrorCode.INVALID_SORT_FIELD);
+        }
+        Pageable pageable = PageableRequest.getPageable(request);
+        Page<Coach> coaches = coachRepository.findAllByIsDeletedFalse(pageable);
+
+        return coaches.map(coachMapper::toResponse);
+    }
+
+    @Override
+    public CoachResponse getCoachById(String id) {
+        Coach coach = coachRepository.findByIdAndIsDeletedFalse(id)
+                .orElseThrow(() -> new AppException(ErrorCode.COACH_NOT_FOUND));
+
+        return coachMapper.toResponse(coach);
+    }
+
+    @Override
+    @Transactional
+    public CoachResponse createCoach(CoachRequest request) {
+        Coach coach = coachMapper.toEntity(request);
+
+        Account account = accountRepository.findByIdAndIsDeletedFalse(request.getAccountId())
+                .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FOUND));
+
+        coach.setAccount(account);
+
+        return coachMapper.toResponse(coachRepository.save(coach));
+    }
+
+    @Override
+    @Transactional
+    public CoachResponse updateCoachById(String id, CoachRequest request) {
+        Coach coach = coachRepository.findByIdAndIsDeletedFalse(id)
+                .orElseThrow(() -> new AppException(ErrorCode.COACH_NOT_FOUND));
+        coachMapper.update(coach, request);
+
+        return coachMapper.toResponse(coachRepository.save(coach));
+    }
+
+    @Override
+    @Transactional
+    public void softDeleteCoachById(String id) {
+        Coach coach = coachRepository.findByIdAndIsDeletedFalse(id)
+                .orElseThrow(() -> new AppException(ErrorCode.COACH_NOT_FOUND));
+
+        coach.setDeleted(true);
+
+        coachRepository.save(coach);
+    }
+}

@@ -7,6 +7,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -45,4 +46,15 @@ public class Account extends BaseEntity {
 
     @OneToOne(mappedBy = "account", cascade = CascadeType.ALL)
     Member member;
+
+    @OneToOne(mappedBy = "account", cascade = CascadeType.ALL)
+    Coach coach;
+
+    @OneToMany(mappedBy = "account")
+    List<Plan> plans = new ArrayList<>();
+
+    @OneToMany(mappedBy = "account")
+    List<Booking> bookings;
+
+
 }

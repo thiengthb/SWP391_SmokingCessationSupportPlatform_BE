@@ -230,12 +230,11 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         account.setRole(Role.MEMBER);
         account.setStatus(AccountStatus.ACTIVE);
 
-        settingRepository.save(Setting.getDefaultSetting(account));
-        memberRepository.save(Member.getDefaultMember(account));
-
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
-
         account.setPassword(passwordEncoder.encode(request.getPassword()));
+
+        account.setSetting(Setting.getDefaultSetting(account));
+
         return accountMapper.toResponse(accountRepository.save(account));
     }
 

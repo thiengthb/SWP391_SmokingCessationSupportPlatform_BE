@@ -36,16 +36,4 @@ public class Member extends BaseEntity {
     int currentStreak;
     @Column(name = "last_counter_reset")
     LocalDateTime lastCounterReset;
-
-    public static Member getDefaultMember(Account account) {
-        return Member.builder()
-                .fullName(null)
-                .dob(null)
-                .address(null)
-                .gender(null)
-                .score(0)
-                .currentStreak(0)
-                .lastCounterReset(null)
-                .build();
-    }
 }

@@ -41,12 +41,25 @@ public enum SuccessCode {
     RECORD_GET_BY_ID(1004, "Success returning a record with given id"),
     RECORD_GET_BY_ACCOUNT(1004, "Success returning a record with given account id"),
 
-    //Message
+    // Message
     MESSAGE_CREATED(2000, "Message has been created"),
     MESSAGE_UPDATED(2001, "Message has been updated"),
     MESSAGE_DELETED(2002, "Message has been deleted"),
     MESSAGE_GET_BY_ID(2003, "Success returning a membership with given id"),
 
+    // Plan
+    PLAN_CREATED(5000,"Plan has been created"),
+    PLAN_UPDATED(5001,"Plan has been updated"),
+    PLAN_DELETED(5002,"Plan has been deleted"),
+    PLAN_GET_BY_ID(5003,"Success returning a plan with given id"),
+    PLAN_GET_ALL(5004,"Success return a page with plan"),
+
+    // Phase
+    PHASE_CREATED(5000,"Phase has been created"),
+    PHASE_UPDATED(5001,"Phase has been updated"),
+    PHASE_DELETED(5002,"Phase has been deleted"),
+    PHASE_GET_BY_ID(5003,"Success returning a phase with given id"),
+    PHASE_GET_ALL(5004,"Success return a page with phase"),
     // Account
     ACCOUNT_CREATED(3000, "Account has been created"),
     ACCOUNT_UPDATED(3001, "Account has been updated"),
@@ -55,12 +68,26 @@ public enum SuccessCode {
     PASSWORD_CHANGE_SUCCESS(3004, "Password is changed successfully"),
     ROLE_UPDATED(3005, "Account role is updated successfully"),
 
+    // Coach
+    COACH_CREATED(5000,"Coach has been created"),
+    COACH_UPDATED(5001,"Coach has been updated"),
+    COACH_DELETED(5002,"Coach has been deleted"),
+    COACH_GET_BY_ID(5003,"Success returning a coach with given id"),
+    COACH_GET_ALL(5004,"Success return a page with coach"),
+
     // Member
     MEMBER_CREATED(3000, "Member has been created"),
     MEMBER_UPDATED(3001, "Member has been updated"),
 
     // Mail
     SEND_MAIL_SUCCESS(1004, "Success sending mail"),
+
+    // Booking
+    BOOKING_GET_ALL(2010, "Successfully retrieved all bookings"),
+    BOOKING_GET_BY_ID(2011, "Successfully retrieved booking by ID"),
+    BOOKING_CREATED(2012, "Booking created successfully"),
+    BOOKING_UPDATED(2013, "Booking updated successfully"),
+    BOOKING_DELETED(2014, "Booking deleted successfully");
 
 
     ;

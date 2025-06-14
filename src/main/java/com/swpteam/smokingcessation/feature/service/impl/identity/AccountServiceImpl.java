@@ -6,14 +6,9 @@ import com.swpteam.smokingcessation.domain.dto.account.AccountUpdateRequest;
 import com.swpteam.smokingcessation.domain.dto.account.ChangePasswordRequest;
 import com.swpteam.smokingcessation.domain.enums.AccountStatus;
 import com.swpteam.smokingcessation.domain.enums.Role;
-import com.swpteam.smokingcessation.domain.entity.Health;
 import com.swpteam.smokingcessation.domain.mapper.AccountMapper;
 import com.swpteam.smokingcessation.feature.repository.AccountRepository;
-import com.swpteam.smokingcessation.feature.repository.HealthRepository;
-import com.swpteam.smokingcessation.domain.entity.Member;
-import com.swpteam.smokingcessation.feature.repository.MemberRepository;
 import com.swpteam.smokingcessation.domain.entity.Setting;
-import com.swpteam.smokingcessation.feature.repository.SettingRepository;
 import com.swpteam.smokingcessation.common.PageableRequest;
 import com.swpteam.smokingcessation.constant.ErrorCode;
 import com.swpteam.smokingcessation.domain.entity.Account;
@@ -38,11 +33,7 @@ import org.springframework.stereotype.Service;
 public class AccountServiceImpl implements AccountService {
 
     AccountRepository accountRepository;
-    SettingRepository settingRepository;
-    HealthRepository healthRepository;
-    MemberRepository memberRepository;
     AccountMapper accountMapper;
-
 
     @Override
     @PreAuthorize("hasRole('ADMIN')")
@@ -59,20 +50,7 @@ public class AccountServiceImpl implements AccountService {
         Account account = accountMapper.toEntity(request);
         account.setPassword(passwordEncoder.encode(request.getPassword()));
 
-        switch (account.getRole()) {
-            case Role.MEMBER -> {
-                healthRepository.save(Health.getDefaultHealth(account));
-                memberRepository.save(Member.getDefaultMember(account));
-            }
-            case Role.COACH -> {
-
-            }
-            default -> {
-
-            }
-        }
-
-        settingRepository.save(Setting.getDefaultSetting(account));
+        account.setSetting(Setting.getDefaultSetting(account));
 
         return accountMapper.toResponse(accountRepository.save(account));
     }
