@@ -155,6 +155,10 @@ public enum ErrorCode {
     PROMPT_MAX_SIZE(4000, "Prompt must not exceed 200 characters", HttpStatus.BAD_REQUEST),
     OUT_OF_LIMIT(4000, "Out of limit of today", HttpStatus.TOO_MANY_REQUESTS),
 
+    // Notification
+    NOTIFICATION_CONTENT_REQUIRED(9000, "Content for notification is required", HttpStatus.BAD_REQUEST),
+
+
     // Coach
     COACH_NOT_FOUND(1040,"Coach not found",HttpStatus.BAD_REQUEST),
     COACH_BIO_TOO_LONG(1030,"Coach bio too long", HttpStatus.BAD_REQUEST),
