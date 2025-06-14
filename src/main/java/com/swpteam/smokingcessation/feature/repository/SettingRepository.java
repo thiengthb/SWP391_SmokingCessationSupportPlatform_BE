@@ -5,6 +5,8 @@ import com.swpteam.smokingcessation.domain.enums.MotivationFrequency;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalTime;
@@ -16,7 +18,11 @@ public interface SettingRepository extends JpaRepository<Setting, String> {
 
     List<Setting> findByReportDeadlineAndIsDeletedFalse(LocalTime deadlineTime);
 
-    List<Setting> findByMotivationFrequency(MotivationFrequency motivationFrequency);
+    @Query("SELECT s FROM Setting s " +
+            "WHERE s.motivationFrequency = :frequency " +
+            "AND s.isDeleted = false " +
+            "AND s.account.role NOT IN ('ADMIN', 'COACH')")
+    List<Setting> findByMotivationFrequencyAndIsDeletedFalse(@Param("frequency") MotivationFrequency frequency);
 
     Optional<Setting> findByIdAndIsDeletedFalse(String id);
 
