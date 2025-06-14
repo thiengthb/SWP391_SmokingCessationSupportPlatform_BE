@@ -86,7 +86,7 @@ public class Reminder {
     private void sendMotivation(MotivationFrequency motivationFrequency) {
         log.info("Sending motivation with frequency: {}", motivationFrequency);
 
-        List<Setting> dailySettings = settingRepository.findByMotivationFrequency(motivationFrequency);
+        List<Setting> dailySettings = settingRepository.findByMotivationFrequencyAndIsDeletedFalse(motivationFrequency);
         if (dailySettings.isEmpty()) {
             log.info("No users found with {} motivation setting", motivationFrequency);
             return;

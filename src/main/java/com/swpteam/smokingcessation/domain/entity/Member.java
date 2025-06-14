@@ -32,17 +32,4 @@ public class Member extends BaseEntity {
 
     @Enumerated(EnumType.STRING)
     MemberGender gender;
-
-    public static Member getDefaultMember(Account account) {
-        return Member.builder()
-                .account(account)
-                .fullName(null)
-                .dob(null)
-                .address(null)
-                .gender(null)
-                .score(0)
-                .currentStreak(0)
-                .lastCounterReset(null)
-                .build();
-    }
 }

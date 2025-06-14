@@ -26,16 +26,4 @@ public class Health extends BaseEntity {
     double packPrice;
     String reasonToQuit;
     int smokeYear;
-
-    public static Health getDefaultHealth(Account account) {
-        return Health.builder()
-                .account(account)
-                .cigarettesPerDay(0)
-                .cigarettesPerPack(0)
-                .fndLevel(0)
-                .packPrice(0f)
-                .reasonToQuit("")
-                .smokeYear(0)
-                .build();
-    }
 }

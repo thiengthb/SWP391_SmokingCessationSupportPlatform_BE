@@ -1,0 +1,49 @@
+{
+  "levels": [
+    {
+      "level": "1",
+      "plan": [
+        { "phase": 1, "cigarettesPerDay": "2–3", "duration": "7 ngày" },
+        { "phase": 2, "cigarettesPerDay": "1–2", "duration": "7 ngày" }
+      ]
+    },
+    {
+      "level": "2",
+      "plan": [
+        { "phase": 1, "cigarettesPerDay": "5–6", "duration": "7 ngày" },
+        { "phase": 2, "cigarettesPerDay": "3–4", "duration": "7 ngày" },
+        { "phase": 3, "cigarettesPerDay": "1–2", "duration": "7 ngày" }
+      ]
+    },
+    {
+      "level": "3",
+      "plan": [
+        { "phase": 1, "cigarettesPerDay": "10–12", "duration": "7 ngày" },
+        { "phase": 2, "cigarettesPerDay": "6–8", "duration": "7 ngày" },
+        { "phase": 3, "cigarettesPerDay": "3–4", "duration": "7 ngày" },
+        { "phase": 4, "cigarettesPerDay": "1–2", "duration": "7 ngày" }
+      ]
+    },
+    {
+      "level": "4",
+      "plan": [
+        { "phase": 1, "cigarettesPerDay": "15–18", "duration": "7 ngày" },
+        { "phase": 2, "cigarettesPerDay": "10–12", "duration": "7 ngày" },
+        { "phase": 3, "cigarettesPerDay": "6–8", "duration": "7 ngày" },
+        { "phase": 4, "cigarettesPerDay": "3–4", "duration": "7 ngày" },
+        { "phase": 5, "cigarettesPerDay": "1–2", "duration": "7 ngày" }
+      ]
+    },
+    {
+      "level": "5",
+      "plan": [
+        { "phase": 1, "cigarettesPerDay": "25+", "duration": "7 ngày" },
+        { "phase": 2, "cigarettesPerDay": "18–20", "duration": "7 ngày" },
+        { "phase": 3, "cigarettesPerDay": "12–15", "duration": "7 ngày" },
+        { "phase": 4, "cigarettesPerDay": "6–8", "duration": "7 ngày" },
+        { "phase": 5, "cigarettesPerDay": "3–4", "duration": "7 ngày" },
+        { "phase": 6, "cigarettesPerDay": "1–2", "duration": "7 ngày" }
+      ]
+    }
+  ]
+}
