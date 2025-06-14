@@ -101,7 +101,10 @@ public enum SuccessCode {
     BOOKING_DELETED(2014, "Booking deleted successfully"),
 
     // Chatbot
-    RETURN_MESSAGE(1000, "Success returning response")
+    RETURN_MESSAGE(1000, "Success returning response"),
+
+    // Cloudinary Image Upload
+    UPLOAD_IMAGE(1000, "Success uploading image"),
 
 
     ;
