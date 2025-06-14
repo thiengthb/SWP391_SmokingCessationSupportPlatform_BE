@@ -2,11 +2,11 @@ package com.swpteam.smokingcessation.config;
 
 import com.swpteam.smokingcessation.domain.entity.Account;
 import com.swpteam.smokingcessation.domain.entity.Member;
-import com.swpteam.smokingcessation.feature.repository.AccountRepository;
+import com.swpteam.smokingcessation.repository.AccountRepository;
 import com.swpteam.smokingcessation.domain.enums.Role;
 import com.swpteam.smokingcessation.domain.entity.Setting;
-import com.swpteam.smokingcessation.feature.repository.MemberRepository;
-import com.swpteam.smokingcessation.feature.repository.SettingRepository;
+import com.swpteam.smokingcessation.repository.MemberRepository;
+import com.swpteam.smokingcessation.repository.SettingRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
