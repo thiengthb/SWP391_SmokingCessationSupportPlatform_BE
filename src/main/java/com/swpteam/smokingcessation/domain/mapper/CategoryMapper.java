@@ -11,7 +11,7 @@ public interface CategoryMapper {
 
     Category toEntity(CategoryRequest request);
 
-    CategoryResponse toResponse(Category membership);
+    CategoryResponse toResponse(Category category);
 
-    void update(@MappingTarget Category membership, CategoryRequest request);
+    void update(@MappingTarget Category category, CategoryRequest request);
 }

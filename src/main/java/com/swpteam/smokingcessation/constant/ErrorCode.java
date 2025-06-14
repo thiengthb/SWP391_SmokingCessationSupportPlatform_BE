@@ -193,6 +193,7 @@ public enum ErrorCode {
 
     // Blog
     BLOG_TITLE_REQUIRED(4000, "Title is required", HttpStatus.BAD_REQUEST),
+    BLOG_CATEGORY_REQUIRED(4000, "Category is required", HttpStatus.BAD_REQUEST),
     BLOG_TITLE_LIMIT(4000, "Title must not exceed 255 characters", HttpStatus.BAD_REQUEST),
     BLOG_SLUG_REQUIRED(4000, "Slug is required", HttpStatus.BAD_REQUEST),
     SLUG_PATTERN(4000, "Slug must be lowercase and can contain hyphens", HttpStatus.BAD_REQUEST),
@@ -201,6 +202,8 @@ public enum ErrorCode {
     COVER_IMAGE_INVALID_URL(4000, "Cover image URL must be a valid URL", HttpStatus.BAD_REQUEST),
     EXCERPT_LENGTH_LIMIT(4000, "Excerpt must not exceed 500 characters", HttpStatus.BAD_REQUEST),
     BLOG_STATUS_REQUIRED(4000, "Status is required", HttpStatus.BAD_REQUEST),
+    BLOG_NOT_FOUND(4000, "Blog does not exist or have been deleted", HttpStatus.BAD_REQUEST),
+
 
     ;
     int code;

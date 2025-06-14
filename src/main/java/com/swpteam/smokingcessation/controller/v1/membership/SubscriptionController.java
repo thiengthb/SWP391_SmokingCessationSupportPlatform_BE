@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.*;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class SubscriptionController {
 
-    ISubscriptionService ISubscriptionService;
+    ISubscriptionService subscriptionService;
 
     @GetMapping
     ResponseEntity<ApiResponse<Page<SubscriptionResponse>>> getSubscriptionPage(@Valid PageableRequest request) {
@@ -30,7 +30,7 @@ public class SubscriptionController {
                 ApiResponse.<Page<SubscriptionResponse>>builder()
                         .code(SuccessCode.SUBSCRIPTION_GET_ALL.getCode())
                         .message(SuccessCode.SUBSCRIPTION_GET_ALL.getMessage())
-                        .result(ISubscriptionService.getSubscriptionPage(request))
+                        .result(subscriptionService.getSubscriptionPage(request))
                         .build()
         );
     }
@@ -41,7 +41,7 @@ public class SubscriptionController {
                 ApiResponse.<SubscriptionResponse>builder()
                         .code(SuccessCode.SUBSCRIPTION_GET_BY_ID.getCode())
                         .message(SuccessCode.SUBSCRIPTION_GET_BY_ID.getMessage())
-                        .result(ISubscriptionService.getSubscriptionById(id))
+                        .result(subscriptionService.getSubscriptionById(id))
                         .build()
         );
     }
@@ -52,7 +52,7 @@ public class SubscriptionController {
                 ApiResponse.<Page<SubscriptionResponse>>builder()
                         .code(SuccessCode.SUBSCRIPTION_GET_BY_ACCOUNT.getCode())
                         .message(SuccessCode.SUBSCRIPTION_GET_BY_ACCOUNT.getMessage())
-                        .result(ISubscriptionService.getSubscriptionPageByAccountId(id, request))
+                        .result(subscriptionService.getSubscriptionPageByAccountId(id, request))
                         .build()
         );
     }
@@ -63,7 +63,7 @@ public class SubscriptionController {
                 ApiResponse.<SubscriptionResponse>builder()
                         .code(SuccessCode.SUBSCRIPTION_CREATED.getCode())
                         .message(SuccessCode.SUBSCRIPTION_CREATED.getMessage())
-                        .result(ISubscriptionService.createSubscription(request))
+                        .result(subscriptionService.createSubscription(request))
                         .build()
         );
     }
@@ -74,14 +74,14 @@ public class SubscriptionController {
                 ApiResponse.<SubscriptionResponse>builder()
                         .code(SuccessCode.SUBSCRIPTION_UPDATED.getCode())
                         .message(SuccessCode.SUBSCRIPTION_UPDATED.getMessage())
-                        .result(ISubscriptionService.updateSubscription(id, request))
+                        .result(subscriptionService.updateSubscription(id, request))
                         .build()
         );
     }
 
     @DeleteMapping("/{id}")
     ResponseEntity<ApiResponse<String>> deleteSubscription(@PathVariable String id) {
-        ISubscriptionService.deleteSubscription(id);
+        subscriptionService.deleteSubscription(id);
         return ResponseEntity.ok().body(
                 ApiResponse.<String>builder()
                         .code(SuccessCode.SUBSCRIPTION_DELETED.getCode())

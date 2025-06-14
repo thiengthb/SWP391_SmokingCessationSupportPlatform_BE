@@ -2,7 +2,6 @@ package com.swpteam.smokingcessation.domain.dto.blog;
 
 import com.swpteam.smokingcessation.domain.enums.BlogStatus;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
 import lombok.*;
@@ -13,13 +12,13 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class BlogPostCreateRequest {
+public class BlogUpdateRequest {
 
-    @NotBlank(message = "BLOG_TITLE_REQUIRED")
     @Size(max = 255, message = "BLOG_TITLE_LIMIT")
     String title;
+    
+    String categoryName;
 
-    @NotBlank(message = "BLOG_SLUG_REQUIRED")
     @Pattern(regexp = "^[a-z0-9]+(?:-[a-z0-9]+)*$", message = "SLUG_PATTERN")
     @Size(max = 255, message = "SLUG_LENGTH_LIMIT")
     String slug;
@@ -36,6 +35,5 @@ public class BlogPostCreateRequest {
 
     String content;
 
-    @NotNull(message = "BLOG_STATUS_REQUIRED")
     BlogStatus status;
 }

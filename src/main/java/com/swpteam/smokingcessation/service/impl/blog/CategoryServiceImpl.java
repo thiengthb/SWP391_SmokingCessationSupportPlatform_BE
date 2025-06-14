@@ -102,7 +102,7 @@ public class CategoryServiceImpl implements ICategoryService {
 
         Category uncategorized = findCategoryByName(ApplicationInitConfig.DEFAULT_CATEGORY);
 
-        List<Blog> blogs = blogRepository.findByCategory(category);
+        List<Blog> blogs = blogRepository.findByCategoryId(category.getId());
         blogs.forEach(blog -> blog.setCategory(uncategorized));
 
         blogRepository.saveAll(blogs);

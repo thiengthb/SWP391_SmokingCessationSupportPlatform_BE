@@ -1,11 +1,12 @@
 package com.swpteam.smokingcessation.controller.v1.tracking;
 
-import com.swpteam.smokingcessation.service.impl.tracking.PhaseServiceImpl;
+import com.swpteam.smokingcessation.service.impl.tracking.IPhaseServiceImpl;
 import com.swpteam.smokingcessation.domain.dto.phase.PhaseRequest;
 import com.swpteam.smokingcessation.domain.dto.phase.PhaseResponse;
 import com.swpteam.smokingcessation.common.ApiResponse;
 import com.swpteam.smokingcessation.common.PageableRequest;
 import com.swpteam.smokingcessation.constant.SuccessCode;
+import com.swpteam.smokingcessation.service.interfaces.tracking.IPhaseService;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -17,11 +18,11 @@ import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RestController
-@RequestMapping("/api/phases")
+@RequestMapping("/api/v1/phases")
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class PhaseController {
-    PhaseServiceImpl phaseServiceImpl;
+    IPhaseService phaseService;
 
     @GetMapping
     ResponseEntity<ApiResponse<Page<PhaseResponse>>> getPhasePage(@Valid PageableRequest request) {
@@ -29,14 +30,14 @@ public class PhaseController {
                 ApiResponse.<Page<PhaseResponse>>builder()
                         .code(SuccessCode.PHASE_GET_ALL.getCode())
                         .message(SuccessCode.PHASE_GET_ALL.getMessage())
-                        .result(phaseServiceImpl.getPhasePage(request))
+                        .result(phaseService.getPhasePage(request))
                         .build()
         );
     }
 
     @GetMapping("/{id}")
     ResponseEntity<ApiResponse<PhaseResponse>> getPhaseById(@PathVariable String id) {
-        PhaseResponse response = phaseServiceImpl.getPhaseById(id);
+        PhaseResponse response = phaseService.getPhaseById(id);
         return ResponseEntity.ok(
                 ApiResponse.<PhaseResponse>builder()
                         .code(SuccessCode.PHASE_GET_BY_ID.getCode())
@@ -48,7 +49,7 @@ public class PhaseController {
 
     @PostMapping
     ResponseEntity<ApiResponse<PhaseResponse>> createPhase(@Valid @RequestBody PhaseRequest request) {
-        PhaseResponse response = phaseServiceImpl.createPhase(request);
+        PhaseResponse response = phaseService.createPhase(request);
         return ResponseEntity.ok(
                 ApiResponse.<PhaseResponse>builder()
                         .code(SuccessCode.PHASE_CREATED.getCode())
@@ -62,7 +63,7 @@ public class PhaseController {
     ResponseEntity<ApiResponse<PhaseResponse>> updatePhaseById(
             @PathVariable String id,
             @Valid @RequestBody PhaseRequest request) {
-        PhaseResponse response = phaseServiceImpl.updatePhaseById(id, request);
+        PhaseResponse response = phaseService.updatePhaseById(id, request);
         return ResponseEntity.ok(
                 ApiResponse.<PhaseResponse>builder()
                         .code(SuccessCode.PHASE_UPDATED.getCode())
@@ -74,7 +75,7 @@ public class PhaseController {
 
     @DeleteMapping("/{id}")
     ResponseEntity<ApiResponse<Void>> deletePhaseById(@PathVariable String id) {
-        phaseServiceImpl.softDeletePhaseById(id);
+        phaseService.softDeletePhaseById(id);
         return ResponseEntity.ok(
                 ApiResponse.<Void>builder()
                         .code(SuccessCode.PHASE_DELETED.getCode())

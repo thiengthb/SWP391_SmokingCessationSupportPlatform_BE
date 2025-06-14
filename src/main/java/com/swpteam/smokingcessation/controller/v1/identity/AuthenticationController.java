@@ -29,7 +29,7 @@ import java.text.ParseException;
 @RequestMapping("/api/v1/auth")
 public class AuthenticationController {
 
-    IAuthenticationService IAuthenticationService;
+    IAuthenticationService authenticationService;
 
     @PostMapping("/google/login")
     ResponseEntity<ApiResponse<GoogleTokenResponse>> getGoogleToken(@RequestBody GoogleTokenRequest request) {
@@ -37,7 +37,7 @@ public class AuthenticationController {
                 ApiResponse.<GoogleTokenResponse>builder()
                         .code(SuccessCode.GOOGLE_LOGIN_SUCCESS.getCode())
                         .message(SuccessCode.GOOGLE_LOGIN_SUCCESS.getMessage())
-                        .result(IAuthenticationService.getGoogleToken(request))
+                        .result(authenticationService.getGoogleToken(request))
                         .build());
     }
 
@@ -47,7 +47,7 @@ public class AuthenticationController {
                 .body(ApiResponse.<AuthenticationResponse>builder()
                         .code(SuccessCode.LOGIN_SUCCESS.getCode())
                         .message(SuccessCode.LOGIN_SUCCESS.getMessage())
-                        .result(IAuthenticationService.authenticate(request))
+                        .result(authenticationService.authenticate(request))
                         .build());
     }
 
@@ -58,7 +58,7 @@ public class AuthenticationController {
                 .body(ApiResponse.<AuthenticationResponse>builder()
                         .code(SuccessCode.TOKEN_REFRESH_SUCCESS.getCode())
                         .message(SuccessCode.TOKEN_REFRESH_SUCCESS.getMessage())
-                        .result(IAuthenticationService.refreshToken(token))
+                        .result(authenticationService.refreshToken(token))
                         .build());
     }
 
@@ -68,14 +68,14 @@ public class AuthenticationController {
                 ApiResponse.<AccountResponse>builder()
                         .code(SuccessCode.REGISTER_SUCCESS.getCode())
                         .message(SuccessCode.REGISTER_SUCCESS.getMessage())
-                        .result(IAuthenticationService.register(request))
+                        .result(authenticationService.register(request))
                         .build());
     }
 
 
     @PostMapping("/forgot-password")
     ResponseEntity<ApiResponse<String>> forgotPassword(@RequestBody @Valid ForgotPasswordRequest request) {
-        IAuthenticationService.sendResetPasswordEmail(request.getEmail());
+        authenticationService.sendResetPasswordEmail(request.getEmail());
         return ResponseEntity.ok(
                 ApiResponse.<String>builder()
                         .code(SuccessCode.SEND_MAIL_SUCCESS.getCode())
@@ -86,7 +86,7 @@ public class AuthenticationController {
 
     @PostMapping("/reset-password")
     ResponseEntity<ApiResponse<Void>> resetPassword(@RequestBody @Valid ResetPasswordRequest request) {
-        IAuthenticationService.resetPassword(request);
+        authenticationService.resetPassword(request);
 
         return ResponseEntity.ok(
                 ApiResponse.<Void>builder()
@@ -98,7 +98,7 @@ public class AuthenticationController {
     //front-end job
     @PostMapping("/logout")
     public ResponseEntity<ApiResponse<Void>> logout() throws JOSEException, ParseException {
-        IAuthenticationService.logout();
+        authenticationService.logout();
         return ResponseEntity.ok(
                 ApiResponse.<Void>builder()
                         .code(SuccessCode.LOGOUT_SUCCESS.getCode())

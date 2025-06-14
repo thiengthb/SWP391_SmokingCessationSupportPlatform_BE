@@ -5,7 +5,7 @@ import com.swpteam.smokingcessation.common.PageableRequest;
 import com.swpteam.smokingcessation.constant.SuccessCode;
 import com.swpteam.smokingcessation.domain.dto.booking.BookingRequest;
 import com.swpteam.smokingcessation.domain.dto.booking.BookingResponse;
-import com.swpteam.smokingcessation.service.impl.booking.BookingServiceImpl;
+import com.swpteam.smokingcessation.service.interfaces.booking.IBookingService;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +21,8 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class BookingController {
-    BookingServiceImpl bookingServiceImpl;
+
+    IBookingService bookingService;
 
     @GetMapping
     ResponseEntity<ApiResponse<Page<BookingResponse>>> getBookingPage(@Valid PageableRequest request) {
@@ -29,7 +30,7 @@ public class BookingController {
                 ApiResponse.<Page<BookingResponse>>builder()
                         .code(SuccessCode.BOOKING_GET_ALL.getCode())
                         .message(SuccessCode.BOOKING_GET_ALL.getMessage())
-                        .result(bookingServiceImpl.getBookingPage(request))
+                        .result(bookingService.getBookingPage(request))
                         .build()
         );
     }
@@ -40,7 +41,7 @@ public class BookingController {
                 ApiResponse.<BookingResponse>builder()
                         .code(SuccessCode.BOOKING_GET_BY_ID.getCode())
                         .message(SuccessCode.BOOKING_GET_BY_ID.getMessage())
-                        .result(bookingServiceImpl.getBookingById(id))
+                        .result(bookingService.getBookingById(id))
                         .build()
         );
     }
@@ -51,7 +52,7 @@ public class BookingController {
                 ApiResponse.<BookingResponse>builder()
                         .code(SuccessCode.BOOKING_CREATED.getCode())
                         .message(SuccessCode.BOOKING_CREATED.getMessage())
-                        .result(bookingServiceImpl.createBooking(request))
+                        .result(bookingService.createBooking(request))
                         .build()
         );
     }
@@ -62,14 +63,14 @@ public class BookingController {
                 ApiResponse.<BookingResponse>builder()
                         .code(SuccessCode.BOOKING_UPDATED.getCode())
                         .message(SuccessCode.BOOKING_UPDATED.getMessage())
-                        .result(bookingServiceImpl.updateBookingById(id, request))
+                        .result(bookingService.updateBookingById(id, request))
                         .build()
         );
     }
 
     @DeleteMapping("/{id}")
     ResponseEntity<?> softDeleteBookingById(@PathVariable String id) {
-        bookingServiceImpl.softDeleteBookingById(id);
+        bookingService.softDeleteBookingById(id);
         return ResponseEntity.ok(
                 ApiResponse.<Void>builder()
                         .code(SuccessCode.BOOKING_DELETED.getCode())

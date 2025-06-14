@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = "Chatbot API", description = "Manage chatbot operations")
 public class ChatbotController {
 
-    IChatbotService IChatbotService;
+    IChatbotService chatbotService;
 
     @PostMapping
     ResponseEntity<ApiResponse<ChatbotResponse>> createAccount(@RequestBody @Valid ChatbotRequest request) {
@@ -31,7 +31,7 @@ public class ChatbotController {
                 ApiResponse.<ChatbotResponse>builder()
                         .code(SuccessCode.RETURN_MESSAGE.getCode())
                         .message(SuccessCode.RETURN_MESSAGE.getMessage())
-                        .result(IChatbotService.chat(request))
+                        .result(chatbotService.chat(request))
                         .build());
     }
 }

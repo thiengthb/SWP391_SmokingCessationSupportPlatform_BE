@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.*;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class MemberController {
 
-    IMemberService IMemberService;
+    IMemberService memberService;
 
     @PostMapping("/{accountId}")
     ResponseEntity<ApiResponse<MemberResponse>> createMember(@PathVariable("accountId") String accountId, @RequestBody @Valid MemberCreateRequest request) {
@@ -29,7 +29,7 @@ public class MemberController {
                 ApiResponse.<MemberResponse>builder()
                         .code(SuccessCode.MEMBER_CREATED.getCode())
                         .message(SuccessCode.MEMBER_CREATED.getMessage())
-                        .result(IMemberService.createMember(request, accountId))
+                        .result(memberService.createMember(request, accountId))
                         .build());
     }
 
@@ -37,7 +37,7 @@ public class MemberController {
     ResponseEntity<ApiResponse<Page<MemberResponse>>> getUsers(@Valid PageableRequest request) {
         return ResponseEntity.ok(
                 ApiResponse.<Page<MemberResponse>>builder()
-                        .result(IMemberService.getMembers(request))
+                        .result(memberService.getMembers(request))
                         .build());
     }
 
@@ -45,7 +45,7 @@ public class MemberController {
     ResponseEntity<ApiResponse<MemberResponse>> getMemberById(@PathVariable("accountId") String id) {
         return ResponseEntity.ok(
                 ApiResponse.<MemberResponse>builder()
-                        .result(IMemberService.getMemberById(id))
+                        .result(memberService.getMemberById(id))
                         .build());
     }
 
@@ -55,7 +55,7 @@ public class MemberController {
                 ApiResponse.<MemberResponse>builder()
                         .code(SuccessCode.ACCOUNT_UPDATED.getCode())
                         .message(SuccessCode.ACCOUNT_UPDATED.getMessage())
-                        .result(IMemberService.updateMember(request, id))
+                        .result(memberService.updateMember(request, id))
                         .build());
     }
 }

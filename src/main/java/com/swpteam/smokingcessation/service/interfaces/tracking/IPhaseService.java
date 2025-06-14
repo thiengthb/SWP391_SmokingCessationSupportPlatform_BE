@@ -1,4 +1,4 @@
-package com.swpteam.smokingcessation.controller.service.interfaces.tracking;
+package com.swpteam.smokingcessation.service.interfaces.tracking;
 
 import com.swpteam.smokingcessation.common.PageableRequest;
 import com.swpteam.smokingcessation.domain.dto.phase.PhaseRequest;

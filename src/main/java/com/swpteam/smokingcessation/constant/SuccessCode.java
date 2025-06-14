@@ -94,7 +94,7 @@ public enum SuccessCode {
     SEND_MAIL_SUCCESS(1004, "Success sending mail"),
 
     // Booking
-    BOOKING_GET_ALL(2010, "Successfully retrieved all bookings"),
+    BOOKING_GET_ALL(2010, "Successfully retrieved all categories"),
     BOOKING_GET_BY_ID(2011, "Successfully retrieved booking by ID"),
     BOOKING_CREATED(2012, "Booking created successfully"),
     BOOKING_UPDATED(2013, "Booking updated successfully"),
@@ -105,6 +105,32 @@ public enum SuccessCode {
 
     // Cloudinary Image Upload
     UPLOAD_IMAGE(1000, "Success uploading image"),
+
+    // Blog
+    BLOG_GET_ALL(2010, "Successfully retrieved blog page"),
+    BLOG_GET_BY_ID(2011, "Successfully retrieved blog by ID"),
+    BLOG_GET_BY_SLUG(2011, "Successfully retrieved blog by slug"),
+    BLOG_GET_BY_CATEGORY(2011, "Successfully retrieved blog by category"),
+    MY_BLOG(2011, "Successfully my blog"),
+    BLOG_CREATED(2012, "Blog created successfully"),
+    BLOG_UPDATED(2013, "Blog updated successfully"),
+    BLOG_DELETED(2014, "Blog deleted successfully"),
+
+    // Category
+    CATEGORY_LIST_ALL(2010, "Successfully listed all categories"),
+    CATEGORY_GET_ALL(2010, "Successfully retrieved all categories"),
+    CATEGORY_GET_BY_ID(2011, "Successfully retrieved category by ID"),
+    CATEGORY_CREATED(2012, "Category created successfully"),
+    CATEGORY_UPDATED(2013, "Category updated successfully"),
+    CATEGORY_DELETED(2014, "Category deleted successfully"),
+
+    // Comment
+    COMMENT_LIST_ALL(2010, "Successfully listed all comments"),
+    COMMENT_GET_BY_BLOG(2010, "Successfully retrieved all comments by blog"),
+    COMMENT_GET_BY_ID(2011, "Successfully retrieved comment by ID"),
+    COMMENT_CREATED(2012, "Comment created successfully"),
+    COMMENT_UPDATED(2013, "Comment updated successfully"),
+    COMMENT_DELETED(2014, "Comment deleted successfully"),
 
 
     ;

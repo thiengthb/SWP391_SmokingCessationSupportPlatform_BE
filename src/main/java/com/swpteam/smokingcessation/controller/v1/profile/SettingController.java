@@ -20,25 +20,25 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class SettingController {
 
-    ISettingService ISettingService;
+    ISettingService settingService;
 
     @PostMapping
     ApiResponse<SettingResponse> createSetting(@RequestBody @Valid SettingRequest request) {
         return ApiResponse.<SettingResponse>builder()
-                .result(ISettingService.createSetting(request))
+                .result(settingService.createSetting(request))
                 .build();
     }
 
     @PutMapping("/{accountId}")
     ApiResponse<SettingResponse> updateSetting(@PathVariable String accountId, @RequestBody @Valid SettingRequest request) {
         return ApiResponse.<SettingResponse>builder()
-                .result(ISettingService.updateSetting(accountId, request))
+                .result(settingService.updateSetting(accountId, request))
                 .build();
     }
 
     @DeleteMapping("/{accountId}")
     ApiResponse<String> createSetting(@PathVariable String accountId) {
-        ISettingService.deleteSetting(accountId);
+        settingService.deleteSetting(accountId);
         return ApiResponse.<String>builder()
                 .result("Setting has been deleted")
                 .build();
@@ -47,14 +47,14 @@ public class SettingController {
     @GetMapping
     ApiResponse<List<SettingResponse>> getSettingList() {
         return ApiResponse.<List<SettingResponse>>builder()
-                .result(ISettingService.getSettingList())
+                .result(settingService.getSettingList())
                 .build();
     }
 
     @GetMapping("/{accountId}")
     ApiResponse<SettingResponse> getSettingList(@PathVariable String accountId) {
         return ApiResponse.<SettingResponse>builder()
-                .result(ISettingService.getSetting(accountId))
+                .result(settingService.getSetting(accountId))
                 .build();
     }
 }

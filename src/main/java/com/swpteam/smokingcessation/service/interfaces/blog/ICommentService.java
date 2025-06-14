@@ -10,7 +10,7 @@ import java.util.List;
 
 public interface ICommentService {
 
-    Page<CommentResponse> getCommentsByBlogId(String blogId, Pageable pageable);
+    Page<CommentResponse> getCommentsByBlogId(String blogId, PageableRequest request);
 
     Page<CommentResponse> getCommentPage(PageableRequest request);
 

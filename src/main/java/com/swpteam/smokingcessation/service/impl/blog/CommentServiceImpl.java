@@ -39,8 +39,14 @@ public class CommentServiceImpl implements ICommentService {
     AuthorizationUtilService authorizationUtilService;
 
     @Override
-    public Page<CommentResponse> getCommentsByBlogId(String blogId, Pageable pageable) {
+    public Page<CommentResponse> getCommentsByBlogId(String blogId, PageableRequest request) {
+        if (!ValidationUtil.isFieldExist(Comment.class, request.getSortBy())) {
+            throw new AppException(ErrorCode.INVALID_SORT_FIELD);
+        }
+
+        Pageable pageable = PageableRequest.getPageable(request);
         Page<Comment> topLevelComments = commentRepository.findByBlogIdAndLevel(blogId, 0, pageable);
+
         return topLevelComments.map(commentMapper::toResponse);
     }
 

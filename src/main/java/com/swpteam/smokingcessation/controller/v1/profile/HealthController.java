@@ -16,14 +16,14 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/v1/healths")
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-@Slf4j
 public class HealthController {
 
-    IHealthService IHealthService;
+    IHealthService healthService;
 
     @GetMapping
     ResponseEntity<ApiResponse<Page<HealthResponse>>> getHealthPage(@Valid PageableRequest request) {
@@ -31,7 +31,7 @@ public class HealthController {
                 ApiResponse.<Page<HealthResponse>>builder()
                         .code(SuccessCode.HEALTH_GET_ALL.getCode())
                         .message(SuccessCode.HEALTH_GET_ALL.getMessage())
-                        .result(IHealthService.getHealthPage(request))
+                        .result(healthService.getHealthPage(request))
                         .build()
         );
     }
@@ -42,7 +42,7 @@ public class HealthController {
                 ApiResponse.<HealthResponse>builder()
                         .code(SuccessCode.HEALTH_GET_BY_ID.getCode())
                         .message(SuccessCode.HEALTH_GET_BY_ID.getMessage())
-                        .result(IHealthService.getHealthById(id))
+                        .result(healthService.getHealthById(id))
                         .build()
         );
     }
@@ -53,7 +53,7 @@ public class HealthController {
                 ApiResponse.<Page<HealthResponse>>builder()
                         .code(SuccessCode.HEALTH_GET_BY_ACCOUNT.getCode())
                         .message(SuccessCode.HEALTH_GET_BY_ACCOUNT.getMessage())
-                        .result(IHealthService.getHealthPageByAccountId(id, request))
+                        .result(healthService.getHealthPageByAccountId(id, request))
                         .build()
         );
     }
@@ -64,7 +64,7 @@ public class HealthController {
                 ApiResponse.<HealthResponse>builder()
                         .code(SuccessCode.HEALTH_CREATED.getCode())
                         .message(SuccessCode.HEALTH_CREATED.getMessage())
-                        .result(IHealthService.createHealth(request))
+                        .result(healthService.createHealth(request))
                         .build()
         );
     }
@@ -75,14 +75,14 @@ public class HealthController {
                 ApiResponse.<HealthResponse>builder()
                         .code(SuccessCode.HEALTH_UPDATED.getCode())
                         .message(SuccessCode.HEALTH_UPDATED.getMessage())
-                        .result(IHealthService.updateHealth(id, request))
+                        .result(healthService.updateHealth(id, request))
                         .build()
         );
     }
 
     @DeleteMapping("/{id}")
     ResponseEntity<ApiResponse<String>> deleteHealthById(@PathVariable String id) {
-        IHealthService.softDeleteHealthById(id);
+        healthService.softDeleteHealthById(id);
         return ResponseEntity.ok(
                 ApiResponse.<String>builder()
                         .code(SuccessCode.HEALTH_DELETED.getCode())
