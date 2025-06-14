@@ -1,5 +1,7 @@
 package com.swpteam.smokingcessation.domain.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.swpteam.smokingcessation.domain.enums.MemberGender;
 import com.swpteam.smokingcessation.common.BaseEntity;
 import jakarta.persistence.*;
@@ -18,8 +20,9 @@ import java.time.LocalDateTime;
 @Entity
 public class Member extends BaseEntity {
 
-    @OneToOne
     @MapsId
+    @OneToOne
+    @JsonBackReference
     @JoinColumn(name = "accountId")
     Account account;
 

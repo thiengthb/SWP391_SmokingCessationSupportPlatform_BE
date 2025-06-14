@@ -24,7 +24,7 @@ public interface IAccountService {
 
     AccountResponse changePassword(ChangePasswordRequest request);
 
-    AccountResponse getAccountByEmail();
+    AccountResponse getCurrentAccount();
 
     void banAccount(String id);
 }

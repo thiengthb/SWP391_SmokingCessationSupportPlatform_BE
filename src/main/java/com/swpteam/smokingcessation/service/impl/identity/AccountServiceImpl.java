@@ -80,8 +80,10 @@ public class AccountServiceImpl implements IAccountService {
     }
 
     @Override
-    public AccountResponse getAccountByEmail() {
-        Account account = accountUtilService.getCurrentAccount();
+    public AccountResponse getCurrentAccount() {
+        Account account = accountUtilService.getCurrentAccount()
+                .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FOUND));
+
         return accountMapper.toResponse(account);
     }
 
@@ -131,7 +133,8 @@ public class AccountServiceImpl implements IAccountService {
     @Override
     @Transactional
     public AccountResponse changePassword(ChangePasswordRequest request) {
-        Account account = accountUtilService.getCurrentAccount();
+        Account account = accountUtilService.getCurrentAccount()
+                .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FOUND));
 
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
 
@@ -151,10 +154,12 @@ public class AccountServiceImpl implements IAccountService {
     public void banAccount(String id) {
         Account account = accountRepository.findByIdAndIsDeletedFalse(id).orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FOUND));
 
-        String emailFromToken = accountUtilService.getCurrentEmail();
-        if (emailFromToken.equals(account.getEmail())) {
+        String emailFromToken = accountUtilService.getCurrentEmail()
+                .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FOUND));
+
+        if (emailFromToken.equals(account.getEmail()))
             throw new AppException(ErrorCode.SELF_BAN);
-        }
+
         account.setStatus(AccountStatus.BANNED);
         accountRepository.save(account);
     }

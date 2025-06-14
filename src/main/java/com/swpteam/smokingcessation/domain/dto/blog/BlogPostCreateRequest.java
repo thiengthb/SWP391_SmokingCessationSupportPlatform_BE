@@ -15,32 +15,27 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class BlogPostCreateRequest {
 
-    @NotBlank(message = "Author name is required")
-    @Size(max = 255, message = "Author name must not exceed 255 characters")
-    String authorName;
-
-    @NotBlank(message = "Title is required")
-    @Size(max = 255, message = "Title must not exceed 255 characters")
+    @NotBlank(message = "BLOG_TITLE_REQUIRED")
+    @Size(max = 255, message = "BLOG_TITLE_LIMIT")
     String title;
 
-    @NotBlank(message = "Slug is required")
-    @Pattern(regexp = "^[a-z0-9]+(?:-[a-z0-9]+)*$", message = "Slug must be lowercase and can contain hyphens")
-    @Size(max = 255, message = "Slug must not exceed 255 characters")
+    @NotBlank(message = "BLOG_SLUG_REQUIRED")
+    @Pattern(regexp = "^[a-z0-9]+(?:-[a-z0-9]+)*$", message = "SLUG_PATTERN")
+    @Size(max = 255, message = "SLUG_LENGTH_LIMIT")
     String slug;
 
-    @Size(max = 1000, message = "Cover image URL must not exceed 1000 characters")
+    @Size(max = 1000, message = "COVER_IMAGE_LENGTH_LIMIT")
     @Pattern(
             regexp = "^(http|https)://.*$",
-            message = "Cover image URL must be a valid URL"
+            message = "COVER_IMAGE_INVALID_URL"
     )
     String coverImageUrl;
 
-    @Size(max = 500, message = "Excerpt must not exceed 500 characters")
+    @Size(max = 500, message = "EXCERPT_LENGTH_LIMIT")
     String excerpt;
 
-    @NotBlank(message = "Content is required")
     String content;
 
-    @NotNull(message = "Status is required")
+    @NotNull(message = "BLOG_STATUS_REQUIRED")
     BlogStatus status;
 }

@@ -1,12 +1,12 @@
 package com.swpteam.smokingcessation.config;
 
 import com.swpteam.smokingcessation.domain.entity.Account;
+import com.swpteam.smokingcessation.domain.entity.Category;
 import com.swpteam.smokingcessation.domain.entity.Member;
 import com.swpteam.smokingcessation.repository.AccountRepository;
 import com.swpteam.smokingcessation.domain.enums.Role;
 import com.swpteam.smokingcessation.domain.entity.Setting;
-import com.swpteam.smokingcessation.repository.MemberRepository;
-import com.swpteam.smokingcessation.repository.SettingRepository;
+import com.swpteam.smokingcessation.repository.CategoryRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -36,14 +36,15 @@ public class ApplicationInitConfig {
     PasswordEncoder passwordEncoder;
 
     AccountRepository accountRepository;
-    MemberRepository memberRepository;
-    SettingRepository settingRepository;
+    CategoryRepository categoryRepository;
 
     private static final String TEST_MEMBER_EMAIL = "member@gmail.com";
     private static final String TEST_MEMBER_PASS = "1";
 
     private static final String TEST_COACH_EMAIL = "coach@gmail.com";
     private static final String TEST_COACH_PASS = "1";
+
+    public static final String DEFAULT_CATEGORY = "Uncategorized";
 
     @Bean
     @ConditionalOnProperty(
@@ -62,6 +63,10 @@ public class ApplicationInitConfig {
 
             if (accountRepository.findByEmail(TEST_MEMBER_EMAIL).isEmpty()) {
                 makeDefaultAccount(TEST_MEMBER_EMAIL, TEST_MEMBER_PASS, Role.MEMBER);
+            }
+
+            if (categoryRepository.findByName(DEFAULT_CATEGORY).isEmpty()) {
+                makeDefaultUncategorized();
             }
 
             log.info("Application initialization completed ...");
@@ -83,4 +88,28 @@ public class ApplicationInitConfig {
         log.info("An {} account has been created with email: {}, default password: {}. Please change the password immediately.", role.name().toLowerCase(), email, password);
     }
 
+    private void makeDefaultMemberAccount() {
+        Account account = Account.builder()
+                .email(ApplicationInitConfig.TEST_MEMBER_EMAIL)
+                .password(passwordEncoder.encode(ApplicationInitConfig.TEST_MEMBER_PASS))
+                .role(Role.MEMBER)
+                .build();
+
+        Setting setting = Setting.getDefaultSetting(account);
+        Member member = Member.getDefaultMember(account);
+
+        account.setSetting(setting);
+        account.setMember(member);
+        accountRepository.save(account);
+
+        log.info("An member account has been created with email: {}, default password: {}. Please change the password immediately.", ApplicationInitConfig.TEST_MEMBER_EMAIL, ApplicationInitConfig.TEST_MEMBER_PASS);
+    }
+
+    private void makeDefaultUncategorized() {
+        Category uncategorized = Category.builder()
+                .name(DEFAULT_CATEGORY)
+                .build();
+
+        categoryRepository.save(uncategorized);
+    }
 }

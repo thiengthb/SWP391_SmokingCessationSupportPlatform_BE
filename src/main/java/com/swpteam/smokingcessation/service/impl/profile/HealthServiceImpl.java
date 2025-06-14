@@ -84,7 +84,7 @@ public class HealthServiceImpl implements IHealthService {
         Health health = healthRepository.findByIdAndIsDeletedFalse(id)
                 .orElseThrow(() -> new AppException(ErrorCode.HEALTH_RECORD_NOT_FOUND));
 
-        healthMapper.updateHealth(health, request);
+        healthMapper.update(health, request);
 
         return healthMapper.toResponse(healthRepository.save(health));
     }

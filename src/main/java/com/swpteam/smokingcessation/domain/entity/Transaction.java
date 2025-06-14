@@ -1,5 +1,6 @@
 package com.swpteam.smokingcessation.domain.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.swpteam.smokingcessation.domain.enums.TransactionStatus;
 import com.swpteam.smokingcessation.domain.enums.TransactionType;
 import com.swpteam.smokingcessation.common.BaseEntity;
@@ -18,6 +19,7 @@ public class Transaction extends BaseEntity {
 
     @ManyToOne
     @JoinColumn(name = "accountId", nullable = false)
+    @JsonBackReference
     Account account;
 
     double amount;

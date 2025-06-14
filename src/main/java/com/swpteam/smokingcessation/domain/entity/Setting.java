@@ -1,5 +1,6 @@
 package com.swpteam.smokingcessation.domain.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.swpteam.smokingcessation.domain.enums.Language;
 import com.swpteam.smokingcessation.domain.enums.MotivationFrequency;
 import com.swpteam.smokingcessation.domain.enums.Theme;
@@ -20,9 +21,10 @@ import java.time.LocalTime;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Setting extends BaseEntity {
 
-    @OneToOne
     @MapsId
+    @OneToOne
     @JoinColumn(name = "accountId")
+    @JsonBackReference
     Account account;
 
     @Enumerated(EnumType.STRING)

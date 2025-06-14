@@ -5,6 +5,7 @@ import com.swpteam.smokingcessation.constant.SuccessCode;
 import com.swpteam.smokingcessation.domain.dto.chatbot.ChatbotRequest;
 import com.swpteam.smokingcessation.domain.dto.chatbot.ChatbotResponse;
 import com.swpteam.smokingcessation.service.interfaces.chatbot.IChatbotService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/chatbot")
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@Tag(name = "Chatbot API", description = "Manage chatbot operations")
 public class ChatbotController {
 
     IChatbotService IChatbotService;

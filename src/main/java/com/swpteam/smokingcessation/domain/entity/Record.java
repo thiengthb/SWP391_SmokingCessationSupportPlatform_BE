@@ -1,5 +1,6 @@
 package com.swpteam.smokingcessation.domain.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.swpteam.smokingcessation.common.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -21,6 +22,7 @@ public class Record extends BaseEntity {
 
     @ManyToOne
     @JoinColumn(name = "accountId", nullable = false)
+    @JsonBackReference
     Account account;
 
     int cigarettesSmoked;

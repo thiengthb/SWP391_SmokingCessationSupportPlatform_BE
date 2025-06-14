@@ -177,6 +177,31 @@ public enum ErrorCode {
     ENDED_AT_MUST_BE_IN_FUTURE(1009, "Ended at must be in the future", HttpStatus.BAD_REQUEST),
     IS_APPROVED_REQUIRED(1010, "Approval status is required", HttpStatus.BAD_REQUEST),
 
+    // Category
+    CATEGORY_NAME_REQUIRED(4000, "Category name must not be blank", HttpStatus.BAD_REQUEST),
+    CATEGORY_MAX_LENGTH(4000, "Category name must not exceed 100 characters", HttpStatus.BAD_REQUEST),
+    CATEGORY_NOT_FOUND(4000, "Category does not exist or have been deleted", HttpStatus.BAD_REQUEST),
+    CATEGORY_CANNOT_BE_DELETED(4000, "This category can not be deleted", HttpStatus.BAD_REQUEST),
+
+    // Comment
+    COMMENT_CONTENT_REQUIRED(4000, "Content must not be blank", HttpStatus.BAD_REQUEST),
+    LEVEL_POSITIVE(4000, "Level must be zero or positive", HttpStatus.BAD_REQUEST),
+    COMMENT_BLOG_REQUIRED(4000, "Blog ID must not be blank", HttpStatus.BAD_REQUEST),
+    COMMENT_USER_REQUIRED(4000, "User ID must not be blank", HttpStatus.BAD_REQUEST),
+    OTHERS_COMMENT_UNCHANGEABLE(4000, "Can not change other user comment", HttpStatus.BAD_REQUEST),
+    COMMENT_NOT_FOUND(4000, "Comment does not exist or have been deleted", HttpStatus.BAD_REQUEST),
+
+    // Blog
+    BLOG_TITLE_REQUIRED(4000, "Title is required", HttpStatus.BAD_REQUEST),
+    BLOG_TITLE_LIMIT(4000, "Title must not exceed 255 characters", HttpStatus.BAD_REQUEST),
+    BLOG_SLUG_REQUIRED(4000, "Slug is required", HttpStatus.BAD_REQUEST),
+    SLUG_PATTERN(4000, "Slug must be lowercase and can contain hyphens", HttpStatus.BAD_REQUEST),
+    SLUG_LENGTH_LIMIT(4000, "Slug must not exceed 255 characters", HttpStatus.BAD_REQUEST),
+    COVER_IMAGE_LENGTH_LIMIT(4000, "Cover image URL must not exceed 1000 characters", HttpStatus.BAD_REQUEST),
+    COVER_IMAGE_INVALID_URL(4000, "Cover image URL must be a valid URL", HttpStatus.BAD_REQUEST),
+    EXCERPT_LENGTH_LIMIT(4000, "Excerpt must not exceed 500 characters", HttpStatus.BAD_REQUEST),
+    BLOG_STATUS_REQUIRED(4000, "Status is required", HttpStatus.BAD_REQUEST),
+
     ;
     int code;
     String message;

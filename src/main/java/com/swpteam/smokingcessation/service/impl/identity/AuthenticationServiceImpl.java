@@ -332,7 +332,9 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
 
     @Override
     public void logout() throws ParseException, JOSEException {
-        String token = accountUtilService.getCurrentToken();
+        String token = accountUtilService.getCurrentToken()
+                .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FOUND));
+
         SignedJWT signedJWT = verifyToken(token, true);
 
         String jwtId = signedJWT.getJWTClaimsSet().getJWTID();

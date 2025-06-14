@@ -1,4 +1,4 @@
-package com.swpteam.smokingcessation.feature.integration.imagecloud;
+package com.swpteam.smokingcessation.integration.imagecloud;
 
 import com.swpteam.smokingcessation.common.ApiResponse;
 import com.swpteam.smokingcessation.constant.SuccessCode;

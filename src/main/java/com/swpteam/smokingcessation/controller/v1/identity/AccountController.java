@@ -101,7 +101,7 @@ public class AccountController {
                 ApiResponse.<AccountResponse>builder()
                         .code(SuccessCode.GET_ME.getCode())
                         .message(SuccessCode.GET_ME.getMessage())
-                        .result(accountService.getAccountByEmail())
+                        .result(accountService.getCurrentAccount())
                         .build());
     }
 
