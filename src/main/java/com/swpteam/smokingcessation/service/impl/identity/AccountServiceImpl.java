@@ -1,4 +1,4 @@
-package com.swpteam.smokingcessation.service.impl.identity;
+package com.swpteam.smokingcessation.feature.service.impl.identity;
 
 import com.swpteam.smokingcessation.domain.dto.account.AccountRequest;
 import com.swpteam.smokingcessation.domain.dto.account.AccountResponse;
@@ -8,12 +8,9 @@ import com.swpteam.smokingcessation.domain.enums.AccountStatus;
 import com.swpteam.smokingcessation.domain.enums.Role;
 import com.swpteam.smokingcessation.domain.entity.Health;
 import com.swpteam.smokingcessation.domain.mapper.AccountMapper;
-import com.swpteam.smokingcessation.repository.AccountRepository;
-import com.swpteam.smokingcessation.repository.HealthRepository;
-import com.swpteam.smokingcessation.domain.entity.Member;
-import com.swpteam.smokingcessation.repository.MemberRepository;
+import com.swpteam.smokingcessation.feature.repository.AccountRepository;
 import com.swpteam.smokingcessation.domain.entity.Setting;
-import com.swpteam.smokingcessation.repository.SettingRepository;
+import com.swpteam.smokingcessation.feature.repository.SettingRepository;
 import com.swpteam.smokingcessation.common.PageableRequest;
 import com.swpteam.smokingcessation.constant.ErrorCode;
 import com.swpteam.smokingcessation.domain.entity.Account;
@@ -33,6 +30,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 
 @RequiredArgsConstructor
@@ -63,20 +61,7 @@ public class AccountServiceImpl implements IAccountService {
         Account account = accountMapper.toEntity(request);
         account.setPassword(passwordEncoder.encode(request.getPassword()));
 
-        switch (account.getRole()) {
-            case Role.MEMBER -> {
-                healthRepository.save(Health.getDefaultHealth(account));
-                memberRepository.save(Member.getDefaultMember(account));
-            }
-            case Role.COACH -> {
-
-            }
-            default -> {
-
-            }
-        }
-
-        settingRepository.save(Setting.getDefaultSetting(account));
+        account.setSetting(Setting.getDefaultSetting(account));
 
         return accountMapper.toResponse(accountRepository.save(account));
     }

@@ -50,6 +50,15 @@ public class Account extends BaseEntity {
     @OneToOne(mappedBy = "account", cascade = CascadeType.ALL)
     Member member;
 
+    @OneToOne(mappedBy = "account", cascade = CascadeType.ALL)
+    Coach coach;
+
+    @OneToMany(mappedBy = "account")
+    List<Plan> plans;
+
+    @OneToMany(mappedBy = "account")
+    List<Booking> bookings;
+
     public boolean isHavingSubscription() {
         return subscriptions != null &&
                 subscriptions.stream().anyMatch(Subscription::isActive);
