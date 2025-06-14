@@ -26,7 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public class IRecordServiceImpl implements IRecordService {
+public class RecordServiceImpl implements IRecordService {
 
     RecordRepository recordRepository;
     AccountRepository accountRepository;

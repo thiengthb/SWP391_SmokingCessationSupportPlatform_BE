@@ -10,21 +10,21 @@ import org.springframework.data.domain.Page;
 
 public interface IAccountService {
 
-    public AccountResponse createAccount(AccountRequest request);
+    AccountResponse createAccount(AccountRequest request);
 
-    public Page<AccountResponse> getAccounts(PageableRequest request);
+    Page<AccountResponse> getAccounts(PageableRequest request);
 
-    public AccountResponse getAccountById(String id);
+    AccountResponse getAccountById(String id);
 
-    public AccountResponse updateAccountRole(String id, Role role);
+    AccountResponse updateAccountRole(String id, Role role);
 
-    public AccountResponse updateAccountWithoutRole(String id, AccountUpdateRequest request);
+    AccountResponse updateAccountWithoutRole(String id, AccountUpdateRequest request);
 
-    public void deleteAccount(String id);
+    void deleteAccount(String id);
 
-    public AccountResponse changePassword(ChangePasswordRequest request);
+    AccountResponse changePassword(ChangePasswordRequest request);
 
-    public AccountResponse getAccountByEmail();
+    AccountResponse getAccountByEmail();
 
-    public void banAccount(String id);
+    void banAccount(String id);
 }

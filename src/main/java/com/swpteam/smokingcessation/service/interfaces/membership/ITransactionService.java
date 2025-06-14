@@ -5,7 +5,7 @@ import com.swpteam.smokingcessation.domain.entity.Transaction;
 
 public interface ITransactionService {
 
-    public Transaction createTransaction(Account account, double amount);
+    Transaction createTransaction(Account account, double amount);
 
-    public void makeAsPaid(String transactionId);
+    void makeAsPaid(String transactionId);
 }

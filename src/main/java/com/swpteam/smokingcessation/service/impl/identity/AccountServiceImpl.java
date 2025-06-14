@@ -19,12 +19,15 @@ import com.swpteam.smokingcessation.constant.ErrorCode;
 import com.swpteam.smokingcessation.domain.entity.Account;
 import com.swpteam.smokingcessation.exception.AppException;
 import com.swpteam.smokingcessation.service.interfaces.identity.IAccountService;
-import com.swpteam.smokingcessation.utils.AccountUtil;
+import com.swpteam.smokingcessation.utils.AccountUtilService;
 import com.swpteam.smokingcessation.utils.ValidationUtil;
 import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -35,18 +38,18 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 @Service
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public class IAccountServiceImpl implements IAccountService {
+public class AccountServiceImpl implements IAccountService {
 
     AccountRepository accountRepository;
     SettingRepository settingRepository;
     HealthRepository healthRepository;
     MemberRepository memberRepository;
     AccountMapper accountMapper;
-    AccountUtil accountUtil;
-
+    AccountUtilService accountUtilService;
 
     @Override
     @PreAuthorize("hasRole('ADMIN')")
+    @CachePut(value = "ACCOUNT_CACHE", key = "#result.getId()")
     public AccountResponse createAccount(AccountRequest request) {
         if (accountRepository.existsByEmail(request.getEmail())) {
             throw new AppException(ErrorCode.ACCOUNT_EXISTED);
@@ -97,23 +100,27 @@ public class IAccountServiceImpl implements IAccountService {
         return accountMapper.toResponse(findAccountById(id));
     }
 
+    @Override
+    public AccountResponse getAccountByEmail() {
+        Account account = accountUtilService.getCurrentAccount();
+        return accountMapper.toResponse(account);
+    }
+
+    @Cacheable(value = "ACCOUNT_CACHE", key = "#id")
     private Account findAccountById(String id) {
-        Account account = accountRepository.findByIdAndIsDeletedFalse(id)
+        return accountRepository.findByIdAndIsDeletedFalse(id)
                 .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FOUND));
-        if (account.isDeleted()) {
-            throw new AppException(ErrorCode.ACCOUNT_DELETED);
-        }
-        return account;
     }
 
     @Override
-    @PreAuthorize("hasRole('ADMIN')")
     @Transactional
+    @PreAuthorize("hasRole('ADMIN')")
+    @CachePut(value = "ACCOUNT_CACHE", key = "#result.getId()")
     public AccountResponse updateAccountRole(String id, Role role) {
         Account account = findAccountById(id);
         account.setRole(role);
-        accountRepository.save(account);
-        return accountMapper.toResponse(account);
+
+        return accountMapper.toResponse(accountRepository.save(account));
     }
 
     @Override
@@ -135,6 +142,7 @@ public class IAccountServiceImpl implements IAccountService {
 
     @Override
     @PreAuthorize("hasRole('ADMIN')")
+    @CacheEvict(value = "ACCOUNT_CACHE", key = "#id")
     public void deleteAccount(String id) {
         Account account = findAccountById(id);
         account.setDeleted(true);
@@ -144,7 +152,7 @@ public class IAccountServiceImpl implements IAccountService {
     @Override
     @Transactional
     public AccountResponse changePassword(ChangePasswordRequest request) {
-        Account account = accountUtil.getCurrentAccount();
+        Account account = accountUtilService.getCurrentAccount();
 
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
 
@@ -159,17 +167,12 @@ public class IAccountServiceImpl implements IAccountService {
     }
 
     @Override
-    public AccountResponse getAccountByEmail() {
-        Account account = accountUtil.getCurrentAccount();
-        return accountMapper.toResponse(account);
-    }
-
-    @Override
+    @Transactional
     @PreAuthorize("hasRole('ADMIN')")
     public void banAccount(String id) {
         Account account = accountRepository.findByIdAndIsDeletedFalse(id).orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FOUND));
 
-        String emailFromToken = accountUtil.getCurrentEmail();
+        String emailFromToken = accountUtilService.getCurrentEmail();
         if (emailFromToken.equals(account.getEmail())) {
             throw new AppException(ErrorCode.SELF_BAN);
         }

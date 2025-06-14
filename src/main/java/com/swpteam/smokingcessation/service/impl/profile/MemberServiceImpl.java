@@ -25,7 +25,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 @Service
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public class IMemberServiceImpl implements IMemberService {
+public class MemberServiceImpl implements IMemberService {
 
     MemberMapper memberMapper;
     MemberRepository memberRepository;

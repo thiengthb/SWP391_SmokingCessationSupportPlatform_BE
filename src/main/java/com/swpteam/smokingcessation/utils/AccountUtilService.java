@@ -15,7 +15,7 @@ import java.util.Optional;
 @Service
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public class AccountUtil {
+public class AccountUtilService {
     AccountRepository accountRepository;
 
     public String getCurrentEmail() {

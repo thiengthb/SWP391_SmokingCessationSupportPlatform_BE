@@ -8,7 +8,7 @@ import com.swpteam.smokingcessation.domain.entity.AITokenUsage;
 import com.swpteam.smokingcessation.domain.entity.Account;
 import com.swpteam.smokingcessation.domain.enums.Role;
 import com.swpteam.smokingcessation.exception.AppException;
-import com.swpteam.smokingcessation.integration.AI.AIService;
+import com.swpteam.smokingcessation.integration.AI.IAIService;
 import com.swpteam.smokingcessation.repository.AITokenUsageRepository;
 import com.swpteam.smokingcessation.repository.AccountRepository;
 import com.swpteam.smokingcessation.service.interfaces.chatbot.IChatbotService;
@@ -24,11 +24,11 @@ import java.time.LocalDate;
 @RequiredArgsConstructor
 @Service
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public class IChatbotServiceImpl implements IChatbotService {
+public class ChatbotServiceImpl implements IChatbotService {
 
     AITokenUsageRepository aiTokenUsageRepository;
     AccountRepository accountRepository;
-    AIService aiService;
+    IAIService aiService;
 
     public ChatbotResponse chat(ChatbotRequest request) {
         Account account = accountRepository.findByEmailAndIsDeletedFalse("member@gmail.com")

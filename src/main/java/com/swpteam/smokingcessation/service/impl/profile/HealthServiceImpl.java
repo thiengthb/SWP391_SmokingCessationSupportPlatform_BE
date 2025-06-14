@@ -26,7 +26,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @Slf4j
-public class IHealthServiceImpl implements IHealthService {
+public class HealthServiceImpl implements IHealthService {
     HealthRepository healthRepository;
     AccountRepository accountRepository;
     HealthMapper healthMapper;

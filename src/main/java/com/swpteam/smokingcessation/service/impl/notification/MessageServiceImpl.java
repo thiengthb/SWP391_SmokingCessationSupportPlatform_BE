@@ -21,7 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 @RequiredArgsConstructor
-public class IMessageServiceImpl implements IMessageService {
+public class MessageServiceImpl implements IMessageService {
     MessageRepository messageRepository;
     MessageMapper messageMapper;
 

@@ -8,17 +8,17 @@ import org.springframework.data.domain.Page;
 
 public interface ISubscriptionService {
 
-    public Page<SubscriptionResponse> getSubscriptionPage(PageableRequest request);
+    Page<SubscriptionResponse> getSubscriptionPage(PageableRequest request);
 
-    public SubscriptionResponse getSubscriptionById(String id);
+    SubscriptionResponse getSubscriptionById(String id);
 
-    public Page<SubscriptionResponse> getSubscriptionPageByAccountId(String accountId, PageableRequest request);
+    Page<SubscriptionResponse> getSubscriptionPageByAccountId(String accountId, PageableRequest request);
 
-    public Subscription createSubscription(String accountId, String membershipName);
+    Subscription createSubscription(String accountId, String membershipName);
 
-    public SubscriptionResponse createSubscription(SubscriptionRequest request);
+    SubscriptionResponse createSubscription(SubscriptionRequest request);
 
-    public SubscriptionResponse updateSubscription(String id, SubscriptionRequest request);
+    SubscriptionResponse updateSubscription(String id, SubscriptionRequest request);
 
-    public void deleteSubscription(String id);
+    void deleteSubscription(String id);
 }

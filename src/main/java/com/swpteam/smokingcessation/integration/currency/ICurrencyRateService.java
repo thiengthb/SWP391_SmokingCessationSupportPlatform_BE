@@ -2,5 +2,9 @@ package com.swpteam.smokingcessation.integration.currency;
 
 public interface ICurrencyRateService {
 
-    public void updateRates(String baseCurrency);
+    void updateRates(String baseCurrency);
+
+    Double getRate(String toCurrency);
+
+    Double getNewPrice(double fromAmount, String fromCurrency, String toCurrency);
 }

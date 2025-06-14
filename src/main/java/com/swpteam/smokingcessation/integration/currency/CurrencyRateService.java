@@ -51,6 +51,7 @@ public class CurrencyRateService implements ICurrencyRateService {
         }
     }
 
+    @Override
     public Double getRate(String toCurrency) {
         Double rate = latestRates.get(toCurrency);
         if (rate == null)
@@ -59,6 +60,7 @@ public class CurrencyRateService implements ICurrencyRateService {
         return rate;
     }
 
+    @Override
     public Double getNewPrice(double fromAmount, String fromCurrency, String toCurrency) {
         Double fromCurrencyRate = getRate(fromCurrency);
         Double toCurrencyRate = getRate(toCurrency);

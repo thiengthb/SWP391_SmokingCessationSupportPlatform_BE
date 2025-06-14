@@ -29,7 +29,7 @@ import java.time.LocalDate;
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public class ISubscriptionServiceImpl implements ISubscriptionService {
+public class SubscriptionServiceImpl implements ISubscriptionService {
 
     SubscriptionRepository subscriptionRepository;
     SubscriptionMapper subscriptionMapper;

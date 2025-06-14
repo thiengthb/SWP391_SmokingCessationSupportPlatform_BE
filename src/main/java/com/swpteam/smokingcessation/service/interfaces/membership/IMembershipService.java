@@ -9,17 +9,17 @@ import org.springframework.data.domain.Page;
 
 public interface IMembershipService {
 
-    public Page<MembershipResponse> getMembershipPage(PageableRequest request);
+    Page<MembershipResponse> getMembershipPage(PageableRequest request);
 
-    public MembershipResponse getMembershipById(String id);
+    MembershipResponse getMembershipById(String id);
 
-    public MembershipResponse getMembershipByName(String name);
+    MembershipResponse getMembershipByName(String name);
 
-    public MembershipResponse createMembership(MembershipCreateRequest request);
+    MembershipResponse createMembership(MembershipCreateRequest request);
 
-    public MembershipResponse updateMembership(String id, MembershipUpdateRequest request);
+    MembershipResponse updateMembership(String id, MembershipUpdateRequest request);
 
-    public void softDeleteMembershipById(String id);
+    void softDeleteMembershipById(String id);
 
-    public MembershipResponse updateMembershipCurrency(String id, MembershipCurrencyUpdateRequest request);
+    MembershipResponse updateMembershipCurrency(String id, MembershipCurrencyUpdateRequest request);
 }

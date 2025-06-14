@@ -7,7 +7,7 @@ import com.swpteam.smokingcessation.domain.dto.account.AccountResponse;
 import com.swpteam.smokingcessation.domain.dto.auth.request.*;
 import com.swpteam.smokingcessation.domain.dto.auth.response.AuthenticationResponse;
 import com.swpteam.smokingcessation.domain.dto.auth.response.GoogleTokenResponse;
-import com.swpteam.smokingcessation.service.interfaces.identity.AuthenticationService;
+import com.swpteam.smokingcessation.service.interfaces.identity.IAuthenticationService;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -29,7 +29,7 @@ import java.text.ParseException;
 @RequestMapping("/api/v1/auth")
 public class AuthenticationController {
 
-    AuthenticationService authenticationService;
+    IAuthenticationService IAuthenticationService;
 
     @PostMapping("/google/login")
     ResponseEntity<ApiResponse<GoogleTokenResponse>> getGoogleToken(@RequestBody GoogleTokenRequest request) {
@@ -37,7 +37,7 @@ public class AuthenticationController {
                 ApiResponse.<GoogleTokenResponse>builder()
                         .code(SuccessCode.GOOGLE_LOGIN_SUCCESS.getCode())
                         .message(SuccessCode.GOOGLE_LOGIN_SUCCESS.getMessage())
-                        .result(authenticationService.getGoogleToken(request))
+                        .result(IAuthenticationService.getGoogleToken(request))
                         .build());
     }
 
@@ -47,7 +47,7 @@ public class AuthenticationController {
                 .body(ApiResponse.<AuthenticationResponse>builder()
                         .code(SuccessCode.LOGIN_SUCCESS.getCode())
                         .message(SuccessCode.LOGIN_SUCCESS.getMessage())
-                        .result(authenticationService.authenticate(request))
+                        .result(IAuthenticationService.authenticate(request))
                         .build());
     }
 
@@ -58,7 +58,7 @@ public class AuthenticationController {
                 .body(ApiResponse.<AuthenticationResponse>builder()
                         .code(SuccessCode.TOKEN_REFRESH_SUCCESS.getCode())
                         .message(SuccessCode.TOKEN_REFRESH_SUCCESS.getMessage())
-                        .result(authenticationService.refreshToken(token))
+                        .result(IAuthenticationService.refreshToken(token))
                         .build());
     }
 
@@ -68,14 +68,14 @@ public class AuthenticationController {
                 ApiResponse.<AccountResponse>builder()
                         .code(SuccessCode.REGISTER_SUCCESS.getCode())
                         .message(SuccessCode.REGISTER_SUCCESS.getMessage())
-                        .result(authenticationService.register(request))
+                        .result(IAuthenticationService.register(request))
                         .build());
     }
 
 
     @PostMapping("/forgot-password")
     ResponseEntity<ApiResponse<String>> forgotPassword(@RequestBody @Valid ForgotPasswordRequest request) {
-        authenticationService.sendResetPasswordEmail(request.getEmail());
+        IAuthenticationService.sendResetPasswordEmail(request.getEmail());
         return ResponseEntity.ok(
                 ApiResponse.<String>builder()
                         .code(SuccessCode.SEND_MAIL_SUCCESS.getCode())
@@ -86,7 +86,7 @@ public class AuthenticationController {
 
     @PostMapping("/reset-password")
     ResponseEntity<ApiResponse<Void>> resetPassword(@RequestBody @Valid ResetPasswordRequest request) {
-        authenticationService.resetPassword(request);
+        IAuthenticationService.resetPassword(request);
 
         return ResponseEntity.ok(
                 ApiResponse.<Void>builder()
@@ -98,7 +98,7 @@ public class AuthenticationController {
     //front-end job
     @PostMapping("/logout")
     public ResponseEntity<ApiResponse<Void>> logout() throws JOSEException, ParseException {
-        authenticationService.logout();
+        IAuthenticationService.logout();
         return ResponseEntity.ok(
                 ApiResponse.<Void>builder()
                         .code(SuccessCode.LOGOUT_SUCCESS.getCode())

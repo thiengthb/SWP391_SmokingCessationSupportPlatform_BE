@@ -6,9 +6,9 @@ import com.swpteam.smokingcessation.integration.payment.dto.StripeSubscriptionRe
 
 public interface IStripeService {
 
-    public StripeResponse checkoutSubscription(StripeSubscriptionRequest request);
+    StripeResponse checkoutSubscription(StripeSubscriptionRequest request);
 
-    public void handleCheckoutSessionCompleted(Event event);
+    void handleCheckoutSessionCompleted(Event event);
 
-    public void handlePaymentIntentSucceeded(Event event);
+    void handlePaymentIntentSucceeded(Event event);
 }

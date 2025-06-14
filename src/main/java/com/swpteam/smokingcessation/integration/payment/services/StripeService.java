@@ -12,13 +12,13 @@ import com.swpteam.smokingcessation.integration.mail.MailServiceImpl;
 import com.swpteam.smokingcessation.domain.entity.Membership;
 import com.swpteam.smokingcessation.repository.MembershipRepository;
 import com.swpteam.smokingcessation.domain.entity.Subscription;
-import com.swpteam.smokingcessation.service.impl.membership.ISubscriptionServiceImpl;
+import com.swpteam.smokingcessation.service.impl.membership.SubscriptionServiceImpl;
 import com.swpteam.smokingcessation.domain.entity.Transaction;
 import com.swpteam.smokingcessation.integration.payment.dto.StripeResponse;
 import com.swpteam.smokingcessation.integration.payment.dto.StripeSubscriptionRequest;
 import com.swpteam.smokingcessation.constant.ErrorCode;
 import com.swpteam.smokingcessation.exception.AppException;
-import com.swpteam.smokingcessation.service.impl.membership.ITransactionServiceImpl;
+import com.swpteam.smokingcessation.service.impl.membership.TransactionServiceImpl;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -37,8 +37,8 @@ public class StripeService implements IStripeService {
 
     AccountRepository accountRepository;
     MembershipRepository membershipRepository;
-    ITransactionServiceImpl transactionService;
-    ISubscriptionServiceImpl subscriptionService;
+    TransactionServiceImpl transactionService;
+    SubscriptionServiceImpl subscriptionService;
     MailServiceImpl mailServiceImpl;
 
     @NonFinal

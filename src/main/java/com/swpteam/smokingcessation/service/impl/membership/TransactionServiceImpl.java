@@ -19,7 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public class ITransactionServiceImpl implements ITransactionService {
+public class TransactionServiceImpl implements ITransactionService {
 
     TransactionRepository transactionRepository;
     AccountRepository accountRepository;

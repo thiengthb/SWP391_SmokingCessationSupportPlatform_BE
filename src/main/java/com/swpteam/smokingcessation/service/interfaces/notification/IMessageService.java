@@ -7,13 +7,13 @@ import org.springframework.data.domain.Page;
 
 public interface IMessageService {
 
-    public Page<MessageResponse> getMessagePage(PageableRequest request);
+    Page<MessageResponse> getMessagePage(PageableRequest request);
 
-    public MessageResponse getById(String id);
+    MessageResponse getById(String id);
 
-    public MessageResponse createMessage(MessageRequest request);
+    MessageResponse createMessage(MessageRequest request);
 
-    public MessageResponse updateMessage(String id, MessageRequest request);
+    MessageResponse updateMessage(String id, MessageRequest request);
 
-    public void softDeleteMessageById(String id);
+    void softDeleteMessageById(String id);
 }

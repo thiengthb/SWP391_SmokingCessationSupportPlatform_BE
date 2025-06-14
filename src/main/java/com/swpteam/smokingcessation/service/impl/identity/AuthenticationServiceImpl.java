@@ -24,8 +24,8 @@ import com.swpteam.smokingcessation.repository.SettingRepository;
 import com.swpteam.smokingcessation.constant.ErrorCode;
 import com.swpteam.smokingcessation.domain.entity.InvalidatedToken;
 import com.swpteam.smokingcessation.exception.AppException;
-import com.swpteam.smokingcessation.service.interfaces.identity.AuthenticationService;
-import com.swpteam.smokingcessation.utils.AccountUtil;
+import com.swpteam.smokingcessation.service.interfaces.identity.IAuthenticationService;
+import com.swpteam.smokingcessation.utils.AccountUtilService;
 import jakarta.mail.MessagingException;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -50,7 +50,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 @Service
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public class AuthenticationServiceImpl implements AuthenticationService {
+public class AuthenticationServiceImpl implements IAuthenticationService {
 
     AccountRepository accountRepository;
     MemberRepository memberRepository;
@@ -58,7 +58,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     AccountMapper accountMapper;
     InvalidatedTokenRepository invalidatedTokenRepository;
     MailServiceImpl mailServiceImpl;
-    AccountUtil accountUtil;
+    AccountUtilService accountUtilService;
     WebClient webClient = WebClient.create();
 
     @NonFinal
@@ -334,7 +334,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     @Override
     public void logout() throws ParseException, JOSEException {
-        String token = accountUtil.getCurrentToken();
+        String token = accountUtilService.getCurrentToken();
         SignedJWT signedJWT = verifyToken(token, true);
 
         String jwtId = signedJWT.getJWTClaimsSet().getJWTID();

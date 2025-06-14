@@ -6,9 +6,9 @@ import com.swpteam.smokingcessation.domain.entity.Account;
 
 public interface IChatbotService {
 
-    public ChatbotResponse chat(ChatbotRequest request);
+    ChatbotResponse chat(ChatbotRequest request);
 
-    public int getAccountTokenLimit(Account account);
+    int getAccountTokenLimit(Account account);
 
-    public int estimateAITokenUsage(String content);
+    int estimateAITokenUsage(String content);
 }

@@ -9,7 +9,7 @@ import com.swpteam.smokingcessation.domain.dto.account.AccountUpdateRequest;
 import com.swpteam.smokingcessation.domain.dto.account.ChangePasswordRequest;
 import com.swpteam.smokingcessation.domain.enums.Role;
 import com.swpteam.smokingcessation.service.interfaces.identity.IAccountService;
-import com.swpteam.smokingcessation.utils.AccountUtil;
+import com.swpteam.smokingcessation.utils.AccountUtilService;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -26,8 +26,7 @@ import org.springframework.web.bind.annotation.*;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class AccountController {
 
-    IAccountService IAccountService;
-    AccountUtil accountUtil;
+    IAccountService accountService;
 
     @PostMapping
     ResponseEntity<ApiResponse<AccountResponse>> createAccount(@RequestBody @Valid AccountRequest request) {
@@ -35,7 +34,7 @@ public class AccountController {
                 ApiResponse.<AccountResponse>builder()
                         .code(SuccessCode.ACCOUNT_CREATED.getCode())
                         .message(SuccessCode.ACCOUNT_CREATED.getMessage())
-                        .result(IAccountService.createAccount(request))
+                        .result(accountService.createAccount(request))
                         .build());
     }
 
@@ -43,7 +42,7 @@ public class AccountController {
     ResponseEntity<ApiResponse<Page<AccountResponse>>> getAccounts(@Valid PageableRequest request) {
         return ResponseEntity.ok(
                 ApiResponse.<Page<AccountResponse>>builder()
-                        .result(IAccountService.getAccounts(request))
+                        .result(accountService.getAccounts(request))
                         .build());
     }
 
@@ -51,7 +50,7 @@ public class AccountController {
     ResponseEntity<ApiResponse<AccountResponse>> getAccountById(@PathVariable String id) {
         return ResponseEntity.ok(
                 ApiResponse.<AccountResponse>builder()
-                        .result(IAccountService.getAccountById(id))
+                        .result(accountService.getAccountById(id))
                         .build());
     }
 
@@ -61,7 +60,7 @@ public class AccountController {
                 ApiResponse.<AccountResponse>builder()
                         .code(SuccessCode.ROLE_UPDATED.getCode())
                         .message(SuccessCode.ROLE_UPDATED.getMessage())
-                        .result(IAccountService.updateAccountRole(id, role))
+                        .result(accountService.updateAccountRole(id, role))
                         .build());
     }
 
@@ -71,13 +70,13 @@ public class AccountController {
                 ApiResponse.<AccountResponse>builder()
                         .code(SuccessCode.ACCOUNT_UPDATED.getCode())
                         .message(SuccessCode.ACCOUNT_UPDATED.getMessage())
-                        .result(IAccountService.updateAccountWithoutRole(id, request))
+                        .result(accountService.updateAccountWithoutRole(id, request))
                         .build());
     }
 
     @DeleteMapping("/{id}")
     ResponseEntity<ApiResponse<String>> deleteAccount(@PathVariable String id) {
-        IAccountService.deleteAccount(id);
+        accountService.deleteAccount(id);
 
         return ResponseEntity.ok(
                 ApiResponse.<String>builder()
@@ -92,7 +91,7 @@ public class AccountController {
                 ApiResponse.<AccountResponse>builder()
                         .code(SuccessCode.PASSWORD_CHANGE_SUCCESS.getCode())
                         .message(SuccessCode.PASSWORD_CHANGE_SUCCESS.getMessage())
-                        .result(IAccountService.changePassword(request))
+                        .result(accountService.changePassword(request))
                         .build());
     }
 
@@ -102,13 +101,13 @@ public class AccountController {
                 ApiResponse.<AccountResponse>builder()
                         .code(SuccessCode.GET_ME.getCode())
                         .message(SuccessCode.GET_ME.getMessage())
-                        .result(IAccountService.getAccountByEmail())
+                        .result(accountService.getAccountByEmail())
                         .build());
     }
 
     @PutMapping("/ban/{id}")
     ResponseEntity<ApiResponse<Void>> banAccount(@PathVariable String id) {
-        IAccountService.banAccount(id);
+        accountService.banAccount(id);
         return ResponseEntity.ok(
                 ApiResponse.<Void>builder()
                         .code(SuccessCode.ACCOUNT_BANNED.getCode())

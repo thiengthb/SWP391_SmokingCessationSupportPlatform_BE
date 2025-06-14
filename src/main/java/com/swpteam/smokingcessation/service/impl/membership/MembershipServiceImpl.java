@@ -1,12 +1,12 @@
 package com.swpteam.smokingcessation.service.impl.membership;
 
-import com.swpteam.smokingcessation.integration.currency.CurrencyRateService;
 import com.swpteam.smokingcessation.domain.dto.membership.MembershipCreateRequest;
 import com.swpteam.smokingcessation.domain.dto.membership.MembershipCurrencyUpdateRequest;
 import com.swpteam.smokingcessation.domain.dto.membership.MembershipResponse;
 import com.swpteam.smokingcessation.domain.dto.membership.MembershipUpdateRequest;
 import com.swpteam.smokingcessation.domain.entity.Subscription;
 import com.swpteam.smokingcessation.domain.mapper.MembershipMapper;
+import com.swpteam.smokingcessation.integration.currency.ICurrencyRateService;
 import com.swpteam.smokingcessation.repository.MembershipRepository;
 import com.swpteam.smokingcessation.repository.SubscriptionRepository;
 import com.swpteam.smokingcessation.common.PageableRequest;
@@ -31,12 +31,12 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public class IMembershipServiceImpl implements IMembershipService {
+public class MembershipServiceImpl implements IMembershipService {
 
     MembershipRepository membershipRepository;
     MembershipMapper membershipMapper;
     SubscriptionRepository subscriptionRepository;
-    CurrencyRateService currencyRateService;
+    ICurrencyRateService currencyRateService;
 
     @Override
     public Page<MembershipResponse> getMembershipPage(PageableRequest request) {

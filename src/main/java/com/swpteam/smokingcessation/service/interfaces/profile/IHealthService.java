@@ -8,15 +8,15 @@ import org.springframework.data.domain.Page;
 
 public interface IHealthService {
 
-    public Page<HealthResponse> getHealthPage(PageableRequest request);
+    Page<HealthResponse> getHealthPage(PageableRequest request);
 
-    public HealthResponse getHealthById(String id);
+    HealthResponse getHealthById(String id);
 
-    public Page<HealthResponse> getHealthPageByAccountId(String accountId, PageableRequest request);
+    Page<HealthResponse> getHealthPageByAccountId(String accountId, PageableRequest request);
 
-    public HealthResponse createHealth(HealthCreateRequest request);
+    HealthResponse createHealth(HealthCreateRequest request);
 
-    public HealthResponse updateHealth(String id, HealthUpdateRequest request);
+    HealthResponse updateHealth(String id, HealthUpdateRequest request);
 
-    public void softDeleteHealthById(String id);
+    void softDeleteHealthById(String id);
 }

@@ -20,7 +20,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public class ISettingServiceImpl implements ISettingService {
+public class SettingServiceImpl implements ISettingService {
 
     SettingRepository settingRepository;
     SettingMapper settingMapper;
