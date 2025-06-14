@@ -1,6 +1,6 @@
 package com.swpteam.smokingcessation.controller.v1.tracking;
 
-import com.swpteam.smokingcessation.feature.service.impl.tracking.PlanServiceImpl;
+import com.swpteam.smokingcessation.service.impl.tracking.IPlanServiceImpl;
 import com.swpteam.smokingcessation.domain.dto.plan.PlanRequest;
 import com.swpteam.smokingcessation.domain.dto.plan.PlanResponse;
 import com.swpteam.smokingcessation.common.ApiResponse;
@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class PlanController {
-    PlanServiceImpl planServiceImpl;
+    IPlanServiceImpl planServiceImpl;
 
     @GetMapping
     ResponseEntity<ApiResponse<Page<PlanResponse>>> getPlanPage(@Valid PageableRequest request) {

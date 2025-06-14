@@ -5,7 +5,7 @@ import com.swpteam.smokingcessation.common.PageableRequest;
 import com.swpteam.smokingcessation.constant.SuccessCode;
 import com.swpteam.smokingcessation.domain.dto.coach.CoachRequest;
 import com.swpteam.smokingcessation.domain.dto.coach.CoachResponse;
-import com.swpteam.smokingcessation.feature.service.impl.profile.CoachServiceImpl;
+import com.swpteam.smokingcessation.service.impl.profile.CoachServiceImpl;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;

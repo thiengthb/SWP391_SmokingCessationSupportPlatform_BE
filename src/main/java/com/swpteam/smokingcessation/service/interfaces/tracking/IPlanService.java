@@ -5,7 +5,7 @@ import com.swpteam.smokingcessation.domain.dto.plan.PlanRequest;
 import com.swpteam.smokingcessation.domain.dto.plan.PlanResponse;
 import org.springframework.data.domain.Page;
 
-public interface PlanService {
+public interface IPlanService {
     Page<PlanResponse> getPlanPage(PageableRequest request);
 
     PlanResponse getPlanById(String id);

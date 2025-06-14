@@ -1,4 +1,4 @@
-package com.swpteam.smokingcessation.feature.service.impl.booking;
+package com.swpteam.smokingcessation.service.impl.booking;
 
 import com.swpteam.smokingcessation.common.PageableRequest;
 import com.swpteam.smokingcessation.constant.ErrorCode;
@@ -9,10 +9,10 @@ import com.swpteam.smokingcessation.domain.entity.Booking;
 import com.swpteam.smokingcessation.domain.entity.Coach;
 import com.swpteam.smokingcessation.domain.mapper.BookingMapper;
 import com.swpteam.smokingcessation.exception.AppException;
-import com.swpteam.smokingcessation.feature.repository.AccountRepository;
-import com.swpteam.smokingcessation.feature.repository.BookingRepository;
-import com.swpteam.smokingcessation.feature.repository.CoachRepository;
-import com.swpteam.smokingcessation.feature.service.interfaces.booking.BookingService;
+import com.swpteam.smokingcessation.repository.AccountRepository;
+import com.swpteam.smokingcessation.repository.BookingRepository;
+import com.swpteam.smokingcessation.repository.CoachRepository;
+import com.swpteam.smokingcessation.service.interfaces.booking.IBookingService;
 import com.swpteam.smokingcessation.utils.ValidationUtil;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 @RequiredArgsConstructor
-public class BookingServiceImpl implements BookingService {
+public class BookingServiceImpl implements IBookingService {
     BookingRepository bookingRepository;
     BookingMapper bookingMapper;
     AccountRepository accountRepository;

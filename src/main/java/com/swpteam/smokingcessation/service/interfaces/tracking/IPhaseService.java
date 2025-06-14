@@ -5,7 +5,7 @@ import com.swpteam.smokingcessation.domain.dto.phase.PhaseRequest;
 import com.swpteam.smokingcessation.domain.dto.phase.PhaseResponse;
 import org.springframework.data.domain.Page;
 
-public interface PhaseService {
+public interface IPhaseService {
     Page<PhaseResponse> getPhasePage(PageableRequest request);
 
     PhaseResponse getPhaseById(String id);

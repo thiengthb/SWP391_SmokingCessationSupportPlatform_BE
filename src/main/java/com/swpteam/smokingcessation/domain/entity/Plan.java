@@ -18,15 +18,15 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class Plan  extends BaseEntity {
+public class Plan extends BaseEntity {
 
     @ManyToOne()
-    @JoinColumn(name = "account_id",nullable = false, updatable = false)
+    @JoinColumn(name = "account_id", nullable = false, updatable = false)
     Account account;
 
     String planName;
-    String description;
     double successRate;
+    String description;
     LocalDate startDate;
     LocalDate endDate;
 

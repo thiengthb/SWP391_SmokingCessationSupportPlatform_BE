@@ -10,7 +10,7 @@ import com.swpteam.smokingcessation.domain.mapper.CoachMapper;
 import com.swpteam.smokingcessation.exception.AppException;
 import com.swpteam.smokingcessation.repository.AccountRepository;
 import com.swpteam.smokingcessation.repository.CoachRepository;
-import com.swpteam.smokingcessation.service.interfaces.profile.CoachService;
+import com.swpteam.smokingcessation.service.interfaces.profile.ICoachService;
 import com.swpteam.smokingcessation.utils.ValidationUtil;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;

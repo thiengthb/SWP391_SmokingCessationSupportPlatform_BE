@@ -57,22 +57,22 @@ public class ApplicationInitConfig {
         return args -> {
 
             if (accountRepository.findByEmail(adminEmail).isEmpty()) {
-                makeDefaultAdminAccount(adminEmail, defaultPassword);
+                makeDefaultAccount(adminEmail, defaultPassword, Role.ADMIN);
             }
 
             if (accountRepository.findByEmail(TEST_MEMBER_EMAIL).isEmpty()) {
-                makeDefaultMemberAccount();
+                makeDefaultAccount(TEST_MEMBER_EMAIL, TEST_MEMBER_PASS, Role.MEMBER);
             }
 
             log.info("Application initialization completed ...");
         };
     }
 
-    private void makeDefaultAdminAccount(String email, String password) {
+    private void makeDefaultAccount(String email, String password, Role role) {
         Account account = Account.builder()
                 .email(email)
                 .password(passwordEncoder.encode(password))
-                .role(Role.ADMIN)
+                .role(role)
                 .build();
 
         Setting setting = Setting.getDefaultSetting(account);
@@ -80,23 +80,7 @@ public class ApplicationInitConfig {
         account.setSetting(setting);
         accountRepository.save(account);
 
-        log.info("An admin account has been created with email: {}, default password: {}. Please change the password immediately.", email, password);
+        log.info("An {} account has been created with email: {}, default password: {}. Please change the password immediately.", role.name().toLowerCase(), email, password);
     }
 
-    private void makeDefaultMemberAccount() {
-        Account account = Account.builder()
-                .email(ApplicationInitConfig.TEST_MEMBER_EMAIL)
-                .password(passwordEncoder.encode(ApplicationInitConfig.TEST_MEMBER_PASS))
-                .role(Role.MEMBER)
-                .build();
-
-        Setting setting = Setting.getDefaultSetting(account);
-        Member member = Member.getDefaultMember(account);
-
-        account.setSetting(setting);
-        account.setMember(member);
-        accountRepository.save(account);
-
-        log.info("An member account has been created with email: {}, default password: {}. Please change the password immediately.", ApplicationInitConfig.TEST_MEMBER_EMAIL, ApplicationInitConfig.TEST_MEMBER_PASS);
-    }
 }

@@ -1,4 +1,4 @@
-package com.swpteam.smokingcessation.feature.service.impl.identity;
+package com.swpteam.smokingcessation.service.impl.identity;
 
 import com.swpteam.smokingcessation.domain.dto.account.AccountRequest;
 import com.swpteam.smokingcessation.domain.dto.account.AccountResponse;
@@ -6,11 +6,9 @@ import com.swpteam.smokingcessation.domain.dto.account.AccountUpdateRequest;
 import com.swpteam.smokingcessation.domain.dto.account.ChangePasswordRequest;
 import com.swpteam.smokingcessation.domain.enums.AccountStatus;
 import com.swpteam.smokingcessation.domain.enums.Role;
-import com.swpteam.smokingcessation.domain.entity.Health;
 import com.swpteam.smokingcessation.domain.mapper.AccountMapper;
-import com.swpteam.smokingcessation.feature.repository.AccountRepository;
+import com.swpteam.smokingcessation.repository.AccountRepository;
 import com.swpteam.smokingcessation.domain.entity.Setting;
-import com.swpteam.smokingcessation.feature.repository.SettingRepository;
 import com.swpteam.smokingcessation.common.PageableRequest;
 import com.swpteam.smokingcessation.constant.ErrorCode;
 import com.swpteam.smokingcessation.domain.entity.Account;
@@ -30,7 +28,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 
 @RequiredArgsConstructor
@@ -39,9 +36,6 @@ import org.springframework.stereotype.Service;
 public class AccountServiceImpl implements IAccountService {
 
     AccountRepository accountRepository;
-    SettingRepository settingRepository;
-    HealthRepository healthRepository;
-    MemberRepository memberRepository;
     AccountMapper accountMapper;
     AccountUtilService accountUtilService;
 

@@ -8,9 +8,9 @@ import com.swpteam.smokingcessation.common.PageableRequest;
 import com.swpteam.smokingcessation.constant.ErrorCode;
 import com.swpteam.smokingcessation.domain.entity.Plan;
 import com.swpteam.smokingcessation.exception.AppException;
-import com.swpteam.smokingcessation.feature.repository.AccountRepository;
-import com.swpteam.smokingcessation.feature.repository.PlanRepository;
-import com.swpteam.smokingcessation.feature.service.interfaces.tracking.PlanService;
+import com.swpteam.smokingcessation.repository.AccountRepository;
+import com.swpteam.smokingcessation.repository.PlanRepository;
+import com.swpteam.smokingcessation.service.interfaces.tracking.IPlanService;
 import com.swpteam.smokingcessation.utils.ValidationUtil;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +23,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 @RequiredArgsConstructor
-public class PlanServiceImpl implements PlanService {
+public class IPlanServiceImpl implements IPlanService {
     PlanRepository planRepository;
     PlanMapper planMapper;
     AccountRepository accountRepository;

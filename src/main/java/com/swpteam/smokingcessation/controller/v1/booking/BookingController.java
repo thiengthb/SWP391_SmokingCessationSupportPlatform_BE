@@ -1,11 +1,11 @@
-package com.swpteam.smokingcessation.feature.api.v1.booking;
+package com.swpteam.smokingcessation.controller.v1.booking;
 
 import com.swpteam.smokingcessation.common.ApiResponse;
 import com.swpteam.smokingcessation.common.PageableRequest;
 import com.swpteam.smokingcessation.constant.SuccessCode;
 import com.swpteam.smokingcessation.domain.dto.booking.BookingRequest;
 import com.swpteam.smokingcessation.domain.dto.booking.BookingResponse;
-import com.swpteam.smokingcessation.feature.service.impl.booking.BookingServiceImpl;
+import com.swpteam.smokingcessation.service.impl.booking.BookingServiceImpl;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
