@@ -2,15 +2,19 @@ package com.swpteam.smokingcessation.utils;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.swpteam.smokingcessation.domain.dto.plan.PhaseTemplateResponse;
+import com.swpteam.smokingcessation.domain.dto.plan.PlanTemplateResponse;
+import com.swpteam.smokingcessation.domain.dto.plan.PlanTemplateWrapper;
 import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 import java.util.Map;
 
 @Slf4j
@@ -43,6 +47,19 @@ public class FileLoaderUtil {
             return objectMapper.readValue(json, new TypeReference<Map<String, String>>() {});
         } catch (Exception e) {
             throw new RuntimeException("Failed to parse JSON file: " + path, e);
+        }
+    }
+
+    // Load plan-template.json into List<PlanLevelDto>
+    public List<PlanTemplateResponse> loadPlanTemplate(String path) {
+        try {
+            InputStream inputStream = new ClassPathResource(path).getInputStream();
+            ObjectMapper objectMapper = new ObjectMapper();
+            PlanTemplateWrapper wrapper = objectMapper.readValue(inputStream, PlanTemplateWrapper.class);
+            return wrapper.getLevels();
+        } catch (IOException e) {
+            log.error("Failed to load plan template from: {}", path, e);
+            throw new RuntimeException("Unable to load plan template", e);
         }
     }
 }

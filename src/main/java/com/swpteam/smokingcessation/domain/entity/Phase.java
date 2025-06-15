@@ -17,7 +17,7 @@ import java.time.LocalDate;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Phase extends BaseEntity {
 
-    @ManyToOne()
+    @ManyToOne
     @JoinColumn(name = "planId")
     Plan plan;
 

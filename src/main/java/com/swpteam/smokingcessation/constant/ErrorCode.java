@@ -137,6 +137,7 @@ public enum ErrorCode {
     SUCCESS_LEVEL_INVALID_MIN(2183,"Success min is invalid",HttpStatus.BAD_REQUEST),
     SUCCESS_LEVEL_INVALID_MAX(2183,"Success max is invalid",HttpStatus.BAD_REQUEST),
     PLAN_ID_REQUIRED(2312,"PlanId is required",HttpStatus.BAD_REQUEST),
+    INVALID_FTND_SCORE(2332,"ftnd score must greater than 0 and less than 10",HttpStatus.BAD_REQUEST),
 
     // Phase
     PHASE_START_DATE_REQUIRED(1023,"start date required",HttpStatus.BAD_REQUEST),
