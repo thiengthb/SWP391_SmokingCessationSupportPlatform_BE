@@ -40,6 +40,7 @@ public enum ErrorCode {
     NOTIFICATION_CONTENT_REQUIRED(1014, "Content for notification is required", HttpStatus.BAD_REQUEST),
     NOTIFICATION_ID_REQUIRED(1015, "Notification ID is required to mark as read", HttpStatus.BAD_REQUEST),
     NOTIFICATION_NOT_FOUND(1016, "Notification not found", HttpStatus.BAD_REQUEST),
+    ACCOUNT_ROLE_REQUIRED(1014, "Account role field is required", HttpStatus.BAD_REQUEST),
 
     // Authentication
     UNAUTHENTICATED(2000, "Unauthenticated", HttpStatus.UNAUTHORIZED),
