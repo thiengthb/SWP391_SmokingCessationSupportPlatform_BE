@@ -2,6 +2,7 @@ package com.swpteam.smokingcessation.controller.v1.chat;
 
 import com.swpteam.smokingcessation.common.ApiResponse;
 import com.swpteam.smokingcessation.common.PageableRequest;
+import com.swpteam.smokingcessation.constant.SuccessCode;
 import com.swpteam.smokingcessation.domain.dto.chat.ChatRestResponse;
 import com.swpteam.smokingcessation.service.impl.chat.ChatServiceImpl;
 import jakarta.validation.Valid;
@@ -23,6 +24,8 @@ public class ChatRestController {
     ResponseEntity<ApiResponse<Page<ChatRestResponse>>> getChats(@Valid PageableRequest request) {
         return ResponseEntity.ok(
                 ApiResponse.<Page<ChatRestResponse>>builder()
+                        .code(SuccessCode.CHAT_GET_ALL.getCode())
+                        .message(SuccessCode.CHAT_GET_ALL.getMessage())
                         .result(chatService.getChats(request))
                         .build());
     }
@@ -31,7 +34,19 @@ public class ChatRestController {
     ResponseEntity<ApiResponse<Page<ChatRestResponse>>> getChatsById(@PathVariable String accountId, @Valid PageableRequest request) {
         return ResponseEntity.ok(
                 ApiResponse.<Page<ChatRestResponse>>builder()
+                        .code(SuccessCode.CHAT_GET_BY_ID.getCode())
+                        .message(SuccessCode.CHAT_GET_BY_ID.getMessage())
                         .result(chatService.getChatsById(accountId, request))
+                        .build());
+    }
+
+    @DeleteMapping("/{id}")
+    ResponseEntity<ApiResponse<Void>> deleteChat(@PathVariable String id) {
+        chatService.deleteChat(id);
+        return ResponseEntity.ok(
+                ApiResponse.<Void>builder()
+                        .code(SuccessCode.CHAT_DELETED.getCode())
+                        .message(SuccessCode.CHAT_DELETED.getMessage())
                         .build());
     }
 }

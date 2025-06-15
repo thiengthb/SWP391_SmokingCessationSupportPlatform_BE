@@ -12,6 +12,7 @@ import com.swpteam.smokingcessation.exception.AppException;
 import com.swpteam.smokingcessation.repository.AccountRepository;
 import com.swpteam.smokingcessation.repository.ChatRepository;
 import com.swpteam.smokingcessation.service.interfaces.chat.IChatService;
+import com.swpteam.smokingcessation.utils.AuthorizationUtilService;
 import com.swpteam.smokingcessation.utils.ValidationUtil;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +30,7 @@ public class ChatServiceImpl implements IChatService {
     AccountRepository accountRepository;
     ChatRepository chatRepository;
     ChatMapper chatMapper;
+    AuthorizationUtilService authorizationUtilService;
 
     @Override
     public ChatResponse sendChatMessage(ChatRequest request) {
@@ -61,6 +63,7 @@ public class ChatServiceImpl implements IChatService {
         return chats.map(chatMapper::toRestResponse);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @Override
     public Page<ChatRestResponse> getChatsById(String id, PageableRequest request) {
         if (!ValidationUtil.isFieldExist(Account.class, request.getSortBy())) {
@@ -72,5 +75,17 @@ public class ChatServiceImpl implements IChatService {
         return chats.map(chatMapper::toRestResponse);
     }
 
+    @Override
+    public void deleteChat(String id) {
+        Chat chat = chatRepository.findByIdAndIsDeletedFalse(id).orElseThrow(() -> new AppException(ErrorCode.CHAT_NOT_FOUND));
+
+        boolean haveAccess = authorizationUtilService.checkAdminOrOwner(chat.getAccount().getId());
+        if (!haveAccess) {
+            throw new AppException(ErrorCode.OTHERS_CHAT_CANT_DELETE);
+        }
+
+        chat.setDeleted(true);
+        chatRepository.save(chat);
+    }
 
 }

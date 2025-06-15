@@ -213,6 +213,8 @@ public enum ErrorCode {
     // Chat
     CHAT_MESSAGE_REQUIRED(1100, "Chat message is required", HttpStatus.BAD_REQUEST),
     CHAT_SIZE_EXCEED(1101, "Chat message needs to be under {max} characters", HttpStatus.BAD_REQUEST),
+    OTHERS_CHAT_CANT_DELETE(1102, "Other's chat message cannot be edited", HttpStatus.BAD_REQUEST),
+    CHAT_NOT_FOUND(1103, "Chat does not exist or have been deleted", HttpStatus.BAD_REQUEST),
     ;
     int code;
     String message;

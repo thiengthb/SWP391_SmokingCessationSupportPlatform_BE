@@ -132,6 +132,10 @@ public enum SuccessCode {
     COMMENT_UPDATED(2013, "Comment updated successfully"),
     COMMENT_DELETED(2014, "Comment deleted successfully"),
 
+    // Chat
+    CHAT_GET_ALL(1101, "Successfully retrieved all chats"),
+    CHAT_GET_BY_ID(1102, "Successfully retrieved all chats by ID"),
+    CHAT_DELETED(1103, "Successfully deleted chat"),
 
     ;
     int code;
