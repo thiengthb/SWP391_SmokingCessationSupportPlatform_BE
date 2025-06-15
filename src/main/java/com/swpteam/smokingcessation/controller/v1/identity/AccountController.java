@@ -10,6 +10,7 @@ import com.swpteam.smokingcessation.domain.dto.account.ChangePasswordRequest;
 import com.swpteam.smokingcessation.domain.enums.Role;
 import com.swpteam.smokingcessation.service.interfaces.identity.IAccountService;
 import com.swpteam.smokingcessation.utils.AccountUtilService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +25,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/accounts")
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@Tag(name = "Account", description = "Manage account-related operations")
 public class AccountController {
 
     IAccountService accountService;
@@ -101,7 +103,7 @@ public class AccountController {
                 ApiResponse.<AccountResponse>builder()
                         .code(SuccessCode.GET_ME.getCode())
                         .message(SuccessCode.GET_ME.getMessage())
-                        .result(accountService.getAccountByEmail())
+                        .result(accountService.getCurrentAccount())
                         .build());
     }
 

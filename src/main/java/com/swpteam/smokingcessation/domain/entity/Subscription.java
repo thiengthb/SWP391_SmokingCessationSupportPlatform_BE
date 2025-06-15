@@ -19,11 +19,13 @@ import java.time.LocalDate;
 public class Subscription extends BaseEntity {
 
     @ManyToOne
-    @JoinColumn(name = "accountId", nullable = false)
+    @JoinColumn(name = "accountId", nullable = false, updatable = false)
+    @JsonBackReference
     Account account;
 
     @ManyToOne
     @JoinColumn(name = "membershipId", nullable = false)
+    @JsonBackReference
     Membership membership;
 
     LocalDate startDate;

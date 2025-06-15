@@ -18,9 +18,10 @@ import java.time.LocalDateTime;
 @Entity
 public class Member extends BaseEntity {
 
-    @OneToOne
     @MapsId
-    @JoinColumn(name = "accountId")
+    @OneToOne
+    @JsonBackReference
+    @JoinColumn(name = "accountId", nullable = false, updatable = false)
     Account account;
 
     String fullName;

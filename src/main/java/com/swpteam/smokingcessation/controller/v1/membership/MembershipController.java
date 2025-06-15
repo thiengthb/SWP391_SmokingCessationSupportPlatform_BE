@@ -8,6 +8,7 @@ import com.swpteam.smokingcessation.common.ApiResponse;
 import com.swpteam.smokingcessation.common.PageableRequest;
 import com.swpteam.smokingcessation.constant.SuccessCode;
 import com.swpteam.smokingcessation.service.interfaces.membership.IMembershipService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -22,9 +23,10 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/v1/memberships")
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@Tag(name = "Membership", description = "Manage membership-related operations")
 public class MembershipController {
 
-    IMembershipService IMembershipService;
+    IMembershipService membershipService;
 
     @GetMapping
     ResponseEntity<ApiResponse<Page<MembershipResponse>>> getMembershipPage(@Valid PageableRequest request) {
@@ -32,7 +34,7 @@ public class MembershipController {
                 ApiResponse.<Page<MembershipResponse>>builder()
                         .code(SuccessCode.MEMBERSHIP_GET_ALL.getCode())
                         .message(SuccessCode.MEMBERSHIP_GET_ALL.getMessage())
-                        .result(IMembershipService.getMembershipPage(request))
+                        .result(membershipService.getMembershipPage(request))
                         .build()
         );
     }
@@ -43,7 +45,7 @@ public class MembershipController {
                 ApiResponse.<MembershipResponse>builder()
                         .code(SuccessCode.MEMBERSHIP_GET_BY_ID.getCode())
                         .message(SuccessCode.MEMBERSHIP_GET_BY_ID.getMessage())
-                        .result(IMembershipService.getMembershipById(id))
+                        .result(membershipService.getMembershipById(id))
                         .build()
         );
     }
@@ -54,7 +56,7 @@ public class MembershipController {
                 ApiResponse.<MembershipResponse>builder()
                         .code(SuccessCode.MEMBERSHIP_CREATED.getCode())
                         .message(SuccessCode.MEMBERSHIP_CREATED.getMessage())
-                        .result(IMembershipService.createMembership(request))
+                        .result(membershipService.createMembership(request))
                         .build()
         );
     }
@@ -65,14 +67,14 @@ public class MembershipController {
                 ApiResponse.<MembershipResponse>builder()
                         .code(SuccessCode.MEMBERSHIP_UPDATED.getCode())
                         .message(SuccessCode.MEMBERSHIP_UPDATED.getMessage())
-                        .result(IMembershipService.updateMembership(id, request))
+                        .result(membershipService.updateMembership(id, request))
                         .build()
         );
     }
 
     @DeleteMapping("/{id}")
     ResponseEntity<ApiResponse<String>> deleteMembership(@PathVariable String id) {
-        IMembershipService.softDeleteMembershipById(id);
+        membershipService.softDeleteMembershipById(id);
         return ResponseEntity.ok(
                 ApiResponse.<String>builder()
                         .code(SuccessCode.MEMBERSHIP_DELETED.getCode())
@@ -87,7 +89,7 @@ public class MembershipController {
                 ApiResponse.<MembershipResponse>builder()
                         .code(SuccessCode.MEMBERSHIP_UPDATED.getCode())
                         .message(SuccessCode.MEMBERSHIP_UPDATED.getMessage())
-                        .result(IMembershipService.updateMembershipCurrency(id, request))
+                        .result(membershipService.updateMembershipCurrency(id, request))
                         .build()
         );
     }

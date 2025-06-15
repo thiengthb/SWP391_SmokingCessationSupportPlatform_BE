@@ -5,7 +5,8 @@ import com.swpteam.smokingcessation.common.PageableRequest;
 import com.swpteam.smokingcessation.constant.SuccessCode;
 import com.swpteam.smokingcessation.domain.dto.coach.CoachRequest;
 import com.swpteam.smokingcessation.domain.dto.coach.CoachResponse;
-import com.swpteam.smokingcessation.service.impl.profile.CoachServiceImpl;
+import com.swpteam.smokingcessation.service.interfaces.profile.ICoachService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -17,11 +18,12 @@ import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @RestController
-@RequestMapping("/api/coaches")
+@RequestMapping("/api/v1/coaches")
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@Tag(name = "Coach", description = "Manage coach-related operations")
 public class CoachController {
-    CoachServiceImpl coachServiceImpl;
+    ICoachService coachService;
 
     @GetMapping
     ResponseEntity<ApiResponse<Page<CoachResponse>>> getCoachPage(@Valid PageableRequest request) {
@@ -29,14 +31,14 @@ public class CoachController {
                 ApiResponse.<Page<CoachResponse>>builder()
                         .code(SuccessCode.COACH_GET_ALL.getCode())
                         .message(SuccessCode.COACH_GET_ALL.getMessage())
-                        .result(coachServiceImpl.getCoachPage(request))
+                        .result(coachService.getCoachPage(request))
                         .build()
         );
     }
 
     @GetMapping("/{id}")
     ResponseEntity<ApiResponse<CoachResponse>> getCoachById(@PathVariable String id) {
-        CoachResponse response = coachServiceImpl.getCoachById(id);
+        CoachResponse response = coachService.getCoachById(id);
         return ResponseEntity.ok(
                 ApiResponse.<CoachResponse>builder()
                         .code(SuccessCode.COACH_GET_BY_ID.getCode())
@@ -48,7 +50,7 @@ public class CoachController {
 
     @PostMapping
     ResponseEntity<ApiResponse<CoachResponse>> createCoach(@Valid @RequestBody CoachRequest request) {
-        CoachResponse response = coachServiceImpl.createCoach(request);
+        CoachResponse response = coachService.createCoach(request);
         return ResponseEntity.ok(
                 ApiResponse.<CoachResponse>builder()
                         .code(SuccessCode.COACH_CREATED.getCode())
@@ -60,7 +62,7 @@ public class CoachController {
 
     @PutMapping("/{id}")
     ResponseEntity<ApiResponse<CoachResponse>> updateCoachById(@PathVariable String id, @Valid @RequestBody CoachRequest request) {
-        CoachResponse response = coachServiceImpl.updateCoachById(id, request);
+        CoachResponse response = coachService.updateCoachById(id, request);
         return ResponseEntity.ok(
                 ApiResponse.<CoachResponse>builder()
                         .code(SuccessCode.COACH_UPDATED.getCode())
@@ -72,7 +74,7 @@ public class CoachController {
 
     @DeleteMapping("/{id}")
     ResponseEntity<ApiResponse<Void>> deleteCoachById(@PathVariable String id) {
-        coachServiceImpl.softDeleteCoachById(id);
+        coachService.softDeleteCoachById(id);
         return ResponseEntity.ok(
                 ApiResponse.<Void>builder()
                         .code(SuccessCode.COACH_DELETED.getCode())

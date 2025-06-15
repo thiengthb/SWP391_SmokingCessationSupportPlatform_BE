@@ -1,11 +1,12 @@
 package com.swpteam.smokingcessation.controller.v1.tracking;
 
-import com.swpteam.smokingcessation.service.impl.tracking.PlanServiceImpl;
 import com.swpteam.smokingcessation.domain.dto.plan.PlanRequest;
 import com.swpteam.smokingcessation.domain.dto.plan.PlanResponse;
 import com.swpteam.smokingcessation.common.ApiResponse;
 import com.swpteam.smokingcessation.common.PageableRequest;
 import com.swpteam.smokingcessation.constant.SuccessCode;
+import com.swpteam.smokingcessation.service.interfaces.tracking.IPlanService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -19,11 +20,12 @@ import java.util.List;
 
 @Slf4j
 @RestController
-@RequestMapping("/api/plans")
+@RequestMapping("/api/v1/plans")
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@Tag(name = "Plan", description = "Manage plan-related operations")
 public class PlanController {
-    PlanServiceImpl planServiceImpl;
+    IPlanService planService;
 
     @GetMapping
     ResponseEntity<ApiResponse<Page<PlanResponse>>> getPlanPage(@Valid PageableRequest request) {
@@ -31,14 +33,14 @@ public class PlanController {
                 ApiResponse.<Page<PlanResponse>>builder()
                         .code(SuccessCode.PLAN_GET_ALL.getCode())
                         .message(SuccessCode.PLAN_GET_ALL.getMessage())
-                        .result(planServiceImpl.getPlanPage(request))
+                        .result(planService.getPlanPage(request))
                         .build()
         );
     }
 
     @GetMapping("/{id}")
     ResponseEntity<ApiResponse<PlanResponse>> getPlanById(@PathVariable String id) {
-        PlanResponse response = planServiceImpl.getPlanById(id);
+        PlanResponse response = planService.getPlanById(id);
         return ResponseEntity.ok(
                 ApiResponse.<PlanResponse>builder()
                         .code(SuccessCode.PLAN_GET_BY_ID.getCode())
@@ -56,14 +58,14 @@ public class PlanController {
                 ApiResponse.<PlanResponse>builder()
                         .code(SuccessCode.PLAN_TEMPLATE_GET.getCode())
                         .message(SuccessCode.PLAN_TEMPLATE_GET.getMessage())
-                        .result(planServiceImpl.getPlanByFtndScore(ftndScore))
+                        .result(planService.getPlanByFtndScore(ftndScore))
                         .build()
         );
     }
 
     @PostMapping
     ResponseEntity<ApiResponse<PlanResponse>> createPlan(@Valid @RequestBody PlanRequest request) {
-        PlanResponse response = planServiceImpl.createPlan(request);
+        PlanResponse response = planService.createPlan(request);
         return ResponseEntity.ok(
                 ApiResponse.<PlanResponse>builder()
                         .code(SuccessCode.PLAN_CREATED.getCode())
@@ -75,7 +77,7 @@ public class PlanController {
 
     @PutMapping("/{id}")
     ResponseEntity<ApiResponse<PlanResponse>> updatePlanById(@PathVariable String id, @Valid @RequestBody PlanRequest request) {
-        PlanResponse response = planServiceImpl.updatePlanById(id, request);
+        PlanResponse response = planService.updatePlanById(id, request);
         return ResponseEntity.ok(
                 ApiResponse.<PlanResponse>builder()
                         .code(SuccessCode.PLAN_UPDATED.getCode())
@@ -87,7 +89,7 @@ public class PlanController {
 
     @DeleteMapping("/{id}")
     ResponseEntity<ApiResponse<Void>> deletePlanById(@PathVariable String id) {
-        planServiceImpl.softDeletePlanById(id);
+        planService.softDeletePlanById(id);
         return ResponseEntity.ok(
                 ApiResponse.<Void>builder()
                         .code(SuccessCode.PLAN_DELETED.getCode())

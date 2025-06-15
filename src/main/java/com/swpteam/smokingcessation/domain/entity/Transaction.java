@@ -17,7 +17,8 @@ import lombok.experimental.FieldDefaults;
 public class Transaction extends BaseEntity {
 
     @ManyToOne
-    @JoinColumn(name = "accountId", nullable = false)
+    @JoinColumn(name = "accountId", nullable = false, updatable = false)
+    @JsonBackReference
     Account account;
 
     double amount;

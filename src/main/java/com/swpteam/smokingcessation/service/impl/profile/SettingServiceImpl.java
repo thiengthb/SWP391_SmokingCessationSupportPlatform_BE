@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -26,6 +27,7 @@ public class SettingServiceImpl implements ISettingService {
     SettingMapper settingMapper;
 
     @Override
+    @Transactional
     public SettingResponse createSetting(SettingRequest request) {
         Setting setting = settingMapper.toEntity(request);
 
@@ -33,6 +35,7 @@ public class SettingServiceImpl implements ISettingService {
     }
 
     @Override
+    @Transactional
     public SettingResponse updateSetting(String accountId, SettingRequest request) {
         Setting setting = settingRepository.findByAccountIdAndIsDeletedFalse(accountId)
                 .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FOUND));
@@ -43,6 +46,7 @@ public class SettingServiceImpl implements ISettingService {
     }
 
     @Override
+    @Transactional
     public void deleteSetting(String accountId) {
         settingRepository.deleteById(accountId);
     }

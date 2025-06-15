@@ -19,6 +19,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,6 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 @RequiredArgsConstructor
 public class BookingServiceImpl implements IBookingService {
+
     BookingRepository bookingRepository;
     BookingMapper bookingMapper;
     AccountRepository accountRepository;
@@ -53,6 +55,7 @@ public class BookingServiceImpl implements IBookingService {
 
     @Override
     @Transactional
+    @PreAuthorize("hasRole('MEMBER')")
     public BookingResponse createBooking(BookingRequest request) {
         Booking booking = bookingMapper.toEntity(request);
 
@@ -70,6 +73,7 @@ public class BookingServiceImpl implements IBookingService {
 
     @Override
     @Transactional
+    @PreAuthorize("hasAnyRole('ADMIN', 'MEMBER')")
     public BookingResponse updateBookingById(String id, BookingRequest request) {
         Booking booking = bookingRepository.findByIdAndIsDeletedFalse(id)
                 .orElseThrow(() -> new AppException(ErrorCode.BOOKING_NOT_FOUND));
@@ -90,6 +94,7 @@ public class BookingServiceImpl implements IBookingService {
 
     @Override
     @Transactional
+    @PreAuthorize("hasAnyRole('ADMIN', 'MEMBER')")
     public void softDeleteBookingById(String id) {
         Booking booking = bookingRepository.findByIdAndIsDeletedFalse(id)
                 .orElseThrow(() -> new AppException(ErrorCode.BOOKING_NOT_FOUND));

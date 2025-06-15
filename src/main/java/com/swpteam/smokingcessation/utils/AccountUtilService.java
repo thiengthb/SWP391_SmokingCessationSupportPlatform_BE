@@ -16,39 +16,33 @@ import java.util.Optional;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class AccountUtilService {
+
     AccountRepository accountRepository;
 
-    public String getCurrentEmail() {
+    public Optional<String> getCurrentEmail() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication != null && authentication.getPrincipal() instanceof Jwt) {
-            return ((Jwt) authentication.getPrincipal()).getClaimAsString("sub");
+        if (authentication != null && authentication.getPrincipal() instanceof Jwt jwt) {
+            return Optional.ofNullable(jwt.getClaimAsString("sub"));
         }
-        return null;
+        return Optional.empty();
     }
 
-    public String getCurrentToken() {
+    public Optional<String> getCurrentToken() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (authentication != null && authentication.getPrincipal() instanceof Jwt) {
-            return ((Jwt) authentication.getPrincipal()).getTokenValue();
+        if (authentication != null && authentication.getPrincipal() instanceof Jwt jwt) {
+            return Optional.ofNullable(jwt.getTokenValue());
         }
-        return null;
+        return Optional.empty();
     }
 
-    public Account getCurrentAccount() {
-        String email = getCurrentEmail();
-        if (email != null) {
-            Optional<Account> account = accountRepository.findByEmailAndIsDeletedFalse(email);
-            return account.orElse(null);
-        }
-        return null;
+    public Optional<Account> getCurrentAccount() {
+        return getCurrentEmail()
+                .flatMap(accountRepository::findByEmailAndIsDeletedFalse);
     }
 
-    public String getIdCurrentAccount() {
-        String email = getCurrentEmail();
-        if (email != null) {
-            Optional<Account> account = accountRepository.findByEmailAndIsDeletedFalse(email);
-            return account.get().getId();
-        }
-        return null;
+    public Optional<String> getIdCurrentAccount() {
+        return getCurrentEmail()
+                .flatMap(accountRepository::findByEmailAndIsDeletedFalse)
+                .map(Account::getId);
     }
 }

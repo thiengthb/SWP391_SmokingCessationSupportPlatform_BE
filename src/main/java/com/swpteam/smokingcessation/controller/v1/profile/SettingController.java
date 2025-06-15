@@ -4,6 +4,7 @@ import com.swpteam.smokingcessation.domain.dto.setting.SettingRequest;
 import com.swpteam.smokingcessation.domain.dto.setting.SettingResponse;
 import com.swpteam.smokingcessation.common.ApiResponse;
 import com.swpteam.smokingcessation.service.interfaces.profile.ISettingService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -18,27 +19,28 @@ import java.util.List;
 @RequestMapping("/api/v1/settings")
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@Tag(name = "Setting", description = "Manage setting-related operations")
 public class SettingController {
 
-    ISettingService ISettingService;
+    ISettingService settingService;
 
     @PostMapping
     ApiResponse<SettingResponse> createSetting(@RequestBody @Valid SettingRequest request) {
         return ApiResponse.<SettingResponse>builder()
-                .result(ISettingService.createSetting(request))
+                .result(settingService.createSetting(request))
                 .build();
     }
 
     @PutMapping("/{accountId}")
     ApiResponse<SettingResponse> updateSetting(@PathVariable String accountId, @RequestBody @Valid SettingRequest request) {
         return ApiResponse.<SettingResponse>builder()
-                .result(ISettingService.updateSetting(accountId, request))
+                .result(settingService.updateSetting(accountId, request))
                 .build();
     }
 
     @DeleteMapping("/{accountId}")
     ApiResponse<String> createSetting(@PathVariable String accountId) {
-        ISettingService.deleteSetting(accountId);
+        settingService.deleteSetting(accountId);
         return ApiResponse.<String>builder()
                 .result("Setting has been deleted")
                 .build();
@@ -47,14 +49,14 @@ public class SettingController {
     @GetMapping
     ApiResponse<List<SettingResponse>> getSettingList() {
         return ApiResponse.<List<SettingResponse>>builder()
-                .result(ISettingService.getSettingList())
+                .result(settingService.getSettingList())
                 .build();
     }
 
     @GetMapping("/{accountId}")
     ApiResponse<SettingResponse> getSettingList(@PathVariable String accountId) {
         return ApiResponse.<SettingResponse>builder()
-                .result(ISettingService.getSetting(accountId))
+                .result(settingService.getSetting(accountId))
                 .build();
     }
 }

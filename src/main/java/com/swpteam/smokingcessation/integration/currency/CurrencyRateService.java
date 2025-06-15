@@ -1,5 +1,6 @@
 package com.swpteam.smokingcessation.integration.currency;
 
+import com.swpteam.smokingcessation.config.CurrencyApiConfig;
 import com.swpteam.smokingcessation.constant.ErrorCode;
 import com.swpteam.smokingcessation.exception.AppException;
 import com.swpteam.smokingcessation.exception.CurrencyRateException;

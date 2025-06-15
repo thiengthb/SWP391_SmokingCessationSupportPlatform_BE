@@ -17,6 +17,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 @RequiredArgsConstructor
 public class CoachServiceImpl implements ICoachService {
+
     CoachRepository coachRepository;
     CoachMapper coachMapper;
     AccountRepository accountRepository;
@@ -49,6 +51,7 @@ public class CoachServiceImpl implements ICoachService {
 
     @Override
     @Transactional
+    @PreAuthorize("hasAnyRole('ADMIN', 'COACH')")
     public CoachResponse createCoach(CoachRequest request) {
         Coach coach = coachMapper.toEntity(request);
 
@@ -62,6 +65,7 @@ public class CoachServiceImpl implements ICoachService {
 
     @Override
     @Transactional
+    @PreAuthorize("hasAnyRole('ADMIN', 'COACH)")
     public CoachResponse updateCoachById(String id, CoachRequest request) {
         Coach coach = coachRepository.findByIdAndIsDeletedFalse(id)
                 .orElseThrow(() -> new AppException(ErrorCode.COACH_NOT_FOUND));
@@ -72,6 +76,7 @@ public class CoachServiceImpl implements ICoachService {
 
     @Override
     @Transactional
+    @PreAuthorize("hasRole('ADMIN')")
     public void softDeleteCoachById(String id) {
         Coach coach = coachRepository.findByIdAndIsDeletedFalse(id)
                 .orElseThrow(() -> new AppException(ErrorCode.COACH_NOT_FOUND));

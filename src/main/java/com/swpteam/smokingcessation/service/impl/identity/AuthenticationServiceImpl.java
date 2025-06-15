@@ -35,6 +35,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
@@ -52,8 +53,6 @@ import java.util.UUID;
 public class AuthenticationServiceImpl implements IAuthenticationService {
 
     AccountRepository accountRepository;
-    MemberRepository memberRepository;
-    SettingRepository settingRepository;
     AccountMapper accountMapper;
     InvalidatedTokenRepository invalidatedTokenRepository;
     MailServiceImpl mailServiceImpl;
@@ -114,21 +113,23 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
 
     @Override
     public AuthenticationResponse authenticate(AuthenticationRequest request) {
-        var account = accountRepository.findByEmailAndIsDeletedFalse(request.getEmail()).orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FOUND));
+        Account account = accountRepository.findByEmailAndIsDeletedFalse(request.getEmail())
+                .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FOUND));
 
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
 
         boolean authenticated = passwordEncoder.matches(request.getPassword(), account.getPassword());
-
         if (!authenticated) {
             throw new AppException(ErrorCode.WRONG_PASSWORD);
         }
 
-        var accessToken = generateAccessToken(account);
+        String accessToken = generateAccessToken(account);
 
         return AuthenticationResponse.builder()
+                .id(account.getId())
+                .username(account.getUsername())
+                .role(account.getRole())
                 .accessToken(accessToken)
-                .authenticated(true)
                 .build();
     }
 
@@ -197,6 +198,7 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
     }
 
     @Override
+    @Transactional
     public AuthenticationResponse refreshToken(String token) throws ParseException, JOSEException {
         var signedJWT = verifyToken(token, true);
 
@@ -215,12 +217,15 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
         var newToken = generateAccessToken(account);
 
         return AuthenticationResponse.builder()
+                .id(account.getId())
+                .username(account.getUsername())
+                .role(account.getRole())
                 .accessToken(newToken)
-                .authenticated(true)
                 .build();
     }
 
     @Override
+    @Transactional
     public AccountResponse register(RegisterRequest request) {
         if (accountRepository.existsByEmail(request.getEmail())) {
             throw new AppException(ErrorCode.ACCOUNT_EXISTED);
@@ -253,6 +258,7 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
         return IntrospectResponse.builder().valid(isValid).build();
     }
 
+    @Transactional
     private SignedJWT verifyToken(String token, boolean isRefresh) throws JOSEException, ParseException {
         JWSVerifier verifier = new MACVerifier(SIGNER_KEY.getBytes());
 
@@ -294,6 +300,7 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
     }
 
     @Override
+    @Transactional
     public void resetPassword(ResetPasswordRequest request) {
         String emailFromToken;
         String jwtId;
@@ -331,8 +338,11 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
     }
 
     @Override
+    @Transactional
     public void logout() throws ParseException, JOSEException {
-        String token = accountUtilService.getCurrentToken();
+        String token = accountUtilService.getCurrentToken()
+                .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FOUND));
+
         SignedJWT signedJWT = verifyToken(token, true);
 
         String jwtId = signedJWT.getJWTClaimsSet().getJWTID();

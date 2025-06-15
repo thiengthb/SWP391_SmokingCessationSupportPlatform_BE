@@ -1,12 +1,12 @@
 package com.swpteam.smokingcessation.controller.v1.profile;
 
-import com.swpteam.smokingcessation.domain.dto.member.MemberCreateRequest;
+import com.swpteam.smokingcessation.domain.dto.member.MemberRequest;
 import com.swpteam.smokingcessation.domain.dto.member.MemberResponse;
-import com.swpteam.smokingcessation.domain.dto.member.MemberUpdateRequest;
 import com.swpteam.smokingcessation.common.ApiResponse;
 import com.swpteam.smokingcessation.common.PageableRequest;
 import com.swpteam.smokingcessation.constant.SuccessCode;
 import com.swpteam.smokingcessation.service.interfaces.profile.IMemberService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -19,17 +19,18 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/v1/members")
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@Tag(name = "Member", description = "Manage member-related operations")
 public class MemberController {
 
-    IMemberService IMemberService;
+    IMemberService memberService;
 
     @PostMapping("/{accountId}")
-    ResponseEntity<ApiResponse<MemberResponse>> createMember(@PathVariable("accountId") String accountId, @RequestBody @Valid MemberCreateRequest request) {
+    ResponseEntity<ApiResponse<MemberResponse>> createMember(@PathVariable("accountId") String accountId, @RequestBody @Valid MemberRequest request) {
         return ResponseEntity.ok(
                 ApiResponse.<MemberResponse>builder()
                         .code(SuccessCode.MEMBER_CREATED.getCode())
                         .message(SuccessCode.MEMBER_CREATED.getMessage())
-                        .result(IMemberService.createMember(request, accountId))
+                        .result(memberService.createMember(request, accountId))
                         .build());
     }
 
@@ -37,7 +38,7 @@ public class MemberController {
     ResponseEntity<ApiResponse<Page<MemberResponse>>> getUsers(@Valid PageableRequest request) {
         return ResponseEntity.ok(
                 ApiResponse.<Page<MemberResponse>>builder()
-                        .result(IMemberService.getMembers(request))
+                        .result(memberService.getMembers(request))
                         .build());
     }
 
@@ -45,17 +46,17 @@ public class MemberController {
     ResponseEntity<ApiResponse<MemberResponse>> getMemberById(@PathVariable("accountId") String id) {
         return ResponseEntity.ok(
                 ApiResponse.<MemberResponse>builder()
-                        .result(IMemberService.getMemberById(id))
+                        .result(memberService.getMemberById(id))
                         .build());
     }
 
     @PutMapping("/{accountId}")
-    ResponseEntity<ApiResponse<MemberResponse>> updateAccount(@PathVariable("accountId") String id, @RequestBody MemberUpdateRequest request) {
+    ResponseEntity<ApiResponse<MemberResponse>> updateAccount(@PathVariable("accountId") String id, @RequestBody MemberRequest request) {
         return ResponseEntity.ok(
                 ApiResponse.<MemberResponse>builder()
                         .code(SuccessCode.ACCOUNT_UPDATED.getCode())
                         .message(SuccessCode.ACCOUNT_UPDATED.getMessage())
-                        .result(IMemberService.updateMember(request, id))
+                        .result(memberService.updateMember(request, id))
                         .build());
     }
 }

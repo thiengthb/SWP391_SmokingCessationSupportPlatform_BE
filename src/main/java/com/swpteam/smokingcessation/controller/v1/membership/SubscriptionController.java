@@ -6,6 +6,7 @@ import com.swpteam.smokingcessation.common.ApiResponse;
 import com.swpteam.smokingcessation.common.PageableRequest;
 import com.swpteam.smokingcessation.constant.SuccessCode;
 import com.swpteam.smokingcessation.service.interfaces.membership.ISubscriptionService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -20,9 +21,10 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/v1/subscriptions")
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@Tag(name = "Subscription", description = "Manage subscription-related operations")
 public class SubscriptionController {
 
-    ISubscriptionService ISubscriptionService;
+    ISubscriptionService subscriptionService;
 
     @GetMapping
     ResponseEntity<ApiResponse<Page<SubscriptionResponse>>> getSubscriptionPage(@Valid PageableRequest request) {
@@ -30,7 +32,7 @@ public class SubscriptionController {
                 ApiResponse.<Page<SubscriptionResponse>>builder()
                         .code(SuccessCode.SUBSCRIPTION_GET_ALL.getCode())
                         .message(SuccessCode.SUBSCRIPTION_GET_ALL.getMessage())
-                        .result(ISubscriptionService.getSubscriptionPage(request))
+                        .result(subscriptionService.getSubscriptionPage(request))
                         .build()
         );
     }
@@ -41,7 +43,7 @@ public class SubscriptionController {
                 ApiResponse.<SubscriptionResponse>builder()
                         .code(SuccessCode.SUBSCRIPTION_GET_BY_ID.getCode())
                         .message(SuccessCode.SUBSCRIPTION_GET_BY_ID.getMessage())
-                        .result(ISubscriptionService.getSubscriptionById(id))
+                        .result(subscriptionService.getSubscriptionById(id))
                         .build()
         );
     }
@@ -52,7 +54,7 @@ public class SubscriptionController {
                 ApiResponse.<Page<SubscriptionResponse>>builder()
                         .code(SuccessCode.SUBSCRIPTION_GET_BY_ACCOUNT.getCode())
                         .message(SuccessCode.SUBSCRIPTION_GET_BY_ACCOUNT.getMessage())
-                        .result(ISubscriptionService.getSubscriptionPageByAccountId(id, request))
+                        .result(subscriptionService.getSubscriptionPageByAccountId(id, request))
                         .build()
         );
     }
@@ -63,7 +65,7 @@ public class SubscriptionController {
                 ApiResponse.<SubscriptionResponse>builder()
                         .code(SuccessCode.SUBSCRIPTION_CREATED.getCode())
                         .message(SuccessCode.SUBSCRIPTION_CREATED.getMessage())
-                        .result(ISubscriptionService.createSubscription(request))
+                        .result(subscriptionService.createSubscription(request))
                         .build()
         );
     }
@@ -74,14 +76,14 @@ public class SubscriptionController {
                 ApiResponse.<SubscriptionResponse>builder()
                         .code(SuccessCode.SUBSCRIPTION_UPDATED.getCode())
                         .message(SuccessCode.SUBSCRIPTION_UPDATED.getMessage())
-                        .result(ISubscriptionService.updateSubscription(id, request))
+                        .result(subscriptionService.updateSubscription(id, request))
                         .build()
         );
     }
 
     @DeleteMapping("/{id}")
     ResponseEntity<ApiResponse<String>> deleteSubscription(@PathVariable String id) {
-        ISubscriptionService.deleteSubscription(id);
+        subscriptionService.deleteSubscription(id);
         return ResponseEntity.ok().body(
                 ApiResponse.<String>builder()
                         .code(SuccessCode.SUBSCRIPTION_DELETED.getCode())

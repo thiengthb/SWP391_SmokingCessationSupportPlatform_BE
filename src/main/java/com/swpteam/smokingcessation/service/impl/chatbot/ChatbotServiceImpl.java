@@ -12,11 +12,13 @@ import com.swpteam.smokingcessation.integration.AI.IAIService;
 import com.swpteam.smokingcessation.repository.AITokenUsageRepository;
 import com.swpteam.smokingcessation.repository.AccountRepository;
 import com.swpteam.smokingcessation.service.interfaces.chatbot.IChatbotService;
+import com.swpteam.smokingcessation.utils.AccountUtilService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 
@@ -27,11 +29,13 @@ import java.time.LocalDate;
 public class ChatbotServiceImpl implements IChatbotService {
 
     AITokenUsageRepository aiTokenUsageRepository;
-    AccountRepository accountRepository;
+    AccountUtilService accountUtilService;
     IAIService aiService;
 
+    @Override
+    @Transactional
     public ChatbotResponse chat(ChatbotRequest request) {
-        Account account = accountRepository.findByEmailAndIsDeletedFalse("member@gmail.com")
+        Account account = accountUtilService.getCurrentAccount()
                 .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FOUND));
 
         AITokenUsage usage = aiTokenUsageRepository.findByAccountIdAndDate(account.getId(), LocalDate.now())
@@ -55,6 +59,7 @@ public class ChatbotServiceImpl implements IChatbotService {
                 .build();
     }
 
+    @Override
     public int getAccountTokenLimit(Account account) {
         switch (account.getRole()) {
             case Role.ADMIN -> {

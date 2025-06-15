@@ -1,8 +1,8 @@
-package com.swpteam.smokingcessation.integration.payment.controller;
+package com.swpteam.smokingcessation.controller.v1.payment;
 
-import com.swpteam.smokingcessation.integration.payment.dto.StripeResponse;
-import com.swpteam.smokingcessation.integration.payment.dto.StripeSubscriptionRequest;
-import com.swpteam.smokingcessation.integration.payment.services.StripeService;
+import com.swpteam.smokingcessation.domain.dto.payment.StripeResponse;
+import com.swpteam.smokingcessation.domain.dto.payment.StripeSubscriptionRequest;
+import com.swpteam.smokingcessation.integration.payment.StripeService;
 import com.swpteam.smokingcessation.common.ApiResponse;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
 @RestController
-@RequestMapping("/api/stripe-payment")
+@RequestMapping("/api/v1/stripe-payment")
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class StripePaymentController {

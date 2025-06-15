@@ -1,5 +1,7 @@
 package com.swpteam.smokingcessation.domain.entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.swpteam.smokingcessation.domain.enums.AccountStatus;
 import com.swpteam.smokingcessation.domain.enums.Role;
 import com.swpteam.smokingcessation.common.BaseEntity;
@@ -25,6 +27,7 @@ public class Account extends BaseEntity {
     String email;
 
     @Column(nullable = false, columnDefinition = "NVARCHAR(100)")
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     String password;
 
     @Column(unique = true, columnDefinition = "NVARCHAR(10)")
@@ -38,26 +41,57 @@ public class Account extends BaseEntity {
 
     String avatar;
 
-    @OneToMany(mappedBy = "account")
-    List<Subscription> subscriptions;
-
-    @OneToMany(mappedBy = "account")
-    List<AITokenUsage> aiTokenUsages;
-
-    @OneToOne(mappedBy = "account", cascade = CascadeType.ALL, optional = false)
-    Setting setting;
-
     @OneToOne(mappedBy = "account", cascade = CascadeType.ALL)
+    @JsonManagedReference
     Member member;
 
+    @Builder.Default
+    @OneToMany(mappedBy = "account")
+    @JsonManagedReference
+    List<AITokenUsage> aiTokenUsages = new ArrayList<>();
+
+    @Builder.Default
+    @OneToMany(mappedBy = "account")
+    @JsonManagedReference
+    List<Blog> blogs = new ArrayList<>();
+
+    @Builder.Default
+    @OneToMany(mappedBy = "account")
+    @JsonManagedReference
+    List<Booking> bookings = new ArrayList<>();
+
     @OneToOne(mappedBy = "account", cascade = CascadeType.ALL)
+    @JsonManagedReference
     Coach coach;
 
+    @Builder.Default
     @OneToMany(mappedBy = "account")
-    List<Plan> plans;
+    @JsonManagedReference
+    List<Comment> comments = new ArrayList<>();
 
+    @Builder.Default
     @OneToMany(mappedBy = "account")
-    List<Booking> bookings;
+    @JsonManagedReference
+    List<Plan> plans = new ArrayList<>();
+
+    @Builder.Default
+    @OneToMany(mappedBy = "account")
+    @JsonManagedReference
+    List<Record> records = new ArrayList<>();
+
+    @OneToOne(mappedBy = "account", cascade = CascadeType.ALL, optional = false)
+    @JsonManagedReference
+    Setting setting;
+
+    @Builder.Default
+    @OneToMany(mappedBy = "account")
+    @JsonManagedReference
+    List<Subscription> subscriptions = new ArrayList<>();
+
+    @Builder.Default
+    @OneToMany(mappedBy = "account")
+    @JsonManagedReference
+    List<Transaction> transactions = new ArrayList<>();
 
     @OneToMany(mappedBy = "account")
     List<Notification> notifications;

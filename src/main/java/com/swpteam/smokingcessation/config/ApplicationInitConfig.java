@@ -1,12 +1,12 @@
 package com.swpteam.smokingcessation.config;
 
+import com.swpteam.smokingcessation.constant.AppInit;
 import com.swpteam.smokingcessation.domain.entity.Account;
-import com.swpteam.smokingcessation.domain.entity.Member;
+import com.swpteam.smokingcessation.domain.entity.Category;
 import com.swpteam.smokingcessation.repository.AccountRepository;
 import com.swpteam.smokingcessation.domain.enums.Role;
 import com.swpteam.smokingcessation.domain.entity.Setting;
-import com.swpteam.smokingcessation.repository.MemberRepository;
-import com.swpteam.smokingcessation.repository.SettingRepository;
+import com.swpteam.smokingcessation.repository.CategoryRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -36,14 +36,7 @@ public class ApplicationInitConfig {
     PasswordEncoder passwordEncoder;
 
     AccountRepository accountRepository;
-    MemberRepository memberRepository;
-    SettingRepository settingRepository;
-
-    private static final String TEST_MEMBER_EMAIL = "member@gmail.com";
-    private static final String TEST_MEMBER_PASS = "1";
-
-    private static final String TEST_COACH_EMAIL = "coach@gmail.com";
-    private static final String TEST_COACH_PASS = "1";
+    CategoryRepository categoryRepository;
 
     @Bean
     @ConditionalOnProperty(
@@ -60,8 +53,16 @@ public class ApplicationInitConfig {
                 makeDefaultAccount(adminEmail, defaultPassword, Role.ADMIN);
             }
 
-            if (accountRepository.findByEmail(TEST_MEMBER_EMAIL).isEmpty()) {
-                makeDefaultAccount(TEST_MEMBER_EMAIL, TEST_MEMBER_PASS, Role.MEMBER);
+            if (accountRepository.findByEmail(AppInit.TEST_MEMBER_EMAIL).isEmpty()) {
+                makeDefaultAccount(AppInit.TEST_MEMBER_EMAIL, AppInit.TEST_MEMBER_PASS, Role.MEMBER);
+            }
+
+            if (accountRepository.findByEmail(AppInit.TEST_COACH_EMAIL).isEmpty()) {
+                makeDefaultAccount(AppInit.TEST_COACH_EMAIL, AppInit.TEST_COACH_PASS, Role.COACH);
+            }
+
+            if (categoryRepository.findByName(AppInit.DEFAULT_CATEGORY).isEmpty()) {
+                makeDefaultUncategorized();
             }
 
             log.info("Application initialization completed ...");
@@ -71,6 +72,7 @@ public class ApplicationInitConfig {
     private void makeDefaultAccount(String email, String password, Role role) {
         Account account = Account.builder()
                 .email(email)
+                .username(role.name().toLowerCase())
                 .password(passwordEncoder.encode(password))
                 .role(role)
                 .build();
@@ -83,4 +85,12 @@ public class ApplicationInitConfig {
         log.info("An {} account has been created with email: {}, default password: {}. Please change the password immediately.", role.name().toLowerCase(), email, password);
     }
 
+    private void makeDefaultUncategorized() {
+        Category uncategorized = Category.builder()
+                .name(AppInit.DEFAULT_CATEGORY)
+                .build();
+
+        categoryRepository.save(uncategorized);
+        log.info("Default category has been created");
+    }
 }

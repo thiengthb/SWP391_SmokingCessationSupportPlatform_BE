@@ -6,6 +6,7 @@ import com.swpteam.smokingcessation.common.ApiResponse;
 import com.swpteam.smokingcessation.common.PageableRequest;
 import com.swpteam.smokingcessation.constant.SuccessCode;
 import com.swpteam.smokingcessation.service.interfaces.notification.IMessageService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -20,9 +21,10 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/v1/messages")
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@Tag(name = "Message", description = "Manage message-related operations")
 public class MessageController {
 
-    IMessageService IMessageService;
+    IMessageService messageService;
 
     @GetMapping
     ResponseEntity<ApiResponse<Page<MessageResponse>>> getMessagePage(@Valid PageableRequest request) {
@@ -30,14 +32,14 @@ public class MessageController {
                 ApiResponse.<Page<MessageResponse>>builder()
                         .code(SuccessCode.MEMBERSHIP_GET_ALL.getCode())
                         .message(SuccessCode.MEMBERSHIP_GET_ALL.getMessage())
-                        .result(IMessageService.getMessagePage(request))
+                        .result(messageService.getMessagePage(request))
                         .build()
         );
     }
 
     @GetMapping("/{id}")
     ResponseEntity<ApiResponse<MessageResponse>> getMessageById(@PathVariable String id) {
-        MessageResponse response = IMessageService.getById(id);
+        MessageResponse response = messageService.getById(id);
         return ResponseEntity.ok(
                 ApiResponse.<MessageResponse>builder()
                         .code(SuccessCode.MESSAGE_GET_BY_ID.getCode())
@@ -49,7 +51,7 @@ public class MessageController {
 
     @PostMapping
     ResponseEntity<ApiResponse<MessageResponse>> createMessage(@Valid @RequestBody MessageRequest request) {
-        MessageResponse response = IMessageService.createMessage(request);
+        MessageResponse response = messageService.createMessage(request);
         return ResponseEntity.ok(
                 ApiResponse.<MessageResponse>builder()
                         .code(SuccessCode.MESSAGE_CREATED.getCode())
@@ -61,7 +63,7 @@ public class MessageController {
 
     @PutMapping("/{id}")
     ResponseEntity<ApiResponse<MessageResponse>> updateMessage(@PathVariable String id, @Valid @RequestBody MessageRequest request) {
-        MessageResponse response = IMessageService.updateMessage(id, request);
+        MessageResponse response = messageService.updateMessage(id, request);
         return ResponseEntity.ok(
                 ApiResponse.<MessageResponse>builder()
                         .code(SuccessCode.MESSAGE_UPDATED.getCode())
@@ -73,7 +75,7 @@ public class MessageController {
 
     @DeleteMapping("/{id}")
     ResponseEntity<ApiResponse<Void>> deleteMessage(@PathVariable String id) {
-        IMessageService.softDeleteMessageById(id);
+        messageService.softDeleteMessageById(id);
         return ResponseEntity.ok(
                 ApiResponse.<Void>builder()
                         .code(SuccessCode.MESSAGE_DELETED.getCode())

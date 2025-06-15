@@ -1,10 +1,13 @@
 package com.swpteam.smokingcessation.domain.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.swpteam.smokingcessation.common.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -17,10 +20,16 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Coach extends BaseEntity {
 
-    @OneToOne
     @MapsId
-    @JoinColumn(name = "accountId")
+    @OneToOne
+    @JsonBackReference
+    @JoinColumn(name = "accountId", nullable = false, updatable = false)
     Account account;
+
+    @Builder.Default
+    @OneToMany(mappedBy = "coach")
+    @JsonManagedReference
+    List<Booking> bookings = new ArrayList<>();
 
     String fullName;
     String bio;
@@ -28,7 +37,4 @@ public class Coach extends BaseEntity {
     String socialLinks;
     String specializations;
     String certificates;
-
-    @OneToMany(mappedBy = "coach")
-    List<Booking> bookings;
 }

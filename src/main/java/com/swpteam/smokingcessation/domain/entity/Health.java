@@ -17,12 +17,13 @@ import lombok.experimental.FieldDefaults;
 public class Health extends BaseEntity {
 
     @ManyToOne
-    @JoinColumn(name = "accountId", nullable = false)
+    @JsonBackReference
+    @JoinColumn(name = "accountId", nullable = false, updatable = false)
     Account account;
 
     int cigarettesPerDay;
     int cigarettesPerPack;
-    int fndLevel;
+    int ftndLevel;
     double packPrice;
     String reasonToQuit;
     int smokeYear;

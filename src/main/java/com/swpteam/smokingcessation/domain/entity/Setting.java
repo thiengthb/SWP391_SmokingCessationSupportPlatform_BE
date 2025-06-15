@@ -20,9 +20,10 @@ import java.time.LocalTime;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Setting extends BaseEntity {
 
-    @OneToOne
     @MapsId
-    @JoinColumn(name = "accountId")
+    @OneToOne
+    @JoinColumn(name = "accountId", nullable = false, updatable = false)
+    @JsonBackReference
     Account account;
 
     @Enumerated(EnumType.STRING)

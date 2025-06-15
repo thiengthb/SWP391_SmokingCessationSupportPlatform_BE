@@ -16,7 +16,6 @@ import com.swpteam.smokingcessation.exception.AppException;
 import com.swpteam.smokingcessation.service.interfaces.identity.IAccountService;
 import com.swpteam.smokingcessation.utils.AccountUtilService;
 import com.swpteam.smokingcessation.utils.ValidationUtil;
-import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -29,6 +28,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @RequiredArgsConstructor
 @Service
@@ -40,6 +40,7 @@ public class AccountServiceImpl implements IAccountService {
     AccountUtilService accountUtilService;
 
     @Override
+    @Transactional
     @PreAuthorize("hasRole('ADMIN')")
     @CachePut(value = "ACCOUNT_CACHE", key = "#result.getId()")
     public AccountResponse createAccount(AccountRequest request) {
@@ -80,8 +81,10 @@ public class AccountServiceImpl implements IAccountService {
     }
 
     @Override
-    public AccountResponse getAccountByEmail() {
-        Account account = accountUtilService.getCurrentAccount();
+    public AccountResponse getCurrentAccount() {
+        Account account = accountUtilService.getCurrentAccount()
+                .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FOUND));
+
         return accountMapper.toResponse(account);
     }
 
@@ -120,6 +123,7 @@ public class AccountServiceImpl implements IAccountService {
     }
 
     @Override
+    @Transactional
     @PreAuthorize("hasRole('ADMIN')")
     @CacheEvict(value = "ACCOUNT_CACHE", key = "#id")
     public void deleteAccount(String id) {
@@ -131,7 +135,8 @@ public class AccountServiceImpl implements IAccountService {
     @Override
     @Transactional
     public AccountResponse changePassword(ChangePasswordRequest request) {
-        Account account = accountUtilService.getCurrentAccount();
+        Account account = accountUtilService.getCurrentAccount()
+                .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FOUND));
 
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
 
@@ -151,10 +156,12 @@ public class AccountServiceImpl implements IAccountService {
     public void banAccount(String id) {
         Account account = accountRepository.findByIdAndIsDeletedFalse(id).orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FOUND));
 
-        String emailFromToken = accountUtilService.getCurrentEmail();
-        if (emailFromToken.equals(account.getEmail())) {
+        String emailFromToken = accountUtilService.getCurrentEmail()
+                .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FOUND));
+
+        if (emailFromToken.equals(account.getEmail()))
             throw new AppException(ErrorCode.SELF_BAN);
-        }
+
         account.setStatus(AccountStatus.BANNED);
         accountRepository.save(account);
     }

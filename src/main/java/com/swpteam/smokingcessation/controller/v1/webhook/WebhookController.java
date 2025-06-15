@@ -1,9 +1,9 @@
-package com.swpteam.smokingcessation.integration.payment.controller;
+package com.swpteam.smokingcessation.controller.v1.webhook;
 
 import com.stripe.exception.SignatureVerificationException;
 import com.stripe.model.Event;
 import com.stripe.net.Webhook;
-import com.swpteam.smokingcessation.integration.payment.services.StripeService;
+import com.swpteam.smokingcessation.integration.payment.StripeService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -22,10 +22,10 @@ import java.util.Scanner;
 
 @Slf4j
 @RestController
-@RequestMapping("/api/webhook")
+@RequestMapping("/api/v1/webhook")
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public class StripeWebhookController {
+public class WebhookController {
 
     StripeService stripeService;
 

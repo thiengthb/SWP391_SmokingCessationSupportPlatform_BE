@@ -1,5 +1,6 @@
 package com.swpteam.smokingcessation.domain.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.swpteam.smokingcessation.domain.enums.PhaseStatus;
 import com.swpteam.smokingcessation.common.BaseEntity;
 import jakarta.persistence.*;
@@ -18,7 +19,8 @@ import java.time.LocalDate;
 public class Phase extends BaseEntity {
 
     @ManyToOne
-    @JoinColumn(name = "planId")
+    @JsonBackReference
+    @JoinColumn(name = "planId", nullable = false, updatable = false)
     Plan plan;
 
     String phaseName;
@@ -26,5 +28,7 @@ public class Phase extends BaseEntity {
     int cigaretteBound;
     LocalDate startDate;
     LocalDate endDate;
+
+    @Enumerated(EnumType.STRING)
     PhaseStatus phaseStatus;
 }

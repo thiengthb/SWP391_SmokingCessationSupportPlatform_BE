@@ -16,17 +16,15 @@ public class PlanRequest {
     @NotBlank(message = "ACCOUNT_ID_REQUIRED")
     String accountId;
 
-    @NotBlank(message = "PLANE_NAME_REQUIRED")
     @Size(max = 255, message = "PLAN_NAME_TOO_LONG")
     String planName;
 
-    @NotBlank(message = "PLAN_DESCRIPTION_REQUIRED")
     @Size(max = 255, message = "PLAN_DESCRIPTION_TOO_LONG")
     String description;
 
     @NotNull(message ="SUCCESS_RATE_REQUIRED")
-    @Min(value = 0, message = "SUCCESS_LEVEL_INVALID_MIN")
-    @Max(value = 11, message = "SUCCESS_LEVEL_INVALID_MAX")
+    @DecimalMin(value = "0.0", message = "SUCCESS_LEVEL_INVALID_MIN")
+    @DecimalMax(value = "1.0", message = "SUCCESS_LEVEL_INVALID_MAX")
     double successRate;
 
     @NotNull(message = "PLAN_START_DATE_REQUIRED")

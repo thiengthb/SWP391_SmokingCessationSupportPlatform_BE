@@ -51,6 +51,7 @@ public enum ErrorCode {
     USED_TOKEN(2006, "Token has expired or has been used", HttpStatus.BAD_REQUEST),
     SELF_BAN(2007, "You cannot ban yourself", HttpStatus.BAD_REQUEST),
     FORBIDDEN(403, "You do not have permission to access this resource", HttpStatus.FORBIDDEN),
+    TOKEN_REQUIRED(403, "Token is required", HttpStatus.FORBIDDEN),
 
     // Account
     ACCOUNT_NOT_FOUND(3000, "Account does not exist", HttpStatus.BAD_REQUEST),
@@ -58,6 +59,7 @@ public enum ErrorCode {
     ACCOUNT_DELETED(3002, "Account has been deleted", HttpStatus.BAD_REQUEST),
     PHONE_NUMBER_EXISTED(3003, "Phone number is registered to another account", HttpStatus.BAD_REQUEST),
     IDENTICAL_PASSWORD(3004, "The new password must be different from the old password", HttpStatus.BAD_REQUEST),
+    ROLE_REQUIRED(3004, "Role is required", HttpStatus.BAD_REQUEST),
 
     // Membership
     MEMBERSHIP_NOT_FOUND(4000, "Membership does not exist or have been deleted", HttpStatus.BAD_REQUEST),
@@ -92,6 +94,7 @@ public enum ErrorCode {
     //Member
     MEMBER_EXISTED(8000, "Member fields already exist", HttpStatus.BAD_REQUEST),
     MEMBER_NOT_FOUND(8001, "Member doesn't exist", HttpStatus.BAD_REQUEST),
+    GENDER_REQUIRED(8001, "Gender is required", HttpStatus.BAD_REQUEST),
 
     // Message
     MESSAGE_NOT_FOUND(8001, "Message does not exist or have been deleted", HttpStatus.BAD_REQUEST),
@@ -151,6 +154,7 @@ public enum ErrorCode {
     PHASE_STATUS_REQUIRED(1025,"Phase status is required",HttpStatus.BAD_REQUEST),
     PHASE_DESCRIPTION_REQUIRED(1111,"Phase description is required",HttpStatus.BAD_REQUEST),
     PHASE_DESCRIPTION_TOO_LONG(1111,"Phase description is too long",HttpStatus.BAD_REQUEST),
+    PHASE_NAME_TOO_LONG(1111,"Phase name is too long",HttpStatus.BAD_REQUEST),
     PHASE_CIGARETTE_BOUND_REQUIRED(1323,"Phase bound is required",HttpStatus.BAD_REQUEST),
     CIGARETTE_NEGATIVE(4005, "Cigarette bound must be a positive number", HttpStatus.BAD_REQUEST),
 
@@ -176,6 +180,34 @@ public enum ErrorCode {
     ENDED_AT_REQUIRED(1008, "Ended at is required", HttpStatus.BAD_REQUEST),
     ENDED_AT_MUST_BE_IN_FUTURE(1009, "Ended at must be in the future", HttpStatus.BAD_REQUEST),
     IS_APPROVED_REQUIRED(1010, "Approval status is required", HttpStatus.BAD_REQUEST),
+
+    // Category
+    CATEGORY_NAME_REQUIRED(4000, "Category name must not be blank", HttpStatus.BAD_REQUEST),
+    CATEGORY_MAX_LENGTH(4000, "Category name must not exceed 100 characters", HttpStatus.BAD_REQUEST),
+    CATEGORY_NOT_FOUND(4000, "Category does not exist or have been deleted", HttpStatus.BAD_REQUEST),
+    CATEGORY_CANNOT_BE_DELETED(4000, "This category can not be deleted", HttpStatus.BAD_REQUEST),
+
+    // Comment
+    COMMENT_CONTENT_REQUIRED(4000, "Content must not be blank", HttpStatus.BAD_REQUEST),
+    COMMENT_REPLY_REQUIRED(4000, "Content reply is required", HttpStatus.BAD_REQUEST),
+    LEVEL_POSITIVE(4000, "Level must be zero or positive", HttpStatus.BAD_REQUEST),
+    COMMENT_BLOG_REQUIRED(4000, "Blog ID must not be blank", HttpStatus.BAD_REQUEST),
+    COMMENT_USER_REQUIRED(4000, "User ID must not be blank", HttpStatus.BAD_REQUEST),
+    OTHERS_COMMENT_UNCHANGEABLE(4000, "Can not change other user comment", HttpStatus.BAD_REQUEST),
+    COMMENT_NOT_FOUND(4000, "Comment does not exist or have been deleted", HttpStatus.BAD_REQUEST),
+
+    // Blog
+    BLOG_TITLE_REQUIRED(4000, "Title is required", HttpStatus.BAD_REQUEST),
+    BLOG_TITLE_LIMIT(4000, "Title must not exceed 255 characters", HttpStatus.BAD_REQUEST),
+    BLOG_SLUG_REQUIRED(4000, "Slug is required", HttpStatus.BAD_REQUEST),
+    SLUG_PATTERN(4000, "Slug must be lowercase and can contain hyphens", HttpStatus.BAD_REQUEST),
+    SLUG_LENGTH_LIMIT(4000, "Slug must not exceed 255 characters", HttpStatus.BAD_REQUEST),
+    COVER_IMAGE_LENGTH_LIMIT(4000, "Cover image URL must not exceed 1000 characters", HttpStatus.BAD_REQUEST),
+    COVER_IMAGE_INVALID_URL(4000, "Cover image URL must be a valid URL", HttpStatus.BAD_REQUEST),
+    EXCERPT_LENGTH_LIMIT(4000, "Excerpt must not exceed 500 characters", HttpStatus.BAD_REQUEST),
+    BLOG_STATUS_REQUIRED(4000, "Status is required", HttpStatus.BAD_REQUEST),
+    BLOG_NOT_FOUND(4000, "Blog does not exist or have been deleted", HttpStatus.BAD_REQUEST),
+
 
     ;
     int code;
