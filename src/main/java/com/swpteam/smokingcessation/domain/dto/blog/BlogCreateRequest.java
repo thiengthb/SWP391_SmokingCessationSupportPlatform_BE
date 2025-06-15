@@ -19,7 +19,6 @@ public class BlogCreateRequest {
     @Size(max = 255, message = "BLOG_TITLE_LIMIT")
     String title;
 
-    @NotBlank(message = "BLOG_CATEGORY_REQUIRED")
     String categoryName;
 
     @NotBlank(message = "BLOG_SLUG_REQUIRED")

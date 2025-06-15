@@ -2,12 +2,16 @@ package com.swpteam.smokingcessation.service.impl.blog;
 
 import com.swpteam.smokingcessation.common.PageableRequest;
 import com.swpteam.smokingcessation.constant.ErrorCode;
-import com.swpteam.smokingcessation.domain.dto.comment.CommentRequest;
+import com.swpteam.smokingcessation.domain.dto.comment.CommentCreateRequest;
+import com.swpteam.smokingcessation.domain.dto.comment.CommentReplyRequest;
 import com.swpteam.smokingcessation.domain.dto.comment.CommentResponse;
+import com.swpteam.smokingcessation.domain.dto.comment.CommentUpdateRequest;
 import com.swpteam.smokingcessation.domain.entity.Account;
+import com.swpteam.smokingcessation.domain.entity.Blog;
 import com.swpteam.smokingcessation.domain.entity.Comment;
 import com.swpteam.smokingcessation.domain.mapper.CommentMapper;
 import com.swpteam.smokingcessation.exception.AppException;
+import com.swpteam.smokingcessation.repository.BlogRepository;
 import com.swpteam.smokingcessation.repository.CommentRepository;
 import com.swpteam.smokingcessation.service.interfaces.blog.ICommentService;
 import com.swpteam.smokingcessation.utils.AccountUtilService;
@@ -34,6 +38,8 @@ public class CommentServiceImpl implements ICommentService {
 
     CommentRepository commentRepository;
     CommentMapper commentMapper;
+
+    BlogRepository blogRepository;
 
     AccountUtilService accountUtilService;
     AuthorizationUtilService authorizationUtilService;
@@ -73,12 +79,16 @@ public class CommentServiceImpl implements ICommentService {
     @Override
     @Transactional
     @CachePut(value = "COMMENT_CACHE", key = "#result.getId()")
-    public CommentResponse createComment(CommentRequest request) {
+    public CommentResponse createComment(CommentCreateRequest request) {
         Account currentAccount = accountUtilService.getCurrentAccount()
                 .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FOUND));
 
-        Comment comment = commentMapper.toEntity(request);
+        Blog blog = blogRepository.findByIdAndIsDeletedFalse(request.getBlogId())
+                .orElseThrow(() -> new AppException(ErrorCode.BLOG_NOT_FOUND));
+
+        Comment comment = commentMapper.toEntityFromCreate(request);
         comment.setAccount(currentAccount);
+        comment.setBlog(blog);
 
         return commentMapper.toResponse(commentRepository.save(comment));
     }
@@ -86,7 +96,26 @@ public class CommentServiceImpl implements ICommentService {
     @Override
     @Transactional
     @CachePut(value = "COMMENT_CACHE", key = "#result.getId()")
-    public CommentResponse updateComment(String id, CommentRequest request) {
+    public CommentResponse replyComment(CommentReplyRequest request) {
+        Account currentAccount = accountUtilService.getCurrentAccount()
+                .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FOUND));
+
+        Comment parentComment = findCommentById(request.getParentCommentId());
+
+        Comment comment = commentMapper.toEntityFromReply(request);
+
+        comment.setAccount(currentAccount);
+        comment.setParentComment(parentComment);
+        comment.setLevel(parentComment.getLevel() + 1);
+        comment.setBlog(parentComment.getBlog());
+
+        return commentMapper.toResponse(commentRepository.save(comment));
+    }
+
+    @Override
+    @Transactional
+    @CachePut(value = "COMMENT_CACHE", key = "#result.getId()")
+    public CommentResponse updateComment(String id, CommentUpdateRequest request) {
         Comment comment = findCommentById(id);
 
         boolean haveAccess = authorizationUtilService.checkAdminOrOwner(comment.getAccount().getId());

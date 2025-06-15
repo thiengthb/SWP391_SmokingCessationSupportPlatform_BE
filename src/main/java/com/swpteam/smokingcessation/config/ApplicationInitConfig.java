@@ -1,8 +1,8 @@
 package com.swpteam.smokingcessation.config;
 
+import com.swpteam.smokingcessation.constant.AppInit;
 import com.swpteam.smokingcessation.domain.entity.Account;
 import com.swpteam.smokingcessation.domain.entity.Category;
-import com.swpteam.smokingcessation.domain.entity.Member;
 import com.swpteam.smokingcessation.repository.AccountRepository;
 import com.swpteam.smokingcessation.domain.enums.Role;
 import com.swpteam.smokingcessation.domain.entity.Setting;
@@ -38,14 +38,6 @@ public class ApplicationInitConfig {
     AccountRepository accountRepository;
     CategoryRepository categoryRepository;
 
-    private static final String TEST_MEMBER_EMAIL = "member@gmail.com";
-    private static final String TEST_MEMBER_PASS = "1";
-
-    private static final String TEST_COACH_EMAIL = "coach@gmail.com";
-    private static final String TEST_COACH_PASS = "1";
-
-    public static final String DEFAULT_CATEGORY = "Uncategorized";
-
     @Bean
     @ConditionalOnProperty(
             prefix = "spring",
@@ -61,15 +53,15 @@ public class ApplicationInitConfig {
                 makeDefaultAccount(adminEmail, defaultPassword, Role.ADMIN);
             }
 
-            if (accountRepository.findByEmail(TEST_MEMBER_EMAIL).isEmpty()) {
-                makeDefaultAccount(TEST_MEMBER_EMAIL, TEST_MEMBER_PASS, Role.MEMBER);
+            if (accountRepository.findByEmail(AppInit.TEST_MEMBER_EMAIL).isEmpty()) {
+                makeDefaultAccount(AppInit.TEST_MEMBER_EMAIL, AppInit.TEST_MEMBER_PASS, Role.MEMBER);
             }
 
-            if (accountRepository.findByEmail(TEST_COACH_EMAIL).isEmpty()) {
-                makeDefaultAccount(TEST_COACH_EMAIL, TEST_COACH_PASS, Role.COACH);
+            if (accountRepository.findByEmail(AppInit.TEST_COACH_EMAIL).isEmpty()) {
+                makeDefaultAccount(AppInit.TEST_COACH_EMAIL, AppInit.TEST_COACH_PASS, Role.COACH);
             }
 
-            if (categoryRepository.findByName(DEFAULT_CATEGORY).isEmpty()) {
+            if (categoryRepository.findByName(AppInit.DEFAULT_CATEGORY).isEmpty()) {
                 makeDefaultUncategorized();
             }
 
@@ -80,6 +72,7 @@ public class ApplicationInitConfig {
     private void makeDefaultAccount(String email, String password, Role role) {
         Account account = Account.builder()
                 .email(email)
+                .username(role.name().toLowerCase())
                 .password(passwordEncoder.encode(password))
                 .role(role)
                 .build();
@@ -94,7 +87,7 @@ public class ApplicationInitConfig {
 
     private void makeDefaultUncategorized() {
         Category uncategorized = Category.builder()
-                .name(DEFAULT_CATEGORY)
+                .name(AppInit.DEFAULT_CATEGORY)
                 .build();
 
         categoryRepository.save(uncategorized);

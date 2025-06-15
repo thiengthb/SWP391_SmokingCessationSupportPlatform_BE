@@ -1,6 +1,7 @@
 package com.swpteam.smokingcessation.service.impl.blog;
 
 import com.swpteam.smokingcessation.common.PageableRequest;
+import com.swpteam.smokingcessation.constant.AppInit;
 import com.swpteam.smokingcessation.constant.ErrorCode;
 import com.swpteam.smokingcessation.domain.dto.blog.BlogCreateRequest;
 import com.swpteam.smokingcessation.domain.dto.blog.BlogResponse;
@@ -41,7 +42,6 @@ public class BlogServiceImpl implements IBlogService {
     BlogMapper blogMapper;
 
     CategoryRepository categoryRepository;
-    CommentRepository commentRepository;
 
     AccountUtilService accountUtilService;
     AuthorizationUtilService authorizationUtilService;
@@ -106,7 +106,8 @@ public class BlogServiceImpl implements IBlogService {
                 .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FOUND));
 
         Category category = categoryRepository.findByName(request.getCategoryName())
-                .orElseThrow(() -> new AppException(ErrorCode.BLOG_NOT_FOUND));
+                .or(() -> categoryRepository.findByName(AppInit.DEFAULT_CATEGORY))
+                .orElseThrow(() -> new AppException(ErrorCode.CATEGORY_NOT_FOUND));
 
         Blog blog = blogMapper.toEntity(request);
 

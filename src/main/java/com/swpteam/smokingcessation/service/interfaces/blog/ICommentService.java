@@ -1,12 +1,11 @@
 package com.swpteam.smokingcessation.service.interfaces.blog;
 
 import com.swpteam.smokingcessation.common.PageableRequest;
-import com.swpteam.smokingcessation.domain.dto.comment.CommentRequest;
+import com.swpteam.smokingcessation.domain.dto.comment.CommentCreateRequest;
+import com.swpteam.smokingcessation.domain.dto.comment.CommentReplyRequest;
 import com.swpteam.smokingcessation.domain.dto.comment.CommentResponse;
+import com.swpteam.smokingcessation.domain.dto.comment.CommentUpdateRequest;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-
-import java.util.List;
 
 public interface ICommentService {
 
@@ -16,9 +15,11 @@ public interface ICommentService {
 
     CommentResponse getCommentById(String id);
 
-    CommentResponse createComment(CommentRequest request);
+    CommentResponse createComment(CommentCreateRequest request);
 
-    CommentResponse updateComment(String id, CommentRequest request);
+    CommentResponse replyComment(CommentReplyRequest request);
+
+    CommentResponse updateComment(String id, CommentUpdateRequest request);
 
     void deleteCommentById(String id);
 }

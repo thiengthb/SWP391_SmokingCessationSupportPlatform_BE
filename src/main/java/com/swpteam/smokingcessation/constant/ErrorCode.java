@@ -189,6 +189,7 @@ public enum ErrorCode {
 
     // Comment
     COMMENT_CONTENT_REQUIRED(4000, "Content must not be blank", HttpStatus.BAD_REQUEST),
+    COMMENT_REPLY_REQUIRED(4000, "Content reply is required", HttpStatus.BAD_REQUEST),
     LEVEL_POSITIVE(4000, "Level must be zero or positive", HttpStatus.BAD_REQUEST),
     COMMENT_BLOG_REQUIRED(4000, "Blog ID must not be blank", HttpStatus.BAD_REQUEST),
     COMMENT_USER_REQUIRED(4000, "User ID must not be blank", HttpStatus.BAD_REQUEST),
@@ -197,7 +198,6 @@ public enum ErrorCode {
 
     // Blog
     BLOG_TITLE_REQUIRED(4000, "Title is required", HttpStatus.BAD_REQUEST),
-    BLOG_CATEGORY_REQUIRED(4000, "Category is required", HttpStatus.BAD_REQUEST),
     BLOG_TITLE_LIMIT(4000, "Title must not exceed 255 characters", HttpStatus.BAD_REQUEST),
     BLOG_SLUG_REQUIRED(4000, "Slug is required", HttpStatus.BAD_REQUEST),
     SLUG_PATTERN(4000, "Slug must be lowercase and can contain hyphens", HttpStatus.BAD_REQUEST),

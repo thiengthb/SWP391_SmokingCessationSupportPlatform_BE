@@ -20,7 +20,7 @@ public class CommentResponse {
     int level;
 
     String blogId;
-    String userId;
+    String username;
     String parentCommentId;
 
     LocalDateTime createdAt;

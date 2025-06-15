@@ -17,6 +17,7 @@ public class BlogResponse {
 
     String id;
     String authorName;
+    String categoryName;
     String title;
     String slug;
     String coverImageUrl;

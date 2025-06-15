@@ -30,7 +30,7 @@ public class Comment extends BaseEntity {
     Account account;
 
     @ManyToOne
-    @JoinColumn(name = "parentId", nullable = false, updatable = false)
+    @JoinColumn(name = "parentId", updatable = false)
     @JsonBackReference("parentChild")
     Comment parentComment;
 

@@ -3,8 +3,10 @@ package com.swpteam.smokingcessation.controller.v1.blog;
 import com.swpteam.smokingcessation.common.ApiResponse;
 import com.swpteam.smokingcessation.common.PageableRequest;
 import com.swpteam.smokingcessation.constant.SuccessCode;
-import com.swpteam.smokingcessation.domain.dto.comment.CommentRequest;
+import com.swpteam.smokingcessation.domain.dto.comment.CommentCreateRequest;
+import com.swpteam.smokingcessation.domain.dto.comment.CommentReplyRequest;
 import com.swpteam.smokingcessation.domain.dto.comment.CommentResponse;
+import com.swpteam.smokingcessation.domain.dto.comment.CommentUpdateRequest;
 import com.swpteam.smokingcessation.service.interfaces.blog.ICommentService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -60,7 +62,7 @@ public class CommentController {
     }
 
     @PostMapping
-    ResponseEntity<ApiResponse<CommentResponse>> createSubscription(@RequestBody @Valid CommentRequest request) {
+    ResponseEntity<ApiResponse<CommentResponse>> createSubscription(@RequestBody @Valid CommentCreateRequest request) {
         return ResponseEntity.ok().body(
                 ApiResponse.<CommentResponse>builder()
                         .code(SuccessCode.COMMENT_CREATED.getCode())
@@ -70,8 +72,19 @@ public class CommentController {
         );
     }
 
+    @PostMapping("/reply")
+    ResponseEntity<ApiResponse<CommentResponse>> createSubscription(@RequestBody @Valid CommentReplyRequest request) {
+        return ResponseEntity.ok().body(
+                ApiResponse.<CommentResponse>builder()
+                        .code(SuccessCode.COMMENT_CREATED.getCode())
+                        .message(SuccessCode.COMMENT_CREATED.getMessage())
+                        .result(commentService.replyComment(request))
+                        .build()
+        );
+    }
+
     @PutMapping("/{id}")
-    ResponseEntity<ApiResponse<CommentResponse>> updateComment(@PathVariable String id, @RequestBody @Valid CommentRequest request) {
+    ResponseEntity<ApiResponse<CommentResponse>> updateComment(@PathVariable String id, @RequestBody @Valid CommentUpdateRequest request) {
         return ResponseEntity.ok().body(
                 ApiResponse.<CommentResponse>builder()
                         .code(SuccessCode.COMMENT_UPDATED.getCode())
