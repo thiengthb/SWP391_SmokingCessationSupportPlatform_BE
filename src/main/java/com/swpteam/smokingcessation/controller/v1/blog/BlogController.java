@@ -7,6 +7,7 @@ import com.swpteam.smokingcessation.domain.dto.blog.BlogCreateRequest;
 import com.swpteam.smokingcessation.domain.dto.blog.BlogResponse;
 import com.swpteam.smokingcessation.domain.dto.blog.BlogUpdateRequest;
 import com.swpteam.smokingcessation.service.interfaces.blog.IBlogService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/v1/blogs")
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@Tag(name = "Blog", description = "Manage blog-related operations")
 public class BlogController {
 
     IBlogService blogService;

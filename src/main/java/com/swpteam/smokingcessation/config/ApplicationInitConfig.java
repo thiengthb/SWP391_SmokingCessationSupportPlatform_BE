@@ -65,6 +65,10 @@ public class ApplicationInitConfig {
                 makeDefaultAccount(TEST_MEMBER_EMAIL, TEST_MEMBER_PASS, Role.MEMBER);
             }
 
+            if (accountRepository.findByEmail(TEST_COACH_EMAIL).isEmpty()) {
+                makeDefaultAccount(TEST_COACH_EMAIL, TEST_COACH_PASS, Role.COACH);
+            }
+
             if (categoryRepository.findByName(DEFAULT_CATEGORY).isEmpty()) {
                 makeDefaultUncategorized();
             }
@@ -88,28 +92,12 @@ public class ApplicationInitConfig {
         log.info("An {} account has been created with email: {}, default password: {}. Please change the password immediately.", role.name().toLowerCase(), email, password);
     }
 
-    private void makeDefaultMemberAccount() {
-        Account account = Account.builder()
-                .email(ApplicationInitConfig.TEST_MEMBER_EMAIL)
-                .password(passwordEncoder.encode(ApplicationInitConfig.TEST_MEMBER_PASS))
-                .role(Role.MEMBER)
-                .build();
-
-        Setting setting = Setting.getDefaultSetting(account);
-        Member member = Member.getDefaultMember(account);
-
-        account.setSetting(setting);
-        account.setMember(member);
-        accountRepository.save(account);
-
-        log.info("An member account has been created with email: {}, default password: {}. Please change the password immediately.", ApplicationInitConfig.TEST_MEMBER_EMAIL, ApplicationInitConfig.TEST_MEMBER_PASS);
-    }
-
     private void makeDefaultUncategorized() {
         Category uncategorized = Category.builder()
                 .name(DEFAULT_CATEGORY)
                 .build();
 
         categoryRepository.save(uncategorized);
+        log.info("Default category has been created");
     }
 }

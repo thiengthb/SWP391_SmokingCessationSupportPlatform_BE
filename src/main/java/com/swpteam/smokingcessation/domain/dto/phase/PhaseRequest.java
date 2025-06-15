@@ -16,11 +16,9 @@ public class PhaseRequest {
     @NotBlank(message = "PLAN_ID_REQUIRED")
     String planId;
 
-    @NotBlank(message = "PHASE_DESCRIPTION_REQUIRED")
-    @Size(max = 255, message = "PHASE_DESCRIPTION_TOO_LONG")
+    @Size(max = 50, message = "PHASE_NAME_TOO_LONG")
     String phaseName;
 
-    @NotBlank(message = "PHASE_DESCRIPTION_REQUIRED")
     @Size(max = 255, message = "PHASE_DESCRIPTION_TOO_LONG")
     String description;
 

@@ -6,6 +6,7 @@ import com.swpteam.smokingcessation.constant.SuccessCode;
 import com.swpteam.smokingcessation.domain.dto.category.CategoryRequest;
 import com.swpteam.smokingcessation.domain.dto.category.CategoryResponse;
 import com.swpteam.smokingcessation.service.interfaces.blog.ICategoryService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +23,7 @@ import java.util.List;
 @RequestMapping("/api/v1/categories")
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@Tag(name = "Category", description = "Manage category-related operations")
 public class CategoryController {
 
     ICategoryService categoryService;

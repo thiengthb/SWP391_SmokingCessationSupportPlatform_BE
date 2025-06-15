@@ -6,6 +6,7 @@ import com.swpteam.smokingcessation.constant.SuccessCode;
 import com.swpteam.smokingcessation.domain.dto.coach.CoachRequest;
 import com.swpteam.smokingcessation.domain.dto.coach.CoachResponse;
 import com.swpteam.smokingcessation.service.interfaces.profile.ICoachService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/v1/coaches")
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@Tag(name = "Coach", description = "Manage coach-related operations")
 public class CoachController {
     ICoachService coachService;
 

@@ -1,12 +1,12 @@
 package com.swpteam.smokingcessation.controller.v1.profile;
 
-import com.swpteam.smokingcessation.domain.dto.member.MemberCreateRequest;
+import com.swpteam.smokingcessation.domain.dto.member.MemberRequest;
 import com.swpteam.smokingcessation.domain.dto.member.MemberResponse;
-import com.swpteam.smokingcessation.domain.dto.member.MemberUpdateRequest;
 import com.swpteam.smokingcessation.common.ApiResponse;
 import com.swpteam.smokingcessation.common.PageableRequest;
 import com.swpteam.smokingcessation.constant.SuccessCode;
 import com.swpteam.smokingcessation.service.interfaces.profile.IMemberService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -19,12 +19,13 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/v1/members")
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@Tag(name = "Member", description = "Manage member-related operations")
 public class MemberController {
 
     IMemberService memberService;
 
     @PostMapping("/{accountId}")
-    ResponseEntity<ApiResponse<MemberResponse>> createMember(@PathVariable("accountId") String accountId, @RequestBody @Valid MemberCreateRequest request) {
+    ResponseEntity<ApiResponse<MemberResponse>> createMember(@PathVariable("accountId") String accountId, @RequestBody @Valid MemberRequest request) {
         return ResponseEntity.ok(
                 ApiResponse.<MemberResponse>builder()
                         .code(SuccessCode.MEMBER_CREATED.getCode())
@@ -50,7 +51,7 @@ public class MemberController {
     }
 
     @PutMapping("/{accountId}")
-    ResponseEntity<ApiResponse<MemberResponse>> updateAccount(@PathVariable("accountId") String id, @RequestBody MemberUpdateRequest request) {
+    ResponseEntity<ApiResponse<MemberResponse>> updateAccount(@PathVariable("accountId") String id, @RequestBody MemberRequest request) {
         return ResponseEntity.ok(
                 ApiResponse.<MemberResponse>builder()
                         .code(SuccessCode.ACCOUNT_UPDATED.getCode())

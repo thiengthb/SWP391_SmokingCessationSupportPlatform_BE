@@ -1,11 +1,10 @@
 package com.swpteam.smokingcessation.service.impl.profile;
 
+import com.swpteam.smokingcessation.domain.dto.member.MemberRequest;
 import com.swpteam.smokingcessation.domain.entity.Account;
 import com.swpteam.smokingcessation.domain.mapper.MemberMapper;
 import com.swpteam.smokingcessation.repository.AccountRepository;
-import com.swpteam.smokingcessation.domain.dto.member.MemberCreateRequest;
 import com.swpteam.smokingcessation.domain.dto.member.MemberResponse;
-import com.swpteam.smokingcessation.domain.dto.member.MemberUpdateRequest;
 import com.swpteam.smokingcessation.common.PageableRequest;
 import com.swpteam.smokingcessation.constant.ErrorCode;
 import com.swpteam.smokingcessation.domain.entity.Member;
@@ -32,7 +31,7 @@ public class MemberServiceImpl implements IMemberService {
     AccountRepository accountRepository;
 
     @Override
-    public MemberResponse createMember(MemberCreateRequest request, String id) {
+    public MemberResponse createMember(MemberRequest request, String id) {
         Account account = accountRepository.findByIdAndIsDeletedFalse(id).orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FOUND));
 
 
@@ -75,7 +74,7 @@ public class MemberServiceImpl implements IMemberService {
 
     @Override
     @Transactional
-    public MemberResponse updateMember(MemberUpdateRequest request, String id) {
+    public MemberResponse updateMember(MemberRequest request, String id) {
         Member member = findMemberById(id);
 
         memberMapper.updateMember(member, request);

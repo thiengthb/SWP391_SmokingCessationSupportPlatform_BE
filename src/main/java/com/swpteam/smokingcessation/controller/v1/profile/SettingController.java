@@ -4,6 +4,7 @@ import com.swpteam.smokingcessation.domain.dto.setting.SettingRequest;
 import com.swpteam.smokingcessation.domain.dto.setting.SettingResponse;
 import com.swpteam.smokingcessation.common.ApiResponse;
 import com.swpteam.smokingcessation.service.interfaces.profile.ISettingService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +19,7 @@ import java.util.List;
 @RequestMapping("/api/v1/settings")
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@Tag(name = "Setting", description = "Manage setting-related operations")
 public class SettingController {
 
     ISettingService settingService;

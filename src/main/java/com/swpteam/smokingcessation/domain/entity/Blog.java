@@ -1,14 +1,10 @@
 package com.swpteam.smokingcessation.domain.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.swpteam.smokingcessation.common.BaseEntity;
 import com.swpteam.smokingcessation.domain.enums.BlogStatus;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -25,7 +21,7 @@ import java.util.List;
 public class Blog extends BaseEntity {
 
     @ManyToOne
-    @JoinColumn(name = "accountId", nullable = false)
+    @JoinColumn(name = "accountId", nullable = false, updatable = false)
     @JsonBackReference
     Account account;
 
@@ -34,28 +30,22 @@ public class Blog extends BaseEntity {
     @JoinColumn(name = "categoryId", nullable = false)
     Category category;
 
+    @Builder.Default
     @OneToMany(mappedBy = "blog", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
-    List<Comment> comments;
+    List<Comment> comments = new ArrayList<>();
 
-    @NotBlank
-    @Size(max = 255)
     String title;
 
-    @NotBlank
-    @Size(max = 255)
     @Column(unique = true, nullable = false)
     String slug;
 
     String coverImageUrl;
-
-    @Size(max = 500)
     String excerpt;
 
     @Lob
     String content;
 
-    @NotNull
     @Enumerated(EnumType.STRING)
     BlogStatus status;
 }

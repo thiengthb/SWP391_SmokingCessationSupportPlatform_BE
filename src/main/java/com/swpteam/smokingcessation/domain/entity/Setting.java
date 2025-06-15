@@ -23,7 +23,7 @@ public class Setting extends BaseEntity {
 
     @MapsId
     @OneToOne
-    @JoinColumn(name = "accountId")
+    @JoinColumn(name = "accountId", nullable = false, updatable = false)
     @JsonBackReference
     Account account;
 

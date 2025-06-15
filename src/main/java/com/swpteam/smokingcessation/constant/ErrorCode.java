@@ -51,6 +51,7 @@ public enum ErrorCode {
     USED_TOKEN(2006, "Token has expired or has been used", HttpStatus.BAD_REQUEST),
     SELF_BAN(2007, "You cannot ban yourself", HttpStatus.BAD_REQUEST),
     FORBIDDEN(403, "You do not have permission to access this resource", HttpStatus.FORBIDDEN),
+    TOKEN_REQUIRED(403, "Token is required", HttpStatus.FORBIDDEN),
 
     // Account
     ACCOUNT_NOT_FOUND(3000, "Account does not exist", HttpStatus.BAD_REQUEST),
@@ -58,6 +59,7 @@ public enum ErrorCode {
     ACCOUNT_DELETED(3002, "Account has been deleted", HttpStatus.BAD_REQUEST),
     PHONE_NUMBER_EXISTED(3003, "Phone number is registered to another account", HttpStatus.BAD_REQUEST),
     IDENTICAL_PASSWORD(3004, "The new password must be different from the old password", HttpStatus.BAD_REQUEST),
+    ROLE_REQUIRED(3004, "Role is required", HttpStatus.BAD_REQUEST),
 
     // Membership
     MEMBERSHIP_NOT_FOUND(4000, "Membership does not exist or have been deleted", HttpStatus.BAD_REQUEST),
@@ -92,6 +94,7 @@ public enum ErrorCode {
     //Member
     MEMBER_EXISTED(8000, "Member fields already exist", HttpStatus.BAD_REQUEST),
     MEMBER_NOT_FOUND(8001, "Member doesn't exist", HttpStatus.BAD_REQUEST),
+    GENDER_REQUIRED(8001, "Gender is required", HttpStatus.BAD_REQUEST),
 
     // Message
     MESSAGE_NOT_FOUND(8001, "Message does not exist or have been deleted", HttpStatus.BAD_REQUEST),
@@ -151,6 +154,7 @@ public enum ErrorCode {
     PHASE_STATUS_REQUIRED(1025,"Phase status is required",HttpStatus.BAD_REQUEST),
     PHASE_DESCRIPTION_REQUIRED(1111,"Phase description is required",HttpStatus.BAD_REQUEST),
     PHASE_DESCRIPTION_TOO_LONG(1111,"Phase description is too long",HttpStatus.BAD_REQUEST),
+    PHASE_NAME_TOO_LONG(1111,"Phase name is too long",HttpStatus.BAD_REQUEST),
     PHASE_CIGARETTE_BOUND_REQUIRED(1323,"Phase bound is required",HttpStatus.BAD_REQUEST),
     CIGARETTE_NEGATIVE(4005, "Cigarette bound must be a positive number", HttpStatus.BAD_REQUEST),
 

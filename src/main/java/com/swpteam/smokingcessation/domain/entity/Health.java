@@ -1,6 +1,6 @@
 package com.swpteam.smokingcessation.domain.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.swpteam.smokingcessation.common.BaseEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
@@ -18,13 +18,13 @@ import lombok.experimental.FieldDefaults;
 public class Health extends BaseEntity {
 
     @ManyToOne
-    @JsonIgnore
-    @JoinColumn(name = "accountId", nullable = false)
+    @JsonBackReference
+    @JoinColumn(name = "accountId", nullable = false, updatable = false)
     Account account;
 
     int cigarettesPerDay;
     int cigarettesPerPack;
-    int fndLevel;
+    int ftndLevel;
     double packPrice;
     String reasonToQuit;
     int smokeYear;

@@ -5,8 +5,8 @@ import com.swpteam.smokingcessation.common.PageableRequest;
 import com.swpteam.smokingcessation.constant.SuccessCode;
 import com.swpteam.smokingcessation.domain.dto.comment.CommentRequest;
 import com.swpteam.smokingcessation.domain.dto.comment.CommentResponse;
-import com.swpteam.smokingcessation.domain.dto.subscription.SubscriptionRequest;
 import com.swpteam.smokingcessation.service.interfaces.blog.ICommentService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/v1/comments")
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@Tag(name = "Comment", description = "Manage comment-related operations")
 public class CommentController {
 
     ICommentService commentService;

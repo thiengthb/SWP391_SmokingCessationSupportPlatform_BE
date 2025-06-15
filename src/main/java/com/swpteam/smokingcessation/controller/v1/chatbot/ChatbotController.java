@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/chatbot")
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-@Tag(name = "Chatbot API", description = "Manage chatbot operations")
+@Tag(name = "Chatbot", description = "Manage chatbot operations")
 public class ChatbotController {
 
     IChatbotService chatbotService;

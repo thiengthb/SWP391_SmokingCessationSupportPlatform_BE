@@ -10,7 +10,7 @@ import com.swpteam.smokingcessation.domain.entity.Phase;
 import com.swpteam.smokingcessation.exception.AppException;
 import com.swpteam.smokingcessation.repository.PhaseRepository;
 import com.swpteam.smokingcessation.repository.PlanRepository;
-import com.swpteam.smokingcessation.controller.service.interfaces.tracking.IPhaseService;
+import com.swpteam.smokingcessation.service.interfaces.tracking.IPhaseService;
 import com.swpteam.smokingcessation.utils.ValidationUtil;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
