@@ -1,8 +1,8 @@
-package com.swpteam.smokingcessation.integration.payment.services;
+package com.swpteam.smokingcessation.integration.payment;
 
 import com.stripe.model.Event;
-import com.swpteam.smokingcessation.integration.payment.dto.StripeResponse;
-import com.swpteam.smokingcessation.integration.payment.dto.StripeSubscriptionRequest;
+import com.swpteam.smokingcessation.domain.dto.payment.StripeResponse;
+import com.swpteam.smokingcessation.domain.dto.payment.StripeSubscriptionRequest;
 
 public interface IStripeService {
 

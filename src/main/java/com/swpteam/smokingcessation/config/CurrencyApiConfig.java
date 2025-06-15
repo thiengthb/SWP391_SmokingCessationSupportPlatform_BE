@@ -1,4 +1,4 @@
-package com.swpteam.smokingcessation.integration.currency;
+package com.swpteam.smokingcessation.config;
 
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;

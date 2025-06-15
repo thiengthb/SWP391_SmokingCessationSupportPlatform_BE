@@ -1,7 +1,8 @@
-package com.swpteam.smokingcessation.integration.imagecloud;
+package com.swpteam.smokingcessation.controller.v1.upload;
 
 import com.swpteam.smokingcessation.common.ApiResponse;
 import com.swpteam.smokingcessation.constant.SuccessCode;
+import com.swpteam.smokingcessation.integration.imagecloud.CloudinaryService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;

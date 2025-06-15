@@ -15,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,10 +23,12 @@ import org.springframework.transaction.annotation.Transactional;
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 @RequiredArgsConstructor
 public class MessageServiceImpl implements IMessageService {
+
     MessageRepository messageRepository;
     MessageMapper messageMapper;
 
     @Override
+    @PreAuthorize("hasRole('ADMIN')")
     public Page<MessageResponse> getMessagePage(PageableRequest request) {
         if (!ValidationUtil.isFieldExist(Message.class, request.getSortBy())) {
             throw new AppException(ErrorCode.INVALID_SORT_FIELD);
@@ -38,6 +41,7 @@ public class MessageServiceImpl implements IMessageService {
     }
 
     @Override
+    @PreAuthorize("hasRole('ADMIN')")
     public MessageResponse getById(String id) {
         Message message = messageRepository.findByIdAndIsDeletedFalse(id)
                 .orElseThrow(() -> new AppException(ErrorCode.MESSAGE_NOT_FOUND));
@@ -47,6 +51,7 @@ public class MessageServiceImpl implements IMessageService {
 
     @Override
     @Transactional
+    @PreAuthorize("hasRole('ADMIN')")
     public MessageResponse createMessage(MessageRequest request) {
         Message message = messageMapper.toMessage(request);
 
@@ -55,6 +60,7 @@ public class MessageServiceImpl implements IMessageService {
 
     @Override
     @Transactional
+    @PreAuthorize("hasRole('ADMIN')")
     public MessageResponse updateMessage(String id, MessageRequest request) {
         Message message = messageRepository.findByIdAndIsDeletedFalse(id)
                 .orElseThrow(() -> new AppException(ErrorCode.MESSAGE_NOT_FOUND));
@@ -66,6 +72,7 @@ public class MessageServiceImpl implements IMessageService {
 
     @Override
     @Transactional
+    @PreAuthorize("hasRole('ADMIN')")
     public void softDeleteMessageById(String id) {
         Message message = messageRepository.findByIdAndIsDeletedFalse(id)
                 .orElseThrow(() -> new AppException(ErrorCode.MESSAGE_NOT_FOUND));

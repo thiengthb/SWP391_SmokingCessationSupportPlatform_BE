@@ -1,4 +1,4 @@
-package com.swpteam.smokingcessation.integration.payment.dto;
+package com.swpteam.smokingcessation.domain.dto.payment;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;

@@ -16,7 +16,6 @@ import com.swpteam.smokingcessation.exception.AppException;
 import com.swpteam.smokingcessation.service.interfaces.identity.IAccountService;
 import com.swpteam.smokingcessation.utils.AccountUtilService;
 import com.swpteam.smokingcessation.utils.ValidationUtil;
-import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -29,6 +28,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @RequiredArgsConstructor
 @Service
@@ -40,6 +40,7 @@ public class AccountServiceImpl implements IAccountService {
     AccountUtilService accountUtilService;
 
     @Override
+    @Transactional
     @PreAuthorize("hasRole('ADMIN')")
     @CachePut(value = "ACCOUNT_CACHE", key = "#result.getId()")
     public AccountResponse createAccount(AccountRequest request) {
@@ -122,6 +123,7 @@ public class AccountServiceImpl implements IAccountService {
     }
 
     @Override
+    @Transactional
     @PreAuthorize("hasRole('ADMIN')")
     @CacheEvict(value = "ACCOUNT_CACHE", key = "#id")
     public void deleteAccount(String id) {

@@ -23,10 +23,11 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 @RequiredArgsConstructor
-public class PhaseServiceImpl implements IPhaseService {
+public class IPhaseServiceImpl implements IPhaseService {
     PhaseRepository phaseRepository;
     PhaseMapper phaseMapper;
     PlanRepository planRepository;
+
     @Override
     public Page<PhaseResponse> getPhasePage(PageableRequest request) {
         if (!ValidationUtil.isFieldExist(Phase.class, request.getSortBy())) {

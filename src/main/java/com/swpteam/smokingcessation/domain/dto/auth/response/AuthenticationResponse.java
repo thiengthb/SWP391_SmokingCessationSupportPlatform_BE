@@ -1,6 +1,7 @@
 package com.swpteam.smokingcessation.domain.dto.auth.response;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.swpteam.smokingcessation.domain.enums.Role;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -11,6 +12,8 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class AuthenticationResponse {
+    String id;
+    String username;
+    Role role;
     String accessToken;
-    boolean authenticated;
 }

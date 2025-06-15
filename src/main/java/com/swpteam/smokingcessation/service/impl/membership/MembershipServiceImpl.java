@@ -21,6 +21,7 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -66,6 +67,7 @@ public class MembershipServiceImpl implements IMembershipService {
 
     @Override
     @Transactional
+    @PreAuthorize("hasRole('ADMIN')")
     public MembershipResponse createMembership(MembershipCreateRequest request) {
         if (membershipRepository.existsByNameAndIsDeletedFalse(request.getName()))
             throw new AppException(ErrorCode.MEMBERSHIP_NAME_UNIQUE);
@@ -78,6 +80,7 @@ public class MembershipServiceImpl implements IMembershipService {
 
     @Override
     @Transactional
+    @PreAuthorize("hasRole('ADMIN')")
     public MembershipResponse updateMembership(String id, MembershipUpdateRequest request) {
         Membership membership = membershipRepository.findByIdAndIsDeletedFalse(id)
                 .orElseThrow(() -> new AppException(ErrorCode.MEMBERSHIP_NOT_FOUND));
@@ -89,6 +92,7 @@ public class MembershipServiceImpl implements IMembershipService {
 
     @Override
     @Transactional
+    @PreAuthorize("hasRole('ADMIN')")
     public void softDeleteMembershipById(String id) {
         Membership membership = membershipRepository.findByIdAndIsDeletedFalse(id)
                 .orElseThrow(() -> new AppException(ErrorCode.MEMBERSHIP_NOT_FOUND));

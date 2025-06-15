@@ -1,10 +1,9 @@
-package com.swpteam.smokingcessation.integration.payment;
+package com.swpteam.smokingcessation.config;
 
 import com.stripe.Stripe;
 import jakarta.annotation.PostConstruct;
 import lombok.AccessLevel;
 import lombok.experimental.FieldDefaults;
-import lombok.experimental.NonFinal;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 

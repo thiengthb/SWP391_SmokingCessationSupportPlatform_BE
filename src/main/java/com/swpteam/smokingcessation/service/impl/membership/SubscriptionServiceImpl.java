@@ -20,6 +20,7 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,6 +38,7 @@ public class SubscriptionServiceImpl implements ISubscriptionService {
     MembershipRepository membershipRepository;
 
     @Override
+    @PreAuthorize("hasRole('ADMIN')")
     public Page<SubscriptionResponse> getSubscriptionPage(PageableRequest request) {
         if (!ValidationUtil.isFieldExist(Subscription.class, request.getSortBy())) {
             throw new AppException(ErrorCode.INVALID_SORT_FIELD);
@@ -49,6 +51,7 @@ public class SubscriptionServiceImpl implements ISubscriptionService {
     }
 
     @Override
+    @PreAuthorize("hasRole('ADMIN')")
     public SubscriptionResponse getSubscriptionById(String id) {
         return subscriptionMapper.toResponse(
                 subscriptionRepository.findByIdAndIsDeletedFalse(id)
@@ -56,6 +59,7 @@ public class SubscriptionServiceImpl implements ISubscriptionService {
     }
 
     @Override
+    @PreAuthorize("hasRole('ADMIN')")
     public Page<SubscriptionResponse> getSubscriptionPageByAccountId(String accountId, PageableRequest request) {
         if (!ValidationUtil.isFieldExist(Subscription.class, request.getSortBy())) {
             throw new AppException(ErrorCode.INVALID_SORT_FIELD);
@@ -91,6 +95,7 @@ public class SubscriptionServiceImpl implements ISubscriptionService {
 
     @Override
     @Transactional
+    @PreAuthorize("hasRole('ADMIN')")
     public SubscriptionResponse createSubscription(SubscriptionRequest request) {
         Subscription subscription = subscriptionMapper.toEntity(request);
 
@@ -108,6 +113,7 @@ public class SubscriptionServiceImpl implements ISubscriptionService {
 
     @Override
     @Transactional
+    @PreAuthorize("hasRole('ADMIN')")
     public SubscriptionResponse updateSubscription(String id, SubscriptionRequest request) {
         Subscription subscription = subscriptionRepository.findByIdAndIsDeletedFalse(id)
                 .orElseThrow(() -> new AppException(ErrorCode.SUBSCRIPTION_NOT_FOUND));
@@ -119,6 +125,7 @@ public class SubscriptionServiceImpl implements ISubscriptionService {
 
     @Override
     @Transactional
+    @PreAuthorize("hasRole('ADMIN')")
     public void deleteSubscription(String id) {
         Subscription subscription = subscriptionRepository.findByIdAndIsDeletedFalse(id)
                 .orElseThrow(() -> new AppException(ErrorCode.SUBSCRIPTION_NOT_FOUND));

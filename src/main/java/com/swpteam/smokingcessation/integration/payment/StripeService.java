@@ -1,4 +1,4 @@
-package com.swpteam.smokingcessation.integration.payment.services;
+package com.swpteam.smokingcessation.integration.payment;
 
 import com.stripe.exception.StripeException;
 import com.stripe.model.Event;
@@ -14,8 +14,8 @@ import com.swpteam.smokingcessation.repository.MembershipRepository;
 import com.swpteam.smokingcessation.domain.entity.Subscription;
 import com.swpteam.smokingcessation.service.impl.membership.SubscriptionServiceImpl;
 import com.swpteam.smokingcessation.domain.entity.Transaction;
-import com.swpteam.smokingcessation.integration.payment.dto.StripeResponse;
-import com.swpteam.smokingcessation.integration.payment.dto.StripeSubscriptionRequest;
+import com.swpteam.smokingcessation.domain.dto.payment.StripeResponse;
+import com.swpteam.smokingcessation.domain.dto.payment.StripeSubscriptionRequest;
 import com.swpteam.smokingcessation.constant.ErrorCode;
 import com.swpteam.smokingcessation.exception.AppException;
 import com.swpteam.smokingcessation.service.impl.membership.TransactionServiceImpl;

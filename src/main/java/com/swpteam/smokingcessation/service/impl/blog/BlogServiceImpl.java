@@ -13,7 +13,6 @@ import com.swpteam.smokingcessation.domain.mapper.BlogMapper;
 import com.swpteam.smokingcessation.exception.AppException;
 import com.swpteam.smokingcessation.repository.BlogRepository;
 import com.swpteam.smokingcessation.repository.CategoryRepository;
-import com.swpteam.smokingcessation.repository.CommentRepository;
 import com.swpteam.smokingcessation.service.interfaces.blog.IBlogService;
 import com.swpteam.smokingcessation.utils.AccountUtilService;
 import com.swpteam.smokingcessation.utils.AuthorizationUtilService;

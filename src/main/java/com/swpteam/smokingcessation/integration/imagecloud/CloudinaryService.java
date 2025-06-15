@@ -21,10 +21,11 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public class CloudinaryService {
+public class CloudinaryService implements ICloudinaryService {
 
     Cloudinary cloudinary;
 
+    @Override
     public String uploadImage(MultipartFile file) throws IOException {
         assert file.getOriginalFilename() != null;
 
@@ -62,11 +63,13 @@ public class CloudinaryService {
         }
     }
 
-    public String generatePublicValue(String originalName){
+    @Override
+    public String generatePublicValue(String originalName) {
         String fileName = getFileName(originalName)[0];
         return StringUtils.join(UUID.randomUUID().toString(), "_", fileName);
     }
 
+    @Override
     public String[] getFileName(String originalName) {
         return originalName.split("\\.");
     }

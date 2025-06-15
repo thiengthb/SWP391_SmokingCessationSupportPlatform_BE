@@ -1,4 +1,4 @@
-package com.swpteam.smokingcessation.integration.imagecloud;
+package com.swpteam.smokingcessation.config;
 
 import com.cloudinary.Cloudinary;
 import lombok.AccessLevel;
