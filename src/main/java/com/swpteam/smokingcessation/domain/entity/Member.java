@@ -1,5 +1,6 @@
 package com.swpteam.smokingcessation.domain.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.swpteam.smokingcessation.domain.enums.MemberGender;
 import com.swpteam.smokingcessation.common.BaseEntity;
 import jakarta.persistence.*;

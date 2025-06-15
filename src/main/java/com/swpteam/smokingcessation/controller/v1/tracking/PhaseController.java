@@ -1,6 +1,5 @@
 package com.swpteam.smokingcessation.controller.v1.tracking;
 
-import com.swpteam.smokingcessation.service.impl.tracking.IPhaseServiceImpl;
 import com.swpteam.smokingcessation.domain.dto.phase.PhaseRequest;
 import com.swpteam.smokingcessation.domain.dto.phase.PhaseResponse;
 import com.swpteam.smokingcessation.common.ApiResponse;
@@ -24,6 +23,7 @@ import org.springframework.web.bind.annotation.*;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @Tag(name = "Phase", description = "Manage phase-related operations")
 public class PhaseController {
+
     IPhaseService phaseService;
 
     @GetMapping

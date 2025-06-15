@@ -1,3 +1,5 @@
+package com.swpteam.smokingcessation.repository;
+
 import com.swpteam.smokingcessation.domain.entity.Comment;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

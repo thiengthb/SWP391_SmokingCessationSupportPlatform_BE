@@ -23,7 +23,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 @RequiredArgsConstructor
-public class IPhaseServiceImpl implements IPhaseService {
+public class PhaseServiceImpl implements IPhaseService {
+
     PhaseRepository phaseRepository;
     PhaseMapper phaseMapper;
     PlanRepository planRepository;

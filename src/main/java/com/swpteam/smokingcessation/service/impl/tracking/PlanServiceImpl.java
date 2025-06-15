@@ -119,7 +119,7 @@ public class PlanServiceImpl implements IPlanService {
 
             PhaseResponse response = PhaseResponse.builder()
                     .phase(phase.getPhase())
-                    .cigaretteBound(Integer.parseInt(phase.getCigarettesPerDay())) // Convert từ String sang Integer
+                    .cigaretteBound(Integer.parseInt(phase.getCigaretteBound())) // Convert từ String sang Integer
                     .startDate(currentPhaseStartDate)
                     .endDate(phaseEndDate)
                     .build();
