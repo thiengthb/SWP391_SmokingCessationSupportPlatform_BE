@@ -23,6 +23,7 @@ public class NotificationController {
     public void sendNotification(@Valid @Payload NotificationRequest request) {
         notificationService.sendNotification(request);
     }
+
     // /app/mark-as-read
     @MessageMapping("/notifications/mark-as-read")
     public void markAsRead(@Valid @Payload MarkAsReadRequest request) {

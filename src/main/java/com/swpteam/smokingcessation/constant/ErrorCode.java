@@ -37,9 +37,6 @@ public enum ErrorCode {
     PAGE_SIZE_MAX(1011, "Page size can not pass 100", HttpStatus.BAD_REQUEST),
     INVALID_SORT_FIELD(1013, "Invalid sort field", HttpStatus.BAD_REQUEST),
     INVALID_RESET_TOKEN(1012, "Reset token is invalid", HttpStatus.BAD_REQUEST),
-    NOTIFICATION_CONTENT_REQUIRED(1014, "Content for notification is required", HttpStatus.BAD_REQUEST),
-    NOTIFICATION_ID_REQUIRED(1015, "Notification ID is required to mark as read", HttpStatus.BAD_REQUEST),
-    NOTIFICATION_NOT_FOUND(1016, "Notification not found", HttpStatus.BAD_REQUEST),
     ACCOUNT_ROLE_REQUIRED(1014, "Account role field is required", HttpStatus.BAD_REQUEST),
 
     // Authentication
@@ -213,8 +210,14 @@ public enum ErrorCode {
     // Chat
     CHAT_MESSAGE_REQUIRED(1100, "Chat message is required", HttpStatus.BAD_REQUEST),
     CHAT_SIZE_EXCEED(1101, "Chat message needs to be under {max} characters", HttpStatus.BAD_REQUEST),
-    OTHERS_CHAT_CANT_DELETE(1102, "Other's chat message cannot be edited", HttpStatus.BAD_REQUEST),
+    OTHERS_CHAT_CANT_DELETE(1102, "Other's chat message cannot be deleted", HttpStatus.BAD_REQUEST),
     CHAT_NOT_FOUND(1103, "Chat does not exist or have been deleted", HttpStatus.BAD_REQUEST),
+
+    // Notification
+    OTHERS_NOTIFICATION_CANT_DELETE(2100, "Other's notifications cannot be deleted", HttpStatus.BAD_REQUEST),
+    NOTIFICATION_CONTENT_REQUIRED(2101, "Content for notification is required", HttpStatus.BAD_REQUEST),
+    NOTIFICATION_ID_REQUIRED(2102, "Notification ID is required to mark as read", HttpStatus.BAD_REQUEST),
+    NOTIFICATION_NOT_FOUND(2103, "Notification does not exist or have been deleted", HttpStatus.BAD_REQUEST),
     ;
     int code;
     String message;
