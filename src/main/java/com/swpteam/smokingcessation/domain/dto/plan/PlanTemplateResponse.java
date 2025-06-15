@@ -5,6 +5,6 @@ import java.util.List;
 
 @Data
 public class PlanTemplateResponse {
-    private String level;
+    private int level;
     private List<PhaseTemplateResponse> plan;
 }
