@@ -15,4 +15,7 @@ public interface IPlanService {
     PlanResponse updatePlanById(String id, PlanRequest request);
 
     void softDeletePlanById(String id);
-}
+
+    PlanResponse getPlanByFtndScore(int ftndScore);
+
+    }

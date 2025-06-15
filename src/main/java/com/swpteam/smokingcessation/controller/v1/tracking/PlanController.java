@@ -1,6 +1,6 @@
 package com.swpteam.smokingcessation.controller.v1.tracking;
 
-import com.swpteam.smokingcessation.service.impl.tracking.IPlanServiceImpl;
+import com.swpteam.smokingcessation.service.impl.tracking.PlanServiceImpl;
 import com.swpteam.smokingcessation.domain.dto.plan.PlanRequest;
 import com.swpteam.smokingcessation.domain.dto.plan.PlanResponse;
 import com.swpteam.smokingcessation.common.ApiResponse;
@@ -15,13 +15,15 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @Slf4j
 @RestController
 @RequestMapping("/api/plans")
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class PlanController {
-    IPlanServiceImpl planServiceImpl;
+    PlanServiceImpl planServiceImpl;
 
     @GetMapping
     ResponseEntity<ApiResponse<Page<PlanResponse>>> getPlanPage(@Valid PageableRequest request) {
@@ -42,6 +44,19 @@ public class PlanController {
                         .code(SuccessCode.PLAN_GET_BY_ID.getCode())
                         .message(SuccessCode.PLAN_GET_BY_ID.getMessage())
                         .result(response)
+                        .build()
+        );
+    }
+
+    //template
+    @GetMapping("/template")
+    //template
+    public ResponseEntity<ApiResponse<PlanResponse>> getPlanTemplate(@RequestParam int ftndScore) {
+        return ResponseEntity.ok(
+                ApiResponse.<PlanResponse>builder()
+                        .code(SuccessCode.PLAN_TEMPLATE_GET.getCode())
+                        .message(SuccessCode.PLAN_TEMPLATE_GET.getMessage())
+                        .result(planServiceImpl.getPlanByFtndScore(ftndScore))
                         .build()
         );
     }

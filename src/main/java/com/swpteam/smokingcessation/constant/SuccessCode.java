@@ -53,6 +53,7 @@ public enum SuccessCode {
     PLAN_DELETED(5002,"Plan has been deleted"),
     PLAN_GET_BY_ID(5003,"Success returning a plan with given id"),
     PLAN_GET_ALL(5004,"Success return a page with plan"),
+    PLAN_TEMPLATE_GET(4324,"Success return plan template"),
 
     // Phase
     PHASE_CREATED(5000,"Phase has been created"),

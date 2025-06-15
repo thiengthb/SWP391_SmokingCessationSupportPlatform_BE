@@ -18,7 +18,8 @@ import java.util.List;
 public class Coach extends BaseEntity {
 
     @OneToOne
-    @JoinColumn(name = "account_id")
+    @MapsId
+    @JoinColumn(name = "accountId")
     Account account;
 
     String fullName;

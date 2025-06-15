@@ -21,7 +21,7 @@ import java.util.List;
 public class Plan extends BaseEntity {
 
     @ManyToOne()
-    @JoinColumn(name = "account_id", nullable = false, updatable = false)
+    @JoinColumn(name = "accountId", nullable = false, updatable = false)
     Account account;
 
     String planName;

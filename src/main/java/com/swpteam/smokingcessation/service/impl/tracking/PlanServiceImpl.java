@@ -1,5 +1,8 @@
 package com.swpteam.smokingcessation.service.impl.tracking;
 
+import com.swpteam.smokingcessation.domain.dto.phase.PhaseResponse;
+import com.swpteam.smokingcessation.domain.dto.plan.PhaseTemplateResponse;
+import com.swpteam.smokingcessation.domain.dto.plan.PlanTemplateResponse;
 import com.swpteam.smokingcessation.domain.entity.Account;
 import com.swpteam.smokingcessation.domain.mapper.PlanMapper;
 import com.swpteam.smokingcessation.domain.dto.plan.PlanRequest;
@@ -11,22 +14,31 @@ import com.swpteam.smokingcessation.exception.AppException;
 import com.swpteam.smokingcessation.repository.AccountRepository;
 import com.swpteam.smokingcessation.repository.PlanRepository;
 import com.swpteam.smokingcessation.service.interfaces.tracking.IPlanService;
+import com.swpteam.smokingcessation.utils.FileLoaderUtil;
 import com.swpteam.smokingcessation.utils.ValidationUtil;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
+@Slf4j
 @Service
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 @RequiredArgsConstructor
-public class IPlanServiceImpl implements IPlanService {
+public class PlanServiceImpl implements IPlanService {
     PlanRepository planRepository;
     PlanMapper planMapper;
     AccountRepository accountRepository;
+    FileLoaderUtil fileLoaderUtil;
 
     @Override
     public Page<PlanResponse> getPlanPage(PageableRequest request) {
@@ -80,5 +92,59 @@ public class IPlanServiceImpl implements IPlanService {
         plan.setDeleted(true);
 
         planRepository.save(plan);
+    }
+
+    @Override
+    public PlanResponse getPlanByFtndScore(int ftndScore) {
+        if (ftndScore < 0 || ftndScore > 10) {
+            log.error("Invalid FTND score: {}", ftndScore);
+            throw new AppException(ErrorCode.INVALID_FTND_SCORE);
+        }
+
+        int level = mapFtndScoreToLevel(ftndScore);
+        List<PlanTemplateResponse> templates = fileLoaderUtil.loadPlanTemplate("quitplan/template-plan.json");
+
+        PlanTemplateResponse selectedPlan = templates.stream()
+                .filter(t -> t.getLevel().equals(String.valueOf(level)))
+                .findFirst()
+                .orElseThrow(() -> new AppException(ErrorCode.PLAN_NOT_FOUND));
+
+        // Bắt đầu ngày kế hoạch từ hôm nay
+        LocalDate planStartDate = LocalDate.now();
+        LocalDate currentPhaseStartDate = planStartDate;
+        List<PhaseResponse> phases = new ArrayList<>();
+
+        for (PhaseTemplateResponse phase : selectedPlan.getPlan()) {
+            LocalDate phaseEndDate = currentPhaseStartDate.plusDays(6); // mỗi phase kéo dài 7 ngày
+
+            PhaseResponse response = PhaseResponse.builder()
+                    .phase(phase.getPhase())
+                    .cigaretteBound(Integer.parseInt(phase.getCigarettesPerDay())) // Convert từ String sang Integer
+                    .startDate(currentPhaseStartDate)
+                    .endDate(phaseEndDate)
+                    .build();
+            phases.add(response);
+            currentPhaseStartDate = phaseEndDate.plusDays(1); // Phase sau bắt đầu sau đó 1 ngày
+        }
+
+        LocalDate planEndDate = phases.get(phases.size() - 1).getEndDate();
+
+        return PlanResponse.builder()
+                .planName("Default plan for level " + selectedPlan.getLevel())
+                .description("This plan is generated based on your FTND score")
+                .startDate(planStartDate)
+                .endDate(planEndDate)
+                .phases(phases)
+                .build();
+    }
+
+
+        //convert điểm ftnd sang level nghiện thuốc
+    private int mapFtndScoreToLevel(int ftnd) {
+        if (ftnd < 3) return 1;
+        else if (ftnd <= 4) return 2;
+        else if (ftnd <= 5) return 3;
+        else if (ftnd <= 7) return 4;
+        else return 5;
     }
 }
