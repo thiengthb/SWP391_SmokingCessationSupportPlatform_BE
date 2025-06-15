@@ -59,6 +59,9 @@ public class Account extends BaseEntity {
     @OneToMany(mappedBy = "account")
     List<Booking> bookings;
 
+    @OneToMany(mappedBy = "account")
+    List<Notification> notifications;
+
     public boolean isHavingSubscription() {
         return subscriptions != null &&
                 subscriptions.stream().anyMatch(Subscription::isActive);
