@@ -37,6 +37,9 @@ public enum ErrorCode {
     PAGE_SIZE_MAX(1011, "Page size can not pass 100", HttpStatus.BAD_REQUEST),
     INVALID_SORT_FIELD(1013, "Invalid sort field", HttpStatus.BAD_REQUEST),
     INVALID_RESET_TOKEN(1012, "Reset token is invalid", HttpStatus.BAD_REQUEST),
+    NOTIFICATION_CONTENT_REQUIRED(1014, "Content for notification is required", HttpStatus.BAD_REQUEST),
+    NOTIFICATION_ID_REQUIRED(1015, "Notification ID is required to mark as read", HttpStatus.BAD_REQUEST),
+    NOTIFICATION_NOT_FOUND(1016, "Notification not found", HttpStatus.BAD_REQUEST),
 
     // Authentication
     UNAUTHENTICATED(2000, "Unauthenticated", HttpStatus.UNAUTHORIZED),

@@ -16,7 +16,6 @@ import com.swpteam.smokingcessation.domain.dto.auth.response.AuthenticationRespo
 import com.swpteam.smokingcessation.domain.dto.auth.response.GoogleTokenResponse;
 import com.swpteam.smokingcessation.domain.dto.auth.response.IntrospectResponse;
 import com.swpteam.smokingcessation.integration.mail.MailServiceImpl;
-import com.swpteam.smokingcessation.domain.entity.Member;
 import com.swpteam.smokingcessation.repository.InvalidatedTokenRepository;
 import com.swpteam.smokingcessation.repository.MemberRepository;
 import com.swpteam.smokingcessation.domain.entity.Setting;
@@ -230,7 +229,7 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
         Account account = accountMapper.toEntityFromRegister(request);
 
         account.setRole(Role.MEMBER);
-        account.setStatus(AccountStatus.ACTIVE);
+        account.setStatus(AccountStatus.ONLINE);
 
         PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
         account.setPassword(passwordEncoder.encode(request.getPassword()));
