@@ -11,25 +11,22 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Controller;
-import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/notifications")
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-@Validated
 public class NotificationController {
     NotificationServiceImpl notificationService;
 
-    // /app/notify
-    @MessageMapping("/notify")
+    // /topic/notify
+    @MessageMapping("/notifications/send")
     public void sendNotification(@Valid @Payload NotificationRequest request) {
         notificationService.sendNotification(request);
     }
 
-    @MessageMapping("/mark-as-read")
-    public void markAsRead(@Valid @Payload MarkAsReadRequest request){
+    // /app/mark-as-read
+    @MessageMapping("/notifications/mark-as-read")
+    public void markAsRead(@Valid @Payload MarkAsReadRequest request) {
         notificationService.markAsRead(request);
     }
 }

@@ -37,9 +37,7 @@ public enum ErrorCode {
     PAGE_SIZE_MAX(1011, "Page size can not pass 100", HttpStatus.BAD_REQUEST),
     INVALID_SORT_FIELD(1013, "Invalid sort field", HttpStatus.BAD_REQUEST),
     INVALID_RESET_TOKEN(1012, "Reset token is invalid", HttpStatus.BAD_REQUEST),
-    NOTIFICATION_CONTENT_REQUIRED(1014, "Content for notification is required", HttpStatus.BAD_REQUEST),
-    NOTIFICATION_ID_REQUIRED(1015, "Notification ID is required to mark as read", HttpStatus.BAD_REQUEST),
-    NOTIFICATION_NOT_FOUND(1016, "Notification not found", HttpStatus.BAD_REQUEST),
+    ACCOUNT_ROLE_REQUIRED(1014, "Account role field is required", HttpStatus.BAD_REQUEST),
 
     // Authentication
     UNAUTHENTICATED(2000, "Unauthenticated", HttpStatus.UNAUTHORIZED),
@@ -128,34 +126,34 @@ public enum ErrorCode {
     TRANSACTION_NOT_FOUND(4000, "Transaction does not exist or have been deleted", HttpStatus.NOT_FOUND),
 
     // Plan
-    PLAN_NOT_FOUND(9000,"Plan does not exist",HttpStatus.BAD_REQUEST),
+    PLAN_NOT_FOUND(9000, "Plan does not exist", HttpStatus.BAD_REQUEST),
     PLAN_START_DATE_MUST_BE_TODAY_OR_FUTURE(9001, "Start date must be today or in the future", HttpStatus.BAD_REQUEST),
     PLAN_END_DATE_MUST_BE_IN_FUTURE(9002, "End date must in the future", HttpStatus.BAD_REQUEST),
-    PLAN_START_DATE_REQUIRED(1013,"start date required",HttpStatus.BAD_REQUEST),
-    PLAN_END_DATE_REQUIRED(1014,"end date required",HttpStatus.BAD_REQUEST),
-    PLAN_STATUS_REQUIRED(1015,"Plan status is required",HttpStatus.BAD_REQUEST),
-    ACCOUNT_ID_REQUIRED(2133,"Account id is required",HttpStatus.BAD_REQUEST),
-    PLAN_NAME_REQUIRED(2143,"Plan name is required",HttpStatus.BAD_REQUEST),
-    PLAN_NAME_TOO_LONG(2153,"Plan name is too long",HttpStatus.BAD_REQUEST),
-    PLAN_DESCRIPTION_REQUIRED(2133,"Plan description is required",HttpStatus.BAD_REQUEST),
-    PLAN_DESCRIPTION_TOO_LONG(2173,"Plan description is too long",HttpStatus.BAD_REQUEST),
-    SUCCESS_RATE_REQUIRED(2183,"Success rate is required",HttpStatus.BAD_REQUEST),
-    SUCCESS_LEVEL_INVALID_MIN(2183,"Success min is invalid",HttpStatus.BAD_REQUEST),
-    SUCCESS_LEVEL_INVALID_MAX(2183,"Success max is invalid",HttpStatus.BAD_REQUEST),
-    PLAN_ID_REQUIRED(2312,"PlanId is required",HttpStatus.BAD_REQUEST),
-    INVALID_FTND_SCORE(2332,"ftnd score must greater than 0 and less than 10",HttpStatus.BAD_REQUEST),
+    PLAN_START_DATE_REQUIRED(1013, "start date required", HttpStatus.BAD_REQUEST),
+    PLAN_END_DATE_REQUIRED(1014, "end date required", HttpStatus.BAD_REQUEST),
+    PLAN_STATUS_REQUIRED(1015, "Plan status is required", HttpStatus.BAD_REQUEST),
+    ACCOUNT_ID_REQUIRED(2133, "Account id is required", HttpStatus.BAD_REQUEST),
+    PLAN_NAME_REQUIRED(2143, "Plan name is required", HttpStatus.BAD_REQUEST),
+    PLAN_NAME_TOO_LONG(2153, "Plan name is too long", HttpStatus.BAD_REQUEST),
+    PLAN_DESCRIPTION_REQUIRED(2133, "Plan description is required", HttpStatus.BAD_REQUEST),
+    PLAN_DESCRIPTION_TOO_LONG(2173, "Plan description is too long", HttpStatus.BAD_REQUEST),
+    SUCCESS_RATE_REQUIRED(2183, "Success rate is required", HttpStatus.BAD_REQUEST),
+    SUCCESS_LEVEL_INVALID_MIN(2183, "Success min is invalid", HttpStatus.BAD_REQUEST),
+    SUCCESS_LEVEL_INVALID_MAX(2183, "Success max is invalid", HttpStatus.BAD_REQUEST),
+    PLAN_ID_REQUIRED(2312, "PlanId is required", HttpStatus.BAD_REQUEST),
+    INVALID_FTND_SCORE(2332, "ftnd score must greater than 0 and less than 10", HttpStatus.BAD_REQUEST),
+
 
     // Phase
-    PHASE_START_DATE_REQUIRED(1023,"start date required",HttpStatus.BAD_REQUEST),
-    PHASE_END_DATE_REQUIRED(1024,"end date required",HttpStatus.BAD_REQUEST),
-    PHASE_NOT_FOUND(1020,"Phase does not exist",HttpStatus.BAD_REQUEST),
+    PHASE_START_DATE_REQUIRED(1023, "start date required", HttpStatus.BAD_REQUEST),
+    PHASE_END_DATE_REQUIRED(1024, "end date required", HttpStatus.BAD_REQUEST),
+    PHASE_NOT_FOUND(1020, "Phase does not exist", HttpStatus.BAD_REQUEST),
     PHASE_START_DATE_MUST_BE_TODAY_OR_FUTURE(1021, "Start date must be today or in the future", HttpStatus.BAD_REQUEST),
     PHASE_END_DATE_MUST_BE_IN_FUTURE(1022, "End date must be in the future", HttpStatus.BAD_REQUEST),
-    PHASE_STATUS_REQUIRED(1025,"Phase status is required",HttpStatus.BAD_REQUEST),
-    PHASE_DESCRIPTION_REQUIRED(1111,"Phase description is required",HttpStatus.BAD_REQUEST),
-    PHASE_DESCRIPTION_TOO_LONG(1111,"Phase description is too long",HttpStatus.BAD_REQUEST),
-    PHASE_NAME_TOO_LONG(1111,"Phase name is too long",HttpStatus.BAD_REQUEST),
-    PHASE_CIGARETTE_BOUND_REQUIRED(1323,"Phase bound is required",HttpStatus.BAD_REQUEST),
+    PHASE_STATUS_REQUIRED(1025, "Phase status is required", HttpStatus.BAD_REQUEST),
+    PHASE_DESCRIPTION_REQUIRED(1111, "Phase description is required", HttpStatus.BAD_REQUEST),
+    PHASE_DESCRIPTION_TOO_LONG(1111, "Phase description is too long", HttpStatus.BAD_REQUEST),
+    PHASE_CIGARETTE_BOUND_REQUIRED(1323, "Phase bound is required", HttpStatus.BAD_REQUEST),
     CIGARETTE_NEGATIVE(4005, "Cigarette bound must be a positive number", HttpStatus.BAD_REQUEST),
 
     // Chatbot
@@ -164,11 +162,11 @@ public enum ErrorCode {
     OUT_OF_LIMIT(4000, "Out of limit of today", HttpStatus.TOO_MANY_REQUESTS),
 
     // Coach
-    COACH_NOT_FOUND(1040,"Coach not found",HttpStatus.BAD_REQUEST),
-    COACH_BIO_TOO_LONG(1030,"Coach bio too long", HttpStatus.BAD_REQUEST),
-    COACH_SOCIAL_LINK_REQUIRED(1221,"Coach social link required",HttpStatus.BAD_REQUEST),
-    COACH_SPECIALIZATION_REQUIRED(1232,"Coach specialization required",HttpStatus.BAD_REQUEST),
-    COACH_CERTIFICATES_REQUIRED(2212,"Coach certificate required",HttpStatus.BAD_REQUEST),
+    COACH_NOT_FOUND(1040, "Coach not found", HttpStatus.BAD_REQUEST),
+    COACH_BIO_TOO_LONG(1030, "Coach bio too long", HttpStatus.BAD_REQUEST),
+    COACH_SOCIAL_LINK_REQUIRED(1221, "Coach social link required", HttpStatus.BAD_REQUEST),
+    COACH_SPECIALIZATION_REQUIRED(1232, "Coach specialization required", HttpStatus.BAD_REQUEST),
+    COACH_CERTIFICATES_REQUIRED(2212, "Coach certificate required", HttpStatus.BAD_REQUEST),
 
     // Booking
     BOOKING_NOT_FOUND(1000, "Booking not found", HttpStatus.BAD_REQUEST),
@@ -209,6 +207,17 @@ public enum ErrorCode {
     BLOG_NOT_FOUND(4000, "Blog does not exist or have been deleted", HttpStatus.BAD_REQUEST),
 
 
+    // Chat
+    CHAT_MESSAGE_REQUIRED(1100, "Chat message is required", HttpStatus.BAD_REQUEST),
+    CHAT_SIZE_EXCEED(1101, "Chat message needs to be under {max} characters", HttpStatus.BAD_REQUEST),
+    OTHERS_CHAT_CANT_DELETE(1102, "Other's chat message cannot be deleted", HttpStatus.BAD_REQUEST),
+    CHAT_NOT_FOUND(1103, "Chat does not exist or have been deleted", HttpStatus.BAD_REQUEST),
+
+    // Notification
+    OTHERS_NOTIFICATION_CANT_DELETE(2100, "Other's notifications cannot be deleted", HttpStatus.BAD_REQUEST),
+    NOTIFICATION_CONTENT_REQUIRED(2101, "Content for notification is required", HttpStatus.BAD_REQUEST),
+    NOTIFICATION_ID_REQUIRED(2102, "Notification ID is required to mark as read", HttpStatus.BAD_REQUEST),
+    NOTIFICATION_NOT_FOUND(2103, "Notification does not exist or have been deleted", HttpStatus.BAD_REQUEST),
     ;
     int code;
     String message;

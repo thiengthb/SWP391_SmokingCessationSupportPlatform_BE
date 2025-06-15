@@ -48,19 +48,19 @@ public enum SuccessCode {
     MESSAGE_GET_BY_ID(2003, "Success returning a membership with given id"),
 
     // Plan
-    PLAN_CREATED(5000,"Plan has been created"),
-    PLAN_UPDATED(5001,"Plan has been updated"),
-    PLAN_DELETED(5002,"Plan has been deleted"),
-    PLAN_GET_BY_ID(5003,"Success returning a plan with given id"),
-    PLAN_GET_ALL(5004,"Success return a page with plan"),
-    PLAN_TEMPLATE_GET(4324,"Success return plan template"),
+    PLAN_CREATED(5000, "Plan has been created"),
+    PLAN_UPDATED(5001, "Plan has been updated"),
+    PLAN_DELETED(5002, "Plan has been deleted"),
+    PLAN_GET_BY_ID(5003, "Success returning a plan with given id"),
+    PLAN_GET_ALL(5004, "Success return a page with plan"),
+    PLAN_TEMPLATE_GET(4324, "Success return plan template"),
 
     // Phase
-    PHASE_CREATED(5000,"Phase has been created"),
-    PHASE_UPDATED(5001,"Phase has been updated"),
-    PHASE_DELETED(5002,"Phase has been deleted"),
-    PHASE_GET_BY_ID(5003,"Success returning a phase with given id"),
-    PHASE_GET_ALL(5004,"Success return a page with phase"),
+    PHASE_CREATED(5000, "Phase has been created"),
+    PHASE_UPDATED(5001, "Phase has been updated"),
+    PHASE_DELETED(5002, "Phase has been deleted"),
+    PHASE_GET_BY_ID(5003, "Success returning a phase with given id"),
+    PHASE_GET_ALL(5004, "Success return a page with phase"),
 
     // Account
     ACCOUNT_CREATED(3000, "Account has been created"),
@@ -80,11 +80,11 @@ public enum SuccessCode {
     LOGOUT_SUCCESS(4005, "Logged out successfully"),
 
     // Coach
-    COACH_CREATED(5000,"Coach has been created"),
-    COACH_UPDATED(5001,"Coach has been updated"),
-    COACH_DELETED(5002,"Coach has been deleted"),
-    COACH_GET_BY_ID(5003,"Success returning a coach with given id"),
-    COACH_GET_ALL(5004,"Success return a page with coach"),
+    COACH_CREATED(5000, "Coach has been created"),
+    COACH_UPDATED(5001, "Coach has been updated"),
+    COACH_DELETED(5002, "Coach has been deleted"),
+    COACH_GET_BY_ID(5003, "Success returning a coach with given id"),
+    COACH_GET_ALL(5004, "Success return a page with coach"),
 
     // Member
     MEMBER_CREATED(3000, "Member has been created"),
@@ -132,6 +132,16 @@ public enum SuccessCode {
     COMMENT_UPDATED(2013, "Comment updated successfully"),
     COMMENT_DELETED(2014, "Comment deleted successfully"),
 
+    // Chat
+    CHAT_GET_ALL(1101, "Successfully retrieved all chats"),
+    CHAT_GET_BY_ID(1102, "Successfully retrieved all chats by ID"),
+    CHAT_DELETED(1103, "Successfully deleted chat"),
+
+    // Notification
+    NOTIFICATION_GET_ALL(1101, "Successfully retrieved all notifications"),
+    NOTIFICATION_GET_BY_ID(1102, "Successfully retrieved all notifications by ID"),
+    NOTIFICATION_DELETED(1103, "Successfully deleted notification"),
+    ALL_NOTIFICATION_DELETED(1103, "Successfully deleted all notifications associated with the account ID"),
 
     ;
     int code;
