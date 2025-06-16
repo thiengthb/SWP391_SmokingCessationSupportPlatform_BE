@@ -3,17 +3,9 @@ package com.swpteam.smokingcessation.service.interfaces.profile;
 import com.swpteam.smokingcessation.domain.dto.setting.SettingResponse;
 import com.swpteam.smokingcessation.domain.dto.setting.SettingRequest;
 
-import java.util.List;
-
 public interface ISettingService {
 
-    SettingResponse createSetting(SettingRequest request);
+    SettingResponse getSetting(String accountId);
 
     SettingResponse updateSetting(String accountId, SettingRequest request);
-
-    void deleteSetting(String accountId);
-
-    List<SettingResponse> getSettingList();
-
-    SettingResponse getSetting(String accountId);
 }

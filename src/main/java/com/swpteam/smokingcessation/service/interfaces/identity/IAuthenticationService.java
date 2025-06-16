@@ -17,7 +17,7 @@ public interface IAuthenticationService {
 
     AuthenticationResponse refreshToken(String token) throws ParseException, JOSEException;
 
-    AccountResponse register(RegisterRequest request);
+    AuthenticationResponse register(RegisterRequest request);
 
     IntrospectResponse introspect(TokenRequest request) throws JOSEException, ParseException;
 

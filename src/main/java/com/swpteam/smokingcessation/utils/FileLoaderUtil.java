@@ -6,6 +6,7 @@ import com.swpteam.smokingcessation.domain.dto.plan.PhaseTemplateResponse;
 import com.swpteam.smokingcessation.domain.dto.plan.PlanTemplateResponse;
 import com.swpteam.smokingcessation.domain.dto.plan.PlanTemplateWrapper;
 import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.ClassPathResource;
@@ -19,14 +20,11 @@ import java.util.Map;
 
 @Slf4j
 @Component
+@RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class FileLoaderUtil {
 
     ObjectMapper objectMapper;
-
-    public FileLoaderUtil(ObjectMapper objectMapper) {
-        this.objectMapper = objectMapper;
-    }
 
     // Load raw file content as String
     public String loadFileAsString(String path) {

@@ -1,6 +1,6 @@
 package com.swpteam.smokingcessation.config;
 
-import com.swpteam.smokingcessation.constant.AppInit;
+import com.swpteam.smokingcessation.constant.App;
 import com.swpteam.smokingcessation.domain.entity.Account;
 import com.swpteam.smokingcessation.domain.entity.Category;
 import com.swpteam.smokingcessation.repository.AccountRepository;
@@ -53,15 +53,15 @@ public class ApplicationInitConfig {
                 makeDefaultAccount(adminEmail, defaultPassword, Role.ADMIN);
             }
 
-            if (accountRepository.findByEmail(AppInit.TEST_MEMBER_EMAIL).isEmpty()) {
-                makeDefaultAccount(AppInit.TEST_MEMBER_EMAIL, AppInit.TEST_MEMBER_PASS, Role.MEMBER);
+            if (accountRepository.findByEmail(App.INIT_TEST_MEMBER_EMAIL).isEmpty()) {
+                makeDefaultAccount(App.INIT_TEST_MEMBER_EMAIL, App.INIT_TEST_MEMBER_PASS, Role.MEMBER);
             }
 
-            if (accountRepository.findByEmail(AppInit.TEST_COACH_EMAIL).isEmpty()) {
-                makeDefaultAccount(AppInit.TEST_COACH_EMAIL, AppInit.TEST_COACH_PASS, Role.COACH);
+            if (accountRepository.findByEmail(App.INIT_TEST_COACH_EMAIL).isEmpty()) {
+                makeDefaultAccount(App.INIT_TEST_COACH_EMAIL, App.INIT_TEST_COACH_PASS, Role.COACH);
             }
 
-            if (categoryRepository.findByName(AppInit.DEFAULT_CATEGORY).isEmpty()) {
+            if (categoryRepository.findByName(App.DEFAULT_CATEGORY).isEmpty()) {
                 makeDefaultUncategorized();
             }
 
@@ -87,7 +87,7 @@ public class ApplicationInitConfig {
 
     private void makeDefaultUncategorized() {
         Category uncategorized = Category.builder()
-                .name(AppInit.DEFAULT_CATEGORY)
+                .name(App.DEFAULT_CATEGORY)
                 .build();
 
         categoryRepository.save(uncategorized);

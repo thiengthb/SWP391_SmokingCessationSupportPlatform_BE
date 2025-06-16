@@ -12,10 +12,10 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 @Slf4j
 @Service
@@ -27,39 +27,29 @@ public class SettingServiceImpl implements ISettingService {
     SettingMapper settingMapper;
 
     @Override
-    @Transactional
-    public SettingResponse createSetting(SettingRequest request) {
-        Setting setting = settingMapper.toEntity(request);
-
-        return settingMapper.toResponse(settingRepository.save(setting));
+    public SettingResponse getSetting(String accountId) {
+        return settingMapper.toResponse(findSettingById(accountId));
     }
-
+    
     @Override
     @Transactional
+    @CachePut(value = "SETTING_CACHE", key = "#result.getId()")
     public SettingResponse updateSetting(String accountId, SettingRequest request) {
-        Setting setting = settingRepository.findByAccountIdAndIsDeletedFalse(accountId)
-                .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FOUND));
+        Setting setting = findSettingById(accountId);
 
         settingMapper.update(setting, request);
 
         return settingMapper.toResponse(settingRepository.save(setting));
     }
 
-    @Override
-    @Transactional
-    public void deleteSetting(String accountId) {
-        settingRepository.deleteById(accountId);
-    }
+    @Cacheable(value = "SETTING_CACHE", key = "#id")
+    private Setting findSettingById(String accountId) {
+        Setting setting = settingRepository.findByIdAndIsDeletedFalse(accountId)
+                .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FOUND));
 
-    @Override
-    public List<SettingResponse> getSettingList() {
-        return settingRepository.findAll().stream().map(settingMapper::toResponse).toList();
-    }
-
-    @Override
-    public SettingResponse getSetting(String accountId) {
-        return settingMapper.toResponse(
-                settingRepository.findById(accountId)
-                        .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FOUND)));
+        if (setting.getAccount().isDeleted()) {
+            throw new AppException(ErrorCode.ACCOUNT_DELETED);
+        }
+        return setting;
     }
 }

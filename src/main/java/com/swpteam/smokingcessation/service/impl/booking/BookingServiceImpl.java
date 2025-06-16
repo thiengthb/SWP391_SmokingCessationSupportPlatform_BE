@@ -40,9 +40,7 @@ public class BookingServiceImpl implements IBookingService {
 
     @Override
     public Page<BookingResponse> getBookingPage(PageableRequest request) {
-        if (!ValidationUtil.isFieldExist(Booking.class, request.getSortBy())) {
-            throw new AppException(ErrorCode.INVALID_SORT_FIELD);
-        }
+        ValidationUtil.checkFieldExist(Booking.class, request.getSortBy());
 
         Pageable pageable = PageableRequest.getPageable(request);
         Page<Booking> bookings = bookingRepository.findAllByIsDeletedFalse(pageable);

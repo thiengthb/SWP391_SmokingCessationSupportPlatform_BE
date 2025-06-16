@@ -9,10 +9,13 @@ import com.swpteam.smokingcessation.domain.dto.auth.response.AuthenticationRespo
 import com.swpteam.smokingcessation.domain.dto.auth.response.GoogleTokenResponse;
 import com.swpteam.smokingcessation.service.interfaces.identity.IAuthenticationService;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
@@ -22,6 +25,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.text.ParseException;
+import java.time.Duration;
 
 
 @RestController
@@ -44,36 +48,74 @@ public class AuthenticationController {
     }
 
     @PostMapping("/login")
-    ResponseEntity<ApiResponse<AuthenticationResponse>> authenticate(@RequestBody @Valid AuthenticationRequest request) {
+    ResponseEntity<ApiResponse<AuthenticationResponse>> authenticate(@RequestBody @Valid AuthenticationRequest request, HttpServletResponse response) {
+        AuthenticationResponse authenticationResponse = authenticationService.authenticate(request);
+
+        ResponseCookie cookie = ResponseCookie.from("token", authenticationResponse.getAccessToken())
+                .httpOnly(true)
+                .secure(false) // set true in production (HTTPS)
+                .path("/")
+                .maxAge(Duration.ofDays(1))
+                .sameSite("Lax")
+                .build();
+
+        response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
+
+        AccountResponse accountResponse = authenticationResponse.getAccountResponse();
         return ResponseEntity.ok()
                 .body(ApiResponse.<AuthenticationResponse>builder()
                         .code(SuccessCode.LOGIN_SUCCESS.getCode())
                         .message(SuccessCode.LOGIN_SUCCESS.getMessage())
-                        .result(authenticationService.authenticate(request))
+                        .result(authenticationResponse)
                         .build());
     }
 
     @PostMapping("/refresh")
-    ResponseEntity<ApiResponse<AuthenticationResponse>> refreshToken(@AuthenticationPrincipal Jwt jwt) throws ParseException, JOSEException {
+    ResponseEntity<ApiResponse<AuthenticationResponse>> refreshToken(@AuthenticationPrincipal Jwt jwt, HttpServletResponse response) throws ParseException, JOSEException {
         String token = jwt.getTokenValue();
+        AuthenticationResponse authenticationResponse = authenticationService.refreshToken(token);
+
+        ResponseCookie cookie = ResponseCookie.from("token", authenticationResponse.getAccessToken())
+                .httpOnly(true)
+                .secure(false) // set true in production (HTTPS)
+                .path("/")
+                .maxAge(Duration.ofDays(1))
+                .sameSite("Lax")
+                .build();
+
+        response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
+
+        AccountResponse accountResponse = authenticationResponse.getAccountResponse();
         return ResponseEntity.ok()
                 .body(ApiResponse.<AuthenticationResponse>builder()
                         .code(SuccessCode.TOKEN_REFRESH_SUCCESS.getCode())
                         .message(SuccessCode.TOKEN_REFRESH_SUCCESS.getMessage())
-                        .result(authenticationService.refreshToken(token))
+                        .result(authenticationResponse)
                         .build());
     }
 
     @PostMapping("/register")
-    ResponseEntity<ApiResponse<AccountResponse>> register(@RequestBody @Valid RegisterRequest request) {
+    ResponseEntity<ApiResponse<AuthenticationResponse>> register(@RequestBody @Valid RegisterRequest request, HttpServletResponse response) {
+        AuthenticationResponse authenticationResponse = authenticationService.register(request);
+
+        ResponseCookie cookie = ResponseCookie.from("token", authenticationResponse.getAccessToken())
+                .httpOnly(true)
+                .secure(false) // set true in production (HTTPS)
+                .path("/")
+                .maxAge(Duration.ofDays(1))
+                .sameSite("Lax")
+                .build();
+
+        response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
+
+        AccountResponse accountResponse = authenticationResponse.getAccountResponse();
         return ResponseEntity.ok(
-                ApiResponse.<AccountResponse>builder()
+                ApiResponse.<AuthenticationResponse>builder()
                         .code(SuccessCode.REGISTER_SUCCESS.getCode())
                         .message(SuccessCode.REGISTER_SUCCESS.getMessage())
-                        .result(authenticationService.register(request))
+                        .result(authenticationResponse)
                         .build());
     }
-
 
     @PostMapping("/forgot-password")
     ResponseEntity<ApiResponse<String>> forgotPassword(@RequestBody @Valid ForgotPasswordRequest request) {
@@ -97,7 +139,6 @@ public class AuthenticationController {
                         .build());
     }
 
-    //front-end job
     @PostMapping("/logout")
     public ResponseEntity<ApiResponse<Void>> logout() throws JOSEException, ParseException {
         authenticationService.logout();

@@ -9,7 +9,7 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class RecordUpdateRequest {
+public class RecordHabitUpdateRequest {
 
     @Min(value = 0, message = "RECORD_CIGARETTES_SMOKED_INVALID")
     int cigarettesSmoked;

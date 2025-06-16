@@ -9,8 +9,8 @@ import com.swpteam.smokingcessation.domain.entity.Account;
 import com.swpteam.smokingcessation.domain.entity.Notification;
 import com.swpteam.smokingcessation.domain.mapper.NotificationMapper;
 import com.swpteam.smokingcessation.exception.AppException;
-import com.swpteam.smokingcessation.repository.AccountRepository;
 import com.swpteam.smokingcessation.repository.NotificationRepository;
+import com.swpteam.smokingcessation.service.interfaces.identity.IAccountService;
 import com.swpteam.smokingcessation.service.interfaces.notification.INotificationService;
 import com.swpteam.smokingcessation.utils.AuthorizationUtilService;
 import com.swpteam.smokingcessation.utils.ValidationUtil;
@@ -22,6 +22,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -34,40 +35,53 @@ public class NotificationServiceImpl implements INotificationService {
     SimpMessagingTemplate simpMessagingTemplate;
     NotificationMapper notificationMapper;
     NotificationRepository notificationRepository;
+
+    IAccountService accountService;
+    SimpMessagingTemplate simpMessagingTemplate;
     AccountRepository accountRepository;
     AuthorizationUtilService authorizationUtilService;
 
     @Override
-    public void sendNotification(NotificationRequest request) {
+    @Transactional
+    @CachePut(value = "MESSAGE_CACHE", key = "#result.getId()")
+    public NotificationResponse sendNotification(NotificationRequest request) {
         Notification notification = notificationMapper.toEntity(request);
-        Account account = null;
-        if (request.getAccountId() != null) {
-            account = accountRepository.findByIdAndIsDeletedFalse(request.getAccountId()).orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FOUND));
-        }
+
+        Account account = request.getAccountId() != null ?
+                accountService.findAccountById(request.getAccountId())
+                :
+                null;
+
         notification.setAccount(account);
         notification.setSentAt(LocalDateTime.now());
         notification.setRead(false);
 
-        notificationRepository.save(notification);
-
-        NotificationResponse response = notificationMapper.toResponse(notification);
+        NotificationResponse response = notificationMapper.toResponse(notificationRepository.save(notification));
 
         if (request.getAccountId() == null) {
             simpMessagingTemplate.convertAndSend("/topic/notifications/", response);
         } else {
             simpMessagingTemplate.convertAndSend("/topic/notifications/" + request.getAccountId(), response);
         }
+
+        return response;
     }
 
     @Override
+    @Transactional
     public void markAsRead(MarkAsReadRequest request) {
-        Notification notification = notificationRepository.findByIdAndIsDeletedFalse(request.getNotificationId())
-                .orElseThrow(() -> new AppException(ErrorCode.NOTIFICATION_NOT_FOUND));
+        Notification notification = findNotificationById(request.getNotificationId());
 
         if (!notification.isRead()) {
             notification.setRead(true);
             notificationRepository.save(notification);
         }
+    }
+
+    @Cacheable(value = "MESSAGE_CACHE", key = "#id")
+    private Notification findNotificationById(String id) {
+        return notificationRepository.findByIdAndIsDeletedFalse(id)
+                .orElseThrow(() -> new AppException(ErrorCode.NOTIFICATION_NOT_FOUND));
     }
 
     @PreAuthorize("hasRole('ADMIN')")

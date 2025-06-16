@@ -54,6 +54,7 @@ public enum ErrorCode {
     // Account
     ACCOUNT_NOT_FOUND(3000, "Account does not exist", HttpStatus.BAD_REQUEST),
     ACCOUNT_EXISTED(3001, "Account already existed", HttpStatus.BAD_REQUEST),
+    EMAIL_EXISTED(3001, "Email already existed", HttpStatus.BAD_REQUEST),
     ACCOUNT_DELETED(3002, "Account has been deleted", HttpStatus.BAD_REQUEST),
     PHONE_NUMBER_EXISTED(3003, "Phone number is registered to another account", HttpStatus.BAD_REQUEST),
     IDENTICAL_PASSWORD(3004, "The new password must be different from the old password", HttpStatus.BAD_REQUEST),

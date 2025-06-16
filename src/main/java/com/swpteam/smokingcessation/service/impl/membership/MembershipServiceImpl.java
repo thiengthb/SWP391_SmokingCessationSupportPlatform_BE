@@ -19,6 +19,9 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -41,9 +44,7 @@ public class MembershipServiceImpl implements IMembershipService {
 
     @Override
     public Page<MembershipResponse> getMembershipPage(PageableRequest request) {
-        if (!ValidationUtil.isFieldExist(Membership.class, request.getSortBy())) {
-            throw new AppException(ErrorCode.INVALID_SORT_FIELD);
-        }
+        ValidationUtil.checkFieldExist(Membership.class, request.getSortBy());
 
         Pageable pageable = PageableRequest.getPageable(request);
         Page<Membership> memberships = membershipRepository.findAllByIsDeletedFalse(pageable);
@@ -53,27 +54,23 @@ public class MembershipServiceImpl implements IMembershipService {
 
     @Override
     public MembershipResponse getMembershipById(String id) {
-        return membershipMapper.toResponse(
-                membershipRepository.findByIdAndIsDeletedFalse(id)
-                        .orElseThrow(() -> new AppException(ErrorCode.MEMBERSHIP_NOT_FOUND)));
+        return membershipMapper.toResponse(findMembershipById(id));
     }
 
     @Override
     public MembershipResponse getMembershipByName(String name) {
-        return membershipMapper.toResponse(
-                membershipRepository.findByNameAndIsDeletedFalse(name)
-                        .orElseThrow(() -> new AppException(ErrorCode.MEMBERSHIP_NOT_FOUND)));
+        return membershipMapper.toResponse(findMembershipByName(name));
     }
 
     @Override
     @Transactional
     @PreAuthorize("hasRole('ADMIN')")
+    @CachePut(value = "MEMBERSHIP_CACHE", key = "#result.getId()")
     public MembershipResponse createMembership(MembershipCreateRequest request) {
         if (membershipRepository.existsByNameAndIsDeletedFalse(request.getName()))
             throw new AppException(ErrorCode.MEMBERSHIP_NAME_UNIQUE);
 
         Membership membership = membershipMapper.toEntity(request);
-        membership.setCreatedAt(LocalDateTime.now());
 
         return membershipMapper.toResponse(membershipRepository.save(membership));
     }
@@ -81,9 +78,9 @@ public class MembershipServiceImpl implements IMembershipService {
     @Override
     @Transactional
     @PreAuthorize("hasRole('ADMIN')")
+    @CachePut(value = "MEMBERSHIP_CACHE", key = "#result.getId()")
     public MembershipResponse updateMembership(String id, MembershipUpdateRequest request) {
-        Membership membership = membershipRepository.findByIdAndIsDeletedFalse(id)
-                .orElseThrow(() -> new AppException(ErrorCode.MEMBERSHIP_NOT_FOUND));
+        Membership membership = findMembershipById(id);
 
         membershipMapper.update(membership, request);
 
@@ -93,28 +90,27 @@ public class MembershipServiceImpl implements IMembershipService {
     @Override
     @Transactional
     @PreAuthorize("hasRole('ADMIN')")
+    @CacheEvict(value = "MEMBERSHIP_CACHE", key = "#id")
     public void softDeleteMembershipById(String id) {
-        Membership membership = membershipRepository.findByIdAndIsDeletedFalse(id)
-                .orElseThrow(() -> new AppException(ErrorCode.MEMBERSHIP_NOT_FOUND));
-
+        Membership membership = findMembershipById(id);
         membership.setDeleted(true);
 
         List<Subscription> subscriptions = membership.getSubscriptions();
         subscriptions.forEach(subscription -> subscription.setDeleted(true));
-
         subscriptionRepository.saveAll(subscriptions);
+
         membershipRepository.save(membership);
     }
 
     @Override
     @Transactional
+    @CachePut(value = "MEMBERSHIP_CACHE", key = "#result.getId()")
     public MembershipResponse updateMembershipCurrency(String id, MembershipCurrencyUpdateRequest request) {
         Double rate = currencyRateService.getRate(request.getCurrency().name().toUpperCase());
         if (rate == null)
             throw new AppException(ErrorCode.INVALID_CURRENCY);
 
-        Membership membership = membershipRepository.findByIdAndIsDeletedFalse(id)
-                .orElseThrow(() -> new AppException(ErrorCode.MEMBERSHIP_NOT_FOUND));
+        Membership membership = findMembershipById(id);
 
         double newPrice = currencyRateService.getNewPrice(
                 membership.getPrice(),
@@ -128,4 +124,17 @@ public class MembershipServiceImpl implements IMembershipService {
         return membershipMapper.toResponse(membershipRepository.save(membership));
     }
 
+    @Override
+    @Cacheable(value = "MEMBERSHIP_CACHE", key = "#id")
+    public Membership findMembershipById(String id) {
+        return membershipRepository.findByIdAndIsDeletedFalse(id)
+                .orElseThrow(() -> new AppException(ErrorCode.MEMBERSHIP_NOT_FOUND));
+    }
+
+    @Override
+    @Cacheable(value = "MEMBERSHIP_CACHE", key = "#name")
+    public Membership findMembershipByName(String name) {
+        return membershipRepository.findByNameAndIsDeletedFalse(name)
+                .orElseThrow(() -> new AppException(ErrorCode.MEMBERSHIP_NOT_FOUND));
+    }
 }

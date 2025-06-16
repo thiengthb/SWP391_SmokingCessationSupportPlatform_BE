@@ -1,22 +1,22 @@
 package com.swpteam.smokingcessation.service.interfaces.tracking;
 
 import com.swpteam.smokingcessation.common.PageableRequest;
-import com.swpteam.smokingcessation.domain.dto.record.RecordCreateRequest;
-import com.swpteam.smokingcessation.domain.dto.record.RecordResponse;
-import com.swpteam.smokingcessation.domain.dto.record.RecordUpdateRequest;
+import com.swpteam.smokingcessation.domain.dto.record.RecordHabitCreateRequest;
+import com.swpteam.smokingcessation.domain.dto.record.RecordHabitResponse;
+import com.swpteam.smokingcessation.domain.dto.record.RecordHabitUpdateRequest;
 import org.springframework.data.domain.Page;
 
 public interface IRecordService {
 
-    Page<RecordResponse> getRecordPage(PageableRequest request);
+    Page<RecordHabitResponse> getRecordPage(PageableRequest request);
 
-    RecordResponse getRecordById(String id);
+    RecordHabitResponse getRecordById(String id);
 
-    Page<RecordResponse> getRecordPageByAccountId(String accountId, PageableRequest request);
+    Page<RecordHabitResponse> getRecordPageByAccountId(String accountId, PageableRequest request);
 
-    RecordResponse createRecord(RecordCreateRequest request);
+    RecordHabitResponse createRecord(RecordHabitCreateRequest request);
 
-    RecordResponse updateRecord(String id, RecordUpdateRequest request);
+    RecordHabitResponse updateRecord(String id, RecordHabitUpdateRequest request);
 
     void softDeleteRecordById(String id);
 }

@@ -9,12 +9,15 @@ import com.swpteam.smokingcessation.constant.ErrorCode;
 import com.swpteam.smokingcessation.domain.entity.Phase;
 import com.swpteam.smokingcessation.exception.AppException;
 import com.swpteam.smokingcessation.repository.PhaseRepository;
-import com.swpteam.smokingcessation.repository.PlanRepository;
 import com.swpteam.smokingcessation.service.interfaces.tracking.IPhaseService;
+import com.swpteam.smokingcessation.service.interfaces.tracking.IPlanService;
 import com.swpteam.smokingcessation.utils.ValidationUtil;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -25,15 +28,14 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class PhaseServiceImpl implements IPhaseService {
 
-    PhaseRepository phaseRepository;
     PhaseMapper phaseMapper;
-    PlanRepository planRepository;
+    PhaseRepository phaseRepository;
+
+    IPlanService planService;
 
     @Override
     public Page<PhaseResponse> getPhasePage(PageableRequest request) {
-        if (!ValidationUtil.isFieldExist(Phase.class, request.getSortBy())) {
-            throw new AppException(ErrorCode.INVALID_SORT_FIELD);
-        }
+        ValidationUtil.checkFieldExist(Phase.class, request.getSortBy());
 
         Pageable pageable = PageableRequest.getPageable(request);
         Page<Phase> phases = phaseRepository.findAllByIsDeletedFalse(pageable);
@@ -43,20 +45,16 @@ public class PhaseServiceImpl implements IPhaseService {
 
     @Override
     public PhaseResponse getPhaseById(String id) {
-        Phase phase = phaseRepository.findByIdAndIsDeletedFalse(id)
-                .orElseThrow(() -> new AppException(ErrorCode.PHASE_NOT_FOUND));
-
-        return phaseMapper.toResponse(phase);
+        return phaseMapper.toResponse(findPhaseById(id));
     }
 
     @Override
     @Transactional
+    @CachePut(value = "PHASE_CACHE", key = "#result.getId()")
     public PhaseResponse createPhase(PhaseRequest request) {
         Phase phase = phaseMapper.toEntity(request);
 
-        Plan plan = planRepository.findByIdAndIsDeletedFalse(request.getPlanId()).
-                orElseThrow(()-> new AppException(ErrorCode.PLAN_NOT_FOUND));
-
+        Plan plan = planService.findPlanById(request.getPlanId());
         phase.setPlan(plan);
 
         return phaseMapper.toResponse(phaseRepository.save(phase));
@@ -64,9 +62,9 @@ public class PhaseServiceImpl implements IPhaseService {
 
     @Override
     @Transactional
+    @CachePut(value = "PHASE_CACHE", key = "#result.getId()")
     public PhaseResponse updatePhaseById(String id, PhaseRequest request) {
-        Phase phase = phaseRepository.findByIdAndIsDeletedFalse(id)
-                .orElseThrow(() -> new AppException(ErrorCode.PHASE_NOT_FOUND));
+        Phase phase = findPhaseById(id);
 
         phaseMapper.update(phase, request);
 
@@ -75,12 +73,23 @@ public class PhaseServiceImpl implements IPhaseService {
 
     @Override
     @Transactional
+    @CacheEvict(value = "PHASE_CACHE", key = "#id")
     public void softDeletePhaseById(String id) {
+        Phase phase = findPhaseById(id);
+
+        phase.setDeleted(true);
+        phaseRepository.save(phase);
+    }
+
+    @Cacheable(value = "PHASE_CACHE", key = "#id")
+    private Phase findPhaseById(String id) {
         Phase phase = phaseRepository.findByIdAndIsDeletedFalse(id)
                 .orElseThrow(() -> new AppException(ErrorCode.PHASE_NOT_FOUND));
 
-        phase.setDeleted(true);
+        if (phase.getPlan().isDeleted()) {
+            throw new AppException(ErrorCode.PLAN_NOT_FOUND);
+        }
 
-        phaseRepository.save(phase);
+        return phase;
     }
 }

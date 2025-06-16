@@ -1,5 +1,8 @@
 package com.swpteam.smokingcessation.security;
 
+import com.swpteam.smokingcessation.constant.App;
+import jakarta.annotation.PostConstruct;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -13,31 +16,24 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
 
+@Slf4j
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
 public class SecurityConfig {
 
-    private final String[] PUBLIC_ENDPOINTS = {
-            "/swagger-ui.html",
-            "/swagger-ui/**",
-            "/v3/api-docs/**",
-            "/ws/**",
-            "/api/webhook/stripe",
-            "/api/v1/auth/login",
-            "/api/v1/auth/register",
-            "/api/v1/auth/google/login",
-            "/api/v1/auth/forgot-password",
-            "/api/v1/test"
-    };
-
     @Autowired
     private JwtCustomDecoder jwtCustomDecoder;
+
+    @PostConstruct
+    public void init() {
+        log.info("Running Bearer Auth Security Config");
+    }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.authorizeHttpRequests(request -> request
-                .requestMatchers(PUBLIC_ENDPOINTS).permitAll()
+                .requestMatchers(App.PUBLIC_ENDPOINTS).permitAll()
                 .anyRequest().authenticated()
         );
 

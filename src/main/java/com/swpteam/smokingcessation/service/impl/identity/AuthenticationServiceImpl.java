@@ -1,13 +1,12 @@
 package com.swpteam.smokingcessation.service.impl.identity;
 
 import com.nimbusds.jose.*;
-import com.nimbusds.jose.crypto.MACSigner;
-import com.nimbusds.jose.crypto.MACVerifier;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
 import com.swpteam.smokingcessation.domain.dto.auth.request.*;
 import com.swpteam.smokingcessation.domain.entity.Account;
 import com.swpteam.smokingcessation.domain.mapper.AccountMapper;
+import com.swpteam.smokingcessation.integration.mail.IMailService;
 import com.swpteam.smokingcessation.repository.AccountRepository;
 import com.swpteam.smokingcessation.domain.dto.account.AccountResponse;
 import com.swpteam.smokingcessation.domain.enums.AccountStatus;
@@ -15,16 +14,14 @@ import com.swpteam.smokingcessation.domain.enums.Role;
 import com.swpteam.smokingcessation.domain.dto.auth.response.AuthenticationResponse;
 import com.swpteam.smokingcessation.domain.dto.auth.response.GoogleTokenResponse;
 import com.swpteam.smokingcessation.domain.dto.auth.response.IntrospectResponse;
-import com.swpteam.smokingcessation.integration.mail.MailServiceImpl;
-import com.swpteam.smokingcessation.repository.InvalidatedTokenRepository;
-import com.swpteam.smokingcessation.repository.MemberRepository;
+import com.swpteam.smokingcessation.repository.RefreshTokenRepository;
 import com.swpteam.smokingcessation.domain.entity.Setting;
-import com.swpteam.smokingcessation.repository.SettingRepository;
 import com.swpteam.smokingcessation.constant.ErrorCode;
-import com.swpteam.smokingcessation.domain.entity.InvalidatedToken;
+import com.swpteam.smokingcessation.domain.entity.RefreshToken;
 import com.swpteam.smokingcessation.exception.AppException;
 import com.swpteam.smokingcessation.service.interfaces.identity.IAuthenticationService;
-import com.swpteam.smokingcessation.utils.AccountUtilService;
+import com.swpteam.smokingcessation.utils.AuthUtil;
+import com.swpteam.smokingcessation.utils.JwtUtil;
 import jakarta.mail.MessagingException;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -40,40 +37,24 @@ import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
 import java.text.ParseException;
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 import java.util.Date;
-import java.util.StringJoiner;
-import java.util.UUID;
 
 @Slf4j
-@RequiredArgsConstructor
 @Service
+@RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class AuthenticationServiceImpl implements IAuthenticationService {
 
-    AccountRepository accountRepository;
     AccountMapper accountMapper;
-    InvalidatedTokenRepository invalidatedTokenRepository;
-    MailServiceImpl mailServiceImpl;
-    AccountUtilService accountUtilService;
+    AccountRepository accountRepository;
+    RefreshTokenRepository refreshTokenRepository;
+
     WebClient webClient = WebClient.create();
+    PasswordEncoder passwordEncoder;
 
-    @NonFinal
-    @Value("${jwt.signer-key}")
-    protected String SIGNER_KEY;
-
-    @NonFinal
-    @Value("${jwt.access-token-duration}")
-    protected long VALID_DURATION;
-
-    @NonFinal
-    @Value("${jwt.refresh-token-duration}")
-    protected long REFRESHABLE_DURATION;
-
-    @NonFinal
-    @Value("${jtw.password-reset-token-duration}")
-    protected long RESET_DURATION;
+    IMailService mailService;
+    AuthUtil authUtil;
+    JwtUtil jwtUtil;
 
     @NonFinal
     @Value("${spring.security.oauth2.client.registration.google.client-id}")
@@ -90,7 +71,6 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
     @NonFinal
     @Value("${app.frontend-domain}")
     protected String FRONTEND_DOMAIN;
-
 
     @Override
     public GoogleTokenResponse getGoogleToken(GoogleTokenRequest request) {
@@ -116,132 +96,69 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
         Account account = accountRepository.findByEmailAndIsDeletedFalse(request.getEmail())
                 .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FOUND));
 
-        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
-
         boolean authenticated = passwordEncoder.matches(request.getPassword(), account.getPassword());
         if (!authenticated) {
             throw new AppException(ErrorCode.WRONG_PASSWORD);
         }
 
-        String accessToken = generateAccessToken(account);
+        String accessToken = jwtUtil.generateAccessToken(account);
+        AccountResponse accountResponse = accountMapper.toResponse(account);
 
         return AuthenticationResponse.builder()
-                .id(account.getId())
-                .username(account.getUsername())
-                .role(account.getRole())
                 .accessToken(accessToken)
+                .accountResponse(accountResponse)
                 .build();
     }
 
-    private String generateAccessToken(Account account) {
-        JWSHeader jwsHeader = new JWSHeader(JWSAlgorithm.HS512);
 
-        JWTClaimsSet jwtClaimsSet = new JWTClaimsSet.Builder()
-                .jwtID(UUID.randomUUID().toString())
-                .subject(account.getEmail())
-                .issuer("swpteam")
-                .issueTime(new Date())
-                .expirationTime(new Date(
-                        Instant.now().plus(VALID_DURATION, ChronoUnit.SECONDS).toEpochMilli()
-                ))
-                .claim("scope", buildScope(account))
-                .build();
-
-
-        Payload payload = new Payload(jwtClaimsSet.toJSONObject());
-
-        JWSObject jwsObject = new JWSObject(jwsHeader, payload);
-        try {
-            jwsObject.sign(new MACSigner(SIGNER_KEY.getBytes()));
-            return jwsObject.serialize();
-        } catch (JOSEException e) {
-            log.error("Cannot create token", e);
-            throw new RuntimeException(e);
-        }
-
-    }
-
-    private String generateResetToken(Account account) {
-        JWSHeader jwsHeader = new JWSHeader(JWSAlgorithm.HS512);
-
-        JWTClaimsSet jwtClaimsSet = new JWTClaimsSet.Builder()
-                .jwtID(UUID.randomUUID().toString())//unique ID to invalidate later on
-                .subject(account.getEmail())
-                .issuer("swpteam")
-                .issueTime(new Date())
-                .expirationTime(new Date(
-                        Instant.now().plus(RESET_DURATION, ChronoUnit.SECONDS).toEpochMilli() // 30 days validity
-                ))
-                .claim("type", "reset")
-                .build();
-
-        Payload payload = new Payload(jwtClaimsSet.toJSONObject());
-
-        JWSObject jwsObject = new JWSObject(jwsHeader, payload);
-        try {
-            jwsObject.sign(new MACSigner(SIGNER_KEY.getBytes()));
-            return jwsObject.serialize();
-        } catch (JOSEException e) {
-            log.error("Cannot create reset token", e);
-            throw new RuntimeException(e);
-        }
-    }
-
-    private String buildScope(Account account) {
-        StringJoiner stringJoiner = new StringJoiner(" ");
-
-        if (account.getRole() != null) {
-            stringJoiner.add("ROLE_" + account.getRole().name());
-        }
-
-        return stringJoiner.toString();
-    }
 
     @Override
     @Transactional
     public AuthenticationResponse refreshToken(String token) throws ParseException, JOSEException {
-        var signedJWT = verifyToken(token, true);
+        var signedJWT = jwtUtil.verifyToken(token, true);
 
         var jit = signedJWT.getJWTClaimsSet().getJWTID();
         Date expiryTime = signedJWT.getJWTClaimsSet().getExpirationTime();
 
-        InvalidatedToken invalidatedToken =
-                InvalidatedToken.builder().id(jit).expiryTime(expiryTime).build();
+        RefreshToken refreshToken =
+                RefreshToken.builder().id(jit).finalize(expiryTime).build();
 
-        invalidatedTokenRepository.save(invalidatedToken);
+        refreshTokenRepository.save(refreshToken);
 
         var email = signedJWT.getJWTClaimsSet().getSubject();
 
-        Account account = accountRepository.findByEmailAndIsDeletedFalse(email).orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FOUND));
+        Account account = accountRepository.findByEmailAndIsDeletedFalse(email)
+                .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FOUND));
 
-        var newToken = generateAccessToken(account);
+        String newToken = jwtUtil.generateAccessToken(account);
+        AccountResponse accountResponse = accountMapper.toResponse(account);
 
         return AuthenticationResponse.builder()
-                .id(account.getId())
-                .username(account.getUsername())
-                .role(account.getRole())
                 .accessToken(newToken)
+                .accountResponse(accountResponse)
                 .build();
     }
 
     @Override
     @Transactional
-    public AccountResponse register(RegisterRequest request) {
+    public AuthenticationResponse register(RegisterRequest request) {
         if (accountRepository.existsByEmail(request.getEmail())) {
             throw new AppException(ErrorCode.ACCOUNT_EXISTED);
         }
 
         Account account = accountMapper.toEntityFromRegister(request);
-
         account.setRole(Role.MEMBER);
+        account.setPassword(passwordEncoder.encode(request.getPassword()));
+        account.setSetting(Setting.getDefaultSetting(account));
         account.setStatus(AccountStatus.ONLINE);
 
-        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
-        account.setPassword(passwordEncoder.encode(request.getPassword()));
+        String accessToken = jwtUtil.generateAccessToken(account);
+        AccountResponse accountResponse = accountMapper.toResponse(accountRepository.save(account));
 
-        account.setSetting(Setting.getDefaultSetting(account));
-
-        return accountMapper.toResponse(accountRepository.save(account));
+        return AuthenticationResponse.builder()
+                .accessToken(accessToken)
+                .accountResponse(accountResponse)
+                .build();
     }
 
     @Override
@@ -250,7 +167,7 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
         boolean isValid = true;
 
         try {
-            verifyToken(token, false);
+            jwtUtil.verifyToken(token, false);
         } catch (AppException e) {
             isValid = false;
         }
@@ -258,41 +175,16 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
         return IntrospectResponse.builder().valid(isValid).build();
     }
 
-    @Transactional
-    private SignedJWT verifyToken(String token, boolean isRefresh) throws JOSEException, ParseException {
-        JWSVerifier verifier = new MACVerifier(SIGNER_KEY.getBytes());
-
-        SignedJWT signedJWT = SignedJWT.parse(token);
-
-        Date expiryTime = (isRefresh)
-                ? new Date(signedJWT
-                .getJWTClaimsSet()
-                .getIssueTime()
-                .toInstant()
-                .plus(REFRESHABLE_DURATION, ChronoUnit.SECONDS)
-                .toEpochMilli())
-                : signedJWT.getJWTClaimsSet().getExpirationTime();
-
-        var verified = signedJWT.verify(verifier);
-
-        if (!(verified && expiryTime.after(new Date()))) throw new AppException(ErrorCode.UNAUTHENTICATED);
-
-        if (invalidatedTokenRepository.existsById(signedJWT.getJWTClaimsSet().getJWTID()))
-            throw new AppException(ErrorCode.USED_TOKEN);
-
-        return signedJWT;
-    }
-
     @Override
     public void sendResetPasswordEmail(String email) {
-        Account account = accountRepository.findByEmailAndIsDeletedFalse(email).orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FOUND));
+        Account account = accountRepository.findByEmailAndIsDeletedFalse(email)
+                .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FOUND));
 
-        //generate reset token
-        String token = generateResetToken(account);
+        String token = jwtUtil.generateResetEmailToken(account);
         String resetLink = FRONTEND_DOMAIN + "/reset-password?token=" + token;
 
         try {
-            mailServiceImpl.sendResetPasswordEmail(email, resetLink, account.getEmail());
+            mailService.sendResetPasswordEmail(email, resetLink, account.getEmail());
         } catch (MessagingException e) {
             log.error("Failed to send reset password email to {}", email, e);
             throw new AppException(ErrorCode.EMAIL_SEND_FAILED);
@@ -311,7 +203,7 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
             if (!jwtClaimsSet.getClaim("type").equals("reset")) {
                 throw new AppException(ErrorCode.INVALID_RESET_TOKEN);
             }
-            if (jwtClaimsSet.getExpirationTime().before(new Date()) || invalidatedTokenRepository.existsById(jwtClaimsSet.getJWTID())) {
+            if (jwtClaimsSet.getExpirationTime().before(new Date()) || refreshTokenRepository.existsById(jwtClaimsSet.getJWTID())) {
                 throw new AppException(ErrorCode.TOKEN_EXPIRED);
             }
             emailFromToken = jwtClaimsSet.getSubject();
@@ -328,32 +220,33 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
         accountRepository.save(account);
 
         if (jwtId != null) {
-            InvalidatedToken invalidatedToken = InvalidatedToken.builder()
+            RefreshToken refreshToken = RefreshToken.builder()
                     .id(jwtId)
                     .expiryTime(null)
                     .build();
 
-            invalidatedTokenRepository.save(invalidatedToken);
+            refreshTokenRepository.save(refreshToken);
         }
     }
 
     @Override
     @Transactional
     public void logout() throws ParseException, JOSEException {
-        String token = accountUtilService.getCurrentToken()
+        String token = authUtil.getCurrentToken()
                 .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FOUND));
 
-        SignedJWT signedJWT = verifyToken(token, true);
+        SignedJWT signedJWT = jwtUtil.verifyToken(token, true);
 
         String jwtId = signedJWT.getJWTClaimsSet().getJWTID();
         Date expiryTime = signedJWT.getJWTClaimsSet().getExpirationTime();
 
         if (jwtId != null) {
-            InvalidatedToken invalidatedToken = InvalidatedToken.builder()
+            RefreshToken refreshToken = RefreshToken.builder()
                     .id(jwtId)
                     .expiryTime(expiryTime)
                     .build();
-            invalidatedTokenRepository.save(invalidatedToken);
+            refreshTokenRepository.save(refreshToken);
         }
     }
+    
 }

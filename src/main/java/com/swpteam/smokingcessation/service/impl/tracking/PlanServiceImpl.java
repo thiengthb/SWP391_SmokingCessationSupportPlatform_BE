@@ -11,8 +11,8 @@ import com.swpteam.smokingcessation.common.PageableRequest;
 import com.swpteam.smokingcessation.constant.ErrorCode;
 import com.swpteam.smokingcessation.domain.entity.Plan;
 import com.swpteam.smokingcessation.exception.AppException;
-import com.swpteam.smokingcessation.repository.AccountRepository;
 import com.swpteam.smokingcessation.repository.PlanRepository;
+import com.swpteam.smokingcessation.service.interfaces.identity.IAccountService;
 import com.swpteam.smokingcessation.service.interfaces.tracking.IPlanService;
 import com.swpteam.smokingcessation.utils.FileLoaderUtil;
 import com.swpteam.smokingcessation.utils.ValidationUtil;
@@ -20,6 +20,9 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -35,16 +38,16 @@ import java.util.stream.Collectors;
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 @RequiredArgsConstructor
 public class PlanServiceImpl implements IPlanService {
-    PlanRepository planRepository;
+
     PlanMapper planMapper;
-    AccountRepository accountRepository;
+    PlanRepository planRepository;
+
     FileLoaderUtil fileLoaderUtil;
+    IAccountService accountService;
 
     @Override
     public Page<PlanResponse> getPlanPage(PageableRequest request) {
-        if (!ValidationUtil.isFieldExist(Plan.class, request.getSortBy())) {
-            throw new AppException(ErrorCode.INVALID_SORT_FIELD);
-        }
+        ValidationUtil.checkFieldExist(Plan.class, request.getSortBy());
 
         Pageable pageable = PageableRequest.getPageable(request);
         Page<Plan> plans = planRepository.findAllByIsDeletedFalse(pageable);
@@ -54,20 +57,16 @@ public class PlanServiceImpl implements IPlanService {
 
     @Override
     public PlanResponse getPlanById(String id) {
-        Plan plan = planRepository.findByIdAndIsDeletedFalse(id)
-                .orElseThrow(() -> new AppException(ErrorCode.PLAN_NOT_FOUND));
-
-        return planMapper.toResponse(plan);
+        return planMapper.toResponse(findPlanById(id));
     }
 
     @Override
     @Transactional
+    @CachePut(value = "PLAN_CACHE", key = "#result.getId()")
     public PlanResponse createPlan(PlanRequest request) {
         Plan plan = planMapper.toEntity(request);
 
-        Account account = accountRepository.findByIdAndIsDeletedFalse(request.getAccountId())
-                .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FOUND));
-
+        Account account = accountService.findAccountById(request.getAccountId());
         plan.setAccount(account);
 
         return planMapper.toResponse(planRepository.save(plan));
@@ -75,26 +74,17 @@ public class PlanServiceImpl implements IPlanService {
 
     @Override
     @Transactional
+    @CachePut(value = "PLAN_CACHE", key = "#result.getId()")
     public PlanResponse updatePlanById(String id, PlanRequest request) {
-        Plan plan = planRepository.findByIdAndIsDeletedFalse(id)
-                .orElseThrow(() -> new AppException(ErrorCode.PLAN_NOT_FOUND));
+        Plan plan = findPlanById(id);
+
         planMapper.update(plan, request);
 
         return planMapper.toResponse(planRepository.save(plan));
     }
 
     @Override
-    @Transactional
-    public void softDeletePlanById(String id) {
-        Plan plan = planRepository.findByIdAndIsDeletedFalse(id)
-                .orElseThrow(() -> new AppException(ErrorCode.PLAN_NOT_FOUND));
-
-        plan.setDeleted(true);
-
-        planRepository.save(plan);
-    }
-
-    @Override
+    @CachePut(value = "PLAN_CACHE", key = "#result.getId()")
     public PlanResponse getPlanByFtndScore(int ftndScore) {
         if (ftndScore < 0 || ftndScore > 10) {
             log.error("Invalid FTND score: {}", ftndScore);
@@ -126,7 +116,7 @@ public class PlanServiceImpl implements IPlanService {
             currentPhaseStartDate = phaseEndDate.plusDays(1);
         }
 
-        LocalDate planEndDate = phases.get(phases.size() - 1).getEndDate();
+        LocalDate planEndDate = phases.getLast().getEndDate();
 
         return PlanResponse.builder()
                 .planName("Default plan for level " + selectedPlan.getLevel())
@@ -137,8 +127,29 @@ public class PlanServiceImpl implements IPlanService {
                 .build();
     }
 
+    @Override
+    @Transactional
+    @CacheEvict(value = "PLAN_CACHE", key = "#id")
+    public void softDeletePlanById(String id) {
+        Plan plan = findPlanById(id);
 
-    //convert điểm ftnd sang level nghiện thuốc
+        plan.setDeleted(true);
+        planRepository.save(plan);
+    }
+
+    @Override
+    @Cacheable(value = "PLAN_CACHE", key = "#id")
+    public Plan findPlanById(String id) {
+        Plan plan = planRepository.findByIdAndIsDeletedFalse(id)
+                .orElseThrow(() -> new AppException(ErrorCode.PLAN_NOT_FOUND));
+
+        if (plan.getAccount().isDeleted()) {
+            throw new AppException(ErrorCode.ACCOUNT_NOT_FOUND);
+        }
+
+        return plan;
+    }
+
     private int mapFtndScoreToLevel(int ftnd) {
         if (ftnd < 3) return 1;
         else if (ftnd <= 4) return 2;

@@ -9,7 +9,6 @@ import com.swpteam.smokingcessation.domain.dto.account.AccountUpdateRequest;
 import com.swpteam.smokingcessation.domain.dto.account.ChangePasswordRequest;
 import com.swpteam.smokingcessation.domain.enums.Role;
 import com.swpteam.smokingcessation.service.interfaces.identity.IAccountService;
-import com.swpteam.smokingcessation.utils.AccountUtilService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
