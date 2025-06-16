@@ -31,6 +31,11 @@ public class Coach extends BaseEntity {
     @JsonManagedReference
     List<Booking> bookings = new ArrayList<>();
 
+    @Builder.Default
+    @OneToMany(mappedBy = "coach", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonManagedReference
+    private List<TimeTable> timetables = new ArrayList<>();
+
     String fullName;
     String bio;
     int experienceYears;
