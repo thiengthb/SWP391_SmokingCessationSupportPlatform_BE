@@ -24,6 +24,8 @@ public interface SettingRepository extends JpaRepository<Setting, String> {
             "AND s.account.role NOT IN ('ADMIN', 'COACH')")
     List<Setting> findByMotivationFrequencyAndIsDeletedFalse(@Param("frequency") MotivationFrequency frequency);
 
+    List<Setting> findAllByIsDeletedFalse();
+
     Optional<Setting> findByIdAndIsDeletedFalse(String id);
 
     Optional<Setting> findByAccountIdAndIsDeletedFalse(String accountId);

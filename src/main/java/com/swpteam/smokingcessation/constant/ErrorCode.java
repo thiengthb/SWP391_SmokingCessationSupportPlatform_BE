@@ -218,6 +218,9 @@ public enum ErrorCode {
     NOTIFICATION_CONTENT_REQUIRED(2101, "Content for notification is required", HttpStatus.BAD_REQUEST),
     NOTIFICATION_ID_REQUIRED(2102, "Notification ID is required to mark as read", HttpStatus.BAD_REQUEST),
     NOTIFICATION_NOT_FOUND(2103, "Notification does not exist or have been deleted", HttpStatus.BAD_REQUEST),
+
+    // Streak
+    STREAK_RESET_FAILED(3100, "Failure in resetting the streak", HttpStatus.INTERNAL_SERVER_ERROR),
     ;
     int code;
     String message;
