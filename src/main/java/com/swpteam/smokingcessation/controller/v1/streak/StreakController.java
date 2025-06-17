@@ -3,8 +3,8 @@ package com.swpteam.smokingcessation.controller.v1.streak;
 import com.swpteam.smokingcessation.common.ApiResponse;
 import com.swpteam.smokingcessation.common.PageableRequest;
 import com.swpteam.smokingcessation.constant.SuccessCode;
-import com.swpteam.smokingcessation.domain.dto.streak.StreakResponse;
 import com.swpteam.smokingcessation.domain.dto.streak.StreakRequest;
+import com.swpteam.smokingcessation.domain.dto.streak.StreakResponse;
 import com.swpteam.smokingcessation.service.impl.streak.StreakServiceImpl;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -41,27 +41,27 @@ public class StreakController {
                         .build());
     }
 
-    @GetMapping("/{id}")
-    ResponseEntity<ApiResponse<StreakResponse>> getStreakById(@PathVariable String id) {
+    @GetMapping("/{memberId}")
+    ResponseEntity<ApiResponse<StreakResponse>> getStreakById(@PathVariable String memberId) {
         return ResponseEntity.ok(
                 ApiResponse.<StreakResponse>builder()
-                        .result(streakService.getStreakById(id))
+                        .result(streakService.getStreakById(memberId))
                         .build());
     }
 
-    @PutMapping("/{id}")
-    ResponseEntity<ApiResponse<StreakResponse>> updateStreak(@PathVariable String id, @RequestBody @Valid StreakRequest request) {
+    @PutMapping("/{memberId}")
+    ResponseEntity<ApiResponse<StreakResponse>> updateStreak(@PathVariable String memberId, @RequestBody @Valid StreakRequest request) {
         return ResponseEntity.ok(
                 ApiResponse.<StreakResponse>builder()
                         .code(SuccessCode.STREAK_UPDATED.getCode())
                         .message(SuccessCode.STREAK_UPDATED.getMessage())
-                        .result(streakService.updateStreak(id, request))
+                        .result(streakService.updateStreak(memberId, request))
                         .build());
     }
 
-    @DeleteMapping("/{id}")
-    ResponseEntity<ApiResponse<Void>> deleteStreak(@PathVariable String id) {
-        streakService.deleteStreak(id);
+    @DeleteMapping("/{memberId}")
+    ResponseEntity<ApiResponse<Void>> deleteStreak(@PathVariable String memberId) {
+        streakService.deleteStreak(memberId);
         return ResponseEntity.ok(
                 ApiResponse.<Void>builder()
                         .code(SuccessCode.STREAK_DELETED.getCode())
@@ -69,4 +69,13 @@ public class StreakController {
                         .build());
     }
 
+    @PutMapping("/reset/{memberId}")
+    ResponseEntity<ApiResponse<Void>> resetStreak(@PathVariable String memberId) {
+        streakService.resetStreak(memberId);
+        return ResponseEntity.ok(
+                ApiResponse.<Void>builder()
+                        .code(SuccessCode.STREAK_RESET.getCode())
+                        .message(SuccessCode.STREAK_RESET.getMessage())
+                        .build());
+    }
 }

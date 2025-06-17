@@ -13,9 +13,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Page;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -23,10 +23,12 @@ import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
 import java.util.List;
 
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 class StreakControllerTest {
 
@@ -201,5 +203,35 @@ class StreakControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.code").exists())
                 .andExpect(jsonPath("$.message").exists());
+    }
+
+    @Test
+    void resetStreak_shouldReturnSuccess() throws Exception {
+        doNothing().when(streakService).resetStreak("member1");
+
+        mockMvc.perform(put("/api/v1/streaks/reset/member1"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value(SuccessCode.STREAK_DELETED.getCode()))
+                .andExpect(jsonPath("$.message").value(SuccessCode.STREAK_DELETED.getMessage()));
+    }
+
+    @Test
+    void resetStreak_whenNotAllowed_shouldReturnError() throws Exception {
+        doThrow(new AppException(ErrorCode.OTHERS_STREAK_CANNOT_BE_DELETED))
+                .when(streakService).resetStreak("memberX");
+
+        mockMvc.perform(put("/api/v1/streaks/reset/memberX"))
+                .andExpect(status().is4xxClientError())
+                .andExpect(jsonPath("$.code").value(ErrorCode.OTHERS_STREAK_CANNOT_BE_DELETED.getCode()));
+    }
+
+    @Test
+    void resetStreak_whenNotFound_shouldReturnError() throws Exception {
+        doThrow(new AppException(ErrorCode.STREAK_NOT_FOUND))
+                .when(streakService).resetStreak("notfound");
+
+        mockMvc.perform(put("/api/v1/streaks/reset/notfound"))
+                .andExpect(status().is4xxClientError())
+                .andExpect(jsonPath("$.code").value(ErrorCode.STREAK_NOT_FOUND.getCode()));
     }
 }

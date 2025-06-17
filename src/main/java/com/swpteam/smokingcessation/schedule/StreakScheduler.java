@@ -5,6 +5,7 @@ import com.swpteam.smokingcessation.domain.entity.Member;
 import com.swpteam.smokingcessation.domain.entity.Setting;
 import com.swpteam.smokingcessation.domain.entity.Streak;
 import com.swpteam.smokingcessation.exception.AppException;
+import com.swpteam.smokingcessation.repository.MemberRepository;
 import com.swpteam.smokingcessation.repository.RecordRepository;
 import com.swpteam.smokingcessation.repository.SettingRepository;
 import com.swpteam.smokingcessation.repository.StreakRepository;
@@ -28,6 +29,7 @@ public class StreakScheduler {
     SettingRepository settingRepository;
     RecordRepository recordRepository;
     StreakRepository streakRepository;
+    MemberRepository memberRepository;
 
     @Scheduled(cron = "0 * * * * *")
     public void checkAndResetStreak() {
@@ -58,6 +60,7 @@ public class StreakScheduler {
 
                 if (member.getHighestStreak() < streak.getStreak()) {
                     member.setHighestStreak(streak.getStreak());
+                    memberRepository.save(member);
                 }
                 streak.setStreak(0);
                 streakRepository.save(streak);

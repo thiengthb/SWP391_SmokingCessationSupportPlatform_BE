@@ -149,6 +149,7 @@ public enum SuccessCode {
     STREAK_CREATED(2012, "Streak created successfully"),
     STREAK_UPDATED(2013, "Streak updated successfully"),
     STREAK_DELETED(2014, "Streak deleted successfully"),
+    STREAK_RESET(2015, "Streak reset successfully"),
     ;
     int code;
     String message;
