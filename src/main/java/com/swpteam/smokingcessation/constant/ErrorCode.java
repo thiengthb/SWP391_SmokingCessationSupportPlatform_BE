@@ -221,6 +221,9 @@ public enum ErrorCode {
 
     // Streak
     STREAK_RESET_FAILED(3100, "Failure in resetting the streak", HttpStatus.INTERNAL_SERVER_ERROR),
+    STREAK_NOT_FOUND(3101, "Streak does not exist or have been deleted", HttpStatus.BAD_REQUEST),
+    STREAK_INVALID(3102, "Streak must be a non-negative number", HttpStatus.BAD_REQUEST),
+    STREAK_REQUIRED(3103, "Streak field must be entered", HttpStatus.BAD_REQUEST),
     ;
     int code;
     String message;
