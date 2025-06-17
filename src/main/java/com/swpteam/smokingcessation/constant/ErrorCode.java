@@ -206,6 +206,8 @@ public enum ErrorCode {
     BLOG_STATUS_REQUIRED(4000, "Status is required", HttpStatus.BAD_REQUEST),
     BLOG_NOT_FOUND(4000, "Blog does not exist or have been deleted", HttpStatus.BAD_REQUEST),
 
+    // Google calender
+    GOOGLE_CALENDAR_ERROR(2131,"google api error",HttpStatus.BAD_REQUEST),
 
     // Chat
     CHAT_MESSAGE_REQUIRED(1100, "Chat message is required", HttpStatus.BAD_REQUEST),

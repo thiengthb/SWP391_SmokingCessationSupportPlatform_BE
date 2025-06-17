@@ -15,4 +15,6 @@ public interface IBookingService {
     BookingResponse updateBookingById(String id, BookingRequest request);
 
     void softDeleteBookingById(String id);
+
+    BookingResponse createBookingWithMeet(BookingRequest request);
 }

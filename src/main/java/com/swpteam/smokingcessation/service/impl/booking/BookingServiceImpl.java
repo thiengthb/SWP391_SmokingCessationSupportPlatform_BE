@@ -7,6 +7,7 @@ import com.swpteam.smokingcessation.domain.dto.booking.BookingResponse;
 import com.swpteam.smokingcessation.domain.entity.Account;
 import com.swpteam.smokingcessation.domain.entity.Booking;
 import com.swpteam.smokingcessation.domain.entity.Coach;
+import com.swpteam.smokingcessation.domain.enums.BookingStatus;
 import com.swpteam.smokingcessation.domain.mapper.BookingMapper;
 import com.swpteam.smokingcessation.exception.AppException;
 import com.swpteam.smokingcessation.repository.AccountRepository;
@@ -23,6 +24,9 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+
 @Service
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 @RequiredArgsConstructor
@@ -32,6 +36,7 @@ public class BookingServiceImpl implements IBookingService {
     BookingMapper bookingMapper;
     AccountRepository accountRepository;
     CoachRepository coachRepository;
+    GoogleCalendarService googleCalendarService;
 
     @Override
     public Page<BookingResponse> getBookingPage(PageableRequest request) {
@@ -101,5 +106,33 @@ public class BookingServiceImpl implements IBookingService {
 
         booking.setDeleted(true);
         bookingRepository.save(booking);
+    }
+
+    @Override
+    @Transactional
+    public BookingResponse createBookingWithMeet(BookingRequest request) {
+        Account account = accountRepository.findByIdAndIsDeletedFalse(request.getAccountId())
+                .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FOUND));
+
+        Coach coach = coachRepository.findByIdAndIsDeletedFalse(request.getCoachId())
+                .orElseThrow(() -> new AppException(ErrorCode.COACH_NOT_FOUND));
+
+        String meetingUrl = null;
+        try {
+            meetingUrl = googleCalendarService.createGoogleMeetEvent(
+                    request.getAccessToken(),
+                    request.getStartedAt().toString(),
+                    request.getEndedAt().toString()
+            );
+        } catch (Exception e) {
+            throw new AppException(ErrorCode.GOOGLE_CALENDAR_ERROR);
+        }
+
+        Booking booking = bookingMapper.toEntity(request);
+        booking.setAccount(account);
+        booking.setCoach(coach);
+        booking.setMeetLink(meetingUrl);
+
+        return bookingMapper.toResponse(bookingRepository.save(booking));
     }
 }

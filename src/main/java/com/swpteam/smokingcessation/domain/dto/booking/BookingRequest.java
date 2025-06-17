@@ -18,8 +18,6 @@ public class BookingRequest {
     @NotBlank(message = "COACH_ID_REQUIRED")
     String coachId;
 
-    @NotBlank(message = "MEET_LINK_REQUIRED")
-    @Size(max = 255, message = "MEET_LINK_TOO_LONG")
     String meetLink;
 
     @NotNull(message = "STARTED_AT_REQUIRED")
@@ -32,4 +30,7 @@ public class BookingRequest {
 
     @NotNull(message = "IS_APPROVED_REQUIRED")
     boolean isApproved;
+
+    private String accessToken; // access token Google để tạo Google Meet
+
 }

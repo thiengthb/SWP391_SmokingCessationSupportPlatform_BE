@@ -80,4 +80,17 @@ public class BookingController {
                         .build()
         );
     }
+
+
+    @PostMapping("/with-meet")
+    public ResponseEntity<ApiResponse<BookingResponse>> createBookingWithMeet(@Valid @RequestBody BookingRequest request) {
+        BookingResponse response = bookingService.createBookingWithMeet(request);
+        return ResponseEntity.ok(
+                ApiResponse.<BookingResponse>builder()
+                        .code(SuccessCode.BOOKING_CREATED.getCode())
+                        .message(SuccessCode.BOOKING_CREATED.getMessage())
+                        .result(response)
+                        .build()
+        );
+    }
 }

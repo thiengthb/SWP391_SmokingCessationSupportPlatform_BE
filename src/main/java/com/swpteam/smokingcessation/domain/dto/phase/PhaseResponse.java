@@ -13,7 +13,6 @@ import java.time.LocalDate;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class PhaseResponse {
     int phase;
-    String cigarettesPerDay;
     LocalDate startDate;
     LocalDate endDate;
     String id;

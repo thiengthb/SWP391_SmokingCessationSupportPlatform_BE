@@ -5,6 +5,6 @@ import lombok.Data;
 @Data
 public class PhaseTemplateResponse {
     int phase;
-    String cigaretteBound;
-    String duration;
+    int cigaretteBound;
+    int duration;
 }

@@ -105,11 +105,10 @@ public class PlanServiceImpl implements IPlanService {
         List<PlanTemplateResponse> templates = fileLoaderUtil.loadPlanTemplate("quitplan/template-plan.json");
 
         PlanTemplateResponse selectedPlan = templates.stream()
-                .filter(t -> t.getLevel().equals(String.valueOf(level)))
+                .filter(t -> t.getLevel() == level)
                 .findFirst()
                 .orElseThrow(() -> new AppException(ErrorCode.PLAN_NOT_FOUND));
 
-        // Bắt đầu ngày kế hoạch từ hôm nay
         LocalDate planStartDate = LocalDate.now();
         LocalDate currentPhaseStartDate = planStartDate;
         List<PhaseResponse> phases = new ArrayList<>();
@@ -119,12 +118,12 @@ public class PlanServiceImpl implements IPlanService {
 
             PhaseResponse response = PhaseResponse.builder()
                     .phase(phase.getPhase())
-                    .cigaretteBound(Integer.parseInt(phase.getCigaretteBound())) // Convert từ String sang Integer
+                    .cigaretteBound((phase.getCigaretteBound()))
                     .startDate(currentPhaseStartDate)
                     .endDate(phaseEndDate)
                     .build();
             phases.add(response);
-            currentPhaseStartDate = phaseEndDate.plusDays(1); // Phase sau bắt đầu sau đó 1 ngày
+            currentPhaseStartDate = phaseEndDate.plusDays(1);
         }
 
         LocalDate planEndDate = phases.get(phases.size() - 1).getEndDate();
@@ -139,7 +138,7 @@ public class PlanServiceImpl implements IPlanService {
     }
 
 
-        //convert điểm ftnd sang level nghiện thuốc
+    //convert điểm ftnd sang level nghiện thuốc
     private int mapFtndScoreToLevel(int ftnd) {
         if (ftnd < 3) return 1;
         else if (ftnd <= 4) return 2;
