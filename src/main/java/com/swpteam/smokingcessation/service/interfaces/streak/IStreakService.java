@@ -14,8 +14,6 @@ public interface IStreakService {
 
     void deleteStreak(String id);
 
-    List<StreakResponse> getStreakList();
-
     StreakResponse getStreakById(String id);
 
     Page<StreakResponse> getStreakPage(PageableRequest request);

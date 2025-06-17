@@ -14,6 +14,8 @@ public interface RecordRepository extends JpaRepository<com.swpteam.smokingcessa
 
     boolean existsByAccountIdAndDateAndIsDeletedFalse(String id, LocalDate time);
 
+    long countByAccountIdAndDateAndIsDeletedFalse(String id, LocalDate time);
+
     Optional<com.swpteam.smokingcessation.domain.entity.Record> findByIdAndIsDeletedFalse(String id);
 
     Page<com.swpteam.smokingcessation.domain.entity.Record> findByAccountIdAndIsDeletedFalse(String accountId, Pageable pageable);
