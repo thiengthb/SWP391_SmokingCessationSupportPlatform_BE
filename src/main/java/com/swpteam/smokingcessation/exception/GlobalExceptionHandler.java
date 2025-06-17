@@ -8,6 +8,7 @@ import com.swpteam.smokingcessation.constant.ErrorCode;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.ConstraintViolation;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.MessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
@@ -15,6 +16,7 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.method.annotation.HandlerMethodValidationException;
 
 import java.util.Map;
 import java.util.Objects;
@@ -112,6 +114,26 @@ public class GlobalExceptionHandler {
                 ApiResponse.<Void>builder()
                         .code(400)
                         .message("Malformed or missing request body")
+                        .build()
+        );
+    }
+
+    @ExceptionHandler(HandlerMethodValidationException.class)
+    public ResponseEntity<?> handleValidationException(HandlerMethodValidationException exception) {
+        ErrorCode errorCode = ErrorCode.INVALID_MESSAGE_KEY;
+        try {
+            MessageSourceResolvable firstError = exception.getAllErrors().getFirst();
+            String enumKey = firstError.getDefaultMessage();
+
+            errorCode = ErrorCode.valueOf(enumKey);
+        } catch (IllegalArgumentException e) {
+            log.warn("Invalid enum key:", e);
+        }
+
+        return ResponseEntity.badRequest().body(
+                ApiResponse.<Void>builder()
+                        .code(errorCode.getCode())
+                        .message(errorCode.getMessage())
                         .build()
         );
     }

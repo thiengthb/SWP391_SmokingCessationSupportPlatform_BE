@@ -209,7 +209,7 @@ public enum ErrorCode {
     BLOG_NOT_FOUND(4000, "Blog does not exist or have been deleted", HttpStatus.BAD_REQUEST),
 
     // Google calender
-    GOOGLE_CALENDAR_ERROR(2131,"google api error",HttpStatus.BAD_REQUEST),
+    GOOGLE_CALENDAR_ERROR(2131, "google api error", HttpStatus.BAD_REQUEST),
 
     // Chat
     CHAT_MESSAGE_REQUIRED(1100, "Chat message is required", HttpStatus.BAD_REQUEST),
@@ -231,6 +231,8 @@ public enum ErrorCode {
     OTHERS_STREAK_CANNOT_BE_DELETED(3104, "Other's streak counter cannot be deleted", HttpStatus.FORBIDDEN),
     STREAK_ALREADY_EXISTS(3105, "Streak already exists in the system", HttpStatus.CONFLICT),
 
+    // Report
+    REPORT_DAY_INVALID(4100, "The input day must be greater than 0", HttpStatus.BAD_REQUEST),
     ;
 
     int code;
