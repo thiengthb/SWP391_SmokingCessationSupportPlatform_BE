@@ -1,6 +1,7 @@
 package com.swpteam.smokingcessation.domain.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.swpteam.smokingcessation.common.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -20,7 +21,7 @@ public class Category extends BaseEntity {
 
     @Builder.Default
     @OneToMany(mappedBy = "category", fetch = FetchType.LAZY)
-    @JsonBackReference
+    @JsonIgnore
     List<Blog> blogs = new ArrayList<>();
 
     @Column(nullable = false, length = 100)

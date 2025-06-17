@@ -1,5 +1,6 @@
 package com.swpteam.smokingcessation.domain.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.swpteam.smokingcessation.domain.enums.Currency;
 import com.swpteam.smokingcessation.common.BaseEntity;
@@ -26,7 +27,7 @@ public class Membership extends BaseEntity {
 
     @Builder.Default
     @OneToMany(mappedBy = "membership")
-    @JsonManagedReference
+    @JsonIgnore
     List<Subscription> subscriptions = new ArrayList<>();
 
     String name;

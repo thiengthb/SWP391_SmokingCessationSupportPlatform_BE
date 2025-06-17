@@ -5,7 +5,7 @@ import com.swpteam.smokingcessation.domain.dto.setting.SettingRequest;
 
 public interface ISettingService {
 
-    SettingResponse getSetting(String accountId);
+    SettingResponse getSettingByAccountId(String accountId);
 
     SettingResponse updateSetting(String accountId, SettingRequest request);
 }

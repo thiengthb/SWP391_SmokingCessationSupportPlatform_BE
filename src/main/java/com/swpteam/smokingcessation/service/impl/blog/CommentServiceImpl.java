@@ -112,7 +112,7 @@ public class CommentServiceImpl implements ICommentService {
     public CommentResponse updateComment(String id, CommentUpdateRequest request) {
         Comment comment = findCommentById(id);
 
-        boolean haveAccess = authUtil.checkAdminOrOwner(comment.getAccount().getId());
+        boolean haveAccess = authUtil.isAdminOrOwner(comment.getAccount().getId());
         if (!haveAccess) {
             throw new AppException(ErrorCode.OTHERS_COMMENT_UNCHANGEABLE);
         }
@@ -128,7 +128,7 @@ public class CommentServiceImpl implements ICommentService {
     public void deleteCommentById(String id) {
         Comment comment = findCommentById(id);
 
-        boolean haveAccess = authUtil.checkAdminOrOwner(comment.getAccount().getId());
+        boolean haveAccess = authUtil.isAdminOrOwner(comment.getAccount().getId());
         if (!haveAccess) {
             throw new AppException(ErrorCode.OTHERS_COMMENT_UNCHANGEABLE);
         }

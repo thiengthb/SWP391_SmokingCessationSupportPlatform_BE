@@ -122,7 +122,7 @@ public class BlogServiceImpl implements IBlogService {
     public BlogResponse updateBlog(String id, BlogUpdateRequest request) {
         Blog blog = findBlogById(id);
 
-        boolean haveAccess = authUtil.checkAdminOrOwner(blog.getAccount().getId());
+        boolean haveAccess = authUtil.isAdminOrOwner(blog.getAccount().getId());
         if (!haveAccess) {
             throw new AppException(ErrorCode.OTHERS_COMMENT_UNCHANGEABLE);
         }
@@ -142,7 +142,7 @@ public class BlogServiceImpl implements IBlogService {
     public void deleteBlogById(String id) {
         Blog blog = findBlogById(id);
 
-        boolean haveAccess = authUtil.checkAdminOrOwner(blog.getAccount().getId());
+        boolean haveAccess = authUtil.isAdminOrOwner(blog.getAccount().getId());
         if (!haveAccess) {
             throw new AppException(ErrorCode.OTHERS_COMMENT_UNCHANGEABLE);
         }

@@ -1,6 +1,7 @@
 package com.swpteam.smokingcessation.domain.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.swpteam.smokingcessation.domain.enums.PlanStatus;
 import com.swpteam.smokingcessation.common.BaseEntity;
@@ -23,13 +24,12 @@ import java.util.List;
 public class Plan extends BaseEntity {
 
     @ManyToOne
-    @JsonBackReference
     @JoinColumn(name = "accountId", nullable = false, updatable = false)
     Account account;
 
     @Builder.Default
     @OneToMany(mappedBy = "plan")
-    @JsonManagedReference
+    @JsonIgnore
     List<Phase> phases = new ArrayList<>();
 
     String planName;

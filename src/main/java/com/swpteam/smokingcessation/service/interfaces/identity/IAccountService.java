@@ -27,6 +27,8 @@ public interface IAccountService {
 
     Account findAccountById(String id);
 
+    Account findAccountByUsername(String username);
+
     Account findAccountByEmail(String email);
 
     void deleteAccount(String id);

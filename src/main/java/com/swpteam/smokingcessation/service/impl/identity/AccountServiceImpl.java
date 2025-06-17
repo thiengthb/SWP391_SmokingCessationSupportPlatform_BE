@@ -136,11 +136,9 @@ public class AccountServiceImpl implements IAccountService {
     @PreAuthorize("hasRole('ADMIN')")
     public void banAccount(String id) {
         Account account = findAccountById(id);
+        Account currentAccount = authUtil.getCurrentAccountOrThrow();
 
-        String emailFromToken = authUtil.getCurrentEmail()
-                .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FOUND));
-
-        if (emailFromToken.equals(account.getEmail()))
+        if (account == currentAccount)
             throw new AppException(ErrorCode.SELF_BAN);
 
         account.setStatus(AccountStatus.BANNED);
@@ -148,7 +146,6 @@ public class AccountServiceImpl implements IAccountService {
     }
 
     @Override
-    @Cacheable(value = "ACCOUNT_CACHE", key = "#email")
     public Account findAccountByEmail(String email) {
         return accountRepository.findByEmailAndIsDeletedFalse(email)
                 .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FOUND));
@@ -158,6 +155,13 @@ public class AccountServiceImpl implements IAccountService {
     @Cacheable(value = "ACCOUNT_CACHE", key = "#id")
     public Account findAccountById(String id) {
         return accountRepository.findByIdAndIsDeletedFalse(id)
+                .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FOUND));
+    }
+
+    @Override
+    @Cacheable(value = "ACCOUNT_CACHE", key = "#username")
+    public Account findAccountByUsername(String username) {
+        return accountRepository.findByUsernameAndIsDeletedFalse(username)
                 .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FOUND));
     }
 

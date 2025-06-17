@@ -8,29 +8,28 @@ import com.nimbusds.jwt.SignedJWT;
 import com.swpteam.smokingcessation.constant.ErrorCode;
 import com.swpteam.smokingcessation.domain.entity.Account;
 import com.swpteam.smokingcessation.exception.AppException;
-import com.swpteam.smokingcessation.repository.RefreshTokenRepository;
+import jakarta.annotation.PostConstruct;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.text.ParseException;
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 import java.util.Date;
-import java.util.StringJoiner;
 import java.util.UUID;
 
 @Slf4j
 @Component
+@AllArgsConstructor
 @RequiredArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class JwtUtil {
 
-    RefreshTokenRepository refreshTokenRepository;
+//    private static final String ADMIN_AUDIENCE = "admin-portal";
+//    private static final String WEBSITE_AUDIENCE = "web-app";
 
     @Value("${jwt.signer-key}")
     String SIGNER_KEY;
@@ -44,91 +43,101 @@ public class JwtUtil {
     @Value("${jwt.password-reset-token-duration}")
     long RESET_EMAIL_DURATION;
 
+    JWSSigner signer;
+    JWSVerifier verifier;
+
+    @PostConstruct
+    public void init() {
+        try {
+            signer = new MACSigner(SIGNER_KEY);
+            verifier = new MACVerifier(SIGNER_KEY);
+        } catch (KeyLengthException e) {
+            throw new IllegalArgumentException("Invalid secret key length", e);
+        } catch (JOSEException e) {
+            throw new RuntimeException("Failed to initialize JWT signer/verifier", e);
+        }
+
+        log.info("{}, {}, {}, {}", SIGNER_KEY, ACCESS_TOKEN_DURATION, REFRESH_TOKEN_DURATION, RESET_EMAIL_DURATION);
+    }
 
     public String generateAccessToken(Account account) {
-        return generateToken(account, ACCESS_TOKEN_DURATION, buildScope(account), null);
+        return generateToken(account, ACCESS_TOKEN_DURATION, "access_token");
     }
 
     public String generateRefreshToken(Account account) {
-        return generateToken(account, REFRESH_TOKEN_DURATION, null, "refresh_token");
+        return generateToken(account, REFRESH_TOKEN_DURATION, "refresh_token");
     }
 
     public String generateResetEmailToken(Account account) {
-        return generateToken(account, REFRESH_TOKEN_DURATION, null, "reset_email_token");
+        return generateToken(account, RESET_EMAIL_DURATION, "reset_email_token");
     }
 
-    @Transactional
-    public SignedJWT verifyToken(String token, boolean isRefresh) {
+    private String generateToken(Account account, long expirySeconds, String tokenType) {
+        Date now = new Date();
+        Date expiryDate = new Date(now.getTime() + expirySeconds * 1000);
+
+        JWTClaimsSet claimsSet = new JWTClaimsSet.Builder()
+                .subject(account.getId())
+                .issuer("smoking-cessation")
+                .issueTime(now)
+                .expirationTime(expiryDate)
+                .claim("token_type", tokenType)
+                .jwtID(UUID.randomUUID().toString())
+                .build();
+
         try {
-            SignedJWT signedJWT = SignedJWT.parse(token);
-
-            boolean verified = signedJWT.verify(new MACVerifier(SIGNER_KEY.getBytes()));
-            if (!verified)
-                throw new AppException(ErrorCode.UNAUTHENTICATED);
-
-            Date expirationTime = isRefresh ?
-                    Date.from(signedJWT.getJWTClaimsSet().getIssueTime().toInstant()
-                    .plus(REFRESH_TOKEN_DURATION, ChronoUnit.SECONDS))
-                    :
-                    signedJWT.getJWTClaimsSet().getExpirationTime();
-
-            if (expirationTime.toInstant().isBefore(Instant.now())) {
-                throw new AppException(ErrorCode.UNAUTHENTICATED);
-            }
-
-            String jti = signedJWT.getJWTClaimsSet().getJWTID();
-            if (refreshTokenRepository.existsById(jti)) {
-                throw new AppException(ErrorCode.USED_TOKEN);
-            }
-
-            return signedJWT;
-
-        } catch (JOSEException | ParseException e) {
-            log.error("Token verification failed", e);
-            throw new AppException(ErrorCode.UNAUTHENTICATED);
-        }
-    }
-
-    private String buildScope(Account account) {
-        StringJoiner stringJoiner = new StringJoiner(" ");
-
-        if (account.getRole() != null) {
-            stringJoiner.add("ROLE_" + account.getRole().name());
-        }
-
-        return stringJoiner.toString();
-    }
-
-    private String generateToken(Account account, long durationSeconds, String scope, String type) {
-        try {
-            JWTClaimsSet.Builder claimsBuilder = new JWTClaimsSet.Builder()
-                    .jwtID(UUID.randomUUID().toString())
-                    .subject(account.getEmail())
-                    .issuer("swpteam")
-                    .issueTime(new Date())
-                    .expirationTime(Date.from(Instant.now().plus(durationSeconds, ChronoUnit.SECONDS)));
-
-            if (scope != null) {
-                claimsBuilder.claim("scope", scope);
-            }
-            if (type != null) {
-                claimsBuilder.claim("token_type", type);
-            }
-
-            JWTClaimsSet claims = claimsBuilder.build();
-
-            SignedJWT signedJWT = new SignedJWT(
-                    new JWSHeader.Builder(JWSAlgorithm.HS512).type(JOSEObjectType.JWT).build(),
-                    claims
-            );
-
-            signedJWT.sign(new MACSigner(SIGNER_KEY.getBytes()));
-
+            SignedJWT signedJWT = new SignedJWT(new JWSHeader(JWSAlgorithm.HS256), claimsSet);
+            signedJWT.sign(signer);
             return signedJWT.serialize();
         } catch (JOSEException e) {
-            log.error("Failed to generate token", e);
-            throw new RuntimeException("Token generation error", e);
+            throw new AppException(ErrorCode.TOKEN_CREATE_FAILED);
         }
     }
 
+    public SignedJWT verifyToken(String token) {
+        try {
+            SignedJWT jwt = SignedJWT.parse(token);
+            if (!jwt.verify(verifier)) {
+                throw new AppException(ErrorCode.INVALID_TOKEN);
+            }
+            if (jwt.getJWTClaimsSet().getExpirationTime().before(new Date())) {
+                throw new AppException(ErrorCode.TOKEN_EXPIRED);
+            }
+            return jwt;
+        } catch (ParseException | JOSEException e) {
+            throw new AppException(ErrorCode.INVALID_TOKEN);
+        }
+    }
+
+    public String getSubject(SignedJWT jwt) {
+        try {
+            return jwt.getJWTClaimsSet().getSubject();
+        } catch (ParseException e) {
+            throw new AppException(ErrorCode.INVALID_TOKEN);
+        }
+    }
+
+    public String getJti(SignedJWT jwt) {
+        try {
+            return jwt.getJWTClaimsSet().getJWTID();
+        } catch (ParseException e) {
+            throw new AppException(ErrorCode.INVALID_TOKEN);
+        }
+    }
+
+    public Date getExpiration(SignedJWT jwt) {
+        try {
+            return jwt.getJWTClaimsSet().getExpirationTime();
+        } catch (ParseException e) {
+            throw new AppException(ErrorCode.INVALID_TOKEN);
+        }
+    }
+
+    public Object getClaim(SignedJWT jwt, String claimKey) {
+        try {
+            return jwt.getJWTClaimsSet().getClaim(claimKey);
+        } catch (ParseException e) {
+            throw new AppException(ErrorCode.INVALID_TOKEN);
+        }
+    }
 }

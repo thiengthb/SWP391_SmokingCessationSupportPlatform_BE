@@ -1,6 +1,7 @@
 package com.swpteam.smokingcessation.domain.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.swpteam.smokingcessation.common.BaseEntity;
 import com.swpteam.smokingcessation.domain.enums.BlogStatus;
@@ -22,17 +23,15 @@ public class Blog extends BaseEntity {
 
     @ManyToOne
     @JoinColumn(name = "accountId", nullable = false, updatable = false)
-    @JsonBackReference
     Account account;
 
     @ManyToOne
-    @JsonBackReference
     @JoinColumn(name = "categoryId", nullable = false)
     Category category;
 
     @Builder.Default
     @OneToMany(mappedBy = "blog", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference
+    @JsonIgnore
     List<Comment> comments = new ArrayList<>();
 
     String title;

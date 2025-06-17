@@ -50,6 +50,7 @@ public enum ErrorCode {
     SELF_BAN(2007, "You cannot ban yourself", HttpStatus.BAD_REQUEST),
     FORBIDDEN(403, "You do not have permission to access this resource", HttpStatus.FORBIDDEN),
     TOKEN_REQUIRED(403, "Token is required", HttpStatus.FORBIDDEN),
+    TOKEN_CREATE_FAILED(403, "Token is required", HttpStatus.INTERNAL_SERVER_ERROR),
 
     // Account
     ACCOUNT_NOT_FOUND(3000, "Account does not exist", HttpStatus.BAD_REQUEST),

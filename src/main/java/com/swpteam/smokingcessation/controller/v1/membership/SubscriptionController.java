@@ -83,7 +83,7 @@ public class SubscriptionController {
 
     @DeleteMapping("/{id}")
     ResponseEntity<ApiResponse<String>> deleteSubscription(@PathVariable String id) {
-        subscriptionService.deleteSubscription(id);
+        subscriptionService.softDeleteSubscription(id);
         return ResponseEntity.ok().body(
                 ApiResponse.<String>builder()
                         .code(SuccessCode.SUBSCRIPTION_DELETED.getCode())

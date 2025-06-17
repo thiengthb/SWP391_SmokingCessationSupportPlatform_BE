@@ -19,7 +19,6 @@ import java.time.LocalDate;
 public class Phase extends BaseEntity {
 
     @ManyToOne
-    @JsonBackReference
     @JoinColumn(name = "planId", nullable = false, updatable = false)
     Plan plan;
 

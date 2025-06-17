@@ -27,7 +27,7 @@ public class SettingServiceImpl implements ISettingService {
     SettingMapper settingMapper;
 
     @Override
-    public SettingResponse getSetting(String accountId) {
+    public SettingResponse getSettingByAccountId(String accountId) {
         return settingMapper.toResponse(findSettingById(accountId));
     }
     

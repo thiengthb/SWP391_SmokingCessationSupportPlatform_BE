@@ -1,11 +1,10 @@
 package com.swpteam.smokingcessation.service.interfaces.identity;
 
 import com.nimbusds.jose.JOSEException;
-import com.swpteam.smokingcessation.domain.dto.account.AccountResponse;
 import com.swpteam.smokingcessation.domain.dto.auth.request.*;
 import com.swpteam.smokingcessation.domain.dto.auth.response.AuthenticationResponse;
 import com.swpteam.smokingcessation.domain.dto.auth.response.GoogleTokenResponse;
-import com.swpteam.smokingcessation.domain.dto.auth.response.IntrospectResponse;
+import org.springframework.security.core.Authentication;
 
 import java.text.ParseException;
 
@@ -13,17 +12,17 @@ public interface IAuthenticationService {
 
     GoogleTokenResponse getGoogleToken(GoogleTokenRequest request);
 
-    AuthenticationResponse authenticate(AuthenticationRequest request);
+    AuthenticationResponse login(AuthenticationRequest request);
 
-    AuthenticationResponse refreshToken(String token) throws ParseException, JOSEException;
+    AuthenticationResponse refreshToken(String token);
 
     AuthenticationResponse register(RegisterRequest request);
 
-    IntrospectResponse introspect(TokenRequest request) throws JOSEException, ParseException;
+    Authentication authenticate(String token);
 
     void sendResetPasswordEmail(String email);
 
     void resetPassword(ResetPasswordRequest request);
 
-    void logout() throws ParseException, JOSEException;
+    void logout();
 }

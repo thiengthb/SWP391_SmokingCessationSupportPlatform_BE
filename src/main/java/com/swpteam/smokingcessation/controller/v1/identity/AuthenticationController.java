@@ -1,32 +1,20 @@
 package com.swpteam.smokingcessation.controller.v1.identity;
 
-import com.nimbusds.jose.JOSEException;
 import com.swpteam.smokingcessation.common.ApiResponse;
 import com.swpteam.smokingcessation.constant.SuccessCode;
-import com.swpteam.smokingcessation.domain.dto.account.AccountResponse;
 import com.swpteam.smokingcessation.domain.dto.auth.request.*;
 import com.swpteam.smokingcessation.domain.dto.auth.response.AuthenticationResponse;
 import com.swpteam.smokingcessation.domain.dto.auth.response.GoogleTokenResponse;
 import com.swpteam.smokingcessation.service.interfaces.identity.IAuthenticationService;
+import com.swpteam.smokingcessation.utils.CookieUtil;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.oauth2.jwt.Jwt;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-import java.text.ParseException;
-import java.time.Duration;
-
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -49,19 +37,10 @@ public class AuthenticationController {
 
     @PostMapping("/login")
     ResponseEntity<ApiResponse<AuthenticationResponse>> authenticate(@RequestBody @Valid AuthenticationRequest request, HttpServletResponse response) {
-        AuthenticationResponse authenticationResponse = authenticationService.authenticate(request);
+        AuthenticationResponse authenticationResponse = authenticationService.login(request);
 
-        ResponseCookie cookie = ResponseCookie.from("token", authenticationResponse.getAccessToken())
-                .httpOnly(true)
-                .secure(false) // set true in production (HTTPS)
-                .path("/")
-                .maxAge(Duration.ofDays(1))
-                .sameSite("Lax")
-                .build();
-
-        response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
-
-        AccountResponse accountResponse = authenticationResponse.getAccountResponse();
+        CookieUtil.setRefreshTokenCookie(response, authenticationResponse.getRefreshToken());
+        authenticationResponse.setRefreshToken(null);
         return ResponseEntity.ok()
                 .body(ApiResponse.<AuthenticationResponse>builder()
                         .code(SuccessCode.LOGIN_SUCCESS.getCode())
@@ -70,22 +49,12 @@ public class AuthenticationController {
                         .build());
     }
 
-    @PostMapping("/refresh")
-    ResponseEntity<ApiResponse<AuthenticationResponse>> refreshToken(@AuthenticationPrincipal Jwt jwt, HttpServletResponse response) throws ParseException, JOSEException {
-        String token = jwt.getTokenValue();
-        AuthenticationResponse authenticationResponse = authenticationService.refreshToken(token);
+    @PostMapping("/refresh-token")
+    ResponseEntity<ApiResponse<AuthenticationResponse>> refreshToken(@CookieValue("refreshToken") String refreshToken, HttpServletResponse response) {
+        AuthenticationResponse authenticationResponse = authenticationService.refreshToken(refreshToken);
 
-        ResponseCookie cookie = ResponseCookie.from("token", authenticationResponse.getAccessToken())
-                .httpOnly(true)
-                .secure(false) // set true in production (HTTPS)
-                .path("/")
-                .maxAge(Duration.ofDays(1))
-                .sameSite("Lax")
-                .build();
-
-        response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
-
-        AccountResponse accountResponse = authenticationResponse.getAccountResponse();
+        CookieUtil.setRefreshTokenCookie(response, authenticationResponse.getRefreshToken());
+        authenticationResponse.setRefreshToken(null);
         return ResponseEntity.ok()
                 .body(ApiResponse.<AuthenticationResponse>builder()
                         .code(SuccessCode.TOKEN_REFRESH_SUCCESS.getCode())
@@ -98,17 +67,8 @@ public class AuthenticationController {
     ResponseEntity<ApiResponse<AuthenticationResponse>> register(@RequestBody @Valid RegisterRequest request, HttpServletResponse response) {
         AuthenticationResponse authenticationResponse = authenticationService.register(request);
 
-        ResponseCookie cookie = ResponseCookie.from("token", authenticationResponse.getAccessToken())
-                .httpOnly(true)
-                .secure(false) // set true in production (HTTPS)
-                .path("/")
-                .maxAge(Duration.ofDays(1))
-                .sameSite("Lax")
-                .build();
-
-        response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
-
-        AccountResponse accountResponse = authenticationResponse.getAccountResponse();
+        CookieUtil.setRefreshTokenCookie(response, authenticationResponse.getRefreshToken());
+        authenticationResponse.setRefreshToken(null);
         return ResponseEntity.ok(
                 ApiResponse.<AuthenticationResponse>builder()
                         .code(SuccessCode.REGISTER_SUCCESS.getCode())
@@ -140,8 +100,11 @@ public class AuthenticationController {
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<ApiResponse<Void>> logout() throws JOSEException, ParseException {
+    public ResponseEntity<ApiResponse<Void>> logout(HttpServletResponse response) {
         authenticationService.logout();
+
+        CookieUtil.clearRefreshTokenCookie(response);
+
         return ResponseEntity.ok(
                 ApiResponse.<Void>builder()
                         .code(SuccessCode.LOGOUT_SUCCESS.getCode())
@@ -149,6 +112,5 @@ public class AuthenticationController {
                         .build()
         );
     }
-
 
 }
