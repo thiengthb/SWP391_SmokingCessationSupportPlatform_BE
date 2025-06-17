@@ -19,7 +19,7 @@ public class RecordHabitCreateRequest {
     @NotBlank(message = "ACCOUNT_REQUIRED")
     String accountId;
 
-    @NotBlank(message = "CIGARETTES_SMOKED_REQUIRED")
+    @NotNull(message = "CIGARETTES_SMOKED_REQUIRED")
     @Min(value = 0, message = "CIGARETTES_SMOKED_INVALID")
     Integer cigarettesSmoked;
 

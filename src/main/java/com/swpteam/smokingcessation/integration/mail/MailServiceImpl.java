@@ -1,12 +1,13 @@
 package com.swpteam.smokingcessation.integration.mail;
 
-import com.swpteam.smokingcessation.domain.entity.Account;
-import com.swpteam.smokingcessation.repository.AccountRepository;
-import com.swpteam.smokingcessation.domain.entity.Message;
-import com.swpteam.smokingcessation.domain.entity.Subscription;
-import com.swpteam.smokingcessation.repository.SubscriptionRepository;
 import com.swpteam.smokingcessation.constant.ErrorCode;
+import com.swpteam.smokingcessation.domain.entity.Account;
+import com.swpteam.smokingcessation.domain.entity.Message;
+import com.swpteam.smokingcessation.domain.entity.Report;
+import com.swpteam.smokingcessation.domain.entity.Subscription;
 import com.swpteam.smokingcessation.exception.AppException;
+import com.swpteam.smokingcessation.repository.AccountRepository;
+import com.swpteam.smokingcessation.repository.SubscriptionRepository;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.AccessLevel;
@@ -140,6 +141,27 @@ public class MailServiceImpl implements IMailService {
         helper.setText(htmlContent, true); // true indicates HTML content
 
         mailSender.send(mimeMessage);
+    }
+
+    @Override
+    public void sendReportEmail(String to, Report report) {
+        Context context = new Context();
+        context.setVariable("report", report);
+
+        String htmlContent = templateEngine.process("monthly-report-email", context);
+
+        try {
+            MimeMessage mimeMessage = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
+            helper.setTo(to);
+            helper.setSubject("Monthly performance report");
+            helper.setText(htmlContent, true);
+
+            mailSender.send(mimeMessage);
+        } catch (MessagingException e) {
+            e.printStackTrace();
+            throw new AppException(ErrorCode.EMAIL_SEND_FAILED);
+        }
     }
 }
 
