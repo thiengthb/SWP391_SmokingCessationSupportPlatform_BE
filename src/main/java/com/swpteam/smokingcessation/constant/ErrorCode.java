@@ -212,15 +212,25 @@ public enum ErrorCode {
     // Chat
     CHAT_MESSAGE_REQUIRED(1100, "Chat message is required", HttpStatus.BAD_REQUEST),
     CHAT_SIZE_EXCEED(1101, "Chat message needs to be under {max} characters", HttpStatus.BAD_REQUEST),
-    OTHERS_CHAT_CANT_DELETE(1102, "Other's chat message cannot be deleted", HttpStatus.BAD_REQUEST),
+    OTHERS_CHAT_CANNOT_BE_DELETED(1102, "Other's chat message cannot be deleted", HttpStatus.FORBIDDEN),
     CHAT_NOT_FOUND(1103, "Chat does not exist or have been deleted", HttpStatus.BAD_REQUEST),
 
     // Notification
-    OTHERS_NOTIFICATION_CANT_DELETE(2100, "Other's notifications cannot be deleted", HttpStatus.BAD_REQUEST),
+    OTHERS_NOTIFICATION_CANNOT_BE_DELETED(2100, "Other's notifications cannot be deleted", HttpStatus.FORBIDDEN),
     NOTIFICATION_CONTENT_REQUIRED(2101, "Content for notification is required", HttpStatus.BAD_REQUEST),
     NOTIFICATION_ID_REQUIRED(2102, "Notification ID is required to mark as read", HttpStatus.BAD_REQUEST),
     NOTIFICATION_NOT_FOUND(2103, "Notification does not exist or have been deleted", HttpStatus.BAD_REQUEST),
+
+    // Streak
+    STREAK_RESET_FAILED(3100, "Failure in resetting the streak", HttpStatus.INTERNAL_SERVER_ERROR),
+    STREAK_NOT_FOUND(3101, "Streak does not exist or have been deleted", HttpStatus.BAD_REQUEST),
+    STREAK_INVALID(3102, "Streak must be a non-negative number", HttpStatus.BAD_REQUEST),
+    STREAK_REQUIRED(3103, "Streak field must be entered", HttpStatus.BAD_REQUEST),
+    OTHERS_STREAK_CANNOT_BE_DELETED(3104, "Other's streak counter cannot be deleted", HttpStatus.FORBIDDEN),
+    STREAK_ALREADY_EXISTS(3105, "Streak already exists in the system", HttpStatus.CONFLICT),
+
     ;
+
     int code;
     String message;
     HttpStatusCode httpCode;

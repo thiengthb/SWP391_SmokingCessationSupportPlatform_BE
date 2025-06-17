@@ -29,7 +29,7 @@ public class Member extends BaseEntity {
     LocalDate dob;
     String address;
     int score;
-    int currentStreak;
+    int highestStreak;
     LocalDateTime lastCounterReset;
 
     @Enumerated(EnumType.STRING)

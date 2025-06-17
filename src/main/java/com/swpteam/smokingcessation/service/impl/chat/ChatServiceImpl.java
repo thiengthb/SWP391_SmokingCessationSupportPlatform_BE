@@ -81,7 +81,7 @@ public class ChatServiceImpl implements IChatService {
 
         boolean haveAccess = authorizationUtilService.checkAdminOrOwner(chat.getAccount().getId());
         if (!haveAccess) {
-            throw new AppException(ErrorCode.OTHERS_CHAT_CANT_DELETE);
+            throw new AppException(ErrorCode.OTHERS_CHAT_CANNOT_BE_DELETED);
         }
 
         chat.setDeleted(true);

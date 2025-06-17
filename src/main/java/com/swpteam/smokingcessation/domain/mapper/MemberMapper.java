@@ -12,7 +12,7 @@ public interface MemberMapper {
 
     @Mapping(target = "account", ignore = true)
     @Mapping(target = "score", ignore = true)
-    @Mapping(target = "currentStreak", ignore = true)
+    @Mapping(target = "highestStreak", ignore = true)
     @Mapping(target = "lastCounterReset", ignore = true)
     Member toEntity(MemberRequest request);
 

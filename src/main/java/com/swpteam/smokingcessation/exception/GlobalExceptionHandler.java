@@ -10,8 +10,7 @@ import jakarta.validation.ConstraintViolation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.messaging.handler.annotation.MessageExceptionHandler;
-import org.springframework.messaging.simp.annotation.SendToUser;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -103,6 +102,16 @@ public class GlobalExceptionHandler {
                 ApiResponse.<Void>builder()
                         .code(ErrorCode.UNAUTHENTICATED.getCode())
                         .message(exception.getMessage())
+                        .build()
+        );
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<ApiResponse<Void>> handleInvalidBody(HttpMessageNotReadableException ex) {
+        return ResponseEntity.badRequest().body(
+                ApiResponse.<Void>builder()
+                        .code(400)
+                        .message("Malformed or missing request body")
                         .build()
         );
     }

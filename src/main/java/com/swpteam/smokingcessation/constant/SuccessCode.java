@@ -143,6 +143,13 @@ public enum SuccessCode {
     NOTIFICATION_DELETED(1103, "Successfully deleted notification"),
     ALL_NOTIFICATION_DELETED(1103, "Successfully deleted all notifications associated with the account ID"),
 
+    // Streak
+    STREAK_LIST_ALL(2010, "Successfully listed all streaks"),
+    STREAK_GET_BY_ID(2011, "Successfully retrieved streak by ID"),
+    STREAK_CREATED(2012, "Streak created successfully"),
+    STREAK_UPDATED(2013, "Streak updated successfully"),
+    STREAK_DELETED(2014, "Streak deleted successfully"),
+    STREAK_RESET(2015, "Streak reset successfully"),
     ;
     int code;
     String message;

@@ -12,6 +12,8 @@ import java.util.Optional;
 public interface MemberRepository extends JpaRepository<Member, String> {
     Optional<Member> findByIdAndIsDeletedFalse(String s);
 
+    Optional<Member> findByAccountIdAndIsDeletedFalse(String s);
+
     boolean existsByFullName(String fullName);
 
     Page<Member> findAllByIsDeletedFalse(Pageable pageable);

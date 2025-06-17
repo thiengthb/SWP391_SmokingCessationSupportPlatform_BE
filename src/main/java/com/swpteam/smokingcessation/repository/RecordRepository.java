@@ -6,10 +6,15 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.util.Optional;
 
 @Repository
 public interface RecordRepository extends JpaRepository<com.swpteam.smokingcessation.domain.entity.Record, String> {
+
+    boolean existsByAccountIdAndDateAndIsDeletedFalse(String id, LocalDate time);
+
+    long countByAccountIdAndDateAndIsDeletedFalse(String id, LocalDate time);
 
     Optional<com.swpteam.smokingcessation.domain.entity.Record> findByIdAndIsDeletedFalse(String id);
 

@@ -1,16 +1,18 @@
 package com.swpteam.smokingcessation.service.impl.tracking;
 
-import com.swpteam.smokingcessation.domain.entity.Account;
-import com.swpteam.smokingcessation.domain.mapper.RecordMapper;
-import com.swpteam.smokingcessation.repository.AccountRepository;
+import com.swpteam.smokingcessation.common.PageableRequest;
+import com.swpteam.smokingcessation.constant.ErrorCode;
 import com.swpteam.smokingcessation.domain.dto.record.RecordCreateRequest;
 import com.swpteam.smokingcessation.domain.dto.record.RecordResponse;
 import com.swpteam.smokingcessation.domain.dto.record.RecordUpdateRequest;
-import com.swpteam.smokingcessation.common.PageableRequest;
-import com.swpteam.smokingcessation.constant.ErrorCode;
+import com.swpteam.smokingcessation.domain.entity.Account;
 import com.swpteam.smokingcessation.domain.entity.Record;
+import com.swpteam.smokingcessation.domain.entity.Streak;
+import com.swpteam.smokingcessation.domain.mapper.RecordMapper;
 import com.swpteam.smokingcessation.exception.AppException;
+import com.swpteam.smokingcessation.repository.AccountRepository;
 import com.swpteam.smokingcessation.repository.RecordRepository;
+import com.swpteam.smokingcessation.repository.StreakRepository;
 import com.swpteam.smokingcessation.service.interfaces.tracking.IRecordService;
 import com.swpteam.smokingcessation.utils.ValidationUtil;
 import lombok.AccessLevel;
@@ -30,6 +32,7 @@ public class RecordServiceImpl implements IRecordService {
 
     RecordRepository recordRepository;
     AccountRepository accountRepository;
+    StreakRepository streakRepository;
     RecordMapper recordMapper;
 
     @Override
@@ -72,11 +75,22 @@ public class RecordServiceImpl implements IRecordService {
         Account account = accountRepository.findById(request.getAccountId())
                 .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FOUND));
 
-        com.swpteam.smokingcessation.domain.entity.Record record = recordMapper.toEntity(request);
+        Record record = recordMapper.toEntity(request);
 
         record.setAccount(account);
 
-        return recordMapper.toResponse(recordRepository.save(record));
+        recordRepository.save(record);
+        long count = recordRepository.countByAccountIdAndDateAndIsDeletedFalse(request.getAccountId(), request.getDate());
+        if (count == 1) { // first record for this account today
+            Streak streak = streakRepository.findByMember_Account_Id(request.getAccountId())
+                    .orElse(null);
+            if (streak != null) {
+                streak.setStreak(streak.getStreak() + 1);
+                streakRepository.save(streak);
+            }
+        }
+
+        return recordMapper.toResponse(record);
     }
 
     @Override

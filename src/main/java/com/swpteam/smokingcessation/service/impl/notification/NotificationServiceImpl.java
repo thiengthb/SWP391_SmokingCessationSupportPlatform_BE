@@ -100,7 +100,7 @@ public class NotificationServiceImpl implements INotificationService {
 
         boolean haveAccess = authorizationUtilService.checkAdminOrOwner(notification.getAccount().getId());
         if (!haveAccess) {
-            throw new AppException(ErrorCode.OTHERS_NOTIFICATION_CANT_DELETE);
+            throw new AppException(ErrorCode.OTHERS_NOTIFICATION_CANNOT_BE_DELETED);
         }
 
         notification.setDeleted(true);
@@ -115,7 +115,7 @@ public class NotificationServiceImpl implements INotificationService {
         }
         boolean haveAccess = authorizationUtilService.checkAdminOrOwner(notifications.getFirst().getAccount().getId());
         if (!haveAccess) {
-            throw new AppException(ErrorCode.OTHERS_NOTIFICATION_CANT_DELETE);
+            throw new AppException(ErrorCode.OTHERS_NOTIFICATION_CANNOT_BE_DELETED);
         }
 
         notifications.forEach(notification -> notification.setDeleted(true));
