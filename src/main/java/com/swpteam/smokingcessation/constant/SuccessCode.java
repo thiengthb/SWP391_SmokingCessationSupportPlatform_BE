@@ -156,6 +156,30 @@ public enum SuccessCode {
 
     // Report
     SUMMARY_GET(3101, "Successfully get summary"),
+
+    // Achievement
+    ACHIEVEMENT_GET_ALL(6000, "Successfully retrieved all achievements"),
+    ACHIEVEMENT_GET_BY_NAME(6001, "Successfully retrieved achievement by name"),
+    ACHIEVEMENT_CREATED(6002, "Achievement created successfully"),
+    ACHIEVEMENT_UPDATED(6003, "Achievement updated successfully"),
+    ACHIEVEMENT_DELETED(6004, "Achievement deleted successfully"),
+
+    // Feedback
+    FEEDBACK_GET_ALL(7000, "Successfully retrieved all feedback"),
+    FEEDBACK_GET_BY_ID(7001, "Successfully retrieved feedback by ID"),
+    FEEDBACK_GET_BY_ACCOUNT(7002, "Successfully retrieved feedback by account"),
+    FEEDBACK_CREATED(7003, "Feedback created successfully"),
+    FEEDBACK_UPDATED(7004, "Feedback updated successfully"),
+    FEEDBACK_DELETED(7005, "Feedback deleted successfully"),
+
+    // Review
+    REVIEW_GET_ALL(8000, "Successfully retrieved all reviews"),
+    REVIEW_GET_BY_ID(8001, "Successfully retrieved review by ID"),
+    REVIEW_GET_BY_ACCOUNT(8002, "Successfully retrieved reviews by account"),
+    REVIEW_GET_BY_COACH(8003, "Successfully retrieved reviews by coach"),
+    REVIEW_CREATED(8004, "Review created successfully"),
+    REVIEW_UPDATED(8005, "Review updated successfully"),
+    REVIEW_DELETED(8006, "Review deleted successfully"),
     ;
     int code;
     String message;

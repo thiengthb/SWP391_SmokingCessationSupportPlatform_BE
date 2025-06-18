@@ -234,8 +234,31 @@ public enum ErrorCode {
     // Report
     PAST_FROM_DATE(4100, "The from date needs to be in the past", HttpStatus.BAD_REQUEST),
     PAST_TO_DATE(4101, "The to date needs to be in the past or present", HttpStatus.BAD_REQUEST),
-    FROM_DATE_REQUIRED(4102, "The from date cannot be empty", HttpStatus.BAD_REQUEST);
+    FROM_DATE_REQUIRED(4102, "The from date cannot be empty", HttpStatus.BAD_REQUEST),
 
+    // Achievement
+    ACHIEVEMENT_NOT_FOUND(6000, "Achievement does not exist or have been deleted", HttpStatus.BAD_REQUEST),
+    ACHIEVEMENT_ALREADY_EXISTS(6001, "Achievement already exists", HttpStatus.BAD_REQUEST),
+    ACHIEVEMENT_NAME_REQUIRED(6002, "Achievement name is required", HttpStatus.BAD_REQUEST),
+    ACHIEVEMENT_DESCRIPTION_REQUIRED(6003, "Achievement description is required", HttpStatus.BAD_REQUEST),
+    ACHIEVEMENT_ICON_URL_REQUIRED(6004, "Achievement icon URL is required", HttpStatus.BAD_REQUEST),
+    ACHIEVEMENT_CRITERIA_TYPE_REQUIRED(6005, "Achievement criteria type is required", HttpStatus.BAD_REQUEST),
+    ACHIEVEMENT_CRITERIA_VALUE_REQUIRED(6006, "Achievement criteria value is required", HttpStatus.BAD_REQUEST),
+    ACHIEVEMENT_CRITERIA_VALUE_INVALID(6007, "Achievement criteria value must be positive", HttpStatus.BAD_REQUEST),
+
+    // Feedback
+    FEEDBACK_NOT_FOUND(7000, "Feedback does not exist or have been deleted", HttpStatus.BAD_REQUEST),
+    FEEDBACK_COMMENT_REQUIRED(7001, "Feedback comment is required", HttpStatus.BAD_REQUEST),
+    FEEDBACK_RATING_MIN(7002, "Feedback rating must be at least 1", HttpStatus.BAD_REQUEST),
+    FEEDBACK_RATING_MAX(7003, "Feedback rating must be at most 5", HttpStatus.BAD_REQUEST),
+
+    // Review
+    REVIEW_NOT_FOUND(8000, "Review does not exist or have been deleted", HttpStatus.BAD_REQUEST),
+    REVIEW_RATING_MIN(8001, "Review rating must be at least 1", HttpStatus.BAD_REQUEST),
+    REVIEW_RATING_MAX(8002, "Review rating must be at most 5", HttpStatus.BAD_REQUEST),
+    REVIEW_TYPE_REQUIRED(8003, "Review type is required", HttpStatus.BAD_REQUEST),
+    REVIEW_COACH_ID_REQUIRED(8004, "Coach ID is required", HttpStatus.BAD_REQUEST),
+    ;
     int code;
     String message;
     HttpStatusCode httpCode;
