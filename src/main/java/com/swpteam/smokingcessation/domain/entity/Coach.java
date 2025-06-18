@@ -22,13 +22,11 @@ public class Coach extends BaseEntity {
 
     @MapsId
     @OneToOne
-    @JsonBackReference
     @JoinColumn(name = "accountId", nullable = false, updatable = false)
     Account account;
 
     @Builder.Default
     @OneToMany(mappedBy = "coach")
-    @JsonManagedReference
     List<Booking> bookings = new ArrayList<>();
 
     @Builder.Default

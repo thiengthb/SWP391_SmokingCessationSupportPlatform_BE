@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class RecordResponse {
+public class RecordHabitResponse {
 
     private String id;
     private String accountId;

@@ -7,11 +7,11 @@ import org.springframework.data.domain.Page;
 
 public interface IMemberService {
 
-    MemberResponse createMember(MemberRequest request, String id);
+    MemberResponse createMember(String accountId, MemberRequest request);
 
     Page<MemberResponse> getMembers(PageableRequest request);
 
-    MemberResponse getMemberById(String id);
+    MemberResponse getMemberById(String accountId);
 
-    MemberResponse updateMember(MemberRequest request, String id);
+    MemberResponse updateMember(String accountId, MemberRequest request);
 }

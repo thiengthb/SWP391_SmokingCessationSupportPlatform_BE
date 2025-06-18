@@ -5,6 +5,7 @@ import com.swpteam.smokingcessation.domain.dto.membership.MembershipCreateReques
 import com.swpteam.smokingcessation.domain.dto.membership.MembershipCurrencyUpdateRequest;
 import com.swpteam.smokingcessation.domain.dto.membership.MembershipResponse;
 import com.swpteam.smokingcessation.domain.dto.membership.MembershipUpdateRequest;
+import com.swpteam.smokingcessation.domain.entity.Membership;
 import org.springframework.data.domain.Page;
 
 public interface IMembershipService {
@@ -19,7 +20,11 @@ public interface IMembershipService {
 
     MembershipResponse updateMembership(String id, MembershipUpdateRequest request);
 
-    void softDeleteMembershipById(String id);
-
     MembershipResponse updateMembershipCurrency(String id, MembershipCurrencyUpdateRequest request);
+
+    Membership findMembershipById(String id);
+
+    Membership findMembershipByName(String name);
+
+    void softDeleteMembershipById(String id);
 }

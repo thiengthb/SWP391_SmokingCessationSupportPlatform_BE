@@ -14,8 +14,7 @@ import com.swpteam.smokingcessation.exception.AppException;
 import com.swpteam.smokingcessation.repository.BlogRepository;
 import com.swpteam.smokingcessation.repository.CommentRepository;
 import com.swpteam.smokingcessation.service.interfaces.blog.ICommentService;
-import com.swpteam.smokingcessation.utils.AccountUtilService;
-import com.swpteam.smokingcessation.utils.AuthorizationUtilService;
+import com.swpteam.smokingcessation.utils.AuthUtil;
 import com.swpteam.smokingcessation.utils.ValidationUtil;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -41,14 +40,11 @@ public class CommentServiceImpl implements ICommentService {
 
     BlogRepository blogRepository;
 
-    AccountUtilService accountUtilService;
-    AuthorizationUtilService authorizationUtilService;
+    AuthUtil authUtil;
 
     @Override
     public Page<CommentResponse> getCommentsByBlogId(String blogId, PageableRequest request) {
-        if (!ValidationUtil.isFieldExist(Comment.class, request.getSortBy())) {
-            throw new AppException(ErrorCode.INVALID_SORT_FIELD);
-        }
+        ValidationUtil.checkFieldExist(Comment.class, request.getSortBy());
 
         Pageable pageable = PageableRequest.getPageable(request);
         Page<Comment> topLevelComments = commentRepository.findByBlogIdAndLevel(blogId, 0, pageable);
@@ -59,9 +55,7 @@ public class CommentServiceImpl implements ICommentService {
     @Override
     @PreAuthorize("hasRole('ADMIN')")
     public Page<CommentResponse> getCommentPage(PageableRequest request) {
-        if (!ValidationUtil.isFieldExist(Comment.class, request.getSortBy())) {
-            throw new AppException(ErrorCode.INVALID_SORT_FIELD);
-        }
+        ValidationUtil.checkFieldExist(Comment.class, request.getSortBy());
 
         Pageable pageable = PageableRequest.getPageable(request);
         Page<Comment> comments = commentRepository.findAll(pageable);
@@ -80,7 +74,7 @@ public class CommentServiceImpl implements ICommentService {
     @Transactional
     @CachePut(value = "COMMENT_CACHE", key = "#result.getId()")
     public CommentResponse createComment(CommentCreateRequest request) {
-        Account currentAccount = accountUtilService.getCurrentAccount()
+        Account currentAccount = authUtil.getCurrentAccount()
                 .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FOUND));
 
         Blog blog = blogRepository.findByIdAndIsDeletedFalse(request.getBlogId())
@@ -97,7 +91,7 @@ public class CommentServiceImpl implements ICommentService {
     @Transactional
     @CachePut(value = "COMMENT_CACHE", key = "#result.getId()")
     public CommentResponse replyComment(CommentReplyRequest request) {
-        Account currentAccount = accountUtilService.getCurrentAccount()
+        Account currentAccount = authUtil.getCurrentAccount()
                 .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FOUND));
 
         Comment parentComment = findCommentById(request.getParentCommentId());
@@ -118,7 +112,7 @@ public class CommentServiceImpl implements ICommentService {
     public CommentResponse updateComment(String id, CommentUpdateRequest request) {
         Comment comment = findCommentById(id);
 
-        boolean haveAccess = authorizationUtilService.checkAdminOrOwner(comment.getAccount().getId());
+        boolean haveAccess = authUtil.isAdminOrOwner(comment.getAccount().getId());
         if (!haveAccess) {
             throw new AppException(ErrorCode.OTHERS_COMMENT_UNCHANGEABLE);
         }
@@ -134,7 +128,7 @@ public class CommentServiceImpl implements ICommentService {
     public void deleteCommentById(String id) {
         Comment comment = findCommentById(id);
 
-        boolean haveAccess = authorizationUtilService.checkAdminOrOwner(comment.getAccount().getId());
+        boolean haveAccess = authUtil.isAdminOrOwner(comment.getAccount().getId());
         if (!haveAccess) {
             throw new AppException(ErrorCode.OTHERS_COMMENT_UNCHANGEABLE);
         }

@@ -71,15 +71,5 @@ public class CoachController {
                         .build()
         );
     }
-
-    @DeleteMapping("/{id}")
-    ResponseEntity<ApiResponse<Void>> deleteCoachById(@PathVariable String id) {
-        coachService.softDeleteCoachById(id);
-        return ResponseEntity.ok(
-                ApiResponse.<Void>builder()
-                        .code(SuccessCode.COACH_DELETED.getCode())
-                        .message(SuccessCode.COACH_DELETED.getMessage())
-                        .build()
-        );
-    }
+    
 }

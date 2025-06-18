@@ -21,7 +21,6 @@ public class Member extends BaseEntity {
 
     @MapsId
     @OneToOne
-    @JsonBackReference
     @JoinColumn(name = "accountId", nullable = false, updatable = false)
     Account account;
 

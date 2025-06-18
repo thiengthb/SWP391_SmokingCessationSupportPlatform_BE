@@ -4,6 +4,7 @@ import com.swpteam.smokingcessation.domain.dto.payment.StripeResponse;
 import com.swpteam.smokingcessation.domain.dto.payment.StripeSubscriptionRequest;
 import com.swpteam.smokingcessation.integration.payment.StripeService;
 import com.swpteam.smokingcessation.common.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1/stripe-payment")
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@Tag(name = "Stripe Payment", description = "Manage payment-related operations")
 public class StripePaymentController {
 
     StripeService stripeService;

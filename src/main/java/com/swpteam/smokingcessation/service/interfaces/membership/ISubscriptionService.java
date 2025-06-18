@@ -20,5 +20,5 @@ public interface ISubscriptionService {
 
     SubscriptionResponse updateSubscription(String id, SubscriptionRequest request);
 
-    void deleteSubscription(String id);
+    void softDeleteSubscription(String id);
 }

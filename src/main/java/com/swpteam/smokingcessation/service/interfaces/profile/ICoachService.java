@@ -13,6 +13,5 @@ public interface ICoachService {
     CoachResponse createCoach(CoachRequest request);
 
     CoachResponse updateCoachById(String id, CoachRequest request);
-
-    void softDeleteCoachById(String id);
+    
 }

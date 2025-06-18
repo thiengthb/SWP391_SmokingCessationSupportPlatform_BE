@@ -18,7 +18,6 @@ import lombok.experimental.FieldDefaults;
 public class Health extends BaseEntity {
 
     @ManyToOne
-    @JsonBackReference
     @JoinColumn(name = "accountId", nullable = false, updatable = false)
     Account account;
 

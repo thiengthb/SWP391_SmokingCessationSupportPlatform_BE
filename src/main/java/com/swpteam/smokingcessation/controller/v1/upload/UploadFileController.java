@@ -3,6 +3,7 @@ package com.swpteam.smokingcessation.controller.v1.upload;
 import com.swpteam.smokingcessation.common.ApiResponse;
 import com.swpteam.smokingcessation.constant.SuccessCode;
 import com.swpteam.smokingcessation.integration.imagecloud.CloudinaryService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -21,6 +22,7 @@ import java.io.IOException;
 @RequestMapping("/api/upload")
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@Tag(name = "Upload image", description = "Manage upload-related operations")
 public class UploadFileController {
 
     CloudinaryService cloudinaryService;

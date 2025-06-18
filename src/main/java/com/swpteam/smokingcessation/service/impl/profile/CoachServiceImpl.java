@@ -8,33 +8,38 @@ import com.swpteam.smokingcessation.domain.entity.Account;
 import com.swpteam.smokingcessation.domain.entity.Coach;
 import com.swpteam.smokingcessation.domain.mapper.CoachMapper;
 import com.swpteam.smokingcessation.exception.AppException;
-import com.swpteam.smokingcessation.repository.AccountRepository;
 import com.swpteam.smokingcessation.repository.CoachRepository;
+import com.swpteam.smokingcessation.service.interfaces.identity.IAccountService;
 import com.swpteam.smokingcessation.service.interfaces.profile.ICoachService;
 import com.swpteam.smokingcessation.utils.ValidationUtil;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
-@FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 @RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class CoachServiceImpl implements ICoachService {
 
     CoachRepository coachRepository;
     CoachMapper coachMapper;
-    AccountRepository accountRepository;
+
+    IAccountService accountService;
 
     @Override
     public Page<CoachResponse> getCoachPage(PageableRequest request) {
-        if (!ValidationUtil.isFieldExist(Coach.class, request.getSortBy())) {
-            throw new AppException(ErrorCode.INVALID_SORT_FIELD);
-        }
+        ValidationUtil.checkFieldExist(Coach.class, request.getSortBy());
+
         Pageable pageable = PageableRequest.getPageable(request);
         Page<Coach> coaches = coachRepository.findAllByIsDeletedFalse(pageable);
 
@@ -43,21 +48,17 @@ public class CoachServiceImpl implements ICoachService {
 
     @Override
     public CoachResponse getCoachById(String id) {
-        Coach coach = coachRepository.findByIdAndIsDeletedFalse(id)
-                .orElseThrow(() -> new AppException(ErrorCode.COACH_NOT_FOUND));
-
-        return coachMapper.toResponse(coach);
+        return coachMapper.toResponse(findCoachById(id));
     }
 
     @Override
     @Transactional
     @PreAuthorize("hasAnyRole('ADMIN', 'COACH')")
+    @CachePut(value = "COACH_CACHE", key = "#result.getId()")
     public CoachResponse createCoach(CoachRequest request) {
         Coach coach = coachMapper.toEntity(request);
 
-        Account account = accountRepository.findByIdAndIsDeletedFalse(request.getAccountId())
-                .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FOUND));
-
+        Account account = accountService.findAccountById(request.getAccountId());
         coach.setAccount(account);
 
         return coachMapper.toResponse(coachRepository.save(coach));
@@ -66,23 +67,25 @@ public class CoachServiceImpl implements ICoachService {
     @Override
     @Transactional
     @PreAuthorize("hasAnyRole('ADMIN', 'COACH)")
+    @CachePut(value = "COACH_CACHE", key = "#result.getId()")
     public CoachResponse updateCoachById(String id, CoachRequest request) {
-        Coach coach = coachRepository.findByIdAndIsDeletedFalse(id)
-                .orElseThrow(() -> new AppException(ErrorCode.COACH_NOT_FOUND));
+        Coach coach = findCoachById(id);
+
         coachMapper.update(coach, request);
 
         return coachMapper.toResponse(coachRepository.save(coach));
     }
 
-    @Override
-    @Transactional
-    @PreAuthorize("hasRole('ADMIN')")
-    public void softDeleteCoachById(String id) {
+    @Cacheable(value = "COACH_CACHE", key = "#id")
+    private Coach findCoachById(String id) {
         Coach coach = coachRepository.findByIdAndIsDeletedFalse(id)
                 .orElseThrow(() -> new AppException(ErrorCode.COACH_NOT_FOUND));
 
-        coach.setDeleted(true);
+        if (coach.getAccount().isDeleted()) {
+            throw new AppException(ErrorCode.ACCOUNT_DELETED);
+        }
 
-        coachRepository.save(coach);
+        return coach;
     }
+
 }

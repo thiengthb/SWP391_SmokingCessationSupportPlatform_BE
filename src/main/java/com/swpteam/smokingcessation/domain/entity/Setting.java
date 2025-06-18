@@ -24,7 +24,6 @@ public class Setting extends BaseEntity {
     @MapsId
     @OneToOne
     @JoinColumn(name = "accountId", nullable = false, updatable = false)
-    @JsonBackReference
     Account account;
 
     @Enumerated(EnumType.STRING)

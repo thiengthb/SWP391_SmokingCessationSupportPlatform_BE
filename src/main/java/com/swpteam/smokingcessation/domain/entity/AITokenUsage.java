@@ -23,7 +23,6 @@ public class AITokenUsage extends BaseEntity {
 
     @ManyToOne
     @JoinColumn(name = "accountId", nullable = false, updatable = false)
-    @JsonBackReference
     Account account;
 
     @Column(nullable = false, unique = true)

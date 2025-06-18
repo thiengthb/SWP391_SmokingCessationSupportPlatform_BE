@@ -14,7 +14,7 @@ import com.swpteam.smokingcessation.constant.ErrorCode;
 import com.swpteam.smokingcessation.domain.entity.Account;
 import com.swpteam.smokingcessation.exception.AppException;
 import com.swpteam.smokingcessation.service.interfaces.identity.IAccountService;
-import com.swpteam.smokingcessation.utils.AccountUtilService;
+import com.swpteam.smokingcessation.utils.AuthUtil;
 import com.swpteam.smokingcessation.utils.ValidationUtil;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +25,6 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,25 +36,20 @@ public class AccountServiceImpl implements IAccountService {
 
     AccountRepository accountRepository;
     AccountMapper accountMapper;
-    AccountUtilService accountUtilService;
+
+    AuthUtil authUtil;
+    PasswordEncoder passwordEncoder;
 
     @Override
     @Transactional
     @PreAuthorize("hasRole('ADMIN')")
     @CachePut(value = "ACCOUNT_CACHE", key = "#result.getId()")
     public AccountResponse createAccount(AccountRequest request) {
-        if (accountRepository.existsByEmail(request.getEmail())) {
-            throw new AppException(ErrorCode.ACCOUNT_EXISTED);
-        }
-
-        if (accountRepository.existsByPhoneNumber(request.getPhoneNumber())) {
-            throw new AppException(ErrorCode.PHONE_NUMBER_EXISTED);
-        }
-        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
+        checkExistByEmail(request.getEmail());
+        checkExistByPhoneNumber(request.getPhoneNumber());
 
         Account account = accountMapper.toEntity(request);
         account.setPassword(passwordEncoder.encode(request.getPassword()));
-
         account.setSetting(Setting.getDefaultSetting(account));
 
         return accountMapper.toResponse(accountRepository.save(account));
@@ -64,9 +58,7 @@ public class AccountServiceImpl implements IAccountService {
     @Override
     @PreAuthorize("hasRole('ADMIN')")
     public Page<AccountResponse> getAccounts(PageableRequest request) {
-        if (!ValidationUtil.isFieldExist(Account.class, request.getSortBy())) {
-            throw new AppException(ErrorCode.INVALID_SORT_FIELD);
-        }
+        ValidationUtil.checkFieldExist(Account.class, request.getSortBy());
 
         Pageable pageable = PageableRequest.getPageable(request);
         Page<Account> accounts = accountRepository.findAllByIsDeletedFalse(pageable);
@@ -82,16 +74,10 @@ public class AccountServiceImpl implements IAccountService {
 
     @Override
     public AccountResponse getCurrentAccount() {
-        Account account = accountUtilService.getCurrentAccount()
+        Account account = authUtil.getCurrentAccount()
                 .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FOUND));
 
         return accountMapper.toResponse(account);
-    }
-
-    @Cacheable(value = "ACCOUNT_CACHE", key = "#id")
-    private Account findAccountById(String id) {
-        return accountRepository.findByIdAndIsDeletedFalse(id)
-                .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FOUND));
     }
 
     @Override
@@ -111,15 +97,11 @@ public class AccountServiceImpl implements IAccountService {
         Account account = findAccountById(id);
 
         accountMapper.updateWithoutRole(account, request);
-
         if (request.getPassword() != null) {
-            PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
             account.setPassword(passwordEncoder.encode(request.getPassword()));
         }
 
-        accountRepository.save(account);
-
-        return accountMapper.toResponse(account);
+        return accountMapper.toResponse(accountRepository.save(account));
     }
 
     @Override
@@ -128,6 +110,7 @@ public class AccountServiceImpl implements IAccountService {
     @CacheEvict(value = "ACCOUNT_CACHE", key = "#id")
     public void deleteAccount(String id) {
         Account account = findAccountById(id);
+
         account.setDeleted(true);
         accountRepository.save(account);
     }
@@ -135,10 +118,8 @@ public class AccountServiceImpl implements IAccountService {
     @Override
     @Transactional
     public AccountResponse changePassword(ChangePasswordRequest request) {
-        Account account = accountUtilService.getCurrentAccount()
+        Account account = authUtil.getCurrentAccount()
                 .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FOUND));
-
-        PasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
 
         if (!passwordEncoder.matches(request.getOldPassword(), account.getPassword())) {
             throw new AppException(ErrorCode.WRONG_PASSWORD);
@@ -154,15 +135,43 @@ public class AccountServiceImpl implements IAccountService {
     @Transactional
     @PreAuthorize("hasRole('ADMIN')")
     public void banAccount(String id) {
-        Account account = accountRepository.findByIdAndIsDeletedFalse(id).orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FOUND));
+        Account account = findAccountById(id);
+        Account currentAccount = authUtil.getCurrentAccountOrThrow();
 
-        String emailFromToken = accountUtilService.getCurrentEmail()
-                .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FOUND));
-
-        if (emailFromToken.equals(account.getEmail()))
+        if (account == currentAccount)
             throw new AppException(ErrorCode.SELF_BAN);
 
         account.setStatus(AccountStatus.BANNED);
         accountRepository.save(account);
+    }
+
+    @Override
+    public Account findAccountByEmail(String email) {
+        return accountRepository.findByEmailAndIsDeletedFalse(email)
+                .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FOUND));
+    }
+
+    @Override
+    @Cacheable(value = "ACCOUNT_CACHE", key = "#id")
+    public Account findAccountById(String id) {
+        return accountRepository.findByIdAndIsDeletedFalse(id)
+                .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FOUND));
+    }
+
+    @Override
+    @Cacheable(value = "ACCOUNT_CACHE", key = "#username")
+    public Account findAccountByUsername(String username) {
+        return accountRepository.findByUsernameAndIsDeletedFalse(username)
+                .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FOUND));
+    }
+
+    private void checkExistByEmail(String email) {
+        if (accountRepository.existsByEmail(email))
+            throw new AppException(ErrorCode.EMAIL_EXISTED);
+    }
+
+    private void checkExistByPhoneNumber(String phoneNumber) {
+        if (accountRepository.existsByEmail(phoneNumber))
+            throw new AppException(ErrorCode.PHONE_NUMBER_EXISTED);
     }
 }

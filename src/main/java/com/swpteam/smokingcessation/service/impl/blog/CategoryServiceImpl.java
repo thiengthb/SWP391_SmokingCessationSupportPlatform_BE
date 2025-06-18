@@ -1,13 +1,13 @@
 package com.swpteam.smokingcessation.service.impl.blog;
 
 import com.swpteam.smokingcessation.common.PageableRequest;
-import com.swpteam.smokingcessation.config.ApplicationInitConfig;
-import com.swpteam.smokingcessation.constant.AppInit;
+import com.swpteam.smokingcessation.constant.App;
 import com.swpteam.smokingcessation.constant.ErrorCode;
 import com.swpteam.smokingcessation.domain.dto.category.CategoryRequest;
 import com.swpteam.smokingcessation.domain.dto.category.CategoryResponse;
 import com.swpteam.smokingcessation.domain.entity.Blog;
 import com.swpteam.smokingcessation.domain.entity.Category;
+import com.swpteam.smokingcessation.domain.entity.Comment;
 import com.swpteam.smokingcessation.domain.mapper.CategoryMapper;
 import com.swpteam.smokingcessation.exception.AppException;
 import com.swpteam.smokingcessation.repository.BlogRepository;
@@ -50,9 +50,7 @@ public class CategoryServiceImpl implements ICategoryService {
     @Override
     @PreAuthorize("hasRole('ADMIN')")
     public Page<CategoryResponse> getCategoryPage(PageableRequest request) {
-        if (!ValidationUtil.isFieldExist(Category.class, request.getSortBy())) {
-            throw new AppException(ErrorCode.INVALID_SORT_FIELD);
-        }
+        ValidationUtil.checkFieldExist(Category.class, request.getSortBy());
 
         Pageable pageable = PageableRequest.getPageable(request);
         Page<Category> categories = categoryRepository.findAll(pageable);
@@ -97,11 +95,11 @@ public class CategoryServiceImpl implements ICategoryService {
     public void deleteCategoryById(String id) {
         Category category = findCategoryById(id);
 
-        if (category.getName().equalsIgnoreCase(AppInit.DEFAULT_CATEGORY)) {
+        if (category.getName().equalsIgnoreCase(App.DEFAULT_CATEGORY)) {
             throw new AppException(ErrorCode.CATEGORY_CANNOT_BE_DELETED);
         }
 
-        Category uncategorized = findCategoryByName(AppInit.DEFAULT_CATEGORY);
+        Category uncategorized = findCategoryByName(App.DEFAULT_CATEGORY);
 
         List<Blog> blogs = blogRepository.findByCategoryId(category.getId());
         blogs.forEach(blog -> blog.setCategory(uncategorized));

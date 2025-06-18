@@ -132,6 +132,9 @@ public enum SuccessCode {
     COMMENT_UPDATED(2013, "Comment updated successfully"),
     COMMENT_DELETED(2014, "Comment deleted successfully"),
 
+    // Notification
+    NOTIFICATION_SENT(2010, "Successfully sent notification"),
+    MARKED_READ(2010, "Successfully marked notification as read"),
     // Chat
     CHAT_GET_ALL(1101, "Successfully retrieved all chats"),
     CHAT_GET_BY_ID(1102, "Successfully retrieved all chats by ID"),

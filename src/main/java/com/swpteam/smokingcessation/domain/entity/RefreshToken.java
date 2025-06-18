@@ -14,10 +14,11 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class InvalidatedToken {
+public class RefreshToken {
 
     @Id
     String id;
 
+    String accountId;
     Date expiryTime;
 }

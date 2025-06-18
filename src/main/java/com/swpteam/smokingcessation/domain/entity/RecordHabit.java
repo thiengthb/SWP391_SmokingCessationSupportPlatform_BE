@@ -18,11 +18,10 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class Record extends BaseEntity {
+public class RecordHabit extends BaseEntity {
 
     @ManyToOne
     @JoinColumn(name = "accountId", nullable = false, updatable = false)
-    @JsonBackReference
     Account account;
 
     int cigarettesSmoked;

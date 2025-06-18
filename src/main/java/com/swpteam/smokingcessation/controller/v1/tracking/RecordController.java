@@ -1,8 +1,8 @@
 package com.swpteam.smokingcessation.controller.v1.tracking;
 
-import com.swpteam.smokingcessation.domain.dto.record.RecordCreateRequest;
-import com.swpteam.smokingcessation.domain.dto.record.RecordResponse;
-import com.swpteam.smokingcessation.domain.dto.record.RecordUpdateRequest;
+import com.swpteam.smokingcessation.domain.dto.record.RecordHabitCreateRequest;
+import com.swpteam.smokingcessation.domain.dto.record.RecordHabitResponse;
+import com.swpteam.smokingcessation.domain.dto.record.RecordHabitUpdateRequest;
 import com.swpteam.smokingcessation.common.ApiResponse;
 import com.swpteam.smokingcessation.common.PageableRequest;
 import com.swpteam.smokingcessation.constant.SuccessCode;
@@ -28,9 +28,9 @@ public class RecordController {
     IRecordService recordService;
 
     @GetMapping
-    ResponseEntity<ApiResponse<Page<RecordResponse>>> getRecordPage(@Valid PageableRequest request) {
+    ResponseEntity<ApiResponse<Page<RecordHabitResponse>>> getRecordPage(@Valid PageableRequest request) {
         return ResponseEntity.ok(
-                ApiResponse.<Page<RecordResponse>>builder()
+                ApiResponse.<Page<RecordHabitResponse>>builder()
                         .code(SuccessCode.RECORD_GET_ALL.getCode())
                         .message(SuccessCode.RECORD_GET_ALL.getMessage())
                         .result(recordService.getRecordPage(request))
@@ -39,9 +39,9 @@ public class RecordController {
     }
 
     @GetMapping("/{id}")
-    ResponseEntity<ApiResponse<RecordResponse>> getRecordById(@PathVariable String id) {
+    ResponseEntity<ApiResponse<RecordHabitResponse>> getRecordById(@PathVariable String id) {
         return ResponseEntity.ok(
-                ApiResponse.<RecordResponse>builder()
+                ApiResponse.<RecordHabitResponse>builder()
                         .code(SuccessCode.RECORD_GET_BY_ID.getCode())
                         .message(SuccessCode.RECORD_GET_BY_ID.getMessage())
                         .result(recordService.getRecordById(id))
@@ -50,9 +50,9 @@ public class RecordController {
     }
 
     @GetMapping("/account/{id}")
-    ResponseEntity<ApiResponse<Page<RecordResponse>>> getRecordPageByAccountId(@PathVariable String id, @Valid PageableRequest request) {
+    ResponseEntity<ApiResponse<Page<RecordHabitResponse>>> getRecordPageByAccountId(@PathVariable String id, @Valid PageableRequest request) {
         return ResponseEntity.ok(
-                ApiResponse.<Page<RecordResponse>>builder()
+                ApiResponse.<Page<RecordHabitResponse>>builder()
                         .code(SuccessCode.RECORD_GET_BY_ACCOUNT.getCode())
                         .message(SuccessCode.RECORD_GET_BY_ACCOUNT.getMessage())
                         .result(recordService.getRecordPageByAccountId(id, request))
@@ -61,9 +61,9 @@ public class RecordController {
     }
 
     @PostMapping
-    ResponseEntity<ApiResponse<RecordResponse>> createRecord(@RequestBody @Valid RecordCreateRequest request) {
+    ResponseEntity<ApiResponse<RecordHabitResponse>> createRecord(@RequestBody @Valid RecordHabitCreateRequest request) {
         return ResponseEntity.ok(
-                ApiResponse.<RecordResponse>builder()
+                ApiResponse.<RecordHabitResponse>builder()
                         .code(SuccessCode.RECORD_CREATED.getCode())
                         .message(SuccessCode.RECORD_CREATED.getMessage())
                         .result(recordService.createRecord(request))
@@ -72,9 +72,9 @@ public class RecordController {
     }
 
     @PutMapping("/{id}")
-    ResponseEntity<ApiResponse<RecordResponse>> updateRecord(@PathVariable String id, @RequestBody @Valid RecordUpdateRequest request) {
+    ResponseEntity<ApiResponse<RecordHabitResponse>> updateRecord(@PathVariable String id, @RequestBody @Valid RecordHabitUpdateRequest request) {
         return ResponseEntity.ok(
-                ApiResponse.<RecordResponse>builder()
+                ApiResponse.<RecordHabitResponse>builder()
                         .code(SuccessCode.RECORD_UPDATED.getCode())
                         .message(SuccessCode.RECORD_UPDATED.getMessage())
                         .result(recordService.updateRecord(id, request))

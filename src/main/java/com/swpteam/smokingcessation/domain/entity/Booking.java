@@ -1,6 +1,7 @@
 package com.swpteam.smokingcessation.domain.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.swpteam.smokingcessation.common.BaseEntity;
 import com.swpteam.smokingcessation.domain.enums.BookingStatus;
 import jakarta.persistence.*;
@@ -18,12 +19,10 @@ import java.time.LocalDateTime;
 public class Booking extends BaseEntity {
 
     @ManyToOne
-    @JsonBackReference
     @JoinColumn(name = "accountId", nullable = false, updatable = false)
     Account account;
 
     @ManyToOne
-    @JsonBackReference
     @JoinColumn(name = "coachId", nullable = false)
     Coach coach;
 

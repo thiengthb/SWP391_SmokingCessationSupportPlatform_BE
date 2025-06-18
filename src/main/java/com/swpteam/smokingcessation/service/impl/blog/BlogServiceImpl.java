@@ -1,7 +1,7 @@
 package com.swpteam.smokingcessation.service.impl.blog;
 
 import com.swpteam.smokingcessation.common.PageableRequest;
-import com.swpteam.smokingcessation.constant.AppInit;
+import com.swpteam.smokingcessation.constant.App;
 import com.swpteam.smokingcessation.constant.ErrorCode;
 import com.swpteam.smokingcessation.domain.dto.blog.BlogCreateRequest;
 import com.swpteam.smokingcessation.domain.dto.blog.BlogResponse;
@@ -14,8 +14,7 @@ import com.swpteam.smokingcessation.exception.AppException;
 import com.swpteam.smokingcessation.repository.BlogRepository;
 import com.swpteam.smokingcessation.repository.CategoryRepository;
 import com.swpteam.smokingcessation.service.interfaces.blog.IBlogService;
-import com.swpteam.smokingcessation.utils.AccountUtilService;
-import com.swpteam.smokingcessation.utils.AuthorizationUtilService;
+import com.swpteam.smokingcessation.utils.AuthUtil;
 import com.swpteam.smokingcessation.utils.SlugUtil;
 import com.swpteam.smokingcessation.utils.ValidationUtil;
 import lombok.AccessLevel;
@@ -42,15 +41,12 @@ public class BlogServiceImpl implements IBlogService {
 
     CategoryRepository categoryRepository;
 
-    AccountUtilService accountUtilService;
-    AuthorizationUtilService authorizationUtilService;
+    AuthUtil authUtil;
 
     @Override
     @PreAuthorize("hasRole('ADMIN')")
     public Page<BlogResponse> getAllBlogsPage(PageableRequest request) {
-        if (!ValidationUtil.isFieldExist(Blog.class, request.getSortBy())) {
-            throw new AppException(ErrorCode.INVALID_SORT_FIELD);
-        }
+        ValidationUtil.checkFieldExist(Blog.class, request.getSortBy());
 
         Pageable pageable = PageableRequest.getPageable(request);
         Page<Blog> blogs = blogRepository.findAllByIsDeletedFalse(pageable);
@@ -61,7 +57,7 @@ public class BlogServiceImpl implements IBlogService {
     @Override
     @PreAuthorize("hasRole('ADMIN')")
     public Page<BlogResponse> getMyBlogsPage(PageableRequest request) {
-        Account account = accountUtilService.getCurrentAccount()
+        Account account = authUtil.getCurrentAccount()
                 .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FOUND));
 
         Pageable pageable = PageableRequest.getPageable(request);
@@ -101,11 +97,11 @@ public class BlogServiceImpl implements IBlogService {
     @PreAuthorize("hasRole('ADMIN')")
     @CachePut(value = "BLOG_CACHE", key = "#result.getId()")
     public BlogResponse createBlog(BlogCreateRequest request) {
-        Account account = accountUtilService.getCurrentAccount()
+        Account account = authUtil.getCurrentAccount()
                 .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FOUND));
 
         Category category = categoryRepository.findByName(request.getCategoryName())
-                .or(() -> categoryRepository.findByName(AppInit.DEFAULT_CATEGORY))
+                .or(() -> categoryRepository.findByName(App.DEFAULT_CATEGORY))
                 .orElseThrow(() -> new AppException(ErrorCode.CATEGORY_NOT_FOUND));
 
         Blog blog = blogMapper.toEntity(request);
@@ -126,7 +122,7 @@ public class BlogServiceImpl implements IBlogService {
     public BlogResponse updateBlog(String id, BlogUpdateRequest request) {
         Blog blog = findBlogById(id);
 
-        boolean haveAccess = authorizationUtilService.checkAdminOrOwner(blog.getAccount().getId());
+        boolean haveAccess = authUtil.isAdminOrOwner(blog.getAccount().getId());
         if (!haveAccess) {
             throw new AppException(ErrorCode.OTHERS_COMMENT_UNCHANGEABLE);
         }
@@ -146,7 +142,7 @@ public class BlogServiceImpl implements IBlogService {
     public void deleteBlogById(String id) {
         Blog blog = findBlogById(id);
 
-        boolean haveAccess = authorizationUtilService.checkAdminOrOwner(blog.getAccount().getId());
+        boolean haveAccess = authUtil.isAdminOrOwner(blog.getAccount().getId());
         if (!haveAccess) {
             throw new AppException(ErrorCode.OTHERS_COMMENT_UNCHANGEABLE);
         }

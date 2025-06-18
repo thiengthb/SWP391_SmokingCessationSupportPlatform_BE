@@ -25,12 +25,12 @@ public class MemberController {
     IMemberService memberService;
 
     @PostMapping("/{accountId}")
-    ResponseEntity<ApiResponse<MemberResponse>> createMember(@PathVariable("accountId") String accountId, @RequestBody @Valid MemberRequest request) {
+    ResponseEntity<ApiResponse<MemberResponse>> createMember(@PathVariable String accountId, @RequestBody @Valid MemberRequest request) {
         return ResponseEntity.ok(
                 ApiResponse.<MemberResponse>builder()
                         .code(SuccessCode.MEMBER_CREATED.getCode())
                         .message(SuccessCode.MEMBER_CREATED.getMessage())
-                        .result(memberService.createMember(request, accountId))
+                        .result(memberService.createMember(accountId, request))
                         .build());
     }
 
@@ -43,20 +43,20 @@ public class MemberController {
     }
 
     @GetMapping("/{accountId}")
-    ResponseEntity<ApiResponse<MemberResponse>> getMemberById(@PathVariable("accountId") String id) {
+    ResponseEntity<ApiResponse<MemberResponse>> getMemberById(@PathVariable String accountId) {
         return ResponseEntity.ok(
                 ApiResponse.<MemberResponse>builder()
-                        .result(memberService.getMemberById(id))
+                        .result(memberService.getMemberById(accountId))
                         .build());
     }
 
     @PutMapping("/{accountId}")
-    ResponseEntity<ApiResponse<MemberResponse>> updateAccount(@PathVariable("accountId") String id, @RequestBody MemberRequest request) {
+    ResponseEntity<ApiResponse<MemberResponse>> updateAccount(@PathVariable String accountId, @RequestBody MemberRequest request) {
         return ResponseEntity.ok(
                 ApiResponse.<MemberResponse>builder()
                         .code(SuccessCode.ACCOUNT_UPDATED.getCode())
                         .message(SuccessCode.ACCOUNT_UPDATED.getMessage())
-                        .result(memberService.updateMember(request, id))
+                        .result(memberService.updateMember(accountId, request))
                         .build());
     }
 }

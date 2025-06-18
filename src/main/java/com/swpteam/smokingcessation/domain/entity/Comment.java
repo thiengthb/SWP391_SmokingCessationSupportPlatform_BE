@@ -20,12 +20,10 @@ import java.util.List;
 public class Comment extends BaseEntity {
 
     @ManyToOne
-    @JsonBackReference
     @JoinColumn(name = "blogId", nullable = false, updatable = false)
     Blog blog;
 
     @ManyToOne
-    @JsonBackReference
     @JoinColumn(name = "accountId", nullable = false, updatable = false)
     Account account;
 

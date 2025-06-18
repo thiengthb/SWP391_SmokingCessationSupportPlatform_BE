@@ -1,18 +1,22 @@
 package com.swpteam.smokingcessation.utils;
 
+import lombok.experimental.UtilityClass;
+
 import java.text.Normalizer;
 import java.util.Random;
 import java.util.regex.Pattern;
 
+@UtilityClass
 public class SlugUtil {
-    private static final Pattern NON_LATIN = Pattern.compile("[^\\w-]");
-    private static final Pattern WHITESPACE = Pattern.compile("[\\s]");
-    private static final Pattern EDGES_DASHES = Pattern.compile("(^-)|(-$)");
-    private static final int RANDOM_SUFFIX_LENGTH = 8;
-    private static final String RANDOM_CHARS = "abcdefghijklmnopqrstuvwxyz0123456789";
-    private static final Random RANDOM = new Random();
 
-    public static String toSlug(String input) {
+    private final Pattern NON_LATIN = Pattern.compile("[^\\w-]");
+    private final Pattern WHITESPACE = Pattern.compile("[\\s]");
+    private final Pattern EDGES_DASHES = Pattern.compile("(^-)|(-$)");
+    private final int RANDOM_SUFFIX_LENGTH = 8;
+    private final String RANDOM_CHARS = "abcdefghijklmnopqrstuvwxyz0123456789";
+    private final Random RANDOM = new Random();
+
+    public String toSlug(String input) {
         if (input == null) {
             return "";
         }
@@ -27,7 +31,7 @@ public class SlugUtil {
         return slug;
     }
 
-    public static String generateRandomString(int length) {
+    public String generateRandomString(int length) {
         StringBuilder sb = new StringBuilder(length);
         for (int i = 0; i < length; i++) {
             sb.append(RANDOM_CHARS.charAt(RANDOM.nextInt(RANDOM_CHARS.length())));
@@ -35,7 +39,7 @@ public class SlugUtil {
         return sb.toString();
     }
 
-    public static String appendRandomSuffix(String slug) {
+    public String appendRandomSuffix(String slug) {
         return slug + "-" + generateRandomString(RANDOM_SUFFIX_LENGTH);
     }
 }

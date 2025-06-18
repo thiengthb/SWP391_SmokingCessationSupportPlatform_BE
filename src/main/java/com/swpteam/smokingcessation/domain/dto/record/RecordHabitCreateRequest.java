@@ -14,7 +14,7 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class RecordCreateRequest {
+public class RecordHabitCreateRequest {
 
     @NotBlank(message = "ACCOUNT_REQUIRED")
     String accountId;
