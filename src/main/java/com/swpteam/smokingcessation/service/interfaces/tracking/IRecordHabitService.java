@@ -6,7 +6,7 @@ import com.swpteam.smokingcessation.domain.dto.record.RecordHabitResponse;
 import com.swpteam.smokingcessation.domain.dto.record.RecordHabitUpdateRequest;
 import org.springframework.data.domain.Page;
 
-public interface IRecordService {
+public interface IRecordHabitService {
 
     Page<RecordHabitResponse> getRecordPage(PageableRequest request);
 

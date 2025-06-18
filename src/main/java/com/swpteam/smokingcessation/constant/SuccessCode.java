@@ -153,6 +153,9 @@ public enum SuccessCode {
     STREAK_UPDATED(2013, "Streak updated successfully"),
     STREAK_DELETED(2014, "Streak deleted successfully"),
     STREAK_RESET(2015, "Streak reset successfully"),
+
+    // Report
+    SUMMARY_GET(3101, "Successfully get summary"),
     ;
     int code;
     String message;

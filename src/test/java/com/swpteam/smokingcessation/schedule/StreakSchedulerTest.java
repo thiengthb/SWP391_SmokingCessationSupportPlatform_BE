@@ -5,7 +5,7 @@ import com.swpteam.smokingcessation.domain.entity.Member;
 import com.swpteam.smokingcessation.domain.entity.Setting;
 import com.swpteam.smokingcessation.domain.entity.Streak;
 import com.swpteam.smokingcessation.exception.AppException;
-import com.swpteam.smokingcessation.repository.RecordRepository;
+import com.swpteam.smokingcessation.repository.RecordHabitRepository;
 import com.swpteam.smokingcessation.repository.SettingRepository;
 import com.swpteam.smokingcessation.repository.StreakRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -30,7 +30,7 @@ class StreakSchedulerTest {
     @Mock
     SettingRepository settingRepository;
     @Mock
-    RecordRepository recordRepository;
+    RecordHabitRepository recordHabitRepository;
     @Mock
     StreakRepository streakRepository;
 
@@ -61,7 +61,7 @@ class StreakSchedulerTest {
     @Test
     void shouldResetStreakWhenNoRecordAfterDeadline() {
         when(settingRepository.findAllByIsDeletedFalse()).thenReturn(List.of(setting));
-        when(recordRepository.existsByAccountIdAndDateAndIsDeletedFalse(anyString(), any(LocalDate.class))).thenReturn(false);
+        when(recordHabitRepository.existsByAccountIdAndDateAndIsDeletedFalse(anyString(), any(LocalDate.class))).thenReturn(false);
         when(streakRepository.findByMember_Account_Id(anyString())).thenReturn(Optional.of(streak));
 
         streakScheduler.checkAndResetStreak();
@@ -73,7 +73,7 @@ class StreakSchedulerTest {
     @Test
     void shouldNotResetStreakWhenRecordExists() {
         when(settingRepository.findAllByIsDeletedFalse()).thenReturn(List.of(setting));
-        when(recordRepository.existsByAccountIdAndDateAndIsDeletedFalse(anyString(), any(LocalDate.class))).thenReturn(true);
+        when(recordHabitRepository.existsByAccountIdAndDateAndIsDeletedFalse(anyString(), any(LocalDate.class))).thenReturn(true);
         when(streakRepository.findByMember_Account_Id(anyString())).thenReturn(Optional.of(streak));
 
         streakScheduler.checkAndResetStreak();
@@ -86,7 +86,7 @@ class StreakSchedulerTest {
     void shouldNotResetStreakWhenStreakIsZero() {
         streak.setStreak(0);
         when(settingRepository.findAllByIsDeletedFalse()).thenReturn(List.of(setting));
-        when(recordRepository.existsByAccountIdAndDateAndIsDeletedFalse(anyString(), any(LocalDate.class))).thenReturn(false);
+        when(recordHabitRepository.existsByAccountIdAndDateAndIsDeletedFalse(anyString(), any(LocalDate.class))).thenReturn(false);
         when(streakRepository.findByMember_Account_Id(anyString())).thenReturn(Optional.of(streak));
 
         streakScheduler.checkAndResetStreak();
@@ -98,7 +98,7 @@ class StreakSchedulerTest {
     @Test
     void shouldThrowAppExceptionWhenRecordRepositoryFails() {
         when(settingRepository.findAllByIsDeletedFalse()).thenReturn(List.of(setting));
-        when(recordRepository.existsByAccountIdAndDateAndIsDeletedFalse(anyString(), any(LocalDate.class)))
+        when(recordHabitRepository.existsByAccountIdAndDateAndIsDeletedFalse(anyString(), any(LocalDate.class)))
                 .thenThrow(new RuntimeException("DB error"));
 
         assertThrows(AppException.class, () -> streakScheduler.checkAndResetStreak());
@@ -112,14 +112,14 @@ class StreakSchedulerTest {
 
         streakScheduler.checkAndResetStreak();
 
-        verifyNoInteractions(recordRepository);
+        verifyNoInteractions(recordHabitRepository);
         verifyNoInteractions(streakRepository);
     }
 
     @Test
     void shouldThrowAppExceptionWhenRepositoryThrowsException() {
         when(settingRepository.findAllByIsDeletedFalse()).thenReturn(List.of(setting));
-        when(recordRepository.existsByAccountIdAndDateAndIsDeletedFalse(anyString(), any(LocalDate.class)))
+        when(recordHabitRepository.existsByAccountIdAndDateAndIsDeletedFalse(anyString(), any(LocalDate.class)))
                 .thenThrow(new RuntimeException("DB error"));
 
         assertThrows(AppException.class, () -> streakScheduler.checkAndResetStreak());
@@ -128,7 +128,7 @@ class StreakSchedulerTest {
     @Test
     void shouldUpdateHighestStreakAndResetStreak() {
         when(settingRepository.findAllByIsDeletedFalse()).thenReturn(List.of(setting));
-        when(recordRepository.existsByAccountIdAndDateAndIsDeletedFalse(anyString(), any(LocalDate.class))).thenReturn(false);
+        when(recordHabitRepository.existsByAccountIdAndDateAndIsDeletedFalse(anyString(), any(LocalDate.class))).thenReturn(false);
         when(streakRepository.findByMember_Account_Id(anyString())).thenReturn(Optional.of(streak));
 
         streakScheduler.checkAndResetStreak();
@@ -142,7 +142,7 @@ class StreakSchedulerTest {
     void shouldNotUpdateHighestStreakIfAlreadyHigher() {
         streak.getMember().setHighestStreak(10); // already higher
         when(settingRepository.findAllByIsDeletedFalse()).thenReturn(List.of(setting));
-        when(recordRepository.existsByAccountIdAndDateAndIsDeletedFalse(anyString(), any(LocalDate.class))).thenReturn(false);
+        when(recordHabitRepository.existsByAccountIdAndDateAndIsDeletedFalse(anyString(), any(LocalDate.class))).thenReturn(false);
         when(streakRepository.findByMember_Account_Id(anyString())).thenReturn(Optional.of(streak));
 
         streakScheduler.checkAndResetStreak();
@@ -155,7 +155,7 @@ class StreakSchedulerTest {
     @Test
     void shouldDoNothingWhenStreakNotFound() {
         when(settingRepository.findAllByIsDeletedFalse()).thenReturn(List.of(setting));
-        when(recordRepository.existsByAccountIdAndDateAndIsDeletedFalse(anyString(), any(LocalDate.class))).thenReturn(false);
+        when(recordHabitRepository.existsByAccountIdAndDateAndIsDeletedFalse(anyString(), any(LocalDate.class))).thenReturn(false);
         when(streakRepository.findByMember_Account_Id(anyString())).thenReturn(Optional.empty());
 
         streakScheduler.checkAndResetStreak();
@@ -167,7 +167,7 @@ class StreakSchedulerTest {
     void shouldThrowAppExceptionWhenStreakHasNoMember() {
         streak.setMember(null); // simulate broken data
         when(settingRepository.findAllByIsDeletedFalse()).thenReturn(List.of(setting));
-        when(recordRepository.existsByAccountIdAndDateAndIsDeletedFalse(anyString(), any(LocalDate.class))).thenReturn(false);
+        when(recordHabitRepository.existsByAccountIdAndDateAndIsDeletedFalse(anyString(), any(LocalDate.class))).thenReturn(false);
         when(streakRepository.findByMember_Account_Id(anyString())).thenReturn(Optional.of(streak));
 
         assertThrows(AppException.class, () -> streakScheduler.checkAndResetStreak());
@@ -188,8 +188,8 @@ class StreakSchedulerTest {
         streak2.setMember(member2);
 
         when(settingRepository.findAllByIsDeletedFalse()).thenReturn(List.of(setting, setting2));
-        when(recordRepository.existsByAccountIdAndDateAndIsDeletedFalse(eq("account1"), any())).thenReturn(false);
-        when(recordRepository.existsByAccountIdAndDateAndIsDeletedFalse(eq("account2"), any())).thenReturn(false);
+        when(recordHabitRepository.existsByAccountIdAndDateAndIsDeletedFalse(eq("account1"), any())).thenReturn(false);
+        when(recordHabitRepository.existsByAccountIdAndDateAndIsDeletedFalse(eq("account2"), any())).thenReturn(false);
         when(streakRepository.findByMember_Account_Id(eq("account1"))).thenReturn(Optional.of(streak));
         when(streakRepository.findByMember_Account_Id(eq("account2"))).thenReturn(Optional.of(streak2));
 

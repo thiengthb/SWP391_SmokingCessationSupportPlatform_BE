@@ -1,17 +1,19 @@
 package com.swpteam.smokingcessation.service.impl.tracking;
 
-import com.swpteam.smokingcessation.domain.entity.Account;
-import com.swpteam.smokingcessation.domain.entity.RecordHabit;
-import com.swpteam.smokingcessation.domain.mapper.RecordHabitMapper;
+import com.swpteam.smokingcessation.common.PageableRequest;
+import com.swpteam.smokingcessation.constant.ErrorCode;
 import com.swpteam.smokingcessation.domain.dto.record.RecordHabitCreateRequest;
 import com.swpteam.smokingcessation.domain.dto.record.RecordHabitResponse;
 import com.swpteam.smokingcessation.domain.dto.record.RecordHabitUpdateRequest;
-import com.swpteam.smokingcessation.common.PageableRequest;
-import com.swpteam.smokingcessation.constant.ErrorCode;
+import com.swpteam.smokingcessation.domain.entity.Account;
+import com.swpteam.smokingcessation.domain.entity.RecordHabit;
+import com.swpteam.smokingcessation.domain.entity.Streak;
+import com.swpteam.smokingcessation.domain.mapper.RecordHabitMapper;
 import com.swpteam.smokingcessation.exception.AppException;
 import com.swpteam.smokingcessation.repository.RecordHabitRepository;
+import com.swpteam.smokingcessation.repository.StreakRepository;
 import com.swpteam.smokingcessation.service.interfaces.identity.IAccountService;
-import com.swpteam.smokingcessation.service.interfaces.tracking.IRecordService;
+import com.swpteam.smokingcessation.service.interfaces.tracking.IRecordHabitService;
 import com.swpteam.smokingcessation.utils.ValidationUtil;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -29,10 +31,11 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public class RecordHabitServiceImpl implements IRecordService {
+public class RecordHabitServiceImpl implements IRecordHabitService {
 
     RecordHabitMapper recordHabitMapper;
     RecordHabitRepository recordHabitRepository;
+    StreakRepository streakRepository;
 
     IAccountService accountService;
 
@@ -71,9 +74,22 @@ public class RecordHabitServiceImpl implements IRecordService {
     public RecordHabitResponse createRecord(RecordHabitCreateRequest request) {
         Account account = accountService.findAccountById(request.getAccountId());
 
+        boolean existed = recordHabitRepository.existsByAccountIdAndDateAndIsDeletedFalse(request.getAccountId(), request.getDate());
+        if (existed) {
+            RecordHabit recordHabit = recordHabitRepository.findByAccountIdAndDateAndIsDeletedFalse(request.getAccountId(), request.getDate())
+                    .orElseThrow(() -> new AppException(ErrorCode.HEALTH_RECORD_NOT_FOUND));
+
+            recordHabit.setCigarettesSmoked(request.getCigarettesSmoked());
+            return recordHabitMapper.toResponse(recordHabit);
+        }
+
         RecordHabit recordHabit = recordHabitMapper.toEntity(request);
         recordHabit.setAccount(account);
+        Streak streak = streakRepository.findByMember_Account_Id(request.getAccountId())
+                .orElseThrow(() -> new AppException(ErrorCode.STREAK_NOT_FOUND));
 
+        streak.setStreak(streak.getStreak() + 1);
+        streakRepository.save(streak);
         return recordHabitMapper.toResponse(recordHabitRepository.save(recordHabit));
     }
 

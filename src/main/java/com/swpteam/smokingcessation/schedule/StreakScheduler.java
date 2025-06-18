@@ -6,7 +6,7 @@ import com.swpteam.smokingcessation.domain.entity.Setting;
 import com.swpteam.smokingcessation.domain.entity.Streak;
 import com.swpteam.smokingcessation.exception.AppException;
 import com.swpteam.smokingcessation.repository.MemberRepository;
-import com.swpteam.smokingcessation.repository.RecordRepository;
+import com.swpteam.smokingcessation.repository.RecordHabitRepository;
 import com.swpteam.smokingcessation.repository.SettingRepository;
 import com.swpteam.smokingcessation.repository.StreakRepository;
 import lombok.AccessLevel;
@@ -27,7 +27,7 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class StreakScheduler {
     SettingRepository settingRepository;
-    RecordRepository recordRepository;
+    RecordHabitRepository recordHabitRepository;
     StreakRepository streakRepository;
     MemberRepository memberRepository;
 
@@ -49,7 +49,7 @@ public class StreakScheduler {
                     return;
                 }
 
-                boolean hasRecord = recordRepository.existsByAccountIdAndDateAndIsDeletedFalse(accountId, today);
+                boolean hasRecord = recordHabitRepository.existsByAccountIdAndDateAndIsDeletedFalse(accountId, today);
 
                 Streak streak = streakRepository.findByMember_Account_Id(accountId).orElse(null);
                 if (streak == null || hasRecord || streak.getStreak() == 0) {
