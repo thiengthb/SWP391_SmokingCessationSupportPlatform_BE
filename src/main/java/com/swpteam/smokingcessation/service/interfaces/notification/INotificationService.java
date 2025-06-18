@@ -16,4 +16,6 @@ public interface INotificationService {
     Page<NotificationResponse> getNotificationsById(String id, PageableRequest request);
 
     void deleteNotification(String id);
+
+    void deleteAllNotification(String id);
 }

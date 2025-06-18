@@ -2,8 +2,7 @@ package com.swpteam.smokingcessation.service.impl.report;
 
 import com.swpteam.smokingcessation.domain.dto.report.ReportSummaryRequest;
 import com.swpteam.smokingcessation.domain.dto.report.ReportSummaryResponse;
-import com.swpteam.smokingcessation.repository.AccountRepository;
-import com.swpteam.smokingcessation.repository.TransactionRepository;
+import com.swpteam.smokingcessation.repository.report.IReportRepository;
 import com.swpteam.smokingcessation.service.interfaces.report.IReportService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -14,12 +13,11 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 
 @Service
-@FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 @RequiredArgsConstructor
+@FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class ReportServiceImpl implements IReportService {
 
-    TransactionRepository transactionRepository;
-    AccountRepository accountRepository;
+    IReportRepository IReportRepository;
 
     @PreAuthorize("hasRole('ADMIN')")
     @Override
@@ -30,18 +28,11 @@ public class ReportServiceImpl implements IReportService {
             to = request.getTo();
         }
 
-        double revenue = transactionRepository.sumAmountBetween(from, to);
-        int newAccounts = accountRepository.countByCreatedAtBetween(from, to);
-        int currentAccounts = (int) accountRepository.count();
-        int activeAccounts = accountRepository.countActiveUsersBetween(from, to);
+        //double revenue = transactionRepository.sumAmountBetween(from, to);
+        //int newAccounts = accountRepository.countByCreatedAtBetween(from, to);
+        //int currentAccounts = (int) accountRepository.count();
+        //int activeAccounts = accountRepository.countActiveUsersBetween(from, to);
 
-        return ReportSummaryResponse.builder()
-                .revenue(revenue)
-                .newAccounts(newAccounts)
-                .currentAccounts(currentAccounts)
-                .activeAccounts(activeAccounts)
-                .fromDate(from)
-                .toDate(to)
-                .build();
+        return IReportRepository.getReportSummary(from, to);
     }
 }

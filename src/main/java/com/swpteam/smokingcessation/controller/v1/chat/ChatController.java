@@ -2,7 +2,7 @@ package com.swpteam.smokingcessation.controller.v1.chat;
 
 import com.swpteam.smokingcessation.domain.dto.chat.ChatRequest;
 import com.swpteam.smokingcessation.domain.dto.chat.ChatResponse;
-import com.swpteam.smokingcessation.service.impl.chat.ChatServiceImpl;
+import com.swpteam.smokingcessation.service.interfaces.chat.IChatService;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -15,7 +15,7 @@ import org.springframework.stereotype.Controller;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class ChatController {
-    ChatServiceImpl chatService;
+    IChatService chatService;
 
     @MessageMapping("/chat/send")
     @SendTo("/topic/public")

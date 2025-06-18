@@ -3,7 +3,7 @@ package com.swpteam.smokingcessation.schedule;
 import com.swpteam.smokingcessation.domain.dto.report.ReportSummaryResponse;
 import com.swpteam.smokingcessation.integration.mail.IMailService;
 import com.swpteam.smokingcessation.repository.AccountRepository;
-import com.swpteam.smokingcessation.repository.TransactionRepository;
+import com.swpteam.smokingcessation.repository.report.IReportRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -21,7 +21,7 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class MonthlyReportScheduler {
     AccountRepository accountRepository;
-    TransactionRepository transactionRepository;
+    IReportRepository reportRepository;
     IMailService mailService;
 
 
@@ -31,26 +31,7 @@ public class MonthlyReportScheduler {
         LocalDateTime startOfMonth = now.with(TemporalAdjusters.firstDayOfMonth());
         LocalDateTime endOfMonth = now.with(TemporalAdjusters.lastDayOfMonth()).withHour(23).withMinute(59).withSecond(59).withNano(999999999);
 
-        // Calculate revenue
-        double revenue = transactionRepository.sumAmountBetween(startOfMonth, endOfMonth);
-
-        // Count new users this month
-        int newAccounts = accountRepository.countByCreatedAtBetween(startOfMonth, endOfMonth);
-
-        // Count active users (e.g., users who logged in or performed an action this month)
-        int activeAccounts = accountRepository.countActiveUsersBetween(startOfMonth, endOfMonth);
-
-        // Total accounts
-        int currentAccounts = (int) accountRepository.count();
-
-        ReportSummaryResponse report = ReportSummaryResponse.builder()
-                .revenue(revenue)
-                .newAccounts(newAccounts)
-                .currentAccounts(currentAccounts)
-                .activeAccounts(activeAccounts)
-                .fromDate(startOfMonth)
-                .toDate(endOfMonth)
-                .build();
+        ReportSummaryResponse report = reportRepository.getReportSummary(startOfMonth, endOfMonth);
 
         List<String> adminEmails = accountRepository.findAllAdminEmails();
         for (String email : adminEmails) {

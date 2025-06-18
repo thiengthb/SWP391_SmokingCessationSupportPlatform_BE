@@ -18,16 +18,16 @@ import lombok.experimental.FieldDefaults;
 public class Review extends BaseEntity {
 
     @ManyToOne
-    @JoinColumn(name = "accountId", nullable = false, updatable = false)
+    @JoinColumn(name = "memberId", nullable = false, updatable = false)
     @JsonBackReference
-    private Account member;
+    Account member;
 
     @ManyToOne
-    @JoinColumn(name = "accountId",  nullable = false)
+    @JoinColumn(name = "coachId", nullable = false)
     @JsonBackReference
-    private Account coach;
+    Account coach;
 
-    private String comment;
+    String comment;
 
-    private int rating;
+    int rating;
 }
