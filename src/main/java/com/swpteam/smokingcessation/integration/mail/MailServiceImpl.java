@@ -1,9 +1,9 @@
 package com.swpteam.smokingcessation.integration.mail;
 
 import com.swpteam.smokingcessation.constant.ErrorCode;
+import com.swpteam.smokingcessation.domain.dto.report.ReportSummaryResponse;
 import com.swpteam.smokingcessation.domain.entity.Account;
 import com.swpteam.smokingcessation.domain.entity.Message;
-import com.swpteam.smokingcessation.domain.entity.Report;
 import com.swpteam.smokingcessation.domain.entity.Subscription;
 import com.swpteam.smokingcessation.exception.AppException;
 import com.swpteam.smokingcessation.repository.AccountRepository;
@@ -144,7 +144,7 @@ public class MailServiceImpl implements IMailService {
     }
 
     @Override
-    public void sendReportEmail(String to, Report report) {
+    public void sendReportEmail(String to, ReportSummaryResponse report) {
         Context context = new Context();
         context.setVariable("report", report);
 

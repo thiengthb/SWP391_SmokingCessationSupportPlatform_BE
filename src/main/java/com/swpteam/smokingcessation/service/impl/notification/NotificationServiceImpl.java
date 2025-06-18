@@ -12,11 +12,13 @@ import com.swpteam.smokingcessation.exception.AppException;
 import com.swpteam.smokingcessation.repository.NotificationRepository;
 import com.swpteam.smokingcessation.service.interfaces.identity.IAccountService;
 import com.swpteam.smokingcessation.service.interfaces.notification.INotificationService;
-import com.swpteam.smokingcessation.utils.AuthorizationUtilService;
+import com.swpteam.smokingcessation.utils.AuthUtil;
 import com.swpteam.smokingcessation.utils.ValidationUtil;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -37,14 +39,12 @@ public class NotificationServiceImpl implements INotificationService {
     NotificationRepository notificationRepository;
 
     IAccountService accountService;
-    SimpMessagingTemplate simpMessagingTemplate;
-    AccountRepository accountRepository;
-    AuthorizationUtilService authorizationUtilService;
+    AuthUtil authUtil;
 
     @Override
     @Transactional
     @CachePut(value = "MESSAGE_CACHE", key = "#result.getId()")
-    public NotificationResponse sendNotification(NotificationRequest request) {
+    public void sendNotification(NotificationRequest request) {
         Notification notification = notificationMapper.toEntity(request);
 
         Account account = request.getAccountId() != null ?
@@ -63,8 +63,6 @@ public class NotificationServiceImpl implements INotificationService {
         } else {
             simpMessagingTemplate.convertAndSend("/topic/notifications/" + request.getAccountId(), response);
         }
-
-        return response;
     }
 
     @Override
@@ -87,9 +85,8 @@ public class NotificationServiceImpl implements INotificationService {
     @PreAuthorize("hasRole('ADMIN')")
     @Override
     public Page<NotificationResponse> getNotifications(PageableRequest request) {
-        if (!ValidationUtil.isFieldExist(Account.class, request.getSortBy())) {
-            throw new AppException(ErrorCode.INVALID_SORT_FIELD);
-        }
+        ValidationUtil.checkFieldExist(Notification.class, request.getSortBy());
+
         Pageable pageable = PageableRequest.getPageable(request);
         Page<Notification> notifications = notificationRepository.findAllByIsDeletedFalse(pageable);
 
@@ -99,9 +96,8 @@ public class NotificationServiceImpl implements INotificationService {
     @PreAuthorize("hasRole('ADMIN')")
     @Override
     public Page<NotificationResponse> getNotificationsById(String id, PageableRequest request) {
-        if (!ValidationUtil.isFieldExist(Account.class, request.getSortBy())) {
-            throw new AppException(ErrorCode.INVALID_SORT_FIELD);
-        }
+        ValidationUtil.checkFieldExist(Notification.class, request.getSortBy());
+
         Pageable pageable = PageableRequest.getPageable(request);
         Page<Notification> notifications = notificationRepository.findByAccountIdAndIsDeletedFalse(id, pageable);
 
@@ -112,7 +108,7 @@ public class NotificationServiceImpl implements INotificationService {
     public void deleteNotification(String id) {
         Notification notification = notificationRepository.findByIdAndIsDeletedFalse(id).orElseThrow(() -> new AppException(ErrorCode.NOTIFICATION_NOT_FOUND));
 
-        boolean haveAccess = authorizationUtilService.checkAdminOrOwner(notification.getAccount().getId());
+        boolean haveAccess = authUtil.isAdminOrOwner(notification.getAccount().getId());
         if (!haveAccess) {
             throw new AppException(ErrorCode.OTHERS_NOTIFICATION_CANNOT_BE_DELETED);
         }
@@ -127,7 +123,7 @@ public class NotificationServiceImpl implements INotificationService {
         if (notifications.isEmpty()) {
             throw new AppException(ErrorCode.NOTIFICATION_NOT_FOUND);
         }
-        boolean haveAccess = authorizationUtilService.checkAdminOrOwner(notifications.getFirst().getAccount().getId());
+        boolean haveAccess = authUtil.isAdminOrOwner(notifications.getFirst().getAccount().getId());
         if (!haveAccess) {
             throw new AppException(ErrorCode.OTHERS_NOTIFICATION_CANNOT_BE_DELETED);
         }

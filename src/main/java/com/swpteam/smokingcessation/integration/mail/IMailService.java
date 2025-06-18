@@ -1,7 +1,7 @@
 package com.swpteam.smokingcessation.integration.mail;
 
+import com.swpteam.smokingcessation.domain.dto.report.ReportSummaryResponse;
 import com.swpteam.smokingcessation.domain.entity.Message;
-import com.swpteam.smokingcessation.domain.entity.Report;
 import jakarta.mail.MessagingException;
 
 public interface IMailService {
@@ -14,5 +14,5 @@ public interface IMailService {
 
     void sendResetPasswordEmail(String to, String resetLink, String userName) throws MessagingException;
 
-    void sendReportEmail(String to, Report report);
+    void sendReportEmail(String to, ReportSummaryResponse report);
 }

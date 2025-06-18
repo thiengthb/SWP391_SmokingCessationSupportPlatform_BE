@@ -232,8 +232,9 @@ public enum ErrorCode {
     STREAK_ALREADY_EXISTS(3105, "Streak already exists in the system", HttpStatus.CONFLICT),
 
     // Report
-    REPORT_DAY_INVALID(4100, "The input day must be greater than 0", HttpStatus.BAD_REQUEST),
-    ;
+    PAST_FROM_DATE(4100, "The from date needs to be in the past", HttpStatus.BAD_REQUEST),
+    PAST_TO_DATE(4101, "The to date needs to be in the past or present", HttpStatus.BAD_REQUEST),
+    FROM_DATE_REQUIRED(4102, "The from date cannot be empty", HttpStatus.BAD_REQUEST);
 
     int code;
     String message;

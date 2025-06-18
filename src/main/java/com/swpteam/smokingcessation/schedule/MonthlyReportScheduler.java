@@ -1,9 +1,8 @@
 package com.swpteam.smokingcessation.schedule;
 
-import com.swpteam.smokingcessation.domain.entity.Report;
+import com.swpteam.smokingcessation.domain.dto.report.ReportSummaryResponse;
 import com.swpteam.smokingcessation.integration.mail.IMailService;
 import com.swpteam.smokingcessation.repository.AccountRepository;
-import com.swpteam.smokingcessation.repository.ReportRepository;
 import com.swpteam.smokingcessation.repository.TransactionRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -22,7 +21,6 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class MonthlyReportScheduler {
     AccountRepository accountRepository;
-    ReportRepository reportRepository;
     TransactionRepository transactionRepository;
     IMailService mailService;
 
@@ -30,7 +28,7 @@ public class MonthlyReportScheduler {
     @Scheduled(cron = "0 0 8 1 * *")
     public void generateAndSendMonthlyReport() {
         LocalDateTime now = LocalDateTime.now();
-        LocalDateTime startOfMonth = now.with(TemporalAdjusters.firstDayOfMonth()).withHour(0).withMinute(0).withSecond(0).withNano(0);
+        LocalDateTime startOfMonth = now.with(TemporalAdjusters.firstDayOfMonth());
         LocalDateTime endOfMonth = now.with(TemporalAdjusters.lastDayOfMonth()).withHour(23).withMinute(59).withSecond(59).withNano(999999999);
 
         // Calculate revenue
@@ -45,14 +43,14 @@ public class MonthlyReportScheduler {
         // Total accounts
         int currentAccounts = (int) accountRepository.count();
 
-        Report report = Report.builder()
+        ReportSummaryResponse report = ReportSummaryResponse.builder()
                 .revenue(revenue)
                 .newAccounts(newAccounts)
-                .activeAccounts(activeAccounts)
                 .currentAccounts(currentAccounts)
+                .activeAccounts(activeAccounts)
+                .fromDate(startOfMonth)
+                .toDate(endOfMonth)
                 .build();
-
-        reportRepository.save(report);
 
         List<String> adminEmails = accountRepository.findAllAdminEmails();
         for (String email : adminEmails) {

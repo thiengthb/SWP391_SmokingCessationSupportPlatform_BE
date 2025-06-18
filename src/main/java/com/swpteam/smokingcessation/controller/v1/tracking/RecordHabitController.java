@@ -1,12 +1,12 @@
 package com.swpteam.smokingcessation.controller.v1.tracking;
 
-import com.swpteam.smokingcessation.domain.dto.record.RecordHabitCreateRequest;
-import com.swpteam.smokingcessation.domain.dto.record.RecordHabitResponse;
-import com.swpteam.smokingcessation.domain.dto.record.RecordHabitUpdateRequest;
 import com.swpteam.smokingcessation.common.ApiResponse;
 import com.swpteam.smokingcessation.common.PageableRequest;
 import com.swpteam.smokingcessation.constant.SuccessCode;
-import com.swpteam.smokingcessation.service.interfaces.tracking.IRecordService;
+import com.swpteam.smokingcessation.domain.dto.record.RecordHabitCreateRequest;
+import com.swpteam.smokingcessation.domain.dto.record.RecordHabitResponse;
+import com.swpteam.smokingcessation.domain.dto.record.RecordHabitUpdateRequest;
+import com.swpteam.smokingcessation.service.interfaces.tracking.IRecordHabitService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
@@ -23,9 +23,9 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @Tag(name = "Record", description = "Manage record-related operations")
-public class RecordController {
+public class RecordHabitController {
 
-    IRecordService recordService;
+    IRecordHabitService recordService;
 
     @GetMapping
     ResponseEntity<ApiResponse<Page<RecordHabitResponse>>> getRecordPage(@Valid PageableRequest request) {

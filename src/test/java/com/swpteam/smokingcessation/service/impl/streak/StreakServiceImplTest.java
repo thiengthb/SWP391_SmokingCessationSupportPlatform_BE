@@ -4,8 +4,9 @@ import com.swpteam.smokingcessation.constant.ErrorCode;
 import com.swpteam.smokingcessation.domain.entity.Member;
 import com.swpteam.smokingcessation.domain.entity.Streak;
 import com.swpteam.smokingcessation.exception.AppException;
+import com.swpteam.smokingcessation.repository.MemberRepository;
 import com.swpteam.smokingcessation.repository.StreakRepository;
-import com.swpteam.smokingcessation.utils.AuthorizationUtilService;
+import com.swpteam.smokingcessation.utils.AuthUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -21,9 +22,12 @@ import static org.mockito.Mockito.when;
 class StreakServiceImplTest {
 
     @Mock
+    MemberRepository memberRepository;
+
+    @Mock
     StreakRepository streakRepository;
     @Mock
-    AuthorizationUtilService authorizationUtilService;
+    AuthUtil authUtil;
 
     @InjectMocks
     StreakServiceImpl streakService;
@@ -45,7 +49,7 @@ class StreakServiceImplTest {
         streak.setMember(member);
 
         when(streakRepository.findById(member.getId())).thenReturn(Optional.of(streak));
-        when(authorizationUtilService.checkAdminOrOwner(member.getId())).thenReturn(true);
+        when(authUtil.isAdminOrOwner(member.getId())).thenReturn(true);
 
         // Act
         streakService.resetStreak(member.getId());
@@ -67,7 +71,7 @@ class StreakServiceImplTest {
         streak.setMember(member);
 
         when(streakRepository.findById(member.getId())).thenReturn(Optional.of(streak));
-        when(authorizationUtilService.checkAdminOrOwner(member.getId())).thenReturn(true);
+        when(authUtil.isAdminOrOwner(member.getId())).thenReturn(true);
 
         // Act
         streakService.resetStreak(member.getId());
@@ -89,7 +93,7 @@ class StreakServiceImplTest {
         streak.setMember(member);
 
         when(streakRepository.findById(member.getId())).thenReturn(Optional.of(streak));
-        when(authorizationUtilService.checkAdminOrOwner(member.getId())).thenReturn(false);
+        when(authUtil.isAdminOrOwner(member.getId())).thenReturn(false);
 
         // Act & Assert
         AppException ex = assertThrows(AppException.class, () -> streakService.resetStreak(member.getId()));
@@ -120,7 +124,7 @@ class StreakServiceImplTest {
         streak.setMember(member);
 
         when(streakRepository.findById(member.getId())).thenReturn(Optional.of(streak));
-        when(authorizationUtilService.checkAdminOrOwner(member.getId())).thenReturn(true);
+        when(authUtil.isAdminOrOwner(member.getId())).thenReturn(true);
 
         // Act
         streakService.resetStreak(member.getId());

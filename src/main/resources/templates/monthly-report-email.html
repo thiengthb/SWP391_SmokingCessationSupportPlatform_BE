@@ -135,15 +135,19 @@
                     <td th:text="${report.activeAccounts}"></td>
                 </tr>
                 <tr>
-                    <th>Report Generated At</th>
-                    <td th:text="${#temporals.format(report.createdAt, 'yyyy-MM-dd HH:mm:ss')}"></td>
+                    <th>Report time period</th>
+                    <td th:text="|${#temporals.format(report.fromDate, 'yyyy-MM-dd')} to ${#temporals.format(report.toDate, 'yyyy-MM-dd')}|"></td>
                 </tr>
             </table>
+
         </div>
 
         <div class="report-data">
             If you have any questions regarding this report, feel free to contact the technical team.
         </div>
+        <p style="font-size:12px;color:#888;">
+            Requested at: <span th:text="${#dates.format(#dates.createNow(), 'yyyy-MM-dd HH:mm:ss')}"></span>
+        </p>
     </div>
 
     <!-- Footer -->

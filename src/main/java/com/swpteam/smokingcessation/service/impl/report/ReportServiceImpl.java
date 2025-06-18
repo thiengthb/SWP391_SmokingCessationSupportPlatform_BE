@@ -1,5 +1,6 @@
 package com.swpteam.smokingcessation.service.impl.report;
 
+import com.swpteam.smokingcessation.domain.dto.report.ReportSummaryRequest;
 import com.swpteam.smokingcessation.domain.dto.report.ReportSummaryResponse;
 import com.swpteam.smokingcessation.repository.AccountRepository;
 import com.swpteam.smokingcessation.repository.TransactionRepository;
@@ -22,14 +23,17 @@ public class ReportServiceImpl implements IReportService {
 
     @PreAuthorize("hasRole('ADMIN')")
     @Override
-    public ReportSummaryResponse getSummary(int days) {
-        LocalDateTime now = LocalDateTime.now();
-        LocalDateTime from = now.minusDays(days).withHour(0).withMinute(0).withSecond(0).withNano(0);
+    public ReportSummaryResponse getSummary(ReportSummaryRequest request) {
+        LocalDateTime to = LocalDateTime.now();
+        LocalDateTime from = request.getFrom();
+        if (request.getTo() != null) {
+            to = request.getTo();
+        }
 
-        double revenue = transactionRepository.sumAmountBetween(from, now);
-        int newAccounts = accountRepository.countByCreatedAtBetween(from, now);
+        double revenue = transactionRepository.sumAmountBetween(from, to);
+        int newAccounts = accountRepository.countByCreatedAtBetween(from, to);
         int currentAccounts = (int) accountRepository.count();
-        int activeAccounts = accountRepository.countActiveUsersBetween(from, now);
+        int activeAccounts = accountRepository.countActiveUsersBetween(from, to);
 
         return ReportSummaryResponse.builder()
                 .revenue(revenue)
@@ -37,7 +41,7 @@ public class ReportServiceImpl implements IReportService {
                 .currentAccounts(currentAccounts)
                 .activeAccounts(activeAccounts)
                 .fromDate(from)
-                .toDate(now)
+                .toDate(to)
                 .build();
     }
 }

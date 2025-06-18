@@ -2,17 +2,17 @@ package com.swpteam.smokingcessation.controller.v1.report;
 
 import com.swpteam.smokingcessation.common.ApiResponse;
 import com.swpteam.smokingcessation.constant.SuccessCode;
+import com.swpteam.smokingcessation.domain.dto.report.ReportSummaryRequest;
 import com.swpteam.smokingcessation.domain.dto.report.ReportSummaryResponse;
 import com.swpteam.smokingcessation.service.impl.report.ReportServiceImpl;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.constraints.Min;
+import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -25,13 +25,12 @@ public class ReportController {
     ReportServiceImpl reportService;
 
     @GetMapping("/summary")
-    public ResponseEntity<ApiResponse<ReportSummaryResponse>> getReportSummary(
-            @RequestParam(defaultValue = "7") @Min(value = 1, message = "REPORT_DAY_INVALID") int days) {
+    public ResponseEntity<ApiResponse<ReportSummaryResponse>> getReportSummary(@Valid ReportSummaryRequest reportSummaryRequest) {
         return ResponseEntity.ok(
                 ApiResponse.<ReportSummaryResponse>builder()
                         .code(SuccessCode.SUMMARY_GET.getCode())
                         .message(SuccessCode.SUMMARY_GET.getMessage())
-                        .result(reportService.getSummary(days))
+                        .result(reportService.getSummary(reportSummaryRequest))
                         .build()
         );
     }
