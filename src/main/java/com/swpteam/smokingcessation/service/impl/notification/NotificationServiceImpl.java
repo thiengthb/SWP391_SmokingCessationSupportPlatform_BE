@@ -12,7 +12,7 @@ import com.swpteam.smokingcessation.exception.AppException;
 import com.swpteam.smokingcessation.repository.NotificationRepository;
 import com.swpteam.smokingcessation.service.interfaces.identity.IAccountService;
 import com.swpteam.smokingcessation.service.interfaces.notification.INotificationService;
-import com.swpteam.smokingcessation.utils.AuthUtil;
+import com.swpteam.smokingcessation.utils.AuthUtilService;
 import com.swpteam.smokingcessation.utils.ValidationUtil;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -39,7 +39,7 @@ public class NotificationServiceImpl implements INotificationService {
     NotificationRepository notificationRepository;
 
     IAccountService accountService;
-    AuthUtil authUtil;
+    AuthUtilService authUtilService;
 
     @Override
     @Transactional
@@ -108,7 +108,7 @@ public class NotificationServiceImpl implements INotificationService {
     public void deleteNotification(String id) {
         Notification notification = notificationRepository.findByIdAndIsDeletedFalse(id).orElseThrow(() -> new AppException(ErrorCode.NOTIFICATION_NOT_FOUND));
 
-        boolean haveAccess = authUtil.isAdminOrOwner(notification.getAccount().getId());
+        boolean haveAccess = authUtilService.isAdminOrOwner(notification.getAccount().getId());
         if (!haveAccess) {
             throw new AppException(ErrorCode.OTHERS_NOTIFICATION_CANNOT_BE_DELETED);
         }
@@ -124,7 +124,7 @@ public class NotificationServiceImpl implements INotificationService {
         if (notifications.isEmpty()) {
             throw new AppException(ErrorCode.NOTIFICATION_NOT_FOUND);
         }
-        boolean haveAccess = authUtil.isAdminOrOwner(notifications.getFirst().getAccount().getId());
+        boolean haveAccess = authUtilService.isAdminOrOwner(notifications.getFirst().getAccount().getId());
         if (!haveAccess) {
             throw new AppException(ErrorCode.OTHERS_NOTIFICATION_CANNOT_BE_DELETED);
         }

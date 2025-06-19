@@ -1,6 +1,6 @@
 package com.swpteam.smokingcessation.domain.entity;
 
-import com.swpteam.smokingcessation.common.BaseEntity;
+import com.swpteam.smokingcessation.common.AuditableEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -14,7 +14,7 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class Chat extends BaseEntity {
+public class Chat extends AuditableEntity {
     @ManyToOne
     @JoinColumn(name = "accountId")
     Account account;

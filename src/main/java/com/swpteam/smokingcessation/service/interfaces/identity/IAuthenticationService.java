@@ -14,7 +14,7 @@ public interface IAuthenticationService {
 
     AuthenticationResponse login(AuthenticationRequest request);
 
-    AuthenticationResponse refreshToken(String token);
+    AuthenticationResponse refreshingToken(String refreshToken);
 
     AuthenticationResponse register(RegisterRequest request);
 

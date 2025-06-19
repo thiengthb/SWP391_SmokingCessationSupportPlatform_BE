@@ -1,11 +1,10 @@
 package com.swpteam.smokingcessation.domain.entity;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.swpteam.smokingcessation.domain.enums.Language;
 import com.swpteam.smokingcessation.domain.enums.MotivationFrequency;
 import com.swpteam.smokingcessation.domain.enums.Theme;
 import com.swpteam.smokingcessation.domain.enums.TrackingMode;
-import com.swpteam.smokingcessation.common.BaseEntity;
+import com.swpteam.smokingcessation.common.AuditableEntity;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -19,7 +18,7 @@ import java.time.LocalTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class Setting extends BaseEntity {
+public class Setting extends AuditableEntity {
 
     @MapsId
     @OneToOne

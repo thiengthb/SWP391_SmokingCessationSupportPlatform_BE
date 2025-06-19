@@ -14,7 +14,7 @@ import com.swpteam.smokingcessation.exception.AppException;
 import com.swpteam.smokingcessation.repository.BlogRepository;
 import com.swpteam.smokingcessation.repository.CommentRepository;
 import com.swpteam.smokingcessation.service.interfaces.blog.ICommentService;
-import com.swpteam.smokingcessation.utils.AuthUtil;
+import com.swpteam.smokingcessation.utils.AuthUtilService;
 import com.swpteam.smokingcessation.utils.ValidationUtil;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -40,7 +40,7 @@ public class CommentServiceImpl implements ICommentService {
 
     BlogRepository blogRepository;
 
-    AuthUtil authUtil;
+    AuthUtilService authUtilService;
 
     @Override
     public Page<CommentResponse> getCommentsByBlogId(String blogId, PageableRequest request) {
@@ -74,7 +74,7 @@ public class CommentServiceImpl implements ICommentService {
     @Transactional
     @CachePut(value = "COMMENT_CACHE", key = "#result.getId()")
     public CommentResponse createComment(CommentCreateRequest request) {
-        Account currentAccount = authUtil.getCurrentAccount()
+        Account currentAccount = authUtilService.getCurrentAccount()
                 .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FOUND));
 
         Blog blog = blogRepository.findByIdAndIsDeletedFalse(request.getBlogId())
@@ -91,7 +91,7 @@ public class CommentServiceImpl implements ICommentService {
     @Transactional
     @CachePut(value = "COMMENT_CACHE", key = "#result.getId()")
     public CommentResponse replyComment(CommentReplyRequest request) {
-        Account currentAccount = authUtil.getCurrentAccount()
+        Account currentAccount = authUtilService.getCurrentAccount()
                 .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FOUND));
 
         Comment parentComment = findCommentById(request.getParentCommentId());
@@ -112,7 +112,7 @@ public class CommentServiceImpl implements ICommentService {
     public CommentResponse updateComment(String id, CommentUpdateRequest request) {
         Comment comment = findCommentById(id);
 
-        boolean haveAccess = authUtil.isAdminOrOwner(comment.getAccount().getId());
+        boolean haveAccess = authUtilService.isAdminOrOwner(comment.getAccount().getId());
         if (!haveAccess) {
             throw new AppException(ErrorCode.OTHERS_COMMENT_UNCHANGEABLE);
         }
@@ -128,7 +128,7 @@ public class CommentServiceImpl implements ICommentService {
     public void deleteCommentById(String id) {
         Comment comment = findCommentById(id);
 
-        boolean haveAccess = authUtil.isAdminOrOwner(comment.getAccount().getId());
+        boolean haveAccess = authUtilService.isAdminOrOwner(comment.getAccount().getId());
         if (!haveAccess) {
             throw new AppException(ErrorCode.OTHERS_COMMENT_UNCHANGEABLE);
         }

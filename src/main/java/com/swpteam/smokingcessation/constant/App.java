@@ -12,7 +12,8 @@ public final class App {
             "/api/v1/auth/register",
             "/api/v1/auth/google/login",
             "/api/v1/auth/forgot-password",
-            "/api/v1/test"
+            "/api/v1/test",
+            "/api/v1/auth/refresh-token"
     };
 
     public static final String INIT_TEST_MEMBER_EMAIL = "member@gmail.com";

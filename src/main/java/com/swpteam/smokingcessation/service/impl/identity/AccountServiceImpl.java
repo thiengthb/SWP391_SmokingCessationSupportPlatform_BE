@@ -14,7 +14,7 @@ import com.swpteam.smokingcessation.constant.ErrorCode;
 import com.swpteam.smokingcessation.domain.entity.Account;
 import com.swpteam.smokingcessation.exception.AppException;
 import com.swpteam.smokingcessation.service.interfaces.identity.IAccountService;
-import com.swpteam.smokingcessation.utils.AuthUtil;
+import com.swpteam.smokingcessation.utils.AuthUtilService;
 import com.swpteam.smokingcessation.utils.ValidationUtil;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -37,7 +37,7 @@ public class AccountServiceImpl implements IAccountService {
     AccountRepository accountRepository;
     AccountMapper accountMapper;
 
-    AuthUtil authUtil;
+    AuthUtilService authUtilService;
     PasswordEncoder passwordEncoder;
 
     @Override
@@ -74,7 +74,7 @@ public class AccountServiceImpl implements IAccountService {
 
     @Override
     public AccountResponse getCurrentAccount() {
-        Account account = authUtil.getCurrentAccount()
+        Account account = authUtilService.getCurrentAccount()
                 .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FOUND));
 
         return accountMapper.toResponse(account);
@@ -118,7 +118,7 @@ public class AccountServiceImpl implements IAccountService {
     @Override
     @Transactional
     public AccountResponse changePassword(ChangePasswordRequest request) {
-        Account account = authUtil.getCurrentAccount()
+        Account account = authUtilService.getCurrentAccount()
                 .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FOUND));
 
         if (!passwordEncoder.matches(request.getOldPassword(), account.getPassword())) {
@@ -136,7 +136,7 @@ public class AccountServiceImpl implements IAccountService {
     @PreAuthorize("hasRole('ADMIN')")
     public void banAccount(String id) {
         Account account = findAccountById(id);
-        Account currentAccount = authUtil.getCurrentAccountOrThrow();
+        Account currentAccount = authUtilService.getCurrentAccountOrThrow();
 
         if (account == currentAccount)
             throw new AppException(ErrorCode.SELF_BAN);

@@ -11,7 +11,7 @@ import com.swpteam.smokingcessation.exception.AppException;
 import com.swpteam.smokingcessation.repository.MemberRepository;
 import com.swpteam.smokingcessation.repository.StreakRepository;
 import com.swpteam.smokingcessation.service.interfaces.streak.IStreakService;
-import com.swpteam.smokingcessation.utils.AuthUtil;
+import com.swpteam.smokingcessation.utils.AuthUtilService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -28,7 +28,7 @@ public class StreakServiceImpl implements IStreakService {
     StreakMapper streakMapper;
     StreakRepository streakRepository;
     MemberRepository memberRepository;
-    AuthUtil authUtil;
+    AuthUtilService authUtilService;
 
     @Override
     @Transactional
@@ -68,7 +68,7 @@ public class StreakServiceImpl implements IStreakService {
         Streak streak = streakRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.STREAK_NOT_FOUND));
         Member member = streak.getMember();
-        boolean isAllowed = authUtil.isAdminOrOwner(member.getId());
+        boolean isAllowed = authUtilService.isAdminOrOwner(member.getId());
 
         if (!isAllowed) {
             throw new AppException(ErrorCode.OTHERS_STREAK_CANNOT_BE_DELETED);

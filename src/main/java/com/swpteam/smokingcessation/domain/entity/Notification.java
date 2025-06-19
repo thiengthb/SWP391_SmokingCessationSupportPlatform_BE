@@ -1,6 +1,6 @@
 package com.swpteam.smokingcessation.domain.entity;
 
-import com.swpteam.smokingcessation.common.BaseEntity;
+import com.swpteam.smokingcessation.common.AuditableEntity;
 import com.swpteam.smokingcessation.domain.enums.NotificationType;
 import jakarta.persistence.*;
 import lombok.*;
@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class Notification extends BaseEntity {
+public class Notification extends AuditableEntity {
 
     @ManyToOne
     @JoinColumn(name = "accountId")

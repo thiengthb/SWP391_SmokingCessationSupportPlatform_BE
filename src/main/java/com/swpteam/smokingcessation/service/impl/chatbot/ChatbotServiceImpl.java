@@ -11,7 +11,7 @@ import com.swpteam.smokingcessation.exception.AppException;
 import com.swpteam.smokingcessation.integration.AI.IAIService;
 import com.swpteam.smokingcessation.repository.AITokenUsageRepository;
 import com.swpteam.smokingcessation.service.interfaces.chatbot.IChatbotService;
-import com.swpteam.smokingcessation.utils.AuthUtil;
+import com.swpteam.smokingcessation.utils.AuthUtilService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -28,13 +28,13 @@ import java.time.LocalDate;
 public class ChatbotServiceImpl implements IChatbotService {
 
     AITokenUsageRepository aiTokenUsageRepository;
-    AuthUtil authUtil;
+    AuthUtilService authUtilService;
     IAIService aiService;
 
     @Override
     @Transactional
     public ChatbotResponse chat(ChatbotRequest request) {
-        Account account = authUtil.getCurrentAccount()
+        Account account = authUtilService.getCurrentAccount()
                 .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FOUND));
 
         AITokenUsage usage = aiTokenUsageRepository.findByAccountIdAndDate(account.getId(), LocalDate.now())

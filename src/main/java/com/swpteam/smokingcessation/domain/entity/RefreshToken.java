@@ -1,7 +1,6 @@
 package com.swpteam.smokingcessation.domain.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -19,6 +18,9 @@ public class RefreshToken {
     @Id
     String id;
 
-    String accountId;
+    @OneToOne
+    @JoinColumn(name = "accountId", updatable = false, nullable = false)
+    Account account;
+
     Date expiryTime;
 }

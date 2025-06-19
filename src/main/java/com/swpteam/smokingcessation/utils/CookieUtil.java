@@ -2,19 +2,31 @@ package com.swpteam.smokingcessation.utils;
 
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.experimental.UtilityClass;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
+import lombok.experimental.NonFinal;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 
-@UtilityClass
+@Slf4j
+@Component
+@RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class CookieUtil {
 
-    private final int REFRESH_TOKEN_EXPIRY = 60 * 60 * 24 * 7; // 7 days
+    @NonFinal
+    @Value("${jwt.refresh-token.duration}")
+    int REFRESH_TOKEN_DURATION;
 
     public void setRefreshTokenCookie(HttpServletResponse response, String token) {
         Cookie refreshTokenCookie = new Cookie("refreshToken", token);
         refreshTokenCookie.setHttpOnly(true);
         refreshTokenCookie.setSecure(true); // set to true in production
-        refreshTokenCookie.setPath("/api/auth/refresh-token");
-        refreshTokenCookie.setMaxAge(REFRESH_TOKEN_EXPIRY);
+        refreshTokenCookie.setPath("/");
+        refreshTokenCookie.setMaxAge(REFRESH_TOKEN_DURATION);
         response.addCookie(refreshTokenCookie);
     }
 
@@ -22,7 +34,7 @@ public class CookieUtil {
         Cookie refreshTokenCookie = new Cookie("refreshToken", "");
         refreshTokenCookie.setHttpOnly(true);
         refreshTokenCookie.setSecure(true); // set to true in production
-        refreshTokenCookie.setPath("/api/auth/refresh-token");
+        refreshTokenCookie.setPath("/");
         refreshTokenCookie.setMaxAge(0);
         response.addCookie(refreshTokenCookie);
     }

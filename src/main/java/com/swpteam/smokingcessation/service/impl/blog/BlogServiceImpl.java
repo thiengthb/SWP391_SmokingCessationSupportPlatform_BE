@@ -14,7 +14,7 @@ import com.swpteam.smokingcessation.exception.AppException;
 import com.swpteam.smokingcessation.repository.BlogRepository;
 import com.swpteam.smokingcessation.repository.CategoryRepository;
 import com.swpteam.smokingcessation.service.interfaces.blog.IBlogService;
-import com.swpteam.smokingcessation.utils.AuthUtil;
+import com.swpteam.smokingcessation.utils.AuthUtilService;
 import com.swpteam.smokingcessation.utils.SlugUtil;
 import com.swpteam.smokingcessation.utils.ValidationUtil;
 import lombok.AccessLevel;
@@ -41,7 +41,7 @@ public class BlogServiceImpl implements IBlogService {
 
     CategoryRepository categoryRepository;
 
-    AuthUtil authUtil;
+    AuthUtilService authUtilService;
 
     @Override
     @PreAuthorize("hasRole('ADMIN')")
@@ -57,7 +57,7 @@ public class BlogServiceImpl implements IBlogService {
     @Override
     @PreAuthorize("hasRole('ADMIN')")
     public Page<BlogResponse> getMyBlogsPage(PageableRequest request) {
-        Account account = authUtil.getCurrentAccount()
+        Account account = authUtilService.getCurrentAccount()
                 .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FOUND));
 
         Pageable pageable = PageableRequest.getPageable(request);
@@ -97,7 +97,7 @@ public class BlogServiceImpl implements IBlogService {
     @PreAuthorize("hasRole('ADMIN')")
     @CachePut(value = "BLOG_CACHE", key = "#result.getId()")
     public BlogResponse createBlog(BlogCreateRequest request) {
-        Account account = authUtil.getCurrentAccount()
+        Account account = authUtilService.getCurrentAccount()
                 .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FOUND));
 
         Category category = categoryRepository.findByName(request.getCategoryName())
@@ -122,7 +122,7 @@ public class BlogServiceImpl implements IBlogService {
     public BlogResponse updateBlog(String id, BlogUpdateRequest request) {
         Blog blog = findBlogById(id);
 
-        boolean haveAccess = authUtil.isAdminOrOwner(blog.getAccount().getId());
+        boolean haveAccess = authUtilService.isAdminOrOwner(blog.getAccount().getId());
         if (!haveAccess) {
             throw new AppException(ErrorCode.OTHERS_COMMENT_UNCHANGEABLE);
         }
@@ -142,7 +142,7 @@ public class BlogServiceImpl implements IBlogService {
     public void deleteBlogById(String id) {
         Blog blog = findBlogById(id);
 
-        boolean haveAccess = authUtil.isAdminOrOwner(blog.getAccount().getId());
+        boolean haveAccess = authUtilService.isAdminOrOwner(blog.getAccount().getId());
         if (!haveAccess) {
             throw new AppException(ErrorCode.OTHERS_COMMENT_UNCHANGEABLE);
         }

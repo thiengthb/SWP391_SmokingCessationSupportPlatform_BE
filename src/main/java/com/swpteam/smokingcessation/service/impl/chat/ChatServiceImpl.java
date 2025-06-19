@@ -12,7 +12,7 @@ import com.swpteam.smokingcessation.exception.AppException;
 import com.swpteam.smokingcessation.repository.AccountRepository;
 import com.swpteam.smokingcessation.repository.ChatRepository;
 import com.swpteam.smokingcessation.service.interfaces.chat.IChatService;
-import com.swpteam.smokingcessation.utils.AuthUtil;
+import com.swpteam.smokingcessation.utils.AuthUtilService;
 import com.swpteam.smokingcessation.utils.ValidationUtil;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -30,7 +30,7 @@ public class ChatServiceImpl implements IChatService {
     AccountRepository accountRepository;
     ChatRepository chatRepository;
     ChatMapper chatMapper;
-    AuthUtil authUtil;
+    AuthUtilService authUtilService;
 
     @Override
     public ChatResponse sendChatMessage(ChatRequest request) {
@@ -77,7 +77,7 @@ public class ChatServiceImpl implements IChatService {
     public void deleteChat(String id) {
         Chat chat = chatRepository.findByIdAndIsDeletedFalse(id).orElseThrow(() -> new AppException(ErrorCode.CHAT_NOT_FOUND));
 
-        boolean haveAccess = authUtil.isAdminOrOwner(chat.getAccount().getId());
+        boolean haveAccess = authUtilService.isAdminOrOwner(chat.getAccount().getId());
         if (!haveAccess) {
             throw new AppException(ErrorCode.OTHERS_CHAT_CANNOT_BE_DELETED);
         }

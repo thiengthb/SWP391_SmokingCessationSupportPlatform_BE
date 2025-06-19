@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.*;
 public class AuthenticationController {
 
     IAuthenticationService authenticationService;
+    CookieUtil cookieUtil;
 
     @PostMapping("/google/login")
     ResponseEntity<ApiResponse<GoogleTokenResponse>> getGoogleToken(@RequestBody GoogleTokenRequest request) {
@@ -39,7 +40,7 @@ public class AuthenticationController {
     ResponseEntity<ApiResponse<AuthenticationResponse>> authenticate(@RequestBody @Valid AuthenticationRequest request, HttpServletResponse response) {
         AuthenticationResponse authenticationResponse = authenticationService.login(request);
 
-        CookieUtil.setRefreshTokenCookie(response, authenticationResponse.getRefreshToken());
+        cookieUtil.setRefreshTokenCookie(response, authenticationResponse.getRefreshToken());
         authenticationResponse.setRefreshToken(null);
         return ResponseEntity.ok()
                 .body(ApiResponse.<AuthenticationResponse>builder()
@@ -51,9 +52,9 @@ public class AuthenticationController {
 
     @PostMapping("/refresh-token")
     ResponseEntity<ApiResponse<AuthenticationResponse>> refreshToken(@CookieValue("refreshToken") String refreshToken, HttpServletResponse response) {
-        AuthenticationResponse authenticationResponse = authenticationService.refreshToken(refreshToken);
+        AuthenticationResponse authenticationResponse = authenticationService.refreshingToken(refreshToken);
 
-        CookieUtil.setRefreshTokenCookie(response, authenticationResponse.getRefreshToken());
+        cookieUtil.setRefreshTokenCookie(response, authenticationResponse.getRefreshToken());
         authenticationResponse.setRefreshToken(null);
         return ResponseEntity.ok()
                 .body(ApiResponse.<AuthenticationResponse>builder()
@@ -67,7 +68,7 @@ public class AuthenticationController {
     ResponseEntity<ApiResponse<AuthenticationResponse>> register(@RequestBody @Valid RegisterRequest request, HttpServletResponse response) {
         AuthenticationResponse authenticationResponse = authenticationService.register(request);
 
-        CookieUtil.setRefreshTokenCookie(response, authenticationResponse.getRefreshToken());
+        cookieUtil.setRefreshTokenCookie(response, authenticationResponse.getRefreshToken());
         authenticationResponse.setRefreshToken(null);
         return ResponseEntity.ok(
                 ApiResponse.<AuthenticationResponse>builder()
@@ -103,7 +104,7 @@ public class AuthenticationController {
     public ResponseEntity<ApiResponse<Void>> logout(HttpServletResponse response) {
         authenticationService.logout();
 
-        CookieUtil.clearRefreshTokenCookie(response);
+        cookieUtil.clearRefreshTokenCookie(response);
 
         return ResponseEntity.ok(
                 ApiResponse.<Void>builder()
