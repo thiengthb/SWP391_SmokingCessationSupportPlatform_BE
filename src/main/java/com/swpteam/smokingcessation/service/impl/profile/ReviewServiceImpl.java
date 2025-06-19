@@ -6,16 +6,11 @@ import com.swpteam.smokingcessation.domain.dto.review.ReviewCreateRequest;
 import com.swpteam.smokingcessation.domain.dto.review.ReviewResponse;
 import com.swpteam.smokingcessation.domain.dto.review.ReviewUpdateRequest;
 import com.swpteam.smokingcessation.domain.entity.Account;
-import com.swpteam.smokingcessation.domain.entity.Coach;
-import com.swpteam.smokingcessation.domain.entity.Feedback;
 import com.swpteam.smokingcessation.domain.entity.Review;
 import com.swpteam.smokingcessation.domain.mapper.ReviewMapper;
 import com.swpteam.smokingcessation.exception.AppException;
-import com.swpteam.smokingcessation.repository.AccountRepository;
-import com.swpteam.smokingcessation.repository.CoachRepository;
 import com.swpteam.smokingcessation.repository.ReviewRepository;
 import com.swpteam.smokingcessation.service.interfaces.identity.IAccountService;
-import com.swpteam.smokingcessation.service.interfaces.profile.ICoachService;
 import com.swpteam.smokingcessation.service.interfaces.profile.IReviewService;
 import com.swpteam.smokingcessation.utils.AuthUtil;
 import com.swpteam.smokingcessation.utils.ValidationUtil;
@@ -58,7 +53,7 @@ public class ReviewServiceImpl implements IReviewService {
         ValidationUtil.checkFieldExist(Review.class, request.getSortBy());
 
         Pageable pageable = PageableRequest.getPageable(request);
-        Page<Review> reviews = reviewRepository.findByAccountIdAndIsDeletedFalse(accountId, pageable);
+        Page<Review> reviews = reviewRepository.findByMemberIdAndIsDeletedFalse(accountId, pageable);
 
         return reviews.map(reviewMapper::toResponse);
     }
@@ -123,7 +118,7 @@ public class ReviewServiceImpl implements IReviewService {
             review.setDeleted(true);
             reviewRepository.save(review);
 
-        }else{
+        } else {
             throw new AppException(ErrorCode.ACCESS_DENIED);
         }
     }

@@ -4,7 +4,7 @@ import com.swpteam.smokingcessation.common.ApiResponse;
 import com.swpteam.smokingcessation.common.PageableRequest;
 import com.swpteam.smokingcessation.constant.SuccessCode;
 import com.swpteam.smokingcessation.domain.dto.notification.NotificationResponse;
-import com.swpteam.smokingcessation.service.impl.notification.NotificationServiceImpl;
+import com.swpteam.smokingcessation.service.interfaces.notification.INotificationService;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class NotificationRestController {
-    NotificationServiceImpl notificationService;
+    INotificationService notificationService;
 
     @GetMapping
     ResponseEntity<ApiResponse<Page<NotificationResponse>>> getChats(@Valid PageableRequest request) {

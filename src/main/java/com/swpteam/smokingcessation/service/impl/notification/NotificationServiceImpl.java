@@ -117,6 +117,7 @@ public class NotificationServiceImpl implements INotificationService {
         notificationRepository.save(notification);
     }
 
+    @Override
     public void deleteAllNotification(String id) {
         List<Notification> notifications = notificationRepository.findAllByAccountIdAndIsDeletedFalse(id);
 

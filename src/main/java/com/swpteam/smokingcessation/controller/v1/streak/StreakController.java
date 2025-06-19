@@ -5,7 +5,7 @@ import com.swpteam.smokingcessation.common.PageableRequest;
 import com.swpteam.smokingcessation.constant.SuccessCode;
 import com.swpteam.smokingcessation.domain.dto.streak.StreakRequest;
 import com.swpteam.smokingcessation.domain.dto.streak.StreakResponse;
-import com.swpteam.smokingcessation.service.impl.streak.StreakServiceImpl;
+import com.swpteam.smokingcessation.service.interfaces.streak.IStreakService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.*;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @Tag(name = "Streak", description = "Manage streak-related operations")
 public class StreakController {
-    StreakServiceImpl streakService;
+    IStreakService streakService;
 
     @PostMapping("/{memberId}")
     ResponseEntity<ApiResponse<StreakResponse>> createStreak(@PathVariable String memberId, @RequestBody @Valid StreakRequest request) {

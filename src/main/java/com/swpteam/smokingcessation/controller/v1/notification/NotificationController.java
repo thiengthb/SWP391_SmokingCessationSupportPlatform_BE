@@ -3,7 +3,7 @@ package com.swpteam.smokingcessation.controller.v1.notification;
 
 import com.swpteam.smokingcessation.domain.dto.notification.MarkAsReadRequest;
 import com.swpteam.smokingcessation.domain.dto.notification.NotificationRequest;
-import com.swpteam.smokingcessation.service.impl.notification.NotificationServiceImpl;
+import com.swpteam.smokingcessation.service.interfaces.notification.INotificationService;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +16,7 @@ import org.springframework.stereotype.Controller;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class NotificationController {
-    NotificationServiceImpl notificationService;
+    INotificationService notificationService;
 
     // /topic/notify
     @MessageMapping("/notifications/send")
