@@ -51,7 +51,7 @@ class StreakControllerTest {
                 .setValidator(new LocalValidatorFactoryBean()) // <--- Add this line
                 .build();
 
-        streakRequest = StreakRequest.builder().streak(5).build();
+        streakRequest = new StreakRequest(5);
         streakResponse = StreakResponse.builder().id("streak1").streak(5).build();
     }
 
@@ -70,7 +70,7 @@ class StreakControllerTest {
 
     @Test
     void createStreak_withInvalidRequest_shouldReturnBadRequest() throws Exception {
-        StreakRequest invalidRequest = StreakRequest.builder().streak(-1).build(); // Assuming negative streak is invalid
+        StreakRequest invalidRequest = new StreakRequest(-1); // Assuming negative streak is invalid
 
         mockMvc.perform(post("/api/v1/streaks/member1")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -135,7 +135,7 @@ class StreakControllerTest {
 
     @Test
     void updateStreak_shouldReturnUpdatedStreak() throws Exception {
-        StreakRequest updateRequest = StreakRequest.builder().streak(10).build();
+        StreakRequest updateRequest = new StreakRequest(10);
         StreakResponse updatedResponse = StreakResponse.builder().id("streak1").streak(10).build();
 
         when(streakService.updateStreak(eq("streak1"), any(StreakRequest.class))).thenReturn(updatedResponse);

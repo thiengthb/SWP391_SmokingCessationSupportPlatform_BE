@@ -10,7 +10,7 @@ import com.swpteam.smokingcessation.domain.mapper.FeedbackMapper;
 import com.swpteam.smokingcessation.exception.AppException;
 import com.swpteam.smokingcessation.repository.FeedbackRepository;
 import com.swpteam.smokingcessation.service.interfaces.profile.IFeedbackService;
-import com.swpteam.smokingcessation.utils.AuthUtil;
+import com.swpteam.smokingcessation.utils.AuthUtilService;
 import com.swpteam.smokingcessation.utils.ValidationUtil;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -31,11 +31,11 @@ public class FeedbackServiceImpl implements IFeedbackService {
 
     FeedbackRepository feedbackRepository;
     FeedbackMapper feedbackMapper;
-    AuthUtil authUtil;
+    AuthUtilService authUtilService;
 
     @Override
     public Page<FeedbackResponse> getFeedbackPage(PageableRequest request) {
-        ValidationUtil.checkFieldExist(Feedback.class, request.getSortBy());
+        ValidationUtil.checkFieldExist(Feedback.class, request.sortBy());
 
         Pageable pageable = PageableRequest.getPageable(request);
         Page<Feedback> feedbacks = feedbackRepository.findAllByIsDeletedFalse(pageable);
@@ -49,7 +49,7 @@ public class FeedbackServiceImpl implements IFeedbackService {
 
     @Override
     public Page<FeedbackResponse> getFeedbackPageByAccountId(String accountId, PageableRequest request) {
-        ValidationUtil.checkFieldExist(Feedback.class, request.getSortBy());
+        ValidationUtil.checkFieldExist(Feedback.class, request.sortBy());
 
         Pageable pageable = PageableRequest.getPageable(request);
         Page<Feedback> feedbacks = feedbackRepository.findByAccountIdAndIsDeletedFalse(accountId, pageable);
@@ -61,7 +61,7 @@ public class FeedbackServiceImpl implements IFeedbackService {
     @PreAuthorize("hasAnyRole('MEMBER', 'COACH')")
     @CachePut(value = "FEEDBACK_CACHE", key = "#result.getId()")
     public FeedbackResponse createFeedback(FeedbackRequest request) {
-        Account currentAccount = authUtil.getCurrentAccountOrThrow();
+        Account currentAccount = authUtilService.getCurrentAccountOrThrowError();
 
         Feedback feedback = feedbackMapper.toEntity(request);
         feedback.setAccount(currentAccount);
@@ -75,7 +75,7 @@ public class FeedbackServiceImpl implements IFeedbackService {
     @PreAuthorize("hasAnyRole('MEMBER', 'COACH')")
     @CachePut(value = "FEEDBACK_CACHE", key = "#result.getId()")
     public FeedbackResponse updateFeedback(String id, FeedbackRequest request) {
-        Account currentAccount = authUtil.getCurrentAccountOrThrow();
+        Account currentAccount = authUtilService.getCurrentAccountOrThrowError();
 
         Feedback feedback = findFeedbackById(id);
         if (!feedback.getAccount().getId().equals(currentAccount.getId())) {
@@ -92,9 +92,9 @@ public class FeedbackServiceImpl implements IFeedbackService {
     @CacheEvict(value = "FEEDBACK_CACHE", key = "#id")
     public void softDeleteFeedbackById(String id) {
         Feedback feedback = findFeedbackById(id);
-        Account currentAccount = authUtil.getCurrentAccountOrThrow();
+        Account currentAccount = authUtilService.getCurrentAccountOrThrowError();
 
-        if (authUtil.isAdminOrOwner(currentAccount.getId()) ||
+        if (authUtilService.isAdminOrOwner(currentAccount.getId()) ||
                 feedback.getAccount().getId().equals(currentAccount.getId())) {
             feedback.setDeleted(true);
             feedbackRepository.save(feedback);

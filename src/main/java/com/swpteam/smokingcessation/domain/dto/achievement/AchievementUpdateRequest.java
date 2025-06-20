@@ -1,24 +1,17 @@
 package com.swpteam.smokingcessation.domain.dto.achievement;
 
 import jakarta.validation.constraints.*;
-import lombok.*;
-import lombok.experimental.FieldDefaults;
 
-@Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE)
-public class AchievementUpdateRequest {
+public record AchievementUpdateRequest (
 
-    String name;
+    String name,
 
-    String description;
+    String description,
 
-    String iconUrl;
+    String iconUrl,
 
-    String criteriaType;
+    String criteriaType,
 
     @Min(value = 0, message = "CRITERIA_VALUE_INVALID")
-    int criteriaValue;
-}
+    int criteriaValue
+) {}

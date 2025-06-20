@@ -40,9 +40,7 @@ class NotificationServiceImplTest {
     @Test
     void markAsRead_shouldMarkNotificationAsRead() {
         // Given
-        MarkAsReadRequest request = MarkAsReadRequest.builder()
-                .notificationId(notificationId)
-                .build();
+        MarkAsReadRequest request = new MarkAsReadRequest(notificationId);
 
         when(notificationRepository.findByIdAndIsDeletedFalse(notificationId))
                 .thenReturn(Optional.of(notification));
@@ -60,9 +58,7 @@ class NotificationServiceImplTest {
     @Test
     void markAsRead_shouldThrowException_whenNotificationNotFound() {
         // Given
-        MarkAsReadRequest request = MarkAsReadRequest.builder()
-                .notificationId(notificationId)
-                .build();
+        MarkAsReadRequest request = new MarkAsReadRequest(notificationId);
 
         when(notificationRepository.findByIdAndIsDeletedFalse(notificationId))
                 .thenReturn(Optional.empty());
@@ -80,9 +76,7 @@ class NotificationServiceImplTest {
     void markAsRead_shouldNotSave_whenAlreadyRead() {
         // Given
         notification.setRead(true);
-        MarkAsReadRequest request = MarkAsReadRequest.builder()
-                .notificationId(notificationId)
-                .build();
+        MarkAsReadRequest request = new MarkAsReadRequest(notificationId);
 
         when(notificationRepository.findByIdAndIsDeletedFalse(notificationId))
                 .thenReturn(Optional.of(notification));

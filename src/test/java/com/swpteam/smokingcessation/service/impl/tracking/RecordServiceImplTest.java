@@ -51,11 +51,7 @@ class RecordServiceImplTest {
         // Arrange
         String accountId = "acc1";
         LocalDate today = LocalDate.now();
-        RecordHabitCreateRequest request = RecordHabitCreateRequest.builder()
-                .accountId(accountId)
-                .cigarettesSmoked(1)
-                .date(today)
-                .build();
+        RecordHabitCreateRequest request = new RecordHabitCreateRequest(accountId, 1, today);
 
         Account account = new Account();
         account.setId(accountId);
@@ -92,11 +88,7 @@ class RecordServiceImplTest {
         // Arrange
         String accountId = "acc1";
         LocalDate today = LocalDate.now();
-        RecordHabitCreateRequest request = RecordHabitCreateRequest.builder()
-                .accountId(accountId)
-                .cigarettesSmoked(1)
-                .date(today)
-                .build();
+        RecordHabitCreateRequest request = new RecordHabitCreateRequest(accountId, 1, today);
 
         Account account = new Account();
         account.setId(accountId);
@@ -131,11 +123,7 @@ class RecordServiceImplTest {
     void createRecord_accountNotFound_shouldThrowException() {
         // Arrange
         String accountId = "acc1";
-        RecordHabitCreateRequest request = RecordHabitCreateRequest.builder()
-                .accountId(accountId)
-                .cigarettesSmoked(1)
-                .date(LocalDate.now())
-                .build();
+        RecordHabitCreateRequest request = new RecordHabitCreateRequest(accountId, 1, LocalDate.now());
 
         when(accountService.findAccountByIdOrThrowError(accountId)).thenThrow(new AppException(ErrorCode.ACCOUNT_NOT_FOUND));
 

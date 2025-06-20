@@ -12,7 +12,7 @@ import com.swpteam.smokingcessation.exception.AppException;
 import com.swpteam.smokingcessation.repository.ReviewRepository;
 import com.swpteam.smokingcessation.service.interfaces.identity.IAccountService;
 import com.swpteam.smokingcessation.service.interfaces.profile.IReviewService;
-import com.swpteam.smokingcessation.utils.AuthUtil;
+import com.swpteam.smokingcessation.utils.AuthUtilService;
 import com.swpteam.smokingcessation.utils.ValidationUtil;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -35,12 +35,12 @@ public class ReviewServiceImpl implements IReviewService {
 
     ReviewRepository reviewRepository;
     ReviewMapper reviewMapper;
-    AuthUtil authUtil;
+    AuthUtilService authUtilService;
     IAccountService accountService;
 
     @Override
     public Page<ReviewResponse> getReviewPage(PageableRequest request) {
-        ValidationUtil.checkFieldExist(Review.class, request.getSortBy());
+        ValidationUtil.checkFieldExist(Review.class, request.sortBy());
 
         Pageable pageable = PageableRequest.getPageable(request);
         Page<Review> reviews = reviewRepository.findAllByIsDeletedFalse(pageable);
@@ -50,7 +50,7 @@ public class ReviewServiceImpl implements IReviewService {
 
     @Override
     public Page<ReviewResponse> getReviewPageByAccount(String accountId, PageableRequest request) {
-        ValidationUtil.checkFieldExist(Review.class, request.getSortBy());
+        ValidationUtil.checkFieldExist(Review.class, request.sortBy());
 
         Pageable pageable = PageableRequest.getPageable(request);
         Page<Review> reviews = reviewRepository.findByMemberIdAndIsDeletedFalse(accountId, pageable);
@@ -60,7 +60,7 @@ public class ReviewServiceImpl implements IReviewService {
 
     @Override
     public Page<ReviewResponse> getReviewPageByCoach(String coachId, PageableRequest request) {
-        ValidationUtil.checkFieldExist(Review.class, request.getSortBy());
+        ValidationUtil.checkFieldExist(Review.class, request.sortBy());
 
         Pageable pageable = PageableRequest.getPageable(request);
         Page<Review> reviews = reviewRepository.findByCoachIdAndIsDeletedFalse(coachId, pageable);
@@ -79,9 +79,9 @@ public class ReviewServiceImpl implements IReviewService {
     @PreAuthorize("hasRole('MEMBER')")
     @CachePut(value = "REVIEW_CACHE", key = "#result.id")
     public ReviewResponse createReview(ReviewCreateRequest request) {
-        Account currentAccount = authUtil.getCurrentAccountOrThrow();
+        Account currentAccount = authUtilService.getCurrentAccountOrThrowError();
 
-        Account coach = accountService.findAccountById(request.getCoachId());
+        Account coach = accountService.findAccountByIdOrThrowError(request.coachId());
 
         Review review = reviewMapper.toEntity(request);
         review.setMember(currentAccount);
@@ -95,7 +95,7 @@ public class ReviewServiceImpl implements IReviewService {
     @PreAuthorize("hasAnyRole('MEMBER')")
     @CachePut(value = "REVIEW_CACHE", key = "#id")
     public ReviewResponse updateReview(String id, ReviewUpdateRequest request) {
-        Account currentAccount = authUtil.getCurrentAccountOrThrow();
+        Account currentAccount = authUtilService.getCurrentAccountOrThrowError();
 
         Review review = findReviewById(id);
         if (!review.getMember().getId().equals(currentAccount.getId())) {
@@ -112,9 +112,9 @@ public class ReviewServiceImpl implements IReviewService {
     @PreAuthorize("hasanyRole('ADMIN', 'MEMBER')")
     public void softDeleteReview(String id) {
         Review review = findReviewById(id);
-        Account currentAccount = authUtil.getCurrentAccountOrThrow();
+        Account currentAccount = authUtilService.getCurrentAccountOrThrowError();
 
-        if (authUtil.isAdminOrOwner(currentAccount.getId()) || currentAccount == review.getCoach()) {
+        if (authUtilService.isAdminOrOwner(currentAccount.getId()) || currentAccount == review.getCoach()) {
             review.setDeleted(true);
             reviewRepository.save(review);
 

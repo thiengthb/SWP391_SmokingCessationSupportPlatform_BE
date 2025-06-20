@@ -33,7 +33,7 @@ public class AchievementServiceImpl implements IAchievementService {
 
     @Override
     public Page<AchievementResponse> getAchievementPage(PageableRequest request) {
-        ValidationUtil.checkFieldExist(Achievement.class, request.getSortBy());
+        ValidationUtil.checkFieldExist(Achievement.class, request.sortBy());
 
         Pageable pageable = PageableRequest.getPageable(request);
         Page<Achievement> achievements = achievementRepository.findAllByIsDeletedFalse(pageable);
@@ -52,7 +52,7 @@ public class AchievementServiceImpl implements IAchievementService {
     @PreAuthorize("hasRole('ADMIN')")
     @CachePut(value = "ACHIEVEMENT_CACHE", key = "#result.getName()")
     public AchievementResponse createAchievement(AchievementCreateRequest request) {
-        if (achievementRepository.existsByNameAndIsDeletedFalse(request.getName())) {
+        if (achievementRepository.existsByNameAndIsDeletedFalse(request.name())) {
             throw new AppException(ErrorCode.ACHIEVEMENT_ALREADY_EXISTS);
         }
 

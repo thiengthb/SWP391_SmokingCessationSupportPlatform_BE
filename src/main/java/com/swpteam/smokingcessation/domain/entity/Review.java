@@ -1,7 +1,7 @@
 package com.swpteam.smokingcessation.domain.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.swpteam.smokingcessation.common.BaseEntity;
+import com.swpteam.smokingcessation.common.AuditableEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -15,7 +15,7 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class Review extends BaseEntity {
+public class Review extends AuditableEntity {
 
     @ManyToOne
     @JoinColumn(name = "memberId", nullable = false, updatable = false)
