@@ -18,9 +18,14 @@ public interface ITokenService {
 
     SignedJWT verifyResetPasswordToken(String token);
 
-    RefreshToken findRefreshTokenByJti(String jti);
+    RefreshToken findRefreshTokenByJtiOrThrowError(String jti);
 
-    RefreshToken findRefreshTokenByAccountId(String accountId);
+    RefreshToken findRefreshTokenByAccountIdOrThrowError(String accountId);
 
-    void revokeRefreshToken(String jti);
+    void revokeRefreshTokenByJti(String jti);
+
+    void revokeRefreshTokenByToken(String token);
+
+    String getAccountIdByRefreshToken(String token);
+
 }

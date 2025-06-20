@@ -22,9 +22,9 @@ public interface IMembershipService {
 
     MembershipResponse updateMembershipCurrency(String id, MembershipCurrencyUpdateRequest request);
 
-    Membership findMembershipById(String id);
+    Membership findMembershipByIdOrThrowError(String id);
 
-    Membership findMembershipByName(String name);
+    Membership findMembershipByNameOrThrowError(String name);
 
     void softDeleteMembershipById(String id);
 }

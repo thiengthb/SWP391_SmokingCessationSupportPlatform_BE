@@ -5,6 +5,7 @@ import com.swpteam.smokingcessation.domain.dto.comment.CommentCreateRequest;
 import com.swpteam.smokingcessation.domain.dto.comment.CommentReplyRequest;
 import com.swpteam.smokingcessation.domain.dto.comment.CommentResponse;
 import com.swpteam.smokingcessation.domain.dto.comment.CommentUpdateRequest;
+import com.swpteam.smokingcessation.domain.entity.Comment;
 import org.springframework.data.domain.Page;
 
 public interface ICommentService {
@@ -22,4 +23,6 @@ public interface ICommentService {
     CommentResponse updateComment(String id, CommentUpdateRequest request);
 
     void deleteCommentById(String id);
+
+    Comment findCommentByIdOrThrowError(String id);
 }

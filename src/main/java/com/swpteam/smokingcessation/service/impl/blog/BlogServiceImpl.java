@@ -14,6 +14,7 @@ import com.swpteam.smokingcessation.exception.AppException;
 import com.swpteam.smokingcessation.repository.BlogRepository;
 import com.swpteam.smokingcessation.repository.CategoryRepository;
 import com.swpteam.smokingcessation.service.interfaces.blog.IBlogService;
+import com.swpteam.smokingcessation.service.interfaces.blog.ICategoryService;
 import com.swpteam.smokingcessation.utils.AuthUtilService;
 import com.swpteam.smokingcessation.utils.SlugUtil;
 import com.swpteam.smokingcessation.utils.ValidationUtil;
@@ -40,13 +41,14 @@ public class BlogServiceImpl implements IBlogService {
     BlogMapper blogMapper;
 
     CategoryRepository categoryRepository;
+    ICategoryService categoryService;
 
     AuthUtilService authUtilService;
 
     @Override
     @PreAuthorize("hasRole('ADMIN')")
     public Page<BlogResponse> getAllBlogsPage(PageableRequest request) {
-        ValidationUtil.checkFieldExist(Blog.class, request.getSortBy());
+        ValidationUtil.checkFieldExist(Blog.class, request.sortBy());
 
         Pageable pageable = PageableRequest.getPageable(request);
         Page<Blog> blogs = blogRepository.findAllByIsDeletedFalse(pageable);
@@ -57,8 +59,7 @@ public class BlogServiceImpl implements IBlogService {
     @Override
     @PreAuthorize("hasRole('ADMIN')")
     public Page<BlogResponse> getMyBlogsPage(PageableRequest request) {
-        Account account = authUtilService.getCurrentAccount()
-                .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FOUND));
+        Account account = authUtilService.getCurrentAccountOrThrowError();
 
         Pageable pageable = PageableRequest.getPageable(request);
         Page<Blog> blogs = blogRepository.findAllByAccountIdAndIsDeletedFalse(account.getId(), pageable);
@@ -69,8 +70,7 @@ public class BlogServiceImpl implements IBlogService {
     @Override
     @PreAuthorize("hasRole('ADMIN')")
     public Page<BlogResponse> getBlogsPageByCategory(String categoryName, PageableRequest request) {
-        Category category = categoryRepository.findByName(categoryName)
-                .orElseThrow(() -> new AppException(ErrorCode.BLOG_NOT_FOUND));
+        Category category = categoryService.findCategoryByNameOrThrowError(categoryName);
 
         Pageable pageable = PageableRequest.getPageable(request);
         Page<Blog> blogs = blogRepository.findByCategoryIdAndIsDeletedFalse(category.getId(), pageable);
@@ -82,14 +82,14 @@ public class BlogServiceImpl implements IBlogService {
     @PreAuthorize("hasRole('ADMIN')")
     @Cacheable(value = "BLOG_CACHE", key = "#slug")
     public BlogResponse getBlogBySlug(String slug) {
-        return blogMapper.toResponse(findBlogBySlug(slug));
+        return blogMapper.toResponse(findBlogBySlugOrThrowError(slug));
     }
 
     @Override
     @PreAuthorize("hasRole('ADMIN')")
     @Cacheable(value = "BLOG_CACHE", key = "#id")
     public BlogResponse getBlogById(String id) {
-        return blogMapper.toResponse(findBlogById(id));
+        return blogMapper.toResponse(findBlogByIdOrThrowError(id));
     }
 
     @Override
@@ -97,10 +97,9 @@ public class BlogServiceImpl implements IBlogService {
     @PreAuthorize("hasRole('ADMIN')")
     @CachePut(value = "BLOG_CACHE", key = "#result.getId()")
     public BlogResponse createBlog(BlogCreateRequest request) {
-        Account account = authUtilService.getCurrentAccount()
-                .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FOUND));
+        Account account = authUtilService.getCurrentAccountOrThrowError();
 
-        Category category = categoryRepository.findByName(request.getCategoryName())
+        Category category = categoryRepository.findByName(request.categoryName())
                 .or(() -> categoryRepository.findByName(App.DEFAULT_CATEGORY))
                 .orElseThrow(() -> new AppException(ErrorCode.CATEGORY_NOT_FOUND));
 
@@ -120,7 +119,7 @@ public class BlogServiceImpl implements IBlogService {
     @PreAuthorize("hasRole('ADMIN')")
     @CachePut(value = "BLOG_CACHE", key = "#result.getId()")
     public BlogResponse updateBlog(String id, BlogUpdateRequest request) {
-        Blog blog = findBlogById(id);
+        Blog blog = findBlogByIdOrThrowError(id);
 
         boolean haveAccess = authUtilService.isAdminOrOwner(blog.getAccount().getId());
         if (!haveAccess) {
@@ -140,25 +139,31 @@ public class BlogServiceImpl implements IBlogService {
     @PreAuthorize("hasRole('ADMIN')")
     @CacheEvict(value = "BLOG_CACHE", key = "#id")
     public void deleteBlogById(String id) {
-        Blog blog = findBlogById(id);
+        Blog blog = findBlogByIdOrThrowError(id);
 
         boolean haveAccess = authUtilService.isAdminOrOwner(blog.getAccount().getId());
         if (!haveAccess) {
             throw new AppException(ErrorCode.OTHERS_COMMENT_UNCHANGEABLE);
         }
 
+        if (blog.getAccount().isDeleted()) {
+            throw new AppException(ErrorCode.ACCOUNT_DELETED);
+        }
+
         blog.setDeleted(true);
         blogRepository.save(blog);
     }
-    
+
+    @Override
     @Cacheable(value = "BLOG_CACHE", key = "#slug")
-    private Blog findBlogBySlug(String slug) {
+    public Blog findBlogBySlugOrThrowError(String slug) {
         return blogRepository.findBySlugAndIsDeletedFalse(slug)
                 .orElseThrow(() -> new AppException(ErrorCode.BLOG_NOT_FOUND));
     }
 
+    @Override
     @Cacheable(value = "BLOG_CACHE", key = "#id")
-    private Blog findBlogById(String id) {
+    public Blog findBlogByIdOrThrowError(String id) {
         return blogRepository.findByIdAndIsDeletedFalse(id)
                 .orElseThrow(() -> new AppException(ErrorCode.BLOG_NOT_FOUND));
     }

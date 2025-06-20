@@ -41,7 +41,7 @@ public class RecordHabitServiceImpl implements IRecordHabitService {
 
     @Override
     public Page<RecordHabitResponse> getRecordPage(PageableRequest request) {
-        ValidationUtil.checkFieldExist(RecordHabitMapper.class, request.getSortBy());
+        ValidationUtil.checkFieldExist(RecordHabitMapper.class, request.sortBy());
 
         Pageable pageable = PageableRequest.getPageable(request);
         Page<RecordHabit> records = recordHabitRepository.findAllByIsDeletedFalse(pageable);
@@ -58,9 +58,9 @@ public class RecordHabitServiceImpl implements IRecordHabitService {
 
     @Override
     public Page<RecordHabitResponse> getRecordPageByAccountId(String accountId, PageableRequest request) {
-        ValidationUtil.checkFieldExist(RecordHabitMapper.class, request.getSortBy());
+        ValidationUtil.checkFieldExist(RecordHabitMapper.class, request.sortBy());
 
-        accountService.findAccountById(accountId);
+        accountService.findAccountByIdOrThrowError(accountId);
 
         Pageable pageable = PageableRequest.getPageable(request);
         Page<RecordHabit> records = recordHabitRepository.findByAccountIdAndIsDeletedFalse(accountId, pageable);
@@ -72,20 +72,20 @@ public class RecordHabitServiceImpl implements IRecordHabitService {
     @Transactional
     @CachePut(value = "RECORDHABIT_CACHE", key = "#result.getId()")
     public RecordHabitResponse createRecord(RecordHabitCreateRequest request) {
-        Account account = accountService.findAccountById(request.getAccountId());
+        Account account = accountService.findAccountByIdOrThrowError(request.accountId());
 
-        boolean existed = recordHabitRepository.existsByAccountIdAndDateAndIsDeletedFalse(request.getAccountId(), request.getDate());
+        boolean existed = recordHabitRepository.existsByAccountIdAndDateAndIsDeletedFalse(request.accountId(), request.date());
         if (existed) {
-            RecordHabit recordHabit = recordHabitRepository.findByAccountIdAndDateAndIsDeletedFalse(request.getAccountId(), request.getDate())
+            RecordHabit recordHabit = recordHabitRepository.findByAccountIdAndDateAndIsDeletedFalse(request.accountId(), request.date())
                     .orElseThrow(() -> new AppException(ErrorCode.HEALTH_RECORD_NOT_FOUND));
 
-            recordHabit.setCigarettesSmoked(request.getCigarettesSmoked());
+            recordHabit.setCigarettesSmoked(request.cigarettesSmoked());
             return recordHabitMapper.toResponse(recordHabit);
         }
 
         RecordHabit recordHabit = recordHabitMapper.toEntity(request);
         recordHabit.setAccount(account);
-        Streak streak = streakRepository.findByMember_Account_Id(request.getAccountId())
+        Streak streak = streakRepository.findByMember_Account_Id(request.accountId())
                 .orElseThrow(() -> new AppException(ErrorCode.STREAK_NOT_FOUND));
 
         streak.setStreak(streak.getStreak() + 1);
@@ -97,7 +97,7 @@ public class RecordHabitServiceImpl implements IRecordHabitService {
     @Transactional
     @CachePut(value = "RECORDHABIT_CACHE", key = "#result.getId()")
     public RecordHabitResponse updateRecord(String id, RecordHabitUpdateRequest request) {
-        RecordHabit recordHabit = findRecordById(id);
+        RecordHabit recordHabit = findRecordByIdOrThrowError(id);
 
         recordHabitMapper.update(recordHabit, request);
 
@@ -108,14 +108,14 @@ public class RecordHabitServiceImpl implements IRecordHabitService {
     @Transactional
     @CacheEvict(value = "RECORDHABIT_CACHE", key = "#id")
     public void softDeleteRecordById(String id) {
-        RecordHabit recordHabit = findRecordById(id);
+        RecordHabit recordHabit = findRecordByIdOrThrowError(id);
 
         recordHabit.setDeleted(true);
         recordHabitRepository.save(recordHabit);
     }
 
     @Cacheable(value = "RECORDHABIT_CACHE", key = "#id")
-    private RecordHabit findRecordById(String id) {
+    public RecordHabit findRecordByIdOrThrowError(String id) {
         RecordHabit recordHabit = recordHabitRepository.findByIdAndIsDeletedFalse(id)
                 .orElseThrow(() -> new AppException(ErrorCode.HEALTH_RECORD_NOT_FOUND));
 

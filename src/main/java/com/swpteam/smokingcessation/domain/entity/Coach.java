@@ -24,15 +24,6 @@ public class Coach extends AuditableEntity {
     @JoinColumn(name = "accountId", nullable = false, updatable = false)
     Account account;
 
-    @Builder.Default
-    @OneToMany(mappedBy = "coach")
-    List<Booking> bookings = new ArrayList<>();
-
-    @Builder.Default
-    @OneToMany(mappedBy = "coach", cascade = CascadeType.ALL, orphanRemoval = true)
-    @JsonManagedReference
-    private List<TimeTable> timetables = new ArrayList<>();
-
     String fullName;
     String bio;
     int experienceYears;

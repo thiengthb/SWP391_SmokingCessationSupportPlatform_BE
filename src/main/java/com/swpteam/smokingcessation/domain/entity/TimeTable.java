@@ -25,7 +25,7 @@ public class TimeTable extends AuditableEntity {
     LocalDateTime endedAt;
 
     @ManyToOne
-    @JoinColumn(name = "coach_id", nullable = false)
+    @JoinColumn(name = "coachId", nullable = false)
     @JsonBackReference
-    private Coach coach;
+    Account coach;
 }

@@ -21,4 +21,6 @@ public interface ISubscriptionService {
     SubscriptionResponse updateSubscription(String id, SubscriptionRequest request);
 
     void softDeleteSubscription(String id);
+
+    Subscription findSubscriptionByIdOrThrowError(String id);
 }

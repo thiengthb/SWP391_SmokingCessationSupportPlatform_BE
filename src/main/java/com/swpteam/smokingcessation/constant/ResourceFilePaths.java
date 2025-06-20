@@ -1,8 +1,10 @@
 package com.swpteam.smokingcessation.constant;
 
-public final class ResourceFilePaths {
+import lombok.experimental.UtilityClass;
 
-    public static final String PLATFORM_CONTEXT = "chatbot/platform-context.json";
+@UtilityClass
+public class ResourceFilePaths {
 
-    private ResourceFilePaths() {}
+    public final String PLATFORM_CONTEXT = "chatbot/platform-context.json";
+
 }

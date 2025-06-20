@@ -11,6 +11,10 @@ import java.lang.reflect.Field;
 public class ValidationUtil {
 
     public void checkFieldExist(Class<?> clazz, String fieldName) {
+        if (clazz == null || fieldName == null) {
+            return;
+        }
+
         if (!isFieldExist(Account.class, fieldName))
             throw new AppException(ErrorCode.INVALID_SORT_FIELD);
     }

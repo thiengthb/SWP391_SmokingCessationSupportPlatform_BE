@@ -17,12 +17,12 @@ import java.time.LocalDateTime;
 public class Booking extends AuditableEntity {
 
     @ManyToOne
-    @JoinColumn(name = "accountId", nullable = false, updatable = false)
-    Account account;
+    @JoinColumn(name = "memberId", nullable = false, updatable = false)
+    Account member;
 
     @ManyToOne
     @JoinColumn(name = "coachId", nullable = false)
-    Coach coach;
+    Account coach;
 
     String meetLink;
     LocalDateTime startedAt;

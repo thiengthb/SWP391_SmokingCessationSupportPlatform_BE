@@ -1,10 +1,8 @@
-package com.swpteam.smokingcessation.domain.dto.plan;
+package com.swpteam.smokingcessation.domain.dto.phase;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-
-import java.util.List;
 
 @Data
 @Builder
@@ -12,6 +10,8 @@ import java.util.List;
 @AllArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class PlanTemplateWrapper {
-    List<PlanTemplateResponse> levels;
+public class PhaseTemplateResponse {
+    int phase;
+    int cigaretteBound;
+    int duration;
 }

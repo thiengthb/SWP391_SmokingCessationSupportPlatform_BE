@@ -9,8 +9,8 @@ public class DifferentPasswordsValidator implements ConstraintValidator<Differen
     @Override
     public boolean isValid(ChangePasswordRequest changePasswordRequest, ConstraintValidatorContext constraintValidatorContext) {
         if (changePasswordRequest == null) return true;
-        if (changePasswordRequest.getOldPassword() == null || changePasswordRequest.getNewPassword() == null)
+        if (changePasswordRequest.oldPassword() == null || changePasswordRequest.newPassword() == null)
             return true;
-        return !changePasswordRequest.getOldPassword().equals(changePasswordRequest.getNewPassword());
+        return !changePasswordRequest.oldPassword().equals(changePasswordRequest.newPassword());
     }
 }

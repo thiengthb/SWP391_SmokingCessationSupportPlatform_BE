@@ -28,14 +28,14 @@ public class SettingServiceImpl implements ISettingService {
 
     @Override
     public SettingResponse getSettingByAccountId(String accountId) {
-        return settingMapper.toResponse(findSettingById(accountId));
+        return settingMapper.toResponse(findSettingByIdOrThrowError(accountId));
     }
     
     @Override
     @Transactional
     @CachePut(value = "SETTING_CACHE", key = "#result.getId()")
     public SettingResponse updateSetting(String accountId, SettingRequest request) {
-        Setting setting = findSettingById(accountId);
+        Setting setting = findSettingByIdOrThrowError(accountId);
 
         settingMapper.update(setting, request);
 
@@ -43,7 +43,7 @@ public class SettingServiceImpl implements ISettingService {
     }
 
     @Cacheable(value = "SETTING_CACHE", key = "#id")
-    private Setting findSettingById(String accountId) {
+    public Setting findSettingByIdOrThrowError(String accountId) {
         Setting setting = settingRepository.findByIdAndIsDeletedFalse(accountId)
                 .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FOUND));
 

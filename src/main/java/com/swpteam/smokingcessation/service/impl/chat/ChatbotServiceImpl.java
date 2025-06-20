@@ -1,4 +1,4 @@
-package com.swpteam.smokingcessation.service.impl.chatbot;
+package com.swpteam.smokingcessation.service.impl.chat;
 
 import com.swpteam.smokingcessation.constant.AIToken;
 import com.swpteam.smokingcessation.constant.ErrorCode;
@@ -10,7 +10,7 @@ import com.swpteam.smokingcessation.domain.enums.Role;
 import com.swpteam.smokingcessation.exception.AppException;
 import com.swpteam.smokingcessation.integration.AI.IAIService;
 import com.swpteam.smokingcessation.repository.AITokenUsageRepository;
-import com.swpteam.smokingcessation.service.interfaces.chatbot.IChatbotService;
+import com.swpteam.smokingcessation.service.interfaces.chat.IChatbotService;
 import com.swpteam.smokingcessation.utils.AuthUtilService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -22,8 +22,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 
 @Slf4j
-@RequiredArgsConstructor
 @Service
+@RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class ChatbotServiceImpl implements IChatbotService {
 
@@ -34,20 +34,19 @@ public class ChatbotServiceImpl implements IChatbotService {
     @Override
     @Transactional
     public ChatbotResponse chat(ChatbotRequest request) {
-        Account account = authUtilService.getCurrentAccount()
-                .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FOUND));
+        Account account = authUtilService.getCurrentAccountOrThrowError();
 
         AITokenUsage usage = aiTokenUsageRepository.findByAccountIdAndDate(account.getId(), LocalDate.now())
                 .orElse(new AITokenUsage(account, LocalDate.now(), 0));
 
         int limit = getAccountTokenLimit(account);
-        int estimatedTokens = estimateAITokenUsage(request.getPrompt());
+        int estimatedTokens = estimateAITokenUsage(request.prompt());
 
         if (usage.getTokensUsed() + estimatedTokens > limit) {
             throw new AppException(ErrorCode.OUT_OF_LIMIT);
         }
 
-        String response = aiService.chatWithPlatformContext(request.getPrompt());
+        String response = aiService.chatWithPlatformContext(request.prompt());
         int responseTokens = estimateAITokenUsage(response);
 
         usage.setTokensUsed(usage.getTokensUsed() + estimatedTokens + responseTokens);

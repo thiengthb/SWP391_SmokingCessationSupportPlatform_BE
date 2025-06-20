@@ -1,13 +1,15 @@
 package com.swpteam.smokingcessation.constant;
 
-public final class AIToken {
+import lombok.experimental.UtilityClass;
 
-    public static final int ADMIN_LIMIT = Integer.MAX_VALUE;
-    public static final int MEMBER_FREE_LIMIT = 200;
-    public static final int MEMBER_PREMIUM_LIMIT = 5000;
-    public static final int COACH_LIMIT = 1500;
+@UtilityClass
+public class AIToken {
 
-    public static final int CHARACTER_TO_TOKEN_DEFINITION = 4;
+    public final int ADMIN_LIMIT = Integer.MAX_VALUE;
+    public final int MEMBER_FREE_LIMIT = 200;
+    public final int MEMBER_PREMIUM_LIMIT = 5000;
+    public final int COACH_LIMIT = 1500;
 
-    private AIToken() {}
+    public final int CHARACTER_TO_TOKEN_DEFINITION = 4;
+
 }

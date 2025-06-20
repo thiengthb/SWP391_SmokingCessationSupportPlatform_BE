@@ -16,7 +16,6 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
@@ -38,7 +37,7 @@ public class CoachServiceImpl implements ICoachService {
 
     @Override
     public Page<CoachResponse> getCoachPage(PageableRequest request) {
-        ValidationUtil.checkFieldExist(Coach.class, request.getSortBy());
+        ValidationUtil.checkFieldExist(Coach.class, request.sortBy());
 
         Pageable pageable = PageableRequest.getPageable(request);
         Page<Coach> coaches = coachRepository.findAllByIsDeletedFalse(pageable);
@@ -58,7 +57,7 @@ public class CoachServiceImpl implements ICoachService {
     public CoachResponse createCoach(CoachRequest request) {
         Coach coach = coachMapper.toEntity(request);
 
-        Account account = accountService.findAccountById(request.getAccountId());
+        Account account = accountService.findAccountByIdOrThrowError(request.accountId());
         coach.setAccount(account);
 
         return coachMapper.toResponse(coachRepository.save(coach));
@@ -76,8 +75,9 @@ public class CoachServiceImpl implements ICoachService {
         return coachMapper.toResponse(coachRepository.save(coach));
     }
 
+    @Override
     @Cacheable(value = "COACH_CACHE", key = "#id")
-    private Coach findCoachById(String id) {
+    public Coach findCoachById(String id) {
         Coach coach = coachRepository.findByIdAndIsDeletedFalse(id)
                 .orElseThrow(() -> new AppException(ErrorCode.COACH_NOT_FOUND));
 

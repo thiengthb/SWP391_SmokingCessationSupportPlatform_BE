@@ -1,8 +1,10 @@
 package com.swpteam.smokingcessation.domain.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.swpteam.smokingcessation.domain.enums.AccountStatus;
+import com.swpteam.smokingcessation.domain.enums.AuthProvider;
 import com.swpteam.smokingcessation.domain.enums.Role;
 import com.swpteam.smokingcessation.common.AuditableEntity;
 import jakarta.persistence.*;
@@ -21,13 +23,18 @@ import java.util.List;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Account extends AuditableEntity {
 
+    @Enumerated(EnumType.STRING)
+    AuthProvider provider; // Google
+
+    String providerId; // Google sub
+
     @Column(unique = true, columnDefinition = "NVARCHAR(30)")
     String username;
 
     @Column(nullable = false, unique = true, columnDefinition = "NVARCHAR(30)")
     String email;
 
-    @Column(nullable = false, columnDefinition = "NVARCHAR(100)")
+    @Column(columnDefinition = "NVARCHAR(100)")
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     String password;
 
@@ -57,9 +64,14 @@ public class Account extends AuditableEntity {
     List<Blog> blogs = new ArrayList<>();
 
     @Builder.Default
-    @OneToMany(mappedBy = "account")
+    @OneToMany(mappedBy = "member")
     @JsonIgnore
-    List<Booking> bookings = new ArrayList<>();
+    List<Booking> bookingsAsMember = new ArrayList<>();
+
+    @Builder.Default
+    @OneToMany(mappedBy = "coach")
+    @JsonIgnore
+    List<Booking> bookingsAsCoach = new ArrayList<>();
 
     @OneToOne(mappedBy = "account", cascade = CascadeType.ALL)
     @JsonIgnore
@@ -80,7 +92,7 @@ public class Account extends AuditableEntity {
     @JsonIgnore
     List<RecordHabit> recordHabits = new ArrayList<>();
 
-    @OneToOne(mappedBy = "account", cascade = CascadeType.ALL, optional = false)
+    @OneToOne(mappedBy = "account", cascade = CascadeType.ALL)
     @JsonIgnore
     Setting setting;
 
@@ -93,6 +105,11 @@ public class Account extends AuditableEntity {
     @OneToMany(mappedBy = "account")
     @JsonIgnore
     List<Transaction> transactions = new ArrayList<>();
+
+    @Builder.Default
+    @OneToMany(mappedBy = "coach", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    List<TimeTable> timetables = new ArrayList<>();
 
     @OneToMany(mappedBy = "account")
     @JsonIgnore

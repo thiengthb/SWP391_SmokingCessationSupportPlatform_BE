@@ -44,7 +44,7 @@ public class CommentServiceImpl implements ICommentService {
 
     @Override
     public Page<CommentResponse> getCommentsByBlogId(String blogId, PageableRequest request) {
-        ValidationUtil.checkFieldExist(Comment.class, request.getSortBy());
+        ValidationUtil.checkFieldExist(Comment.class, request.sortBy());
 
         Pageable pageable = PageableRequest.getPageable(request);
         Page<Comment> topLevelComments = commentRepository.findByBlogIdAndLevel(blogId, 0, pageable);
@@ -55,7 +55,7 @@ public class CommentServiceImpl implements ICommentService {
     @Override
     @PreAuthorize("hasRole('ADMIN')")
     public Page<CommentResponse> getCommentPage(PageableRequest request) {
-        ValidationUtil.checkFieldExist(Comment.class, request.getSortBy());
+        ValidationUtil.checkFieldExist(Comment.class, request.sortBy());
 
         Pageable pageable = PageableRequest.getPageable(request);
         Page<Comment> comments = commentRepository.findAll(pageable);
@@ -66,7 +66,7 @@ public class CommentServiceImpl implements ICommentService {
     @Override
     @PreAuthorize("hasRole('ADMIN')")
     public CommentResponse getCommentById(String id) {
-        Comment comment = findCommentById(id);
+        Comment comment = findCommentByIdOrThrowError(id);
         return commentMapper.toResponse(comment);
     }
 
@@ -74,10 +74,9 @@ public class CommentServiceImpl implements ICommentService {
     @Transactional
     @CachePut(value = "COMMENT_CACHE", key = "#result.getId()")
     public CommentResponse createComment(CommentCreateRequest request) {
-        Account currentAccount = authUtilService.getCurrentAccount()
-                .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FOUND));
+        Account currentAccount = authUtilService.getCurrentAccountOrThrowError();
 
-        Blog blog = blogRepository.findByIdAndIsDeletedFalse(request.getBlogId())
+        Blog blog = blogRepository.findByIdAndIsDeletedFalse(request.blogId())
                 .orElseThrow(() -> new AppException(ErrorCode.BLOG_NOT_FOUND));
 
         Comment comment = commentMapper.toEntityFromCreate(request);
@@ -91,10 +90,9 @@ public class CommentServiceImpl implements ICommentService {
     @Transactional
     @CachePut(value = "COMMENT_CACHE", key = "#result.getId()")
     public CommentResponse replyComment(CommentReplyRequest request) {
-        Account currentAccount = authUtilService.getCurrentAccount()
-                .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FOUND));
+        Account currentAccount = authUtilService.getCurrentAccountOrThrowError();
 
-        Comment parentComment = findCommentById(request.getParentCommentId());
+        Comment parentComment = findCommentByIdOrThrowError(request.parentCommentId());
 
         Comment comment = commentMapper.toEntityFromReply(request);
 
@@ -110,7 +108,7 @@ public class CommentServiceImpl implements ICommentService {
     @Transactional
     @CachePut(value = "COMMENT_CACHE", key = "#result.getId()")
     public CommentResponse updateComment(String id, CommentUpdateRequest request) {
-        Comment comment = findCommentById(id);
+        Comment comment = findCommentByIdOrThrowError(id);
 
         boolean haveAccess = authUtilService.isAdminOrOwner(comment.getAccount().getId());
         if (!haveAccess) {
@@ -126,18 +124,23 @@ public class CommentServiceImpl implements ICommentService {
     @Transactional
     @CacheEvict(value = "COMMENT_CACHE", key = "#id")
     public void deleteCommentById(String id) {
-        Comment comment = findCommentById(id);
+        Comment comment = findCommentByIdOrThrowError(id);
 
         boolean haveAccess = authUtilService.isAdminOrOwner(comment.getAccount().getId());
         if (!haveAccess) {
             throw new AppException(ErrorCode.OTHERS_COMMENT_UNCHANGEABLE);
         }
 
+        if (comment.getAccount().isDeleted()) {
+            throw new AppException(ErrorCode.ACCOUNT_DELETED);
+        }
+
         commentRepository.deleteById(id);
     }
 
+    @Override
     @Cacheable(value = "COMMENT_CACHE", key = "#id")
-    private Comment findCommentById(String id) {
+    public Comment findCommentByIdOrThrowError(String id) {
         return commentRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.COMMENT_NOT_FOUND));
     }

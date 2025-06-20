@@ -1,19 +1,27 @@
 package com.swpteam.smokingcessation.service.interfaces.identity;
 
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import com.swpteam.smokingcessation.common.PageableRequest;
 import com.swpteam.smokingcessation.domain.dto.account.AccountRequest;
 import com.swpteam.smokingcessation.domain.dto.account.AccountResponse;
 import com.swpteam.smokingcessation.domain.dto.account.AccountUpdateRequest;
 import com.swpteam.smokingcessation.domain.dto.account.ChangePasswordRequest;
 import com.swpteam.smokingcessation.domain.entity.Account;
+import com.swpteam.smokingcessation.domain.enums.AccountStatus;
 import com.swpteam.smokingcessation.domain.enums.Role;
 import org.springframework.data.domain.Page;
 
 public interface IAccountService {
 
+    void updateStatus(String accountId, AccountStatus status);
+
+    void changePassword(String accountId, String newPassword);
+
     Page<AccountResponse> getAccounts(PageableRequest request);
 
     AccountResponse createAccount(AccountRequest request);
+
+    Account createAccountByGoogle(GoogleIdToken.Payload payload);
 
     AccountResponse getAccountById(String id);
 
@@ -25,13 +33,15 @@ public interface IAccountService {
 
     AccountResponse getCurrentAccount();
 
-    Account findAccountById(String id);
+    Account findAccountByIdOrThrowError(String id);
 
-    Account findAccountByUsername(String username);
+    Account findAccountByUsernameOrThrowError(String username);
 
-    Account findAccountByEmail(String email);
+    Account findAccountByEmailOrThrowError(String email);
 
     void deleteAccount(String id);
 
     void banAccount(String id);
+
+    void checkExistByEmail(String email);
 }

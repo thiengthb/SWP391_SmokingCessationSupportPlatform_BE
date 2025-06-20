@@ -1,4 +1,4 @@
-package com.swpteam.smokingcessation.service.interfaces.chatbot;
+package com.swpteam.smokingcessation.service.interfaces.chat;
 
 import com.swpteam.smokingcessation.domain.dto.chatbot.ChatbotRequest;
 import com.swpteam.smokingcessation.domain.dto.chatbot.ChatbotResponse;

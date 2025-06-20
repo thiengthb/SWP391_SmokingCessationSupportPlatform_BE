@@ -28,7 +28,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Slf4j
@@ -44,7 +43,7 @@ public class MembershipServiceImpl implements IMembershipService {
 
     @Override
     public Page<MembershipResponse> getMembershipPage(PageableRequest request) {
-        ValidationUtil.checkFieldExist(Membership.class, request.getSortBy());
+        ValidationUtil.checkFieldExist(Membership.class, request.sortBy());
 
         Pageable pageable = PageableRequest.getPageable(request);
         Page<Membership> memberships = membershipRepository.findAllByIsDeletedFalse(pageable);
@@ -54,12 +53,12 @@ public class MembershipServiceImpl implements IMembershipService {
 
     @Override
     public MembershipResponse getMembershipById(String id) {
-        return membershipMapper.toResponse(findMembershipById(id));
+        return membershipMapper.toResponse(findMembershipByIdOrThrowError(id));
     }
 
     @Override
     public MembershipResponse getMembershipByName(String name) {
-        return membershipMapper.toResponse(findMembershipByName(name));
+        return membershipMapper.toResponse(findMembershipByNameOrThrowError(name));
     }
 
     @Override
@@ -67,7 +66,7 @@ public class MembershipServiceImpl implements IMembershipService {
     @PreAuthorize("hasRole('ADMIN')")
     @CachePut(value = "MEMBERSHIP_CACHE", key = "#result.getId()")
     public MembershipResponse createMembership(MembershipCreateRequest request) {
-        if (membershipRepository.existsByNameAndIsDeletedFalse(request.getName()))
+        if (membershipRepository.existsByNameAndIsDeletedFalse(request.name()))
             throw new AppException(ErrorCode.MEMBERSHIP_NAME_UNIQUE);
 
         Membership membership = membershipMapper.toEntity(request);
@@ -80,7 +79,7 @@ public class MembershipServiceImpl implements IMembershipService {
     @PreAuthorize("hasRole('ADMIN')")
     @CachePut(value = "MEMBERSHIP_CACHE", key = "#result.getId()")
     public MembershipResponse updateMembership(String id, MembershipUpdateRequest request) {
-        Membership membership = findMembershipById(id);
+        Membership membership = findMembershipByIdOrThrowError(id);
 
         membershipMapper.update(membership, request);
 
@@ -92,7 +91,7 @@ public class MembershipServiceImpl implements IMembershipService {
     @PreAuthorize("hasRole('ADMIN')")
     @CacheEvict(value = "MEMBERSHIP_CACHE", key = "#id")
     public void softDeleteMembershipById(String id) {
-        Membership membership = findMembershipById(id);
+        Membership membership = findMembershipByIdOrThrowError(id);
         membership.setDeleted(true);
 
         List<Subscription> subscriptions = membership.getSubscriptions();
@@ -106,19 +105,19 @@ public class MembershipServiceImpl implements IMembershipService {
     @Transactional
     @CachePut(value = "MEMBERSHIP_CACHE", key = "#result.getId()")
     public MembershipResponse updateMembershipCurrency(String id, MembershipCurrencyUpdateRequest request) {
-        Double rate = currencyRateService.getRate(request.getCurrency().name().toUpperCase());
+        Double rate = currencyRateService.getRate(request.currency().name().toUpperCase());
         if (rate == null)
             throw new AppException(ErrorCode.INVALID_CURRENCY);
 
-        Membership membership = findMembershipById(id);
+        Membership membership = findMembershipByIdOrThrowError(id);
 
         double newPrice = currencyRateService.getNewPrice(
                 membership.getPrice(),
                 membership.getCurrency().name().toUpperCase(),
-                request.getCurrency().name().toUpperCase()
+                request.currency().name().toUpperCase()
         );
 
-        membership.setCurrency(request.getCurrency());
+        membership.setCurrency(request.currency());
         membership.setPrice(newPrice);
 
         return membershipMapper.toResponse(membershipRepository.save(membership));
@@ -126,14 +125,14 @@ public class MembershipServiceImpl implements IMembershipService {
 
     @Override
     @Cacheable(value = "MEMBERSHIP_CACHE", key = "#id")
-    public Membership findMembershipById(String id) {
+    public Membership findMembershipByIdOrThrowError(String id) {
         return membershipRepository.findByIdAndIsDeletedFalse(id)
                 .orElseThrow(() -> new AppException(ErrorCode.MEMBERSHIP_NOT_FOUND));
     }
 
     @Override
     @Cacheable(value = "MEMBERSHIP_CACHE", key = "#name")
-    public Membership findMembershipByName(String name) {
+    public Membership findMembershipByNameOrThrowError(String name) {
         return membershipRepository.findByNameAndIsDeletedFalse(name)
                 .orElseThrow(() -> new AppException(ErrorCode.MEMBERSHIP_NOT_FOUND));
     }

@@ -1,17 +1,20 @@
 package com.swpteam.smokingcessation.service.impl.identity;
 
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import com.nimbusds.jwt.SignedJWT;
 import com.swpteam.smokingcessation.domain.dto.auth.request.*;
 import com.swpteam.smokingcessation.domain.entity.Account;
+import com.swpteam.smokingcessation.domain.entity.Member;
+import com.swpteam.smokingcessation.domain.enums.AuthProvider;
 import com.swpteam.smokingcessation.domain.mapper.AccountMapper;
+import com.swpteam.smokingcessation.integration.google.GoogleTokenVerifier;
 import com.swpteam.smokingcessation.integration.mail.IMailService;
 import com.swpteam.smokingcessation.repository.AccountRepository;
 import com.swpteam.smokingcessation.domain.dto.account.AccountResponse;
 import com.swpteam.smokingcessation.domain.enums.AccountStatus;
 import com.swpteam.smokingcessation.domain.enums.Role;
 import com.swpteam.smokingcessation.domain.dto.auth.response.AuthenticationResponse;
-import com.swpteam.smokingcessation.domain.dto.auth.response.GoogleTokenResponse;
-import com.swpteam.smokingcessation.repository.RefreshTokenRepository;
+import com.swpteam.smokingcessation.repository.MemberRepository;
 import com.swpteam.smokingcessation.domain.entity.Setting;
 import com.swpteam.smokingcessation.constant.ErrorCode;
 import com.swpteam.smokingcessation.domain.entity.RefreshToken;
@@ -20,8 +23,8 @@ import com.swpteam.smokingcessation.security.UserPrincipal;
 import com.swpteam.smokingcessation.service.interfaces.identity.IAccountService;
 import com.swpteam.smokingcessation.service.interfaces.identity.IAuthenticationService;
 import com.swpteam.smokingcessation.service.interfaces.identity.ITokenService;
-import com.swpteam.smokingcessation.utils.AuthUtilService;
 import com.swpteam.smokingcessation.utils.JwtUtil;
+import com.swpteam.smokingcessation.utils.RandomUtil;
 import jakarta.mail.MessagingException;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -36,7 +39,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.reactive.function.client.WebClient;
-import reactor.core.publisher.Mono;
 
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
@@ -50,62 +52,30 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
     AccountMapper accountMapper;
     AccountRepository accountRepository;
     IAccountService accountService;
-    RefreshTokenRepository refreshTokenRepository;
+
+    MemberRepository memberRepository;
 
     WebClient webClient = WebClient.create();
     PasswordEncoder passwordEncoder;
 
     IMailService mailService;
-    AuthUtilService authUtilService;
     ITokenService tokenService;
 
-    @NonFinal
-    @Value("${spring.security.oauth2.client.registration.google.client-id}")
-    String CLIENT_ID;
-
-    @NonFinal
-    @Value("${spring.security.oauth2.client.registration.google.client-secret}")
-    String CLIENT_SECRET;
-
-    @NonFinal
-    @Value("${spring.security.oauth2.client.registration.google.redirect-uri:http://localhost:8080/oauth2/callback}")
-    String REDIRECT_URI;
+    GoogleTokenVerifier googleTokenVerifier;
 
     @NonFinal
     @Value("${app.frontend-domain}")
     String FRONTEND_DOMAIN;
 
     @Override
-    public GoogleTokenResponse getGoogleToken(@NotNull GoogleTokenRequest request) {
-        String tokenEndpoint = "https://oauth2.googleapis.com/token";
-        Mono<GoogleTokenResponse> responseMono = webClient.post()
-                .uri(tokenEndpoint)
-                .bodyValue(
-                        "code=" + request.getCode() +
-                                "&client_id=" + CLIENT_ID +
-                                "&client_secret=" + CLIENT_SECRET +
-                                "&redirect_uri=" + REDIRECT_URI +
-                                "&grant_type=authorization_code"
-                )
-                .header("Content-Type", "application/x-www-form-urlencoded")
-                .retrieve()
-                .bodyToMono(GoogleTokenResponse.class);
+    public AuthenticationResponse googleLogin(GoogleLoginRequest request) {
+        GoogleIdToken.Payload payload = googleTokenVerifier.verify(request.idToken());
 
-        return responseMono.block();
-    }
-
-    @Override
-    public AuthenticationResponse login(@NotNull AuthenticationRequest request) {
-        Account account = accountService.findAccountByEmail(request.getEmail());
-
-        boolean authenticated = passwordEncoder.matches(request.getPassword(), account.getPassword());
-        if (!authenticated) {
-            throw new AppException(ErrorCode.WRONG_PASSWORD);
-        }
-
-        AccountResponse accountResponse = accountMapper.toResponse(account);
+        Account account = accountService.createAccountByGoogle(payload);
         String accessToken = tokenService.generateAccessToken(account);
         String refreshToken = tokenService.generateRefreshToken(account);
+
+        AccountResponse accountResponse = accountMapper.toResponse(account);
 
         return AuthenticationResponse.builder()
                 .accountResponse(accountResponse)
@@ -115,20 +85,41 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
     }
 
     @Override
-    @Transactional
+    public AuthenticationResponse login(@NotNull AuthenticationRequest request) {
+        Account account = accountService.findAccountByEmailOrThrowError(request.email());
+
+        boolean authenticated = passwordEncoder.matches(request.password(), account.getPassword());
+        if (!authenticated) {
+            throw new AppException(ErrorCode.WRONG_PASSWORD);
+        }
+
+        AccountResponse accountResponse = accountMapper.toResponse(account);
+        String accessToken = tokenService.generateAccessToken(account);
+        String refreshToken = tokenService.generateRefreshToken(account);
+
+        accountService.updateStatus(account.getId(), AccountStatus.ONLINE);
+
+        return AuthenticationResponse.builder()
+                .accountResponse(accountResponse)
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
+                .build();
+    }
+
+    @Override
     public AuthenticationResponse refreshingToken(String token) {
         SignedJWT jwt = tokenService.verifyRefreshToken(token);
 
         String jti = JwtUtil.getJti(jwt);
-        RefreshToken currentRefreshToken = tokenService.findRefreshTokenByJti(jti);
-        Account account = accountService.findAccountById(JwtUtil.getSubject(jwt));
+        RefreshToken currentRefreshToken = tokenService.findRefreshTokenByJtiOrThrowError(jti);
+        Account account = accountService.findAccountByIdOrThrowError(JwtUtil.getSubject(jwt));
 
         Date expiration = JwtUtil.getExpiration(jwt);
         long remainingMillis = expiration.getTime() - System.currentTimeMillis();
 
         String resultRefreshToken;
         if (remainingMillis < TimeUnit.DAYS.toMillis(1)) {
-            tokenService.revokeRefreshToken(currentRefreshToken.getId());
+            tokenService.revokeRefreshTokenByJti(currentRefreshToken.getId());
             resultRefreshToken = tokenService.generateRefreshToken(account);
         } else {
             resultRefreshToken = token;
@@ -144,15 +135,25 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
     @Override
     @Transactional
     public AuthenticationResponse register(@NotNull RegisterRequest request) {
-        if (accountRepository.existsByEmail(request.getEmail())) {
-            throw new AppException(ErrorCode.ACCOUNT_EXISTED);
+        accountService.checkExistByEmail(request.email());
+
+        if (!request.password().equals(request.confirmPassword())) {
+            throw new AppException(ErrorCode.PASSWORD_MISMATCH);
         }
 
         Account account = accountMapper.toEntityFromRegister(request);
-        account.setPassword(passwordEncoder.encode(request.getPassword()));
+        account.setUsername(RandomUtil.generateRandomUsername());
+        account.setPassword(passwordEncoder.encode(request.password()));
+        account.setProvider(AuthProvider.LOCAL);
         account.setRole(Role.MEMBER);
         account.setStatus(AccountStatus.ONLINE);
         account.setSetting(Setting.getDefaultSetting(account));
+
+        Member member = new Member();
+        member.setAccount(account);
+        member.setFullName(request.fullName());
+
+        memberRepository.save(member);
 
         account = accountRepository.save(account);
 
@@ -166,7 +167,7 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
     @Override
     public Authentication authenticate(String accessToken) {
         SignedJWT jwt = tokenService.verifyAccessToken(accessToken);
-        Account account = accountService.findAccountById(JwtUtil.getSubject(jwt));
+        Account account = accountService.findAccountByIdOrThrowError(JwtUtil.getSubject(jwt));
 
         UserPrincipal principal = UserPrincipal.builder().account(account).build();
         return new UsernamePasswordAuthenticationToken(
@@ -178,7 +179,7 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
 
     @Override
     public void sendResetPasswordEmail(String email) {
-        Account account = accountService.findAccountByEmail(email);
+        Account account = accountService.findAccountByEmailOrThrowError(email);
 
         String token = tokenService.generateResetEmailToken(account);
         String link = FRONTEND_DOMAIN + "/reset-password?token=" + token;
@@ -192,24 +193,21 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
     }
 
     @Override
-    @Transactional
     public void resetPassword(ResetPasswordRequest request) {
-        SignedJWT jwt = tokenService.verifyResetPasswordToken(request.getToken());
+        SignedJWT jwt = tokenService.verifyResetPasswordToken(request.token());
 
         String accountId = JwtUtil.getSubject(jwt);
-        Account account = accountService.findAccountById(accountId);
-        account.setPassword(passwordEncoder.encode(request.getNewPassword()));
-        accountRepository.save(account);
+
+        accountService.changePassword(accountId, request.newPassword());
     }
 
     @Override
-    @Transactional
-    public void logout() {
-        Account account = authUtilService.getCurrentAccountOrThrow();
+    public void logout(String refreshToken) {
+        tokenService.revokeRefreshTokenByToken(refreshToken);
 
-        RefreshToken refreshToken = tokenService.findRefreshTokenByAccountId(account.getId());
+        String accountId = tokenService.getAccountIdByRefreshToken(refreshToken);
 
-        tokenService.revokeRefreshToken(refreshToken.getId());
+        accountService.updateStatus(accountId, AccountStatus.OFFLINE);
     }
 
 }

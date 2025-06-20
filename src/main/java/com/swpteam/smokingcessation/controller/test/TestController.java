@@ -1,7 +1,8 @@
 package com.swpteam.smokingcessation.controller.test;
 
 import com.swpteam.smokingcessation.common.ApiResponse;
-import com.swpteam.smokingcessation.integration.AI.AIService;
+import com.swpteam.smokingcessation.domain.entity.Account;
+import com.swpteam.smokingcessation.utils.AuthUtilService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
@@ -20,18 +21,15 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = "Testing", description = "For testing services")
 public class TestController {
 
-    AIService aiService;
+    AuthUtilService authUtilService;
 
     @PostMapping
-    ResponseEntity<ApiResponse<String>> createAccount(@RequestBody @Valid TestRequest request) {
-        String result;
-        //
+    ResponseEntity<ApiResponse<Object>> createAccount(@RequestBody @Valid TestRequest request) {
 
-        result = aiService.chat(request.getPrompt());
+        Account result = authUtilService.getCurrentAccountOrThrowError();
 
-        //
         return ResponseEntity.ok(
-                ApiResponse.<String>builder()
+                ApiResponse.<Object>builder()
                         .code(200)
                         .message("Success")
                         .result(result)

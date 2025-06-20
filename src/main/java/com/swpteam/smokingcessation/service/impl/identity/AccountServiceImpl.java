@@ -1,10 +1,12 @@
 package com.swpteam.smokingcessation.service.impl.identity;
 
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import com.swpteam.smokingcessation.domain.dto.account.AccountRequest;
 import com.swpteam.smokingcessation.domain.dto.account.AccountResponse;
 import com.swpteam.smokingcessation.domain.dto.account.AccountUpdateRequest;
 import com.swpteam.smokingcessation.domain.dto.account.ChangePasswordRequest;
 import com.swpteam.smokingcessation.domain.enums.AccountStatus;
+import com.swpteam.smokingcessation.domain.enums.AuthProvider;
 import com.swpteam.smokingcessation.domain.enums.Role;
 import com.swpteam.smokingcessation.domain.mapper.AccountMapper;
 import com.swpteam.smokingcessation.repository.AccountRepository;
@@ -15,10 +17,12 @@ import com.swpteam.smokingcessation.domain.entity.Account;
 import com.swpteam.smokingcessation.exception.AppException;
 import com.swpteam.smokingcessation.service.interfaces.identity.IAccountService;
 import com.swpteam.smokingcessation.utils.AuthUtilService;
+import com.swpteam.smokingcessation.utils.RandomUtil;
 import com.swpteam.smokingcessation.utils.ValidationUtil;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
@@ -29,8 +33,11 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-@RequiredArgsConstructor
+import java.util.Random;
+
+@Slf4j
 @Service
+@RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class AccountServiceImpl implements IAccountService {
 
@@ -42,23 +49,62 @@ public class AccountServiceImpl implements IAccountService {
 
     @Override
     @Transactional
+    public void updateStatus(String accountId, AccountStatus status) {
+        Account account = findAccountByIdOrThrowError(accountId);
+
+        account.setStatus(AccountStatus.ONLINE);
+        accountRepository.save(account);
+    }
+
+    @Override
+    @Transactional
+    public void changePassword(String accountId, String newPassword) {
+        Account account = findAccountByIdOrThrowError(accountId);
+
+        account.setPassword(passwordEncoder.encode(newPassword));
+        accountRepository.save(account);
+    }
+
+    @Override
+    @Transactional
     @PreAuthorize("hasRole('ADMIN')")
     @CachePut(value = "ACCOUNT_CACHE", key = "#result.getId()")
     public AccountResponse createAccount(AccountRequest request) {
-        checkExistByEmail(request.getEmail());
-        checkExistByPhoneNumber(request.getPhoneNumber());
+        checkExistByEmail(request.email());
+        checkExistByPhoneNumber(request.phoneNumber());
 
         Account account = accountMapper.toEntity(request);
-        account.setPassword(passwordEncoder.encode(request.getPassword()));
+        account.setUsername(RandomUtil.generateRandomUsername());
+        account.setPassword(passwordEncoder.encode(request.password()));
+        account.setProvider(AuthProvider.LOCAL);
         account.setSetting(Setting.getDefaultSetting(account));
 
         return accountMapper.toResponse(accountRepository.save(account));
     }
 
     @Override
+    @Transactional
+    @CachePut(value = "ACCOUNT_CACHE", key = "#result.getId()")
+    public Account createAccountByGoogle(GoogleIdToken.Payload payload) {
+
+        String email = payload.getEmail();
+        return accountRepository.findByEmail(email)
+                .orElseGet(() -> {
+                    Account newAccount = Account.builder()
+                            .username(RandomUtil.generateRandomUsername())
+                            .email(payload.getEmail())
+                            .provider(AuthProvider.GOOGLE)
+                            .avatar((String) payload.get("picture"))
+                            .build();
+                    return accountRepository.save(newAccount);
+                });
+    }
+
+
+    @Override
     @PreAuthorize("hasRole('ADMIN')")
     public Page<AccountResponse> getAccounts(PageableRequest request) {
-        ValidationUtil.checkFieldExist(Account.class, request.getSortBy());
+        ValidationUtil.checkFieldExist(Account.class, request.sortBy());
 
         Pageable pageable = PageableRequest.getPageable(request);
         Page<Account> accounts = accountRepository.findAllByIsDeletedFalse(pageable);
@@ -69,13 +115,12 @@ public class AccountServiceImpl implements IAccountService {
     @Override
     @PreAuthorize("hasRole('ADMIN')")
     public AccountResponse getAccountById(String id) {
-        return accountMapper.toResponse(findAccountById(id));
+        return accountMapper.toResponse(findAccountByIdOrThrowError(id));
     }
 
     @Override
     public AccountResponse getCurrentAccount() {
-        Account account = authUtilService.getCurrentAccount()
-                .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FOUND));
+        Account account = authUtilService.getCurrentAccountOrThrowError();
 
         return accountMapper.toResponse(account);
     }
@@ -85,7 +130,8 @@ public class AccountServiceImpl implements IAccountService {
     @PreAuthorize("hasRole('ADMIN')")
     @CachePut(value = "ACCOUNT_CACHE", key = "#result.getId()")
     public AccountResponse updateAccountRole(String id, Role role) {
-        Account account = findAccountById(id);
+        Account account = findAccountByIdOrThrowError(id);
+
         account.setRole(role);
 
         return accountMapper.toResponse(accountRepository.save(account));
@@ -94,11 +140,11 @@ public class AccountServiceImpl implements IAccountService {
     @Override
     @Transactional
     public AccountResponse updateAccountWithoutRole(String id, AccountUpdateRequest request) {
-        Account account = findAccountById(id);
+        Account account = findAccountByIdOrThrowError(id);
 
         accountMapper.updateWithoutRole(account, request);
-        if (request.getPassword() != null) {
-            account.setPassword(passwordEncoder.encode(request.getPassword()));
+        if (request.password() != null) {
+            account.setPassword(passwordEncoder.encode(request.password()));
         }
 
         return accountMapper.toResponse(accountRepository.save(account));
@@ -109,7 +155,7 @@ public class AccountServiceImpl implements IAccountService {
     @PreAuthorize("hasRole('ADMIN')")
     @CacheEvict(value = "ACCOUNT_CACHE", key = "#id")
     public void deleteAccount(String id) {
-        Account account = findAccountById(id);
+        Account account = findAccountByIdOrThrowError(id);
 
         account.setDeleted(true);
         accountRepository.save(account);
@@ -121,11 +167,11 @@ public class AccountServiceImpl implements IAccountService {
         Account account = authUtilService.getCurrentAccount()
                 .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FOUND));
 
-        if (!passwordEncoder.matches(request.getOldPassword(), account.getPassword())) {
+        if (!passwordEncoder.matches(request.oldPassword(), account.getPassword())) {
             throw new AppException(ErrorCode.WRONG_PASSWORD);
         }
 
-        account.setPassword(passwordEncoder.encode(request.getNewPassword()));
+        account.setPassword(passwordEncoder.encode(request.newPassword()));
         accountRepository.save(account);
 
         return accountMapper.toResponse(account);
@@ -135,8 +181,8 @@ public class AccountServiceImpl implements IAccountService {
     @Transactional
     @PreAuthorize("hasRole('ADMIN')")
     public void banAccount(String id) {
-        Account account = findAccountById(id);
-        Account currentAccount = authUtilService.getCurrentAccountOrThrow();
+        Account account = findAccountByIdOrThrowError(id);
+        Account currentAccount = authUtilService.getCurrentAccountOrThrowError();
 
         if (account == currentAccount)
             throw new AppException(ErrorCode.SELF_BAN);
@@ -146,26 +192,27 @@ public class AccountServiceImpl implements IAccountService {
     }
 
     @Override
-    public Account findAccountByEmail(String email) {
+    public Account findAccountByEmailOrThrowError(String email) {
         return accountRepository.findByEmailAndIsDeletedFalse(email)
                 .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FOUND));
     }
 
     @Override
     @Cacheable(value = "ACCOUNT_CACHE", key = "#id")
-    public Account findAccountById(String id) {
+    public Account findAccountByIdOrThrowError(String id) {
         return accountRepository.findByIdAndIsDeletedFalse(id)
                 .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FOUND));
     }
 
     @Override
     @Cacheable(value = "ACCOUNT_CACHE", key = "#username")
-    public Account findAccountByUsername(String username) {
+    public Account findAccountByUsernameOrThrowError(String username) {
         return accountRepository.findByUsernameAndIsDeletedFalse(username)
                 .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FOUND));
     }
 
-    private void checkExistByEmail(String email) {
+    @Override
+    public void checkExistByEmail(String email) {
         if (accountRepository.existsByEmail(email))
             throw new AppException(ErrorCode.EMAIL_EXISTED);
     }
@@ -174,4 +221,5 @@ public class AccountServiceImpl implements IAccountService {
         if (accountRepository.existsByEmail(phoneNumber))
             throw new AppException(ErrorCode.PHONE_NUMBER_EXISTED);
     }
+
 }

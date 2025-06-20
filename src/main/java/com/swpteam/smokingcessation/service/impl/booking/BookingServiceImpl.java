@@ -14,6 +14,8 @@ import com.swpteam.smokingcessation.repository.AccountRepository;
 import com.swpteam.smokingcessation.repository.BookingRepository;
 import com.swpteam.smokingcessation.repository.CoachRepository;
 import com.swpteam.smokingcessation.service.interfaces.booking.IBookingService;
+import com.swpteam.smokingcessation.service.interfaces.identity.IAccountService;
+import com.swpteam.smokingcessation.utils.AuthUtilService;
 import com.swpteam.smokingcessation.utils.ValidationUtil;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -34,13 +36,14 @@ public class BookingServiceImpl implements IBookingService {
 
     BookingRepository bookingRepository;
     BookingMapper bookingMapper;
-    AccountRepository accountRepository;
-    CoachRepository coachRepository;
     GoogleCalendarService googleCalendarService;
+
+    IAccountService accountService;
+    AuthUtilService authUtilService;
 
     @Override
     public Page<BookingResponse> getBookingPage(PageableRequest request) {
-        ValidationUtil.checkFieldExist(Booking.class, request.getSortBy());
+        ValidationUtil.checkFieldExist(Booking.class, request.sortBy());
 
         Pageable pageable = PageableRequest.getPageable(request);
         Page<Booking> bookings = bookingRepository.findAllByIsDeletedFalse(pageable);
@@ -50,10 +53,7 @@ public class BookingServiceImpl implements IBookingService {
 
     @Override
     public BookingResponse getBookingById(String id) {
-        Booking booking = bookingRepository.findByIdAndIsDeletedFalse(id)
-                .orElseThrow(() -> new AppException(ErrorCode.BOOKING_NOT_FOUND));
-
-        return bookingMapper.toResponse(booking);
+        return bookingMapper.toResponse(findBookingByIdOrThrowError(id));
     }
 
     @Override
@@ -62,13 +62,10 @@ public class BookingServiceImpl implements IBookingService {
     public BookingResponse createBooking(BookingRequest request) {
         Booking booking = bookingMapper.toEntity(request);
 
-        Account account = accountRepository.findByIdAndIsDeletedFalse(request.getAccountId())
-                .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FOUND));
+        Account member = authUtilService.getCurrentAccountOrThrowError();
+        Account coach = accountService.findAccountByIdOrThrowError(request.coachId());
 
-        Coach coach = coachRepository.findByIdAndIsDeletedFalse(request.getCoachId())
-                .orElseThrow(() -> new AppException(ErrorCode.COACH_NOT_FOUND));
-
-        booking.setAccount(account);
+        booking.setMember(member);
         booking.setCoach(coach);
 
         return bookingMapper.toResponse(bookingRepository.save(booking));
@@ -78,18 +75,16 @@ public class BookingServiceImpl implements IBookingService {
     @Transactional
     @PreAuthorize("hasAnyRole('ADMIN', 'MEMBER')")
     public BookingResponse updateBookingById(String id, BookingRequest request) {
-        Booking booking = bookingRepository.findByIdAndIsDeletedFalse(id)
-                .orElseThrow(() -> new AppException(ErrorCode.BOOKING_NOT_FOUND));
+        Booking booking = findBookingByIdOrThrowError(id);
 
         bookingMapper.update(booking, request);
 
-        Account account = accountRepository.findByIdAndIsDeletedFalse(request.getAccountId())
-                .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FOUND));
+        boolean haveAccess = authUtilService.isAdminOrOwner(booking.getMember().getId());
+        if (!haveAccess) {
+            throw new AppException(ErrorCode.INVALID_TOKEN);
+        }
 
-        Coach coach = coachRepository.findByIdAndIsDeletedFalse(request.getCoachId())
-                .orElseThrow(() -> new AppException(ErrorCode.COACH_NOT_FOUND));
-
-        booking.setAccount(account);
+        Account coach = accountService.findAccountByIdOrThrowError(request.coachId());
         booking.setCoach(coach);
 
         return bookingMapper.toResponse(bookingRepository.save(booking));
@@ -99,8 +94,7 @@ public class BookingServiceImpl implements IBookingService {
     @Transactional
     @PreAuthorize("hasAnyRole('ADMIN', 'MEMBER')")
     public void softDeleteBookingById(String id) {
-        Booking booking = bookingRepository.findByIdAndIsDeletedFalse(id)
-                .orElseThrow(() -> new AppException(ErrorCode.BOOKING_NOT_FOUND));
+        Booking booking = findBookingByIdOrThrowError(id);
 
         booking.setDeleted(true);
         bookingRepository.save(booking);
@@ -109,28 +103,38 @@ public class BookingServiceImpl implements IBookingService {
     @Override
     @Transactional
     public BookingResponse createBookingWithMeet(BookingRequest request) {
-        Account account = accountRepository.findByIdAndIsDeletedFalse(request.getAccountId())
-                .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FOUND));
-
-        Coach coach = coachRepository.findByIdAndIsDeletedFalse(request.getCoachId())
-                .orElseThrow(() -> new AppException(ErrorCode.COACH_NOT_FOUND));
+        Account member = authUtilService.getCurrentAccountOrThrowError();
+        Account coach = accountService.findAccountByIdOrThrowError(request.coachId());
 
         String meetingUrl = null;
         try {
             meetingUrl = googleCalendarService.createGoogleMeetEvent(
-                    request.getAccessToken(),
-                    request.getStartedAt().toString(),
-                    request.getEndedAt().toString()
+                    request.accessToken(),
+                    request.startedAt().toString(),
+                    request.endedAt().toString()
             );
         } catch (Exception e) {
             throw new AppException(ErrorCode.GOOGLE_CALENDAR_ERROR);
         }
 
         Booking booking = bookingMapper.toEntity(request);
-        booking.setAccount(account);
+        booking.setMember(member);
         booking.setCoach(coach);
         booking.setMeetLink(meetingUrl);
 
         return bookingMapper.toResponse(bookingRepository.save(booking));
     }
+
+    @Override
+    public Booking findBookingByIdOrThrowError(String id) {
+        Booking booking = bookingRepository.findByIdAndIsDeletedFalse(id)
+                .orElseThrow(() -> new AppException(ErrorCode.BOOKING_NOT_FOUND));
+
+        if (booking.getMember().isDeleted() || booking.getCoach().isDeleted()) {
+            throw new AppException(ErrorCode.ACCOUNT_NOT_FOUND);
+        }
+
+        return booking;
+    }
+
 }

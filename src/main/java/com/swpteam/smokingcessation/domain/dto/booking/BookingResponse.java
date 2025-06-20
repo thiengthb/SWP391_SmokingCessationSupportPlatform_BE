@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 public class BookingResponse {
 
     String id;
-    String accountId;
+    String memberId;
     String coachId;
     String meetLink;
     LocalDateTime startedAt;

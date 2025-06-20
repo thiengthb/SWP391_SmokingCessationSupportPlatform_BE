@@ -7,10 +7,8 @@ import com.stripe.model.PaymentIntent;
 import com.stripe.model.checkout.Session;
 import com.stripe.param.checkout.SessionCreateParams;
 import com.swpteam.smokingcessation.domain.entity.Account;
-import com.swpteam.smokingcessation.repository.AccountRepository;
 import com.swpteam.smokingcessation.integration.mail.MailServiceImpl;
 import com.swpteam.smokingcessation.domain.entity.Membership;
-import com.swpteam.smokingcessation.repository.MembershipRepository;
 import com.swpteam.smokingcessation.domain.entity.Subscription;
 import com.swpteam.smokingcessation.service.impl.membership.SubscriptionServiceImpl;
 import com.swpteam.smokingcessation.domain.entity.Transaction;
@@ -19,6 +17,8 @@ import com.swpteam.smokingcessation.domain.dto.payment.StripeSubscriptionRequest
 import com.swpteam.smokingcessation.constant.ErrorCode;
 import com.swpteam.smokingcessation.exception.AppException;
 import com.swpteam.smokingcessation.service.impl.membership.TransactionServiceImpl;
+import com.swpteam.smokingcessation.service.interfaces.identity.IAccountService;
+import com.swpteam.smokingcessation.service.interfaces.membership.IMembershipService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -35,11 +35,12 @@ import java.util.Map;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class StripeService implements IStripeService {
 
-    AccountRepository accountRepository;
-    MembershipRepository membershipRepository;
     TransactionServiceImpl transactionService;
     SubscriptionServiceImpl subscriptionService;
     MailServiceImpl mailServiceImpl;
+
+    IAccountService accountService;
+    IMembershipService membershipService;
 
     @NonFinal
     @Value("${stripe.success-url}")
@@ -51,11 +52,9 @@ public class StripeService implements IStripeService {
 
     @Override
     public StripeResponse checkoutSubscription(StripeSubscriptionRequest request) {
-        Membership membership = membershipRepository.findByNameAndIsDeletedFalse(request.getMembershipName())
-                .orElseThrow(() -> new AppException(ErrorCode.MEMBERSHIP_NOT_FOUND));
+        Membership membership = membershipService.findMembershipByNameOrThrowError(request.membershipName());
 
-        Account account = accountRepository.findById(request.getAccountId())
-                .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FOUND));
+        Account account = accountService.findAccountByIdOrThrowError(request.accountId());
 
         Transaction transaction = transactionService.createTransaction(account, membership.getPrice());
 
@@ -134,8 +133,7 @@ public class StripeService implements IStripeService {
                     return;
                 }
 
-                Membership membership = membershipRepository.findByNameAndIsDeletedFalse(membershipName)
-                        .orElseThrow(() -> new AppException(ErrorCode.MEMBERSHIP_NOT_FOUND));
+                Membership membership = membershipService.findMembershipByNameOrThrowError(membershipName);
 
                 transactionService.makeAsPaid(transactionId);
 
@@ -179,11 +177,9 @@ public class StripeService implements IStripeService {
                     return;
                 }
 
-                Account account = accountRepository.findById(accountId)
-                        .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FOUND));
+                accountService.findAccountByIdOrThrowError(accountId);
 
-                Membership membership = membershipRepository.findByNameAndIsDeletedFalse(membershipName)
-                        .orElseThrow(() -> new AppException(ErrorCode.MEMBERSHIP_NOT_FOUND));
+                Membership membership = membershipService.findMembershipByNameOrThrowError(membershipName);
 
                 transactionService.makeAsPaid(transactionId);
                 Subscription subscription = subscriptionService.createSubscription(accountId, membershipName);

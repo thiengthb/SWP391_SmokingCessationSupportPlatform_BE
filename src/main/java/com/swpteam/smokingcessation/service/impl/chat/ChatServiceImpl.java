@@ -34,14 +34,14 @@ public class ChatServiceImpl implements IChatService {
 
     @Override
     public ChatResponse sendChatMessage(ChatRequest request) {
-        Account account = accountRepository.findByIdAndIsDeletedFalse(request.getAccountId())
+        Account account = accountRepository.findByIdAndIsDeletedFalse(request.accountId())
                 .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FOUND));
 
-        boolean isFirstTime = !chatRepository.existsByAccountIdAndIsDeletedFalse(request.getAccountId());
+        boolean isFirstTime = !chatRepository.existsByAccountIdAndIsDeletedFalse(request.accountId());
 
         Chat chat = Chat.builder()
                 .account(account)
-                .content(request.getContent())
+                .content(request.content())
                 .build();
 
         chatRepository.save(chat);
@@ -51,10 +51,10 @@ public class ChatServiceImpl implements IChatService {
         return chatResponse;
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
     @Override
+    @PreAuthorize("hasRole('ADMIN')")
     public Page<ChatRestResponse> getChats(PageableRequest request) {
-        ValidationUtil.checkFieldExist(Chat.class, request.getSortBy());
+        ValidationUtil.checkFieldExist(Chat.class, request.sortBy());
 
         Pageable pageable = PageableRequest.getPageable(request);
         Page<Chat> chats = chatRepository.findAllByIsDeletedFalse(pageable);
@@ -62,10 +62,10 @@ public class ChatServiceImpl implements IChatService {
         return chats.map(chatMapper::toRestResponse);
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
     @Override
+    @PreAuthorize("hasRole('ADMIN')")
     public Page<ChatRestResponse> getChatsById(String id, PageableRequest request) {
-        ValidationUtil.checkFieldExist(Chat.class, request.getSortBy());
+        ValidationUtil.checkFieldExist(Chat.class, request.sortBy());
 
         Pageable pageable = PageableRequest.getPageable(request);
         Page<Chat> chats = chatRepository.findByAccountIdAndIsDeletedFalse(id, pageable);

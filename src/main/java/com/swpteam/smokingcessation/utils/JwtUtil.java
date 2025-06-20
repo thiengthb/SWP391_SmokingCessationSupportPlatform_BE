@@ -29,7 +29,8 @@ public class JwtUtil {
                 .issuer("swp-team")
                 .issueTime(now)
                 .expirationTime(expiryDate)
-                .claim("token_type", tokenType.name())
+                .claim("token_type", tokenType.name().toUpperCase())
+                .claim("role", account.getRole().name())
                 .jwtID(UUID.randomUUID().toString())
                 .build();
 
@@ -65,6 +66,28 @@ public class JwtUtil {
                 throw new AppException(ErrorCode.TOKEN_EXPIRED);
 
             return jwt;
+        } catch (ParseException | JOSEException e) {
+            throw new AppException(ErrorCode.INVALID_TOKEN);
+        }
+    }
+
+    public String extractJtiWithVerification(String token, JWSVerifier verifier) {
+        try {
+            SignedJWT jwt = SignedJWT.parse(token);
+            if (!jwt.verify(verifier))
+                throw new AppException(ErrorCode.INVALID_TOKEN);
+            return jwt.getJWTClaimsSet().getJWTID();
+        } catch (ParseException | JOSEException e) {
+            throw new AppException(ErrorCode.INVALID_TOKEN);
+        }
+    }
+
+    public String extractAccountIdWithVerification(String token, JWSVerifier verifier) {
+        try {
+            SignedJWT jwt = SignedJWT.parse(token);
+            if (!jwt.verify(verifier))
+                throw new AppException(ErrorCode.INVALID_TOKEN);
+            return jwt.getJWTClaimsSet().getSubject();
         } catch (ParseException | JOSEException e) {
             throw new AppException(ErrorCode.INVALID_TOKEN);
         }

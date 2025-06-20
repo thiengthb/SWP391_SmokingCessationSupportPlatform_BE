@@ -3,6 +3,7 @@ package com.swpteam.smokingcessation.service.interfaces.streak;
 import com.swpteam.smokingcessation.common.PageableRequest;
 import com.swpteam.smokingcessation.domain.dto.streak.StreakRequest;
 import com.swpteam.smokingcessation.domain.dto.streak.StreakResponse;
+import com.swpteam.smokingcessation.domain.entity.Streak;
 import org.springframework.data.domain.Page;
 
 public interface IStreakService {
@@ -17,4 +18,7 @@ public interface IStreakService {
     StreakResponse getStreakById(String id);
 
     Page<StreakResponse> getStreakPage(PageableRequest request);
+
+    Streak findStreakByIdOrThrowError(String id);
+    
 }

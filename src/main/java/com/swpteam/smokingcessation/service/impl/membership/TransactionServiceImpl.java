@@ -30,7 +30,7 @@ public class TransactionServiceImpl implements ITransactionService {
     @Transactional
     @CachePut(value = "TRANSACTION_CACHE", key = "#result.getId()")
     public Transaction createTransaction(Account account, double amount) {
-        accountService.findAccountById(account.getId());
+        accountService.findAccountByIdOrThrowError(account.getId());
 
         Transaction transaction = Transaction.startTransaction(account);
         transaction.setAmount(amount);

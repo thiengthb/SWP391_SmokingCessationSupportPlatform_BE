@@ -48,18 +48,18 @@ public class AuthUtilService {
                 .flatMap(accountRepository::findById);
     }
 
-    public Account getCurrentAccountOrThrow() {
+    public Account getCurrentAccountOrThrowError() {
         return getCurrentAccount()
                 .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FOUND));
     }
 
     public boolean isAdminOrOwner(String ownerId) {
-        Account account = getCurrentAccountOrThrow();
+        Account account = getCurrentAccountOrThrowError();
         return account.getRole() == Role.ADMIN || account.getId().equals(ownerId);
     }
 
     public boolean isOwner(String ownerId) {
-        Account account = getCurrentAccountOrThrow();
+        Account account = getCurrentAccountOrThrowError();
         return account.getId().equals(ownerId);
     }
 
@@ -69,7 +69,7 @@ public class AuthUtilService {
                 .orElse(false);
     }
 
-    public Optional<String> getCurrentToken() {
+    public Optional<String> getCurrentAccessToken() {
         HttpServletRequest request = getCurrentHttpRequest();
         if (request == null) return Optional.empty();
 

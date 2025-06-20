@@ -131,7 +131,7 @@ public class TokenServiceImplement implements ITokenService {
     }
 
     @Override
-    public RefreshToken findRefreshTokenByJti(String jti) {
+    public RefreshToken findRefreshTokenByJtiOrThrowError(String jti) {
         RefreshToken refreshToken = refreshTokenRepository.findById(jti)
                 .orElseThrow(() -> new AppException(ErrorCode.TOKEN_NOT_FOUND));
 
@@ -143,7 +143,7 @@ public class TokenServiceImplement implements ITokenService {
     }
 
     @Override
-    public RefreshToken findRefreshTokenByAccountId(String accountId) {
+    public RefreshToken findRefreshTokenByAccountIdOrThrowError(String accountId) {
         RefreshToken refreshToken = refreshTokenRepository.findByAccountId(accountId)
                 .orElseThrow(() -> new AppException(ErrorCode.TOKEN_NOT_FOUND));
 
@@ -155,8 +155,20 @@ public class TokenServiceImplement implements ITokenService {
     }
 
     @Override
-    public void revokeRefreshToken(String jti) {
+    public void revokeRefreshTokenByJti(String jti) {
+        findRefreshTokenByJtiOrThrowError(jti);
         refreshTokenRepository.deleteById(jti);
+    }
+
+    @Override
+    public void revokeRefreshTokenByToken(String token) {
+        String jti = JwtUtil.extractJtiWithVerification(token, refreshTokenVerifier);
+        revokeRefreshTokenByJti(jti);
+    }
+
+    @Override
+    public String getAccountIdByRefreshToken(String token) {
+        return JwtUtil.extractAccountIdWithVerification(token, refreshTokenVerifier);
     }
 
 }

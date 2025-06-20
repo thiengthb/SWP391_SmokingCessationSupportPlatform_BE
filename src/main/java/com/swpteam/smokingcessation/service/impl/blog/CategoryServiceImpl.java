@@ -7,7 +7,6 @@ import com.swpteam.smokingcessation.domain.dto.category.CategoryRequest;
 import com.swpteam.smokingcessation.domain.dto.category.CategoryResponse;
 import com.swpteam.smokingcessation.domain.entity.Blog;
 import com.swpteam.smokingcessation.domain.entity.Category;
-import com.swpteam.smokingcessation.domain.entity.Comment;
 import com.swpteam.smokingcessation.domain.mapper.CategoryMapper;
 import com.swpteam.smokingcessation.exception.AppException;
 import com.swpteam.smokingcessation.repository.BlogRepository;
@@ -50,7 +49,7 @@ public class CategoryServiceImpl implements ICategoryService {
     @Override
     @PreAuthorize("hasRole('ADMIN')")
     public Page<CategoryResponse> getCategoryPage(PageableRequest request) {
-        ValidationUtil.checkFieldExist(Category.class, request.getSortBy());
+        ValidationUtil.checkFieldExist(Category.class, request.sortBy());
 
         Pageable pageable = PageableRequest.getPageable(request);
         Page<Category> categories = categoryRepository.findAll(pageable);
@@ -61,7 +60,7 @@ public class CategoryServiceImpl implements ICategoryService {
     @Override
     @PreAuthorize("hasRole('ADMIN')")
     public CategoryResponse getCategoryById(String id) {
-        Category category = findCategoryById(id);
+        Category category = findCategoryByIdOrThrowError(id);
         return categoryMapper.toResponse(category);
     }
 
@@ -70,7 +69,9 @@ public class CategoryServiceImpl implements ICategoryService {
     @PreAuthorize("hasRole('ADMIN')")
     @CachePut(value = "CATEGORY_CACHE", key = "#result.getId()")
     public CategoryResponse createCategory(CategoryRequest request) {
-        findCategoryByName(request.getName());
+        if (categoryRepository.existsByName(request.name())) {
+            throw new AppException(ErrorCode.CATEGORY_EXISTED);
+        }
 
         Category category = categoryMapper.toEntity(request);
         return categoryMapper.toResponse(categoryRepository.save(category));
@@ -81,7 +82,7 @@ public class CategoryServiceImpl implements ICategoryService {
     @PreAuthorize("hasRole('ADMIN')")
     @CachePut(value = "CATEGORY_CACHE", key = "#result.getId()")
     public CategoryResponse updateCategory(String id, CategoryRequest request) {
-        Category category = findCategoryById(id);
+        Category category = findCategoryByIdOrThrowError(id);
 
         categoryMapper.update(category, request);
 
@@ -93,13 +94,13 @@ public class CategoryServiceImpl implements ICategoryService {
     @PreAuthorize("hasRole('ADMIN')")
     @CacheEvict(value = "CATEGORY_CACHE", key = "#id", allEntries = true)
     public void deleteCategoryById(String id) {
-        Category category = findCategoryById(id);
+        Category category = findCategoryByIdOrThrowError(id);
 
         if (category.getName().equalsIgnoreCase(App.DEFAULT_CATEGORY)) {
             throw new AppException(ErrorCode.CATEGORY_CANNOT_BE_DELETED);
         }
 
-        Category uncategorized = findCategoryByName(App.DEFAULT_CATEGORY);
+        Category uncategorized = findCategoryByNameOrThrowError(App.DEFAULT_CATEGORY);
 
         List<Blog> blogs = blogRepository.findByCategoryId(category.getId());
         blogs.forEach(blog -> blog.setCategory(uncategorized));
@@ -109,14 +110,16 @@ public class CategoryServiceImpl implements ICategoryService {
         categoryRepository.deleteById(id);
     }
 
+    @Override
     @Cacheable(value = "CATEGORY_CACHE", key = "#name")
-    private Category findCategoryByName(String name) {
+    public Category findCategoryByNameOrThrowError(String name) {
         return categoryRepository.findByName(name)
                 .orElseThrow(() -> new AppException(ErrorCode.CATEGORY_NOT_FOUND));
     }
 
+    @Override
     @Cacheable(value = "CATEGORY_CACHE", key = "#id")
-    private Category findCategoryById(String id) {
+    public Category findCategoryByIdOrThrowError(String id) {
         return categoryRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.CATEGORY_NOT_FOUND));
     }
