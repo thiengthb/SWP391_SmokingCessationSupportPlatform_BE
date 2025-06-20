@@ -36,7 +36,7 @@ public class MemberServiceImpl implements IMemberService {
     @Override
     @PreAuthorize("hasRole('ADMIN')")
     public Page<MemberResponse> getMembers(PageableRequest request) {
-        ValidationUtil.checkFieldExist(Member.class, request.getSortBy());
+        ValidationUtil.checkFieldExist(Member.class, request.sortBy());
 
         Pageable pageable = PageableRequest.getPageable(request);
         Page<Member> members = memberRepository.findAllByIsDeletedFalse(pageable);
@@ -46,16 +46,16 @@ public class MemberServiceImpl implements IMemberService {
 
     @Override
     public MemberResponse getMemberById(String accountId) {
-        return memberMapper.toResponse(findMemberById(accountId));
+        return memberMapper.toResponse(findMemberByIdOrThrowError(accountId));
     }
 
     @Override
     @Transactional
     @CachePut(value = "MEMBER_CACHE", key = "#result.getId()")
     public MemberResponse createMember(String accountId, MemberRequest request) {
-        Account account = accountService.findAccountById(accountId);
+        Account account = accountService.findAccountByIdOrThrowError(accountId);
 
-        if (memberRepository.existsByFullName(request.getFullName())) {
+        if (memberRepository.existsByFullName(request.fullName())) {
             throw new AppException(ErrorCode.MEMBER_EXISTED);
         }
 
@@ -69,7 +69,7 @@ public class MemberServiceImpl implements IMemberService {
     @Transactional
     @CachePut(value = "MEMBER_CACHE", key = "#result.getId()")
     public MemberResponse updateMember(String accountId, MemberRequest request) {
-        Member member = findMemberById(accountId);
+        Member member = findMemberByIdOrThrowError(accountId);
 
         memberMapper.updateMember(member, request);
 
@@ -77,13 +77,14 @@ public class MemberServiceImpl implements IMemberService {
     }
 
     @Cacheable(value = "MEMBER_CACHE", key = "#accountId")
-    private Member findMemberById(String accountId) {
+    public Member findMemberByIdOrThrowError(String accountId) {
         Member member = memberRepository.findByIdAndIsDeletedFalse(accountId)
                 .orElseThrow(() -> new AppException(ErrorCode.MEMBER_NOT_FOUND));
 
         if (member.getAccount().isDeleted()) {
             throw new AppException(ErrorCode.ACCOUNT_DELETED);
         }
+
         return member;
     }
 

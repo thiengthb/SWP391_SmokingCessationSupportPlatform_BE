@@ -11,7 +11,7 @@ import com.swpteam.smokingcessation.exception.AppException;
 import com.swpteam.smokingcessation.repository.MemberRepository;
 import com.swpteam.smokingcessation.repository.StreakRepository;
 import com.swpteam.smokingcessation.service.interfaces.streak.IStreakService;
-import com.swpteam.smokingcessation.utils.AuthUtil;
+import com.swpteam.smokingcessation.utils.AuthUtilService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -25,15 +25,16 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class StreakServiceImpl implements IStreakService {
+
     StreakMapper streakMapper;
     StreakRepository streakRepository;
     MemberRepository memberRepository;
-    AuthUtil authUtil;
+    AuthUtilService authUtilService;
 
     @Override
     @Transactional
     public StreakResponse createStreak(String id, StreakRequest request) {
-        if (streakRepository.findById(id).isPresent()) {
+        if (streakRepository.existsById(id)) {
             throw new AppException(ErrorCode.STREAK_ALREADY_EXISTS);
         }
 
@@ -48,28 +49,26 @@ public class StreakServiceImpl implements IStreakService {
     @Override
     @Transactional
     public StreakResponse updateStreak(String id, StreakRequest request) {
-        Streak streak = streakRepository.findById(id)
-                .orElseThrow(() -> new AppException(ErrorCode.STREAK_NOT_FOUND));
+        Streak streak = findStreakByIdOrThrowError(id);
+
         streakMapper.update(streak, request);
+
         return streakMapper.toResponse(streakRepository.save(streak));
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
     @Override
     @Transactional
+    @PreAuthorize("hasRole('ADMIN')")
     public void deleteStreak(String id) {
-        Streak streak = streakRepository.findById(id)
-                .orElseThrow(() -> new AppException(ErrorCode.STREAK_NOT_FOUND));
-        streakRepository.delete(streak);
+        streakRepository.deleteById(id);
     }
 
     @Override
     public void resetStreak(String id) {
-        Streak streak = streakRepository.findById(id)
-                .orElseThrow(() -> new AppException(ErrorCode.STREAK_NOT_FOUND));
-        Member member = streak.getMember();
-        boolean isAllowed = authUtil.isAdminOrOwner(member.getId());
+        Streak streak = findStreakByIdOrThrowError(id);
 
+        Member member = streak.getMember();
+        boolean isAllowed = authUtilService.isAdminOrOwner(member.getId());
         if (!isAllowed) {
             throw new AppException(ErrorCode.OTHERS_STREAK_CANNOT_BE_DELETED);
         }
@@ -84,16 +83,21 @@ public class StreakServiceImpl implements IStreakService {
     }
 
     @Override
-    public StreakResponse getStreakById(String id) {
-        Streak streak = streakRepository.findById(id)
+    public Streak findStreakByIdOrThrowError(String id) {
+        return streakRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.STREAK_NOT_FOUND));
-        return streakMapper.toResponse(streak);
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
     @Override
+    public StreakResponse getStreakById(String id) {
+        return streakMapper.toResponse(findStreakByIdOrThrowError(id));
+    }
+
+    @Override
+    @PreAuthorize("hasRole('ADMIN')")
     public Page<StreakResponse> getStreakPage(PageableRequest request) {
         Pageable pageable = PageableRequest.getPageable(request);
         return streakRepository.findAll(pageable).map(streakMapper::toResponse);
     }
+
 }

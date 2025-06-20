@@ -1,6 +1,5 @@
 package com.swpteam.smokingcessation.common;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -25,7 +24,7 @@ import java.time.LocalDateTime;
 @MappedSuperclass
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @EntityListeners(AuditingEntityListener.class)
-public abstract class BaseEntity implements Serializable {
+public abstract class AuditableEntity implements Serializable {
 
     @Serial
     private static final long serialVersionUID = 1L;

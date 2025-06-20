@@ -19,7 +19,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public class MonthlyReportScheduler {
+public class ReportScheduler {
     AccountRepository accountRepository;
     IReportRepository reportRepository;
     IMailService mailService;

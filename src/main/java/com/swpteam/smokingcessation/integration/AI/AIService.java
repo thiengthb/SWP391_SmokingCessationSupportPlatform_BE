@@ -1,6 +1,5 @@
 package com.swpteam.smokingcessation.integration.AI;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.swpteam.smokingcessation.constant.ResourceFilePaths;
 import com.swpteam.smokingcessation.utils.FileLoaderUtil;
 import lombok.AccessLevel;

@@ -10,10 +10,9 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -21,10 +20,11 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 
 import java.util.Optional;
 
+@Slf4j
 @Service
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
-public class AuthUtil {
+public class AuthUtilService {
 
     AccountRepository accountRepository;
 
@@ -48,17 +48,28 @@ public class AuthUtil {
                 .flatMap(accountRepository::findById);
     }
 
-    public Account getCurrentAccountOrThrow() {
+    public Account getCurrentAccountOrThrowError() {
         return getCurrentAccount()
                 .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FOUND));
     }
 
     public boolean isAdminOrOwner(String ownerId) {
-        Account account = getCurrentAccountOrThrow();
+        Account account = getCurrentAccountOrThrowError();
         return account.getRole() == Role.ADMIN || account.getId().equals(ownerId);
     }
 
-    public Optional<String> getCurrentToken() {
+    public boolean isOwner(String ownerId) {
+        Account account = getCurrentAccountOrThrowError();
+        return account.getId().equals(ownerId);
+    }
+
+    public boolean isAdmin() {
+        return getCurrentAccount()
+                .map(account -> account.getRole() == Role.ADMIN)
+                .orElse(false);
+    }
+
+    public Optional<String> getCurrentAccessToken() {
         HttpServletRequest request = getCurrentHttpRequest();
         if (request == null) return Optional.empty();
 
@@ -77,9 +88,4 @@ public class AuthUtil {
         return null;
     }
 
-    public boolean isAdmin() {
-        return getCurrentAccount()
-                .map(account -> account.getRole() == Role.ADMIN)
-                .orElse(false);
-    }
 }

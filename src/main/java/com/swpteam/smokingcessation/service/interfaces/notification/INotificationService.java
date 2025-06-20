@@ -4,6 +4,7 @@ import com.swpteam.smokingcessation.common.PageableRequest;
 import com.swpteam.smokingcessation.domain.dto.notification.MarkAsReadRequest;
 import com.swpteam.smokingcessation.domain.dto.notification.NotificationRequest;
 import com.swpteam.smokingcessation.domain.dto.notification.NotificationResponse;
+import com.swpteam.smokingcessation.domain.entity.Notification;
 import org.springframework.data.domain.Page;
 
 public interface INotificationService {
@@ -18,4 +19,6 @@ public interface INotificationService {
     void deleteNotification(String id);
 
     void deleteAllNotification(String id);
+
+    Notification findNotificationByIdOrThrowError(String id);
 }

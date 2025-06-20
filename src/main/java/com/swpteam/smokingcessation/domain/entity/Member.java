@@ -1,8 +1,7 @@
 package com.swpteam.smokingcessation.domain.entity;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.swpteam.smokingcessation.domain.enums.MemberGender;
-import com.swpteam.smokingcessation.common.BaseEntity;
+import com.swpteam.smokingcessation.common.AuditableEntity;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -17,7 +16,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Entity
-public class Member extends BaseEntity {
+public class Member extends AuditableEntity {
 
     @MapsId
     @OneToOne

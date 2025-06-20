@@ -17,6 +17,7 @@ import java.time.LocalDateTime;
 public class AccountResponse {
 
     String id;
+    String username;
     String email;
     String phoneNumber;
     Role role;

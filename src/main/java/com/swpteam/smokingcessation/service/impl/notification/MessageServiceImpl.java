@@ -36,7 +36,7 @@ public class MessageServiceImpl implements IMessageService {
     @Override
     @PreAuthorize("hasRole('ADMIN')")
     public Page<MessageResponse> getMessagePage(PageableRequest request) {
-        ValidationUtil.checkFieldExist(Subscription.class, request.getSortBy());
+        ValidationUtil.checkFieldExist(Subscription.class, request.sortBy());
 
         Pageable pageable = PageableRequest.getPageable(request);
         Page<Message> messages = messageRepository.findAllByIsDeletedFalse(pageable);
@@ -47,7 +47,7 @@ public class MessageServiceImpl implements IMessageService {
     @Override
     @PreAuthorize("hasRole('ADMIN')")
     public MessageResponse getById(String id) {
-        return messageMapper.toMessageResponse(findMessageById(id));
+        return messageMapper.toMessageResponse(findMessageByIdOrThrowError(id));
     }
 
     @Override
@@ -65,7 +65,7 @@ public class MessageServiceImpl implements IMessageService {
     @PreAuthorize("hasRole('ADMIN')")
     @CachePut(value = "MESSAGE_CACHE", key = "#result.getId()")
     public MessageResponse updateMessage(String id, MessageRequest request) {
-        Message message = findMessageById(id);
+        Message message = findMessageByIdOrThrowError(id);
 
         messageMapper.update(message, request);
 
@@ -77,14 +77,15 @@ public class MessageServiceImpl implements IMessageService {
     @PreAuthorize("hasRole('ADMIN')")
     @CacheEvict(value = "MESSAGE_CACHE", key = "#id")
     public void softDeleteMessageById(String id) {
-        Message message = findMessageById(id);
+        Message message = findMessageByIdOrThrowError(id);
 
         message.setDeleted(true);
         messageRepository.save(message);
     }
 
+    @Override
     @Cacheable(value = "MESSAGE_CACHE", key = "#id")
-    private Message findMessageById(String id) {
+    public Message findMessageByIdOrThrowError(String id) {
         return messageRepository.findByIdAndIsDeletedFalse(id)
                 .orElseThrow(() -> new AppException(ErrorCode.MESSAGE_NOT_FOUND));
     }

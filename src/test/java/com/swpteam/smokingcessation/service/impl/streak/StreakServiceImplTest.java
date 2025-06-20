@@ -6,7 +6,7 @@ import com.swpteam.smokingcessation.domain.entity.Streak;
 import com.swpteam.smokingcessation.exception.AppException;
 import com.swpteam.smokingcessation.repository.MemberRepository;
 import com.swpteam.smokingcessation.repository.StreakRepository;
-import com.swpteam.smokingcessation.utils.AuthUtil;
+import com.swpteam.smokingcessation.utils.AuthUtilService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -27,7 +27,7 @@ class StreakServiceImplTest {
     @Mock
     StreakRepository streakRepository;
     @Mock
-    AuthUtil authUtil;
+    AuthUtilService authUtilService;
 
     @InjectMocks
     StreakServiceImpl streakService;
@@ -49,7 +49,7 @@ class StreakServiceImplTest {
         streak.setMember(member);
 
         when(streakRepository.findById(member.getId())).thenReturn(Optional.of(streak));
-        when(authUtil.isAdminOrOwner(member.getId())).thenReturn(true);
+        when(authUtilService.isAdminOrOwner(member.getId())).thenReturn(true);
 
         // Act
         streakService.resetStreak(member.getId());
@@ -71,7 +71,7 @@ class StreakServiceImplTest {
         streak.setMember(member);
 
         when(streakRepository.findById(member.getId())).thenReturn(Optional.of(streak));
-        when(authUtil.isAdminOrOwner(member.getId())).thenReturn(true);
+        when(authUtilService.isAdminOrOwner(member.getId())).thenReturn(true);
 
         // Act
         streakService.resetStreak(member.getId());
@@ -93,7 +93,7 @@ class StreakServiceImplTest {
         streak.setMember(member);
 
         when(streakRepository.findById(member.getId())).thenReturn(Optional.of(streak));
-        when(authUtil.isAdminOrOwner(member.getId())).thenReturn(false);
+        when(authUtilService.isAdminOrOwner(member.getId())).thenReturn(false);
 
         // Act & Assert
         AppException ex = assertThrows(AppException.class, () -> streakService.resetStreak(member.getId()));
@@ -124,7 +124,7 @@ class StreakServiceImplTest {
         streak.setMember(member);
 
         when(streakRepository.findById(member.getId())).thenReturn(Optional.of(streak));
-        when(authUtil.isAdminOrOwner(member.getId())).thenReturn(true);
+        when(authUtilService.isAdminOrOwner(member.getId())).thenReturn(true);
 
         // Act
         streakService.resetStreak(member.getId());

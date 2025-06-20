@@ -4,7 +4,7 @@ import com.swpteam.smokingcessation.common.ApiResponse;
 import com.swpteam.smokingcessation.constant.SuccessCode;
 import com.swpteam.smokingcessation.domain.dto.chatbot.ChatbotRequest;
 import com.swpteam.smokingcessation.domain.dto.chatbot.ChatbotResponse;
-import com.swpteam.smokingcessation.service.interfaces.chatbot.IChatbotService;
+import com.swpteam.smokingcessation.service.interfaces.chat.IChatbotService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;

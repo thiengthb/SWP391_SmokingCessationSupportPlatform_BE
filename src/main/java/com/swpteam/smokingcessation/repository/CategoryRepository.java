@@ -13,7 +13,7 @@ public interface CategoryRepository extends JpaRepository<Category, String> {
 
     Optional<Category> findByName(String name);
 
-    Page<Category> findByCreatedBy(String createdBy, Pageable pageable);
-
     Page<Category> findAll(Pageable pageable);
+
+    boolean existsByName(String name);
 }

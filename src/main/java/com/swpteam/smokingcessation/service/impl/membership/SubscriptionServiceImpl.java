@@ -44,7 +44,7 @@ public class SubscriptionServiceImpl implements ISubscriptionService {
     @Override
     @PreAuthorize("hasRole('ADMIN')")
     public Page<SubscriptionResponse> getSubscriptionPage(PageableRequest request) {
-        ValidationUtil.checkFieldExist(Subscription.class, request.getSortBy());
+        ValidationUtil.checkFieldExist(Subscription.class, request.sortBy());
 
         Pageable pageable = PageableRequest.getPageable(request);
         Page<Subscription> subscriptions = subscriptionRepository.findAllByIsDeletedFalse(pageable);
@@ -55,7 +55,7 @@ public class SubscriptionServiceImpl implements ISubscriptionService {
     @Override
     @PreAuthorize("hasRole('ADMIN')")
     public Page<SubscriptionResponse> getSubscriptionPageByAccountId(String accountId, PageableRequest request) {
-        ValidationUtil.checkFieldExist(Subscription.class, request.getSortBy());
+        ValidationUtil.checkFieldExist(Subscription.class, request.sortBy());
 
         Pageable pageable = PageableRequest.getPageable(request);
         Page<Subscription> subscriptions = subscriptionRepository.findByAccountIdAndIsDeletedFalse(accountId, pageable);
@@ -66,16 +66,16 @@ public class SubscriptionServiceImpl implements ISubscriptionService {
     @Override
     @PreAuthorize("hasRole('ADMIN')")
     public SubscriptionResponse getSubscriptionById(String id) {
-        return subscriptionMapper.toResponse(findSubscriptionById(id));
+        return subscriptionMapper.toResponse(findSubscriptionByIdOrThrowError(id));
     }
 
     @Override
     @Transactional
     @CachePut(value = "SUBSCRIPTION_CACHE", key = "#result.getId()")
     public Subscription createSubscription(String accountId, String membershipName) {
-        Account account = accountService.findAccountById(accountId);
+        Account account = accountService.findAccountByIdOrThrowError(accountId);
 
-        Membership membership = membershipService.findMembershipByName(membershipName);
+        Membership membership = membershipService.findMembershipByNameOrThrowError(membershipName);
 
         Subscription subscription = Subscription.builder()
                 .account(account)
@@ -94,8 +94,8 @@ public class SubscriptionServiceImpl implements ISubscriptionService {
     public SubscriptionResponse createSubscription(SubscriptionRequest request) {
         Subscription subscription = subscriptionMapper.toEntity(request);
 
-        Account account = accountService.findAccountByEmail(request.getEmail());
-        Membership membership = membershipService.findMembershipByName(request.getMembershipName());
+        Account account = accountService.findAccountByEmailOrThrowError(request.email());
+        Membership membership = membershipService.findMembershipByNameOrThrowError(request.membershipName());
 
         subscription.setAccount(account);
         subscription.setMembership(membership);
@@ -108,7 +108,7 @@ public class SubscriptionServiceImpl implements ISubscriptionService {
     @PreAuthorize("hasRole('ADMIN')")
     @CachePut(value = "SUBSCRIPTION_CACHE", key = "#result.getId()")
     public SubscriptionResponse updateSubscription(String id, SubscriptionRequest request) {
-        Subscription subscription = findSubscriptionById(id);
+        Subscription subscription = findSubscriptionByIdOrThrowError(id);
 
         subscriptionMapper.update(subscription, request);
 
@@ -120,14 +120,15 @@ public class SubscriptionServiceImpl implements ISubscriptionService {
     @PreAuthorize("hasRole('ADMIN')")
     @CacheEvict(value = "SUBSCRIPTION_CACHE", key = "#id")
     public void softDeleteSubscription(String id) {
-        Subscription subscription = findSubscriptionById(id);
+        Subscription subscription = findSubscriptionByIdOrThrowError(id);
 
         subscription.setDeleted(true);
         subscriptionRepository.save(subscription);
     }
 
+    @Override
     @Cacheable(value = "SUBSCRIPTION_CACHE", key = "#id")
-    private Subscription findSubscriptionById(String id) {
+    public Subscription findSubscriptionByIdOrThrowError(String id) {
         Subscription subscription = subscriptionRepository.findByIdAndIsDeletedFalse(id)
                 .orElseThrow(() -> new AppException(ErrorCode.SUBSCRIPTION_NOT_FOUND));
 

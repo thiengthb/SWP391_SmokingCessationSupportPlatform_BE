@@ -1,8 +1,7 @@
 package com.swpteam.smokingcessation.domain.entity;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.swpteam.smokingcessation.domain.enums.PhaseStatus;
-import com.swpteam.smokingcessation.common.BaseEntity;
+import com.swpteam.smokingcessation.common.AuditableEntity;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -16,7 +15,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class Phase extends BaseEntity {
+public class Phase extends AuditableEntity {
 
     @ManyToOne
     @JoinColumn(name = "planId", nullable = false, updatable = false)

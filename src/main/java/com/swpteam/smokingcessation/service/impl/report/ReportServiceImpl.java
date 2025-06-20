@@ -23,9 +23,9 @@ public class ReportServiceImpl implements IReportService {
     @Override
     public ReportSummaryResponse getSummary(ReportSummaryRequest request) {
         LocalDateTime to = LocalDateTime.now();
-        LocalDateTime from = request.getFrom();
-        if (request.getTo() != null) {
-            to = request.getTo();
+        LocalDateTime from = request.from();
+        if (request.to() != null) {
+            to = request.to();
         }
 
         //double revenue = transactionRepository.sumAmountBetween(from, to);

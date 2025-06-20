@@ -4,6 +4,7 @@ import com.swpteam.smokingcessation.common.PageableRequest;
 import com.swpteam.smokingcessation.domain.dto.blog.BlogCreateRequest;
 import com.swpteam.smokingcessation.domain.dto.blog.BlogResponse;
 import com.swpteam.smokingcessation.domain.dto.blog.BlogUpdateRequest;
+import com.swpteam.smokingcessation.domain.entity.Blog;
 import org.springframework.data.domain.Page;
 
 public interface IBlogService {
@@ -23,4 +24,9 @@ public interface IBlogService {
     BlogResponse updateBlog(String id, BlogUpdateRequest request);
 
     void deleteBlogById(String id);
+
+    Blog findBlogBySlugOrThrowError(String slug);
+
+    Blog findBlogByIdOrThrowError(String id);
+
 }

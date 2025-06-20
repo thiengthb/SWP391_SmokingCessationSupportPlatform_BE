@@ -18,7 +18,7 @@ public interface IPlanService {
 
     PlanResponse getPlanByFtndScore(int ftndScore);
 
-    Plan findPlanById(String id);
+    Plan findPlanByIdOrThrowError(String id);
 
     void softDeletePlanById(String id);
 }

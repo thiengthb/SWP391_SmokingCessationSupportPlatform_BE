@@ -1,7 +1,6 @@
 package com.swpteam.smokingcessation.domain.entity;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.swpteam.smokingcessation.common.BaseEntity;
+import com.swpteam.smokingcessation.common.AuditableEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -17,7 +16,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class Subscription extends BaseEntity {
+public class Subscription extends AuditableEntity {
 
     @ManyToOne
     @JoinColumn(name = "accountId", nullable = false, updatable = false)

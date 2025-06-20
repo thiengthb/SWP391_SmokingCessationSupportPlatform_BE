@@ -1,20 +1,19 @@
 package com.swpteam.smokingcessation.service.interfaces.identity;
 
-import com.nimbusds.jose.JOSEException;
 import com.swpteam.smokingcessation.domain.dto.auth.request.*;
 import com.swpteam.smokingcessation.domain.dto.auth.response.AuthenticationResponse;
 import com.swpteam.smokingcessation.domain.dto.auth.response.GoogleTokenResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.core.Authentication;
-
-import java.text.ParseException;
 
 public interface IAuthenticationService {
 
-    GoogleTokenResponse getGoogleToken(GoogleTokenRequest request);
+    AuthenticationResponse googleLogin(GoogleLoginRequest request);
 
     AuthenticationResponse login(AuthenticationRequest request);
 
-    AuthenticationResponse refreshToken(String token);
+    AuthenticationResponse refreshingToken(String refreshToken);
 
     AuthenticationResponse register(RegisterRequest request);
 
@@ -24,5 +23,5 @@ public interface IAuthenticationService {
 
     void resetPassword(ResetPasswordRequest request);
 
-    void logout();
+    void logout(String refreshToken);
 }

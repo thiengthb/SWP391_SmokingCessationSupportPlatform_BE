@@ -2,7 +2,6 @@ package com.swpteam.smokingcessation.utils;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.swpteam.smokingcessation.domain.dto.plan.PhaseTemplateResponse;
 import com.swpteam.smokingcessation.domain.dto.plan.PlanTemplateResponse;
 import com.swpteam.smokingcessation.domain.dto.plan.PlanTemplateWrapper;
 import lombok.AccessLevel;
@@ -60,4 +59,5 @@ public class FileLoaderUtil {
             throw new RuntimeException("Unable to load plan template", e);
         }
     }
+
 }

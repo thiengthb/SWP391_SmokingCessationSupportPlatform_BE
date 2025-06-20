@@ -75,7 +75,7 @@ class RecordServiceImplTest {
         when(streakRepository.findByMember_Account_Id(accountId)).thenReturn(Optional.of(streak));
         when(streakRepository.save(streak)).thenReturn(streak);
         when(recordHabitMapper.toResponse(record)).thenReturn(response);
-        when(accountService.findAccountById(accountId)).thenReturn(account);
+        when(accountService.findAccountByIdOrThrowError(accountId)).thenReturn(account);
 
 
         // Act
@@ -110,7 +110,7 @@ class RecordServiceImplTest {
 
         RecordHabitResponse response = new RecordHabitResponse();
 
-        when(accountService.findAccountById(accountId)).thenReturn(account);
+        when(accountService.findAccountByIdOrThrowError(accountId)).thenReturn(account);
         when(recordHabitMapper.toEntity(request)).thenReturn(record);
         when(recordHabitRepository.save(record)).thenReturn(record);
         when(recordHabitRepository.existsByAccountIdAndDateAndIsDeletedFalse(accountId, today)).thenReturn(true);
@@ -137,7 +137,7 @@ class RecordServiceImplTest {
                 .date(LocalDate.now())
                 .build();
 
-        when(accountService.findAccountById(accountId)).thenThrow(new AppException(ErrorCode.ACCOUNT_NOT_FOUND));
+        when(accountService.findAccountByIdOrThrowError(accountId)).thenThrow(new AppException(ErrorCode.ACCOUNT_NOT_FOUND));
 
         // Act & Assert
         assertThrows(AppException.class, () -> recordHabitService.createRecord(request));

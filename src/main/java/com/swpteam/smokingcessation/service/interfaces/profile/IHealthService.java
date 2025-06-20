@@ -4,6 +4,7 @@ import com.swpteam.smokingcessation.common.PageableRequest;
 import com.swpteam.smokingcessation.domain.dto.health.HealthCreateRequest;
 import com.swpteam.smokingcessation.domain.dto.health.HealthResponse;
 import com.swpteam.smokingcessation.domain.dto.health.HealthUpdateRequest;
+import com.swpteam.smokingcessation.domain.entity.Health;
 import org.springframework.data.domain.Page;
 
 public interface IHealthService {
@@ -19,4 +20,6 @@ public interface IHealthService {
     HealthResponse updateHealth(String id, HealthUpdateRequest request);
 
     void softDeleteHealthById(String id);
+
+    Health findHealthByIdOrThrowError(String id);
 }

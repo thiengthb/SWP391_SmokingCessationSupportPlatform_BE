@@ -1,7 +1,7 @@
 package com.swpteam.smokingcessation.service.impl.tracking;
 
 import com.swpteam.smokingcessation.domain.dto.phase.PhaseResponse;
-import com.swpteam.smokingcessation.domain.dto.plan.PhaseTemplateResponse;
+import com.swpteam.smokingcessation.domain.dto.phase.PhaseTemplateResponse;
 import com.swpteam.smokingcessation.domain.dto.plan.PlanTemplateResponse;
 import com.swpteam.smokingcessation.domain.entity.Account;
 import com.swpteam.smokingcessation.domain.mapper.PlanMapper;
@@ -31,7 +31,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -47,7 +46,7 @@ public class PlanServiceImpl implements IPlanService {
 
     @Override
     public Page<PlanResponse> getPlanPage(PageableRequest request) {
-        ValidationUtil.checkFieldExist(Plan.class, request.getSortBy());
+        ValidationUtil.checkFieldExist(Plan.class, request.sortBy());
 
         Pageable pageable = PageableRequest.getPageable(request);
         Page<Plan> plans = planRepository.findAllByIsDeletedFalse(pageable);
@@ -57,7 +56,7 @@ public class PlanServiceImpl implements IPlanService {
 
     @Override
     public PlanResponse getPlanById(String id) {
-        return planMapper.toResponse(findPlanById(id));
+        return planMapper.toResponse(findPlanByIdOrThrowError(id));
     }
 
     @Override
@@ -66,7 +65,7 @@ public class PlanServiceImpl implements IPlanService {
     public PlanResponse createPlan(PlanRequest request) {
         Plan plan = planMapper.toEntity(request);
 
-        Account account = accountService.findAccountById(request.getAccountId());
+        Account account = accountService.findAccountByIdOrThrowError(request.accountId());
         plan.setAccount(account);
 
         return planMapper.toResponse(planRepository.save(plan));
@@ -76,7 +75,7 @@ public class PlanServiceImpl implements IPlanService {
     @Transactional
     @CachePut(value = "PLAN_CACHE", key = "#result.getId()")
     public PlanResponse updatePlanById(String id, PlanRequest request) {
-        Plan plan = findPlanById(id);
+        Plan plan = findPlanByIdOrThrowError(id);
 
         planMapper.update(plan, request);
 
@@ -131,7 +130,7 @@ public class PlanServiceImpl implements IPlanService {
     @Transactional
     @CacheEvict(value = "PLAN_CACHE", key = "#id")
     public void softDeletePlanById(String id) {
-        Plan plan = findPlanById(id);
+        Plan plan = findPlanByIdOrThrowError(id);
 
         plan.setDeleted(true);
         planRepository.save(plan);
@@ -139,7 +138,7 @@ public class PlanServiceImpl implements IPlanService {
 
     @Override
     @Cacheable(value = "PLAN_CACHE", key = "#id")
-    public Plan findPlanById(String id) {
+    public Plan findPlanByIdOrThrowError(String id) {
         Plan plan = planRepository.findByIdAndIsDeletedFalse(id)
                 .orElseThrow(() -> new AppException(ErrorCode.PLAN_NOT_FOUND));
 

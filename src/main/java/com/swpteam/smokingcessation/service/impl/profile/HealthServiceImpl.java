@@ -12,6 +12,7 @@ import com.swpteam.smokingcessation.exception.AppException;
 import com.swpteam.smokingcessation.repository.HealthRepository;
 import com.swpteam.smokingcessation.service.interfaces.identity.IAccountService;
 import com.swpteam.smokingcessation.service.interfaces.profile.IHealthService;
+import com.swpteam.smokingcessation.utils.AuthUtilService;
 import com.swpteam.smokingcessation.utils.ValidationUtil;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -35,10 +36,11 @@ public class HealthServiceImpl implements IHealthService {
     HealthRepository healthRepository;
 
     IAccountService accountService;
+    AuthUtilService authUtilService;
 
     @Override
     public Page<HealthResponse> getHealthPage(PageableRequest request) {
-        ValidationUtil.checkFieldExist(Health.class, request.getSortBy());
+        ValidationUtil.checkFieldExist(Health.class, request.sortBy());
 
         Pageable pageable = PageableRequest.getPageable(request);
         Page<Health> healths = healthRepository.findAllByIsDeletedFalse(pageable);
@@ -48,14 +50,14 @@ public class HealthServiceImpl implements IHealthService {
 
     @Override
     public HealthResponse getHealthById(String id) {
-        return healthMapper.toResponse(findHealthById(id));
+        return healthMapper.toResponse(findHealthByIdOrThrowError(id));
     }
 
     @Override
     public Page<HealthResponse> getHealthPageByAccountId(String accountId, PageableRequest request) {
-        ValidationUtil.checkFieldExist(Health.class, request.getSortBy());
+        ValidationUtil.checkFieldExist(Health.class, request.sortBy());
 
-        accountService.findAccountById(accountId);
+        accountService.findAccountByIdOrThrowError(accountId);
 
         Pageable pageable = PageableRequest.getPageable(request);
         Page<Health> healths = healthRepository.findByAccountIdAndIsDeletedFalse(accountId, pageable);
@@ -67,7 +69,7 @@ public class HealthServiceImpl implements IHealthService {
     @Transactional
     @CachePut(value = "HEALTH_CACHE", key = "#result.getId()")
     public HealthResponse createHealth(HealthCreateRequest request) {
-        Account account = accountService.findAccountById(request.getAccountId());
+        Account account = authUtilService.getCurrentAccountOrThrowError();
 
         Health health = healthMapper.toEntity(request);
         health.setAccount(account);
@@ -79,7 +81,7 @@ public class HealthServiceImpl implements IHealthService {
     @Transactional
     @CachePut(value = "HEALTH_CACHE", key = "#result.getId()")
     public HealthResponse updateHealth(String id, HealthUpdateRequest request) {
-        Health health = findHealthById(id);
+        Health health = findHealthByIdOrThrowError(id);
 
         healthMapper.update(health, request);
 
@@ -90,15 +92,21 @@ public class HealthServiceImpl implements IHealthService {
     @Transactional
     @CacheEvict(value = "HEALTH_CACHE", key = "#id")
     public void softDeleteHealthById(String id) {
-        Health health = findHealthById(id);
+        Health health = findHealthByIdOrThrowError(id);
 
         health.setDeleted(true);
         healthRepository.save(health);
     }
 
     @Cacheable(value = "HEALTH_CACHE", key = "#id")
-    private Health findHealthById(String id) {
-        return healthRepository.findByIdAndIsDeletedFalse(id)
+    public Health findHealthByIdOrThrowError(String id) {
+        Health health = healthRepository.findByIdAndIsDeletedFalse(id)
                 .orElseThrow(() -> new AppException(ErrorCode.HEALTH_RECORD_NOT_FOUND));
+
+        if (health.getAccount().isDeleted()) {
+            throw new AppException(ErrorCode.ACCOUNT_DELETED);
+        }
+
+        return health;
     }
 }

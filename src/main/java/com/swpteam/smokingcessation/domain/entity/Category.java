@@ -1,8 +1,7 @@
 package com.swpteam.smokingcessation.domain.entity;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.swpteam.smokingcessation.common.BaseEntity;
+import com.swpteam.smokingcessation.common.AuditableEntity;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -17,7 +16,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class Category extends BaseEntity {
+public class Category extends AuditableEntity {
 
     @Builder.Default
     @OneToMany(mappedBy = "category", fetch = FetchType.LAZY)

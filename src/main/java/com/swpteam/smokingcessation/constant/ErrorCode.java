@@ -42,15 +42,19 @@ public enum ErrorCode {
     // Authentication
     UNAUTHENTICATED(2000, "Unauthenticated", HttpStatus.UNAUTHORIZED),
     UNAUTHORIZED(2001, "You do not have permission", HttpStatus.FORBIDDEN),
-    TOKEN_EXPIRED(2002, "Token is expired", HttpStatus.BAD_REQUEST),
     WRONG_PASSWORD(2003, "Wrong password for email", HttpStatus.BAD_REQUEST),
     INVALID_SIGNATURE(2004, "Token signature is invalid", HttpStatus.BAD_REQUEST),
     EMAIL_SEND_FAILED(2005, "Failed to send email. Please try again later.", HttpStatus.INTERNAL_SERVER_ERROR),
     USED_TOKEN(2006, "Token has expired or has been used", HttpStatus.BAD_REQUEST),
     SELF_BAN(2007, "You cannot ban yourself", HttpStatus.BAD_REQUEST),
     FORBIDDEN(403, "You do not have permission to access this resource", HttpStatus.FORBIDDEN),
+    PASSWORD_MISMATCH(2000, "Unauthenticated", HttpStatus.BAD_REQUEST),
+
+    // Token
+    TOKEN_EXPIRED(2002, "Token is expired", HttpStatus.BAD_REQUEST),
     TOKEN_REQUIRED(403, "Token is required", HttpStatus.FORBIDDEN),
     TOKEN_CREATE_FAILED(403, "Token is required", HttpStatus.INTERNAL_SERVER_ERROR),
+    TOKEN_NOT_FOUND(2002, "Token is expired", HttpStatus.BAD_REQUEST),
 
     // Account
     ACCOUNT_NOT_FOUND(3000, "Account does not exist", HttpStatus.BAD_REQUEST),
@@ -183,6 +187,7 @@ public enum ErrorCode {
 
     // Category
     CATEGORY_NAME_REQUIRED(4000, "Category name must not be blank", HttpStatus.BAD_REQUEST),
+    CATEGORY_EXISTED(4000, "Category name already existed", HttpStatus.BAD_REQUEST),
     CATEGORY_MAX_LENGTH(4000, "Category name must not exceed 100 characters", HttpStatus.BAD_REQUEST),
     CATEGORY_NOT_FOUND(4000, "Category does not exist or have been deleted", HttpStatus.BAD_REQUEST),
     CATEGORY_CANNOT_BE_DELETED(4000, "This category can not be deleted", HttpStatus.BAD_REQUEST),

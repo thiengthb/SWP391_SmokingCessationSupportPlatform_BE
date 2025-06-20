@@ -3,6 +3,8 @@ package com.swpteam.smokingcessation.config;
 import com.swpteam.smokingcessation.constant.App;
 import com.swpteam.smokingcessation.domain.entity.Account;
 import com.swpteam.smokingcessation.domain.entity.Category;
+import com.swpteam.smokingcessation.domain.enums.AccountStatus;
+import com.swpteam.smokingcessation.domain.enums.AuthProvider;
 import com.swpteam.smokingcessation.repository.AccountRepository;
 import com.swpteam.smokingcessation.domain.enums.Role;
 import com.swpteam.smokingcessation.domain.entity.Setting;
@@ -71,15 +73,15 @@ public class ApplicationInitConfig {
 
     private void makeDefaultAccount(String email, String password, Role role) {
         Account account = Account.builder()
-                .email(email)
                 .username(role.name().toLowerCase())
                 .password(passwordEncoder.encode(password))
+                .email(email)
+                .provider(AuthProvider.LOCAL)
                 .role(role)
+                .status(AccountStatus.ONLINE)
                 .build();
 
-        Setting setting = Setting.getDefaultSetting(account);
-
-        account.setSetting(setting);
+        account.setSetting(Setting.getDefaultSetting(account));
         accountRepository.save(account);
 
         log.info("An {} account has been created with email: {}, default password: {}. Please change the password immediately.", role.name().toLowerCase(), email, password);

@@ -12,7 +12,7 @@ import com.swpteam.smokingcessation.exception.AppException;
 import com.swpteam.smokingcessation.repository.AccountRepository;
 import com.swpteam.smokingcessation.repository.ChatRepository;
 import com.swpteam.smokingcessation.service.interfaces.chat.IChatService;
-import com.swpteam.smokingcessation.utils.AuthUtil;
+import com.swpteam.smokingcessation.utils.AuthUtilService;
 import com.swpteam.smokingcessation.utils.ValidationUtil;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -30,18 +30,18 @@ public class ChatServiceImpl implements IChatService {
     AccountRepository accountRepository;
     ChatRepository chatRepository;
     ChatMapper chatMapper;
-    AuthUtil authUtil;
+    AuthUtilService authUtilService;
 
     @Override
     public ChatResponse sendChatMessage(ChatRequest request) {
-        Account account = accountRepository.findByIdAndIsDeletedFalse(request.getAccountId())
+        Account account = accountRepository.findByIdAndIsDeletedFalse(request.accountId())
                 .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FOUND));
 
-        boolean isFirstTime = !chatRepository.existsByAccountIdAndIsDeletedFalse(request.getAccountId());
+        boolean isFirstTime = !chatRepository.existsByAccountIdAndIsDeletedFalse(request.accountId());
 
         Chat chat = Chat.builder()
                 .account(account)
-                .content(request.getContent())
+                .content(request.content())
                 .build();
 
         chatRepository.save(chat);
@@ -51,10 +51,10 @@ public class ChatServiceImpl implements IChatService {
         return chatResponse;
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
     @Override
+    @PreAuthorize("hasRole('ADMIN')")
     public Page<ChatRestResponse> getChats(PageableRequest request) {
-        ValidationUtil.checkFieldExist(Chat.class, request.getSortBy());
+        ValidationUtil.checkFieldExist(Chat.class, request.sortBy());
 
         Pageable pageable = PageableRequest.getPageable(request);
         Page<Chat> chats = chatRepository.findAllByIsDeletedFalse(pageable);
@@ -62,10 +62,10 @@ public class ChatServiceImpl implements IChatService {
         return chats.map(chatMapper::toRestResponse);
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
     @Override
+    @PreAuthorize("hasRole('ADMIN')")
     public Page<ChatRestResponse> getChatsById(String id, PageableRequest request) {
-        ValidationUtil.checkFieldExist(Chat.class, request.getSortBy());
+        ValidationUtil.checkFieldExist(Chat.class, request.sortBy());
 
         Pageable pageable = PageableRequest.getPageable(request);
         Page<Chat> chats = chatRepository.findByAccountIdAndIsDeletedFalse(id, pageable);
@@ -77,7 +77,7 @@ public class ChatServiceImpl implements IChatService {
     public void deleteChat(String id) {
         Chat chat = chatRepository.findByIdAndIsDeletedFalse(id).orElseThrow(() -> new AppException(ErrorCode.CHAT_NOT_FOUND));
 
-        boolean haveAccess = authUtil.isAdminOrOwner(chat.getAccount().getId());
+        boolean haveAccess = authUtilService.isAdminOrOwner(chat.getAccount().getId());
         if (!haveAccess) {
             throw new AppException(ErrorCode.OTHERS_CHAT_CANNOT_BE_DELETED);
         }

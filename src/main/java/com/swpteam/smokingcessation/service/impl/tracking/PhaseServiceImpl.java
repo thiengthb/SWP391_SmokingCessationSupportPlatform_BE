@@ -35,7 +35,7 @@ public class PhaseServiceImpl implements IPhaseService {
 
     @Override
     public Page<PhaseResponse> getPhasePage(PageableRequest request) {
-        ValidationUtil.checkFieldExist(Phase.class, request.getSortBy());
+        ValidationUtil.checkFieldExist(Phase.class, request.sortBy());
 
         Pageable pageable = PageableRequest.getPageable(request);
         Page<Phase> phases = phaseRepository.findAllByIsDeletedFalse(pageable);
@@ -45,7 +45,7 @@ public class PhaseServiceImpl implements IPhaseService {
 
     @Override
     public PhaseResponse getPhaseById(String id) {
-        return phaseMapper.toResponse(findPhaseById(id));
+        return phaseMapper.toResponse(findPhaseByIdOrThrowError(id));
     }
 
     @Override
@@ -54,7 +54,7 @@ public class PhaseServiceImpl implements IPhaseService {
     public PhaseResponse createPhase(PhaseRequest request) {
         Phase phase = phaseMapper.toEntity(request);
 
-        Plan plan = planService.findPlanById(request.getPlanId());
+        Plan plan = planService.findPlanByIdOrThrowError(request.planId());
         phase.setPlan(plan);
 
         return phaseMapper.toResponse(phaseRepository.save(phase));
@@ -64,7 +64,7 @@ public class PhaseServiceImpl implements IPhaseService {
     @Transactional
     @CachePut(value = "PHASE_CACHE", key = "#result.getId()")
     public PhaseResponse updatePhaseById(String id, PhaseRequest request) {
-        Phase phase = findPhaseById(id);
+        Phase phase = findPhaseByIdOrThrowError(id);
 
         phaseMapper.update(phase, request);
 
@@ -75,14 +75,15 @@ public class PhaseServiceImpl implements IPhaseService {
     @Transactional
     @CacheEvict(value = "PHASE_CACHE", key = "#id")
     public void softDeletePhaseById(String id) {
-        Phase phase = findPhaseById(id);
+        Phase phase = findPhaseByIdOrThrowError(id);
 
         phase.setDeleted(true);
         phaseRepository.save(phase);
     }
 
+    @Override
     @Cacheable(value = "PHASE_CACHE", key = "#id")
-    private Phase findPhaseById(String id) {
+    public Phase findPhaseByIdOrThrowError(String id) {
         Phase phase = phaseRepository.findByIdAndIsDeletedFalse(id)
                 .orElseThrow(() -> new AppException(ErrorCode.PHASE_NOT_FOUND));
 
