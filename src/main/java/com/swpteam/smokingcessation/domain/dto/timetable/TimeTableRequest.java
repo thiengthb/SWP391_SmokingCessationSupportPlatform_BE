@@ -1,14 +1,14 @@
-package com.swpteam.smokingcessation.domain.dto.booking;
-
+package com.swpteam.smokingcessation.domain.dto.timetable;
 import jakarta.validation.constraints.*;
 import java.time.LocalDateTime;
 
-public record BookingRequest (
 
-    @NotBlank(message = "COACH_ID_REQUIRED")
-    String coachId,
+public record TimeTableRequest (
+    @NotBlank(message = "TIMETABLE_NAME_REQUIRED")
+    String name,
 
-    String meetLink,
+    @NotBlank(message = "TIMETABLE_DESCRIPTION_REQUIRED")
+    String description,
 
     @NotNull(message = "STARTED_AT_REQUIRED")
     @FutureOrPresent(message = "STARTED_AT_MUST_BE_TODAY_OR_FUTURE")
@@ -16,8 +16,9 @@ public record BookingRequest (
 
     @NotNull(message = "ENDED_AT_REQUIRED")
     @Future(message = "ENDED_AT_MUST_BE_IN_FUTURE")
-    LocalDateTime endedAt,
+    LocalDateTime endedAt
+    ) {}
 
-    String accessToken // access token Google để tạo Google Meet
 
-) {}
+
+

@@ -180,6 +180,11 @@ public enum SuccessCode {
     REVIEW_CREATED(8004, "Review created successfully"),
     REVIEW_UPDATED(8005, "Review updated successfully"),
     REVIEW_DELETED(8006, "Review deleted successfully"),
+
+    // TimeTable
+    TIMETABLE_GET_BY_ID(2313,"Successfully get timetable"),
+    TIMETABLE_CREATED(1232,"Successfully creat timetable"),
+    TIMETABLE_GET_ALL(2343,"Successfully return list timetable")
     ;
     int code;
     String message;
