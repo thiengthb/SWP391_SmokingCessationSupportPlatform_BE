@@ -13,7 +13,9 @@ import com.swpteam.smokingcessation.exception.AppException;
 import com.swpteam.smokingcessation.repository.AccountRepository;
 import com.swpteam.smokingcessation.repository.BookingRepository;
 import com.swpteam.smokingcessation.repository.CoachRepository;
+import com.swpteam.smokingcessation.repository.TimeTableRepository;
 import com.swpteam.smokingcessation.service.interfaces.booking.IBookingService;
+import com.swpteam.smokingcessation.service.interfaces.booking.ITimeTableService;
 import com.swpteam.smokingcessation.service.interfaces.identity.IAccountService;
 import com.swpteam.smokingcessation.utils.AuthUtilService;
 import com.swpteam.smokingcessation.utils.ValidationUtil;
@@ -37,7 +39,7 @@ public class BookingServiceImpl implements IBookingService {
     BookingRepository bookingRepository;
     BookingMapper bookingMapper;
     GoogleCalendarService googleCalendarService;
-
+    TimeTableRepository timeTableRepository;
     IAccountService accountService;
     AuthUtilService authUtilService;
 
@@ -58,15 +60,36 @@ public class BookingServiceImpl implements IBookingService {
 
     @Override
     @Transactional
-    @PreAuthorize("hasRole('MEMBER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MEMBER')")
     public BookingResponse createBooking(BookingRequest request) {
-        Booking booking = bookingMapper.toEntity(request);
-
+        // lấy account hiện tại (member)
         Account member = authUtilService.getCurrentAccountOrThrowError();
+
+        // lấy account coach theo coachId từ request
         Account coach = accountService.findAccountByIdOrThrowError(request.coachId());
 
+        // kiểm tra time hợp lệ (trong working time)
+        boolean inWorkingTime = timeTableRepository
+                .findByCoachIdAndStartedAtLessThanEqualAndEndedAtGreaterThanEqual(
+                        request.coachId(), request.startedAt(), request.endedAt()
+                ).isPresent();
+        if (!inWorkingTime) {
+            throw new AppException(ErrorCode.BOOKING_OUT_OF_WORKING_TIME);
+        }
+
+        // kiểm tra trùng lịch
+        boolean isOverlapped = bookingRepository.existsByCoachIdAndIsDeletedFalseAndStartedAtLessThanAndEndedAtGreaterThan(
+                request.coachId(),
+                request.endedAt(),
+                request.startedAt()
+        );
+        if (isOverlapped) {
+            throw new AppException(ErrorCode.BOOKING_TIME_CONFLICT);
+        }
+        Booking booking = bookingMapper.toEntity(request);
         booking.setMember(member);
         booking.setCoach(coach);
+        booking.setStatus(BookingStatus.PENDING);
 
         return bookingMapper.toResponse(bookingRepository.save(booking));
     }
@@ -93,11 +116,10 @@ public class BookingServiceImpl implements IBookingService {
     @Override
     @Transactional
     @PreAuthorize("hasAnyRole('ADMIN', 'MEMBER')")
-    public void softDeleteBookingById(String id) {
+    public void DeleteBookingById(String id) {
         Booking booking = findBookingByIdOrThrowError(id);
 
-        booking.setDeleted(true);
-        bookingRepository.save(booking);
+        bookingRepository.delete(booking);
     }
 
     @Override

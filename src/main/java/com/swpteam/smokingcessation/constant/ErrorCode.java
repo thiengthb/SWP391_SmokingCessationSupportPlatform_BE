@@ -184,7 +184,8 @@ public enum ErrorCode {
     ENDED_AT_REQUIRED(1008, "Ended at is required", HttpStatus.BAD_REQUEST),
     ENDED_AT_MUST_BE_IN_FUTURE(1009, "Ended at must be in the future", HttpStatus.BAD_REQUEST),
     IS_APPROVED_REQUIRED(1010, "Approval status is required", HttpStatus.BAD_REQUEST),
-
+    BOOKING_OUT_OF_WORKING_TIME(3213,"Out of coach working time",HttpStatus.BAD_REQUEST),
+    BOOKING_TIME_CONFLICT(4123,"Booking time conflict",HttpStatus.BAD_REQUEST),
     // Category
     CATEGORY_NAME_REQUIRED(4000, "Category name must not be blank", HttpStatus.BAD_REQUEST),
     CATEGORY_EXISTED(4000, "Category name already existed", HttpStatus.BAD_REQUEST),
@@ -263,6 +264,11 @@ public enum ErrorCode {
     REVIEW_RATING_MAX(8002, "Review rating must be at most 5", HttpStatus.BAD_REQUEST),
     REVIEW_TYPE_REQUIRED(8003, "Review type is required", HttpStatus.BAD_REQUEST),
     REVIEW_COACH_ID_REQUIRED(8004, "Coach ID is required", HttpStatus.BAD_REQUEST),
+
+    // TimeTable
+    TIMETABLE_NOT_FOUND(2312,"TimeTable does not exist",HttpStatus.BAD_REQUEST),
+    TIMETABLE_NAME_REQUIRED(1232,"TimeTable name required",HttpStatus.BAD_REQUEST),
+    TIMETABLE_DESCRIPTION_REQUIRED(1232,"TimeTable desctiption required",HttpStatus.BAD_REQUEST),
     ;
     int code;
     String message;

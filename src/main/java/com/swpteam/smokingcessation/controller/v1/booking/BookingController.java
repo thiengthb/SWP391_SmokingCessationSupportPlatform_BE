@@ -72,7 +72,7 @@ public class BookingController {
 
     @DeleteMapping("/{id}")
     ResponseEntity<?> softDeleteBookingById(@PathVariable String id) {
-        bookingService.softDeleteBookingById(id);
+        bookingService.DeleteBookingById(id);
         return ResponseEntity.ok(
                 ApiResponse.<Void>builder()
                         .code(SuccessCode.BOOKING_DELETED.getCode())
