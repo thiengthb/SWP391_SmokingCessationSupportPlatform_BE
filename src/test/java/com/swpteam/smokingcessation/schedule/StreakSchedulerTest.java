@@ -5,6 +5,7 @@ import com.swpteam.smokingcessation.domain.entity.Member;
 import com.swpteam.smokingcessation.domain.entity.Setting;
 import com.swpteam.smokingcessation.domain.entity.Streak;
 import com.swpteam.smokingcessation.exception.AppException;
+import com.swpteam.smokingcessation.repository.MemberRepository;
 import com.swpteam.smokingcessation.repository.RecordHabitRepository;
 import com.swpteam.smokingcessation.repository.SettingRepository;
 import com.swpteam.smokingcessation.repository.StreakRepository;
@@ -33,6 +34,8 @@ class StreakSchedulerTest {
     RecordHabitRepository recordHabitRepository;
     @Mock
     StreakRepository streakRepository;
+    @Mock
+    MemberRepository memberRepository;
 
     @InjectMocks
     StreakScheduler streakScheduler;

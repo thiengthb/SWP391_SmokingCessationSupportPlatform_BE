@@ -211,8 +211,8 @@ class StreakControllerTest {
 
         mockMvc.perform(put("/api/v1/streaks/reset/member1"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.code").value(SuccessCode.STREAK_DELETED.getCode()))
-                .andExpect(jsonPath("$.message").value(SuccessCode.STREAK_DELETED.getMessage()));
+                .andExpect(jsonPath("$.code").value(SuccessCode.STREAK_RESET.getCode()))
+                .andExpect(jsonPath("$.message").value(SuccessCode.STREAK_RESET.getMessage()));
     }
 
     @Test
