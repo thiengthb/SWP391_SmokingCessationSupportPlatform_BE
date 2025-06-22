@@ -13,14 +13,12 @@ import com.swpteam.smokingcessation.repository.SubscriptionRepository;
 import com.swpteam.smokingcessation.service.interfaces.identity.IAccountService;
 import com.swpteam.smokingcessation.service.interfaces.membership.IMembershipService;
 import com.swpteam.smokingcessation.service.interfaces.membership.ISubscriptionService;
+import com.swpteam.smokingcessation.utils.AuthUtilService;
 import com.swpteam.smokingcessation.utils.ValidationUtil;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.CachePut;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -37,9 +35,9 @@ public class SubscriptionServiceImpl implements ISubscriptionService {
 
     SubscriptionRepository subscriptionRepository;
     SubscriptionMapper subscriptionMapper;
-
     IAccountService accountService;
     IMembershipService membershipService;
+    AuthUtilService authUtilService;
 
     @Override
     @PreAuthorize("hasRole('ADMIN')")
@@ -48,6 +46,19 @@ public class SubscriptionServiceImpl implements ISubscriptionService {
 
         Pageable pageable = PageableRequest.getPageable(request);
         Page<Subscription> subscriptions = subscriptionRepository.findAllByIsDeletedFalse(pageable);
+
+        return subscriptions.map(subscriptionMapper::toResponse);
+    }
+
+    @Override
+    @PreAuthorize("hasRole('ADMIN')")
+    public Page<SubscriptionResponse> getMySubscriptionPage(PageableRequest request) {
+        ValidationUtil.checkFieldExist(Subscription.class, request.sortBy());
+
+        Account currentAccount = authUtilService.getCurrentAccountOrThrowError();
+
+        Pageable pageable = PageableRequest.getPageable(request);
+        Page<Subscription> subscriptions = subscriptionRepository.findByAccountIdAndIsDeletedFalse(currentAccount.getId(), pageable);
 
         return subscriptions.map(subscriptionMapper::toResponse);
     }
@@ -71,7 +82,6 @@ public class SubscriptionServiceImpl implements ISubscriptionService {
 
     @Override
     @Transactional
-    @CachePut(value = "SUBSCRIPTION_CACHE", key = "#result.getId()")
     public Subscription createSubscription(String accountId, String membershipName) {
         Account account = accountService.findAccountByIdOrThrowError(accountId);
 
@@ -90,7 +100,6 @@ public class SubscriptionServiceImpl implements ISubscriptionService {
     @Override
     @Transactional
     @PreAuthorize("hasRole('ADMIN')")
-    @CachePut(value = "SUBSCRIPTION_CACHE", key = "#result.getId()")
     public SubscriptionResponse createSubscription(SubscriptionRequest request) {
         Subscription subscription = subscriptionMapper.toEntity(request);
 
@@ -106,7 +115,6 @@ public class SubscriptionServiceImpl implements ISubscriptionService {
     @Override
     @Transactional
     @PreAuthorize("hasRole('ADMIN')")
-    @CachePut(value = "SUBSCRIPTION_CACHE", key = "#result.getId()")
     public SubscriptionResponse updateSubscription(String id, SubscriptionRequest request) {
         Subscription subscription = findSubscriptionByIdOrThrowError(id);
 
@@ -118,22 +126,21 @@ public class SubscriptionServiceImpl implements ISubscriptionService {
     @Override
     @Transactional
     @PreAuthorize("hasRole('ADMIN')")
-    @CacheEvict(value = "SUBSCRIPTION_CACHE", key = "#id")
     public void softDeleteSubscription(String id) {
         Subscription subscription = findSubscriptionByIdOrThrowError(id);
 
         subscription.setDeleted(true);
+
         subscriptionRepository.save(subscription);
     }
 
     @Override
-    @Cacheable(value = "SUBSCRIPTION_CACHE", key = "#id")
     public Subscription findSubscriptionByIdOrThrowError(String id) {
         Subscription subscription = subscriptionRepository.findByIdAndIsDeletedFalse(id)
                 .orElseThrow(() -> new AppException(ErrorCode.SUBSCRIPTION_NOT_FOUND));
 
-        if (subscription.getAccount().isDeleted()) {
-            throw new AppException(ErrorCode.ACCOUNT_DELETED);
+        if (subscription.getAccount().isDeleted() || subscription.getMembership().isDeleted()) {
+            throw new AppException(ErrorCode.SUBSCRIPTION_NOT_FOUND);
         }
 
         return subscription;

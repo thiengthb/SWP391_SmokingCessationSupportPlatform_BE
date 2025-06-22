@@ -1,4 +1,4 @@
-package com.swpteam.smokingcessation.service.interfaces.streak;
+package com.swpteam.smokingcessation.service.interfaces.tracking;
 
 import com.swpteam.smokingcessation.common.PageableRequest;
 import com.swpteam.smokingcessation.domain.dto.streak.StreakRequest;
@@ -7,18 +7,19 @@ import com.swpteam.smokingcessation.domain.entity.Streak;
 import org.springframework.data.domain.Page;
 
 public interface IStreakService {
-    StreakResponse createStreak(String id, StreakRequest request);
 
-    StreakResponse updateStreak(String id, StreakRequest request);
+    Streak createStreak(String accountId, int number);
 
-    void deleteStreak(String id);
+    Streak updateStreak(String accountId, int number);
 
     void resetStreak(String id);
 
-    StreakResponse getStreakById(String id);
+    StreakResponse getStreakByAccountId(String accountId);
+
+    Page<StreakResponse> getMyStreakPage(PageableRequest request);
 
     Page<StreakResponse> getStreakPage(PageableRequest request);
 
-    Streak findStreakByIdOrThrowError(String id);
+    Streak findStreakByAccountIdOrThrowError(String id);
     
 }

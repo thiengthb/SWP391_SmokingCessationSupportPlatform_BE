@@ -1,14 +1,13 @@
 package com.swpteam.smokingcessation.domain.dto.plan;
 
+import com.swpteam.smokingcessation.domain.dto.phase.PhaseRequest;
 import com.swpteam.smokingcessation.domain.enums.PlanStatus;
 import jakarta.validation.constraints.*;
 
 import java.time.LocalDate;
+import java.util.List;
 
 public record PlanRequest(
-
-        @NotBlank(message = "ACCOUNT_ID_REQUIRED")
-        String accountId,
 
         @Size(max = 255, message = "PLAN_NAME_TOO_LONG")
         String planName,
@@ -30,5 +29,8 @@ public record PlanRequest(
         LocalDate endDate,
 
         @NotNull(message = "PLAN_STATUS_REQUIRED")
-        PlanStatus planStatus
+        PlanStatus planStatus,
+
+        @NotNull(message = "PLAN_STATUS_REQUIRED")
+        List<PhaseRequest> phases
 ) {}

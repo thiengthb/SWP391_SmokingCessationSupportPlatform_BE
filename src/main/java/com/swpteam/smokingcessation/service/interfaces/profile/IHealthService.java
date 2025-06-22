@@ -11,6 +11,8 @@ public interface IHealthService {
 
     Page<HealthResponse> getHealthPage(PageableRequest request);
 
+    Page<HealthResponse> getMyHealthPage(PageableRequest request);
+
     HealthResponse getHealthById(String id);
 
     Page<HealthResponse> getHealthPageByAccountId(String accountId, PageableRequest request);

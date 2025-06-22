@@ -1,6 +1,7 @@
 package com.swpteam.smokingcessation.domain.entity;
 
 
+import com.swpteam.smokingcessation.common.AuditableEntity;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -12,14 +13,11 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class Streak {
-    @Id
-    String id;
+public class Streak extends AuditableEntity {
 
-    @OneToOne
-    @MapsId
-    @JoinColumn(name = "memberId", nullable = false)
-    Member member;
+    @OneToMany
+    @JoinColumn(name = "accountId", nullable = false)
+    Account account;
 
-    int streak;
+    int number;
 }

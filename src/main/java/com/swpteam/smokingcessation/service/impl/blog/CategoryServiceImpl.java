@@ -37,17 +37,19 @@ public class CategoryServiceImpl implements ICategoryService {
 
     CategoryRepository categoryRepository;
     CategoryMapper categoryMapper;
-
     BlogRepository blogRepository;
 
     @Override
     @PreAuthorize("hasRole('ADMIN')")
+    @Cacheable(value = "CATEGORY_LIST_CACHE")
     public List<CategoryResponse> getCategoryList() {
         return categoryRepository.findAll(Sort.by("name")).stream().map(categoryMapper::toResponse).toList();
     }
 
     @Override
     @PreAuthorize("hasRole('ADMIN')")
+    @Cacheable(value = "CATEGORY_PAGE_CACHE",
+            key = "#request.page + '-' + #request.size + '-' + #request.sortBy + '-' + #request.direction")
     public Page<CategoryResponse> getCategoryPage(PageableRequest request) {
         ValidationUtil.checkFieldExist(Category.class, request.sortBy());
 
@@ -59,15 +61,16 @@ public class CategoryServiceImpl implements ICategoryService {
 
     @Override
     @PreAuthorize("hasRole('ADMIN')")
+    @Cacheable(value = "CATEGORY_CACHE", key = "#id")
     public CategoryResponse getCategoryById(String id) {
-        Category category = findCategoryByIdOrThrowError(id);
-        return categoryMapper.toResponse(category);
+        return categoryMapper.toResponse(findCategoryByIdOrThrowError(id));
     }
 
     @Override
     @Transactional
     @PreAuthorize("hasRole('ADMIN')")
     @CachePut(value = "CATEGORY_CACHE", key = "#result.getId()")
+    @CacheEvict(value = {"CATEGORY_PAGE_CACHE", "CATEGORY_LIST_CACHE"}, allEntries = true)
     public CategoryResponse createCategory(CategoryRequest request) {
         if (categoryRepository.existsByName(request.name())) {
             throw new AppException(ErrorCode.CATEGORY_EXISTED);
@@ -81,6 +84,7 @@ public class CategoryServiceImpl implements ICategoryService {
     @Transactional
     @PreAuthorize("hasRole('ADMIN')")
     @CachePut(value = "CATEGORY_CACHE", key = "#result.getId()")
+    @CacheEvict(value = {"CATEGORY_PAGE_CACHE", "CATEGORY_LIST_CACHE"}, allEntries = true)
     public CategoryResponse updateCategory(String id, CategoryRequest request) {
         Category category = findCategoryByIdOrThrowError(id);
 
@@ -92,7 +96,7 @@ public class CategoryServiceImpl implements ICategoryService {
     @Override
     @Transactional
     @PreAuthorize("hasRole('ADMIN')")
-    @CacheEvict(value = "CATEGORY_CACHE", key = "#id", allEntries = true)
+    @CacheEvict(value = {"CATEGORY_CACHE", "CATEGORY_PAGE_CACHE", "CATEGORY_LIST_CACHE"}, key = "#id", allEntries = true)
     public void deleteCategoryById(String id) {
         Category category = findCategoryByIdOrThrowError(id);
 
@@ -111,16 +115,15 @@ public class CategoryServiceImpl implements ICategoryService {
     }
 
     @Override
-    @Cacheable(value = "CATEGORY_CACHE", key = "#name")
     public Category findCategoryByNameOrThrowError(String name) {
         return categoryRepository.findByName(name)
                 .orElseThrow(() -> new AppException(ErrorCode.CATEGORY_NOT_FOUND));
     }
 
     @Override
-    @Cacheable(value = "CATEGORY_CACHE", key = "#id")
     public Category findCategoryByIdOrThrowError(String id) {
         return categoryRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.CATEGORY_NOT_FOUND));
     }
+
 }

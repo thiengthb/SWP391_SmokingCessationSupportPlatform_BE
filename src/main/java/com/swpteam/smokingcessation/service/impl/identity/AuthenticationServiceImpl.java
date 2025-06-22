@@ -52,15 +52,10 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
     AccountMapper accountMapper;
     AccountRepository accountRepository;
     IAccountService accountService;
-
     MemberRepository memberRepository;
-
-    WebClient webClient = WebClient.create();
     PasswordEncoder passwordEncoder;
-
     IMailService mailService;
     ITokenService tokenService;
-
     GoogleTokenVerifier googleTokenVerifier;
 
     @NonFinal

@@ -28,12 +28,12 @@ public class RecordHabitController {
     IRecordHabitService recordService;
 
     @GetMapping
-    ResponseEntity<ApiResponse<Page<RecordHabitResponse>>> getRecordPage(@Valid PageableRequest request) {
+    ResponseEntity<ApiResponse<Page<RecordHabitResponse>>> getMyRecordPage(@Valid PageableRequest request) {
         return ResponseEntity.ok(
                 ApiResponse.<Page<RecordHabitResponse>>builder()
                         .code(SuccessCode.RECORD_GET_ALL.getCode())
                         .message(SuccessCode.RECORD_GET_ALL.getMessage())
-                        .result(recordService.getRecordPage(request))
+                        .result(recordService.getMyRecordPage(request))
                         .build()
         );
     }

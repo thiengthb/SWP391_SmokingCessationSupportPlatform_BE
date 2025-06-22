@@ -1,6 +1,7 @@
 package com.swpteam.smokingcessation.service.interfaces.membership;
 
 import com.swpteam.smokingcessation.common.PageableRequest;
+import com.swpteam.smokingcessation.domain.dto.category.CategoryResponse;
 import com.swpteam.smokingcessation.domain.dto.membership.MembershipCreateRequest;
 import com.swpteam.smokingcessation.domain.dto.membership.MembershipCurrencyUpdateRequest;
 import com.swpteam.smokingcessation.domain.dto.membership.MembershipResponse;
@@ -8,7 +9,11 @@ import com.swpteam.smokingcessation.domain.dto.membership.MembershipUpdateReques
 import com.swpteam.smokingcessation.domain.entity.Membership;
 import org.springframework.data.domain.Page;
 
+import java.util.List;
+
 public interface IMembershipService {
+
+    List<MembershipResponse> getCategoryList();
 
     Page<MembershipResponse> getMembershipPage(PageableRequest request);
 
@@ -27,4 +32,5 @@ public interface IMembershipService {
     Membership findMembershipByNameOrThrowError(String name);
 
     void softDeleteMembershipById(String id);
+
 }

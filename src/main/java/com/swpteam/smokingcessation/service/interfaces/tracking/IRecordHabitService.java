@@ -9,7 +9,7 @@ import org.springframework.data.domain.Page;
 
 public interface IRecordHabitService {
 
-    Page<RecordHabitResponse> getRecordPage(PageableRequest request);
+    Page<RecordHabitResponse> getMyRecordPage(PageableRequest request);
 
     RecordHabitResponse getRecordById(String id);
 

@@ -17,7 +17,7 @@ public interface IAccountService {
 
     void changePassword(String accountId, String newPassword);
 
-    Page<AccountResponse> getAccounts(PageableRequest request);
+    Page<AccountResponse> getAccountsPage(PageableRequest request);
 
     AccountResponse createAccount(AccountRequest request);
 
@@ -44,4 +44,5 @@ public interface IAccountService {
     void banAccount(String id);
 
     void checkExistByEmail(String email);
+
 }

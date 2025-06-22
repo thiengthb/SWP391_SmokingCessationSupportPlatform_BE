@@ -7,13 +7,18 @@ import com.swpteam.smokingcessation.domain.entity.Coach;
 import org.springframework.data.domain.Page;
 
 public interface ICoachService {
+
     Page<CoachResponse> getCoachPage(PageableRequest request);
 
     CoachResponse getCoachById(String id);
 
-    CoachResponse createCoach(CoachRequest request);
+    CoachResponse getMyCoachProfile();
+
+    CoachResponse registerCoachProfile(CoachRequest request);
 
     CoachResponse updateCoachById(String id, CoachRequest request);
+
+    CoachResponse updateMyCoachProfile(CoachRequest request);
 
     Coach findCoachById(String id);
     

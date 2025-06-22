@@ -24,13 +24,13 @@ public class MemberController {
 
     IMemberService memberService;
 
-    @PostMapping("/{accountId}")
-    ResponseEntity<ApiResponse<MemberResponse>> createMember(@PathVariable String accountId, @RequestBody @Valid MemberRequest request) {
+    @PostMapping
+    ResponseEntity<ApiResponse<MemberResponse>> createMember(@RequestBody @Valid MemberRequest request) {
         return ResponseEntity.ok(
                 ApiResponse.<MemberResponse>builder()
                         .code(SuccessCode.MEMBER_CREATED.getCode())
                         .message(SuccessCode.MEMBER_CREATED.getMessage())
-                        .result(memberService.createMember(accountId, request))
+                        .result(memberService.createMember(request))
                         .build());
     }
 
@@ -38,7 +38,7 @@ public class MemberController {
     ResponseEntity<ApiResponse<Page<MemberResponse>>> getUsers(@Valid PageableRequest request) {
         return ResponseEntity.ok(
                 ApiResponse.<Page<MemberResponse>>builder()
-                        .result(memberService.getMembers(request))
+                        .result(memberService.getMembersPage(request))
                         .build());
     }
 
@@ -56,7 +56,7 @@ public class MemberController {
                 ApiResponse.<MemberResponse>builder()
                         .code(SuccessCode.ACCOUNT_UPDATED.getCode())
                         .message(SuccessCode.ACCOUNT_UPDATED.getMessage())
-                        .result(memberService.updateMember(accountId, request))
+                        .result(memberService.updateMemberById(accountId, request))
                         .build());
     }
 }

@@ -53,7 +53,6 @@ public class MessageServiceImpl implements IMessageService {
     @Override
     @Transactional
     @PreAuthorize("hasRole('ADMIN')")
-    @CachePut(value = "MESSAGE_CACHE", key = "#result.getId()")
     public MessageResponse createMessage(MessageRequest request) {
         Message message = messageMapper.toMessage(request);
 
@@ -63,7 +62,6 @@ public class MessageServiceImpl implements IMessageService {
     @Override
     @Transactional
     @PreAuthorize("hasRole('ADMIN')")
-    @CachePut(value = "MESSAGE_CACHE", key = "#result.getId()")
     public MessageResponse updateMessage(String id, MessageRequest request) {
         Message message = findMessageByIdOrThrowError(id);
 
@@ -75,16 +73,15 @@ public class MessageServiceImpl implements IMessageService {
     @Override
     @Transactional
     @PreAuthorize("hasRole('ADMIN')")
-    @CacheEvict(value = "MESSAGE_CACHE", key = "#id")
     public void softDeleteMessageById(String id) {
         Message message = findMessageByIdOrThrowError(id);
 
         message.setDeleted(true);
+
         messageRepository.save(message);
     }
 
     @Override
-    @Cacheable(value = "MESSAGE_CACHE", key = "#id")
     public Message findMessageByIdOrThrowError(String id) {
         return messageRepository.findByIdAndIsDeletedFalse(id)
                 .orElseThrow(() -> new AppException(ErrorCode.MESSAGE_NOT_FOUND));

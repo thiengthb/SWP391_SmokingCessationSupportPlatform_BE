@@ -6,6 +6,7 @@ import com.swpteam.smokingcessation.domain.entity.Streak;
 import com.swpteam.smokingcessation.exception.AppException;
 import com.swpteam.smokingcessation.repository.MemberRepository;
 import com.swpteam.smokingcessation.repository.StreakRepository;
+import com.swpteam.smokingcessation.service.impl.tracking.StreakServiceImpl;
 import com.swpteam.smokingcessation.utils.AuthUtilService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

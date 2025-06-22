@@ -7,7 +7,10 @@ import com.swpteam.smokingcessation.domain.entity.Booking;
 import org.springframework.data.domain.Page;
 
 public interface IBookingService {
+
     Page<BookingResponse> getBookingPage(PageableRequest request);
+
+    Page<BookingResponse> getMyBookingPage(PageableRequest request);
 
     BookingResponse getBookingById(String id);
 
@@ -15,7 +18,7 @@ public interface IBookingService {
 
     BookingResponse updateBookingById(String id, BookingRequest request);
 
-    void DeleteBookingById(String id);
+    void deleteBookingById(String id);
 
     BookingResponse createBookingWithMeet(BookingRequest request);
 

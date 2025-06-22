@@ -50,7 +50,7 @@ public class CoachController {
 
     @PostMapping
     ResponseEntity<ApiResponse<CoachResponse>> createCoach(@Valid @RequestBody CoachRequest request) {
-        CoachResponse response = coachService.createCoach(request);
+        CoachResponse response = coachService.registerCoachProfile(request);
         return ResponseEntity.ok(
                 ApiResponse.<CoachResponse>builder()
                         .code(SuccessCode.COACH_CREATED.getCode())

@@ -3,7 +3,6 @@ package com.swpteam.smokingcessation.controller.v1.tracking;
 import com.swpteam.smokingcessation.domain.dto.phase.PhaseRequest;
 import com.swpteam.smokingcessation.domain.dto.phase.PhaseResponse;
 import com.swpteam.smokingcessation.common.ApiResponse;
-import com.swpteam.smokingcessation.common.PageableRequest;
 import com.swpteam.smokingcessation.constant.SuccessCode;
 import com.swpteam.smokingcessation.service.interfaces.tracking.IPhaseService;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -12,9 +11,10 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Slf4j
 @RestController
@@ -26,13 +26,13 @@ public class PhaseController {
 
     IPhaseService phaseService;
 
-    @GetMapping
-    ResponseEntity<ApiResponse<Page<PhaseResponse>>> getPhasePage(@Valid PageableRequest request) {
+    @GetMapping("/plan/{id}")
+    ResponseEntity<ApiResponse<List<PhaseResponse>>> getPhasePage(@PathVariable String planId) {
         return ResponseEntity.ok(
-                ApiResponse.<Page<PhaseResponse>>builder()
+                ApiResponse.<List<PhaseResponse>>builder()
                         .code(SuccessCode.PHASE_GET_ALL.getCode())
                         .message(SuccessCode.PHASE_GET_ALL.getMessage())
-                        .result(phaseService.getPhasePage(request))
+                        .result(phaseService.getPhaseListByPlanId(planId))
                         .build()
         );
     }

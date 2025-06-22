@@ -49,6 +49,18 @@ public class HealthServiceImpl implements IHealthService {
     }
 
     @Override
+    public Page<HealthResponse> getMyHealthPage(PageableRequest request) {
+        ValidationUtil.checkFieldExist(Health.class, request.sortBy());
+
+        Account currentAccount = authUtilService.getCurrentAccountOrThrowError();
+
+        Pageable pageable = PageableRequest.getPageable(request);
+        Page<Health> healths = healthRepository.findAllByAccountIdAndIsDeletedFalse(currentAccount.getId(), pageable);
+
+        return healths.map(healthMapper::toResponse);
+    }
+
+    @Override
     public HealthResponse getHealthById(String id) {
         return healthMapper.toResponse(findHealthByIdOrThrowError(id));
     }
@@ -67,7 +79,6 @@ public class HealthServiceImpl implements IHealthService {
 
     @Override
     @Transactional
-    @CachePut(value = "HEALTH_CACHE", key = "#result.getId()")
     public HealthResponse createHealth(HealthCreateRequest request) {
         Account account = authUtilService.getCurrentAccountOrThrowError();
 
@@ -79,7 +90,6 @@ public class HealthServiceImpl implements IHealthService {
 
     @Override
     @Transactional
-    @CachePut(value = "HEALTH_CACHE", key = "#result.getId()")
     public HealthResponse updateHealth(String id, HealthUpdateRequest request) {
         Health health = findHealthByIdOrThrowError(id);
 
@@ -90,21 +100,20 @@ public class HealthServiceImpl implements IHealthService {
 
     @Override
     @Transactional
-    @CacheEvict(value = "HEALTH_CACHE", key = "#id")
     public void softDeleteHealthById(String id) {
         Health health = findHealthByIdOrThrowError(id);
 
         health.setDeleted(true);
+        
         healthRepository.save(health);
     }
 
-    @Cacheable(value = "HEALTH_CACHE", key = "#id")
     public Health findHealthByIdOrThrowError(String id) {
         Health health = healthRepository.findByIdAndIsDeletedFalse(id)
                 .orElseThrow(() -> new AppException(ErrorCode.HEALTH_RECORD_NOT_FOUND));
 
         if (health.getAccount().isDeleted()) {
-            throw new AppException(ErrorCode.ACCOUNT_DELETED);
+            throw new AppException(ErrorCode.HEALTH_RECORD_NOT_FOUND);
         }
 
         return health;

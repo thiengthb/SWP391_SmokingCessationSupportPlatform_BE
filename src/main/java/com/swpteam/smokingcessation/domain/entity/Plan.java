@@ -26,7 +26,7 @@ public class Plan extends AuditableEntity {
     Account account;
 
     @Builder.Default
-    @OneToMany(mappedBy = "plan")
+    @OneToMany(mappedBy = "plan", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
     List<Phase> phases = new ArrayList<>();
 

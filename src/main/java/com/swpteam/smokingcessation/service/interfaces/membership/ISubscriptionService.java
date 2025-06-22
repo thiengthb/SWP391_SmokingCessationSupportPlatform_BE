@@ -10,6 +10,8 @@ public interface ISubscriptionService {
 
     Page<SubscriptionResponse> getSubscriptionPage(PageableRequest request);
 
+    Page<SubscriptionResponse> getMySubscriptionPage(PageableRequest request);
+
     SubscriptionResponse getSubscriptionById(String id);
 
     Page<SubscriptionResponse> getSubscriptionPageByAccountId(String accountId, PageableRequest request);

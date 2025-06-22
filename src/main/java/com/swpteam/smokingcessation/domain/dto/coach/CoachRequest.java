@@ -6,10 +6,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 public record CoachRequest (
-
-    @NotBlank(message = "COACH_ACCOUNT_ID_REQUIRED")
-    String accountId,
-
+        
     @NotBlank(message = "COACH_FULL_NAME_REQUIRED")
     String fullName,
 

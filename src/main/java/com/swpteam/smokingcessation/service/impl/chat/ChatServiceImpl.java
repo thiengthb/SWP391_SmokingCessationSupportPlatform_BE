@@ -12,6 +12,7 @@ import com.swpteam.smokingcessation.exception.AppException;
 import com.swpteam.smokingcessation.repository.AccountRepository;
 import com.swpteam.smokingcessation.repository.ChatRepository;
 import com.swpteam.smokingcessation.service.interfaces.chat.IChatService;
+import com.swpteam.smokingcessation.service.interfaces.identity.IAccountService;
 import com.swpteam.smokingcessation.utils.AuthUtilService;
 import com.swpteam.smokingcessation.utils.ValidationUtil;
 import lombok.AccessLevel;
@@ -27,15 +28,14 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class ChatServiceImpl implements IChatService {
 
-    AccountRepository accountRepository;
-    ChatRepository chatRepository;
     ChatMapper chatMapper;
+    ChatRepository chatRepository;
+    IAccountService accountService;
     AuthUtilService authUtilService;
 
     @Override
     public ChatResponse sendChatMessage(ChatRequest request) {
-        Account account = accountRepository.findByIdAndIsDeletedFalse(request.accountId())
-                .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FOUND));
+        Account account = accountService.findAccountByIdOrThrowError(request.accountId());
 
         boolean isFirstTime = !chatRepository.existsByAccountIdAndIsDeletedFalse(request.accountId());
 
@@ -74,8 +74,9 @@ public class ChatServiceImpl implements IChatService {
     }
 
     @Override
-    public void deleteChat(String id) {
-        Chat chat = chatRepository.findByIdAndIsDeletedFalse(id).orElseThrow(() -> new AppException(ErrorCode.CHAT_NOT_FOUND));
+    public void softDeleteChat(String id) {
+        Chat chat = chatRepository.findByIdAndIsDeletedFalse(id)
+                .orElseThrow(() -> new AppException(ErrorCode.CHAT_NOT_FOUND));
 
         boolean haveAccess = authUtilService.isAdminOrOwner(chat.getAccount().getId());
         if (!haveAccess) {

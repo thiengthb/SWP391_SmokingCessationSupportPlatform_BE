@@ -42,7 +42,7 @@ public class ChatRestController {
 
     @DeleteMapping("/{id}")
     ResponseEntity<ApiResponse<Void>> deleteChat(@PathVariable String id) {
-        chatService.deleteChat(id);
+        chatService.softDeleteChat(id);
         return ResponseEntity.ok(
                 ApiResponse.<Void>builder()
                         .code(SuccessCode.CHAT_DELETED.getCode())

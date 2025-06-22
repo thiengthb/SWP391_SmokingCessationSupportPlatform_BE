@@ -9,6 +9,7 @@ import org.mapstruct.MappingTarget;
 
 @Mapper(componentModel = "spring")
 public interface PhaseMapper {
+
     @Mapping(source = "plan.id",target = "planId")
     PhaseResponse toResponse(Phase phase);
 

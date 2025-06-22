@@ -8,15 +8,17 @@ import org.springframework.data.domain.Page;
 
 public interface IPlanService {
 
-    Page<PlanResponse> getPlanPage(PageableRequest request);
+    Page<PlanResponse> getMyPlanPage(PageableRequest request);
 
     PlanResponse getPlanById(String id);
+
+    PlanResponse getMyCurrentPlan();
 
     PlanResponse createPlan(PlanRequest request);
 
     PlanResponse updatePlanById(String id, PlanRequest request);
 
-    PlanResponse getPlanByFtndScore(int ftndScore);
+    PlanResponse generatePlanByFtndScore(int ftndScore);
 
     Plan findPlanByIdOrThrowError(String id);
 

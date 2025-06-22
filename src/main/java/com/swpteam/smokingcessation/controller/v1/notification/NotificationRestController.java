@@ -26,17 +26,17 @@ public class NotificationRestController {
                 ApiResponse.<Page<NotificationResponse>>builder()
                         .code(SuccessCode.NOTIFICATION_GET_ALL.getCode())
                         .message(SuccessCode.NOTIFICATION_GET_ALL.getMessage())
-                        .result(notificationService.getNotifications(request))
+                        .result(notificationService.getMyNotificationsPage(request))
                         .build());
     }
 
-    @GetMapping("/{accountId}")
-    ResponseEntity<ApiResponse<Page<NotificationResponse>>> getChatsById(@PathVariable String accountId, @Valid PageableRequest request) {
+    @GetMapping("/{id}")
+    ResponseEntity<ApiResponse<Page<NotificationResponse>>> getChatsById(@PathVariable String id) {
         return ResponseEntity.ok(
                 ApiResponse.<Page<NotificationResponse>>builder()
                         .code(SuccessCode.NOTIFICATION_GET_BY_ID.getCode())
                         .message(SuccessCode.NOTIFICATION_GET_BY_ID.getMessage())
-                        .result(notificationService.getNotificationsById(accountId, request))
+                        .result(notificationService.getNotificationsById(id))
                         .build());
     }
 
@@ -51,8 +51,8 @@ public class NotificationRestController {
     }
 
     @DeleteMapping("/all/{accountId}")
-    public ResponseEntity<ApiResponse<Void>> deleteAllNotifications(@PathVariable String accountId) {
-        notificationService.deleteAllNotification(accountId);
+    public ResponseEntity<ApiResponse<Void>> deleteAllNotifications() {
+        notificationService.deleteAllMyNotification();
         return ResponseEntity.ok(
                 ApiResponse.<Void>builder()
                         .code(SuccessCode.ALL_NOTIFICATION_DELETED.getCode())

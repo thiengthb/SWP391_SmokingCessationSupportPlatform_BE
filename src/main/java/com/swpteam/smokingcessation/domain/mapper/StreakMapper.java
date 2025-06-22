@@ -8,6 +8,7 @@ import org.mapstruct.MappingTarget;
 
 @Mapper(componentModel = "spring")
 public interface StreakMapper {
+
     StreakResponse toResponse(Streak entity);
 
     Streak toEntity(StreakRequest request);

@@ -39,16 +39,14 @@ class NotificationServiceImplTest {
 
     @Test
     void markAsRead_shouldMarkNotificationAsRead() {
-        // Given
-        MarkAsReadRequest request = new MarkAsReadRequest(notificationId);
+
 
         when(notificationRepository.findByIdAndIsDeletedFalse(notificationId))
                 .thenReturn(Optional.of(notification));
         when(notificationRepository.save(any(Notification.class)))
                 .thenAnswer(invocation -> invocation.getArgument(0));
 
-        // When
-        notificationService.markAsRead(request);
+        notificationService.markAsRead(notificationId);
 
         // Then
         assertTrue(notification.isRead());
@@ -65,7 +63,7 @@ class NotificationServiceImplTest {
 
         // Then
         AppException ex = assertThrows(AppException.class, () -> {
-            notificationService.markAsRead(request);
+            notificationService.markAsRead(notificationId);
         });
 
         assertEquals(ErrorCode.NOTIFICATION_NOT_FOUND, ex.getErrorCode());
@@ -82,7 +80,7 @@ class NotificationServiceImplTest {
                 .thenReturn(Optional.of(notification));
 
         // When
-        notificationService.markAsRead(request);
+        notificationService.markAsRead(notificationId);
 
         // Then
         verify(notificationRepository, never()).save(any());

@@ -8,17 +8,18 @@ import com.swpteam.smokingcessation.domain.entity.Notification;
 import org.springframework.data.domain.Page;
 
 public interface INotificationService {
+
     void sendNotification(NotificationRequest request);
 
-    void markAsRead(MarkAsReadRequest request);
+    void markAsRead(String id);
 
-    Page<NotificationResponse> getNotifications(PageableRequest request);
+    Page<NotificationResponse> getMyNotificationsPage(PageableRequest request);
 
-    Page<NotificationResponse> getNotificationsById(String id, PageableRequest request);
+    NotificationResponse getNotificationsById(String id);
 
     void deleteNotification(String id);
 
-    void deleteAllNotification(String id);
+    void deleteAllMyNotification();
 
     Notification findNotificationByIdOrThrowError(String id);
 }

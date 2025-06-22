@@ -1,4 +1,4 @@
-package com.swpteam.smokingcessation.controller.v1.timetable;
+package com.swpteam.smokingcessation.controller.v1.booking;
 
 import com.swpteam.smokingcessation.common.ApiResponse;
 import com.swpteam.smokingcessation.common.PageableRequest;

@@ -1,4 +1,4 @@
-package com.swpteam.smokingcessation.domain.dto.achievement;
+package com.swpteam.smokingcessation.domain.dto.goal;
 
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class AchievementResponse {
+public class GoalResponse {
 
     String id;
     String name;

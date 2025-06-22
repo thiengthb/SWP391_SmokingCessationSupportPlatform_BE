@@ -1,8 +1,8 @@
-package com.swpteam.smokingcessation.domain.dto.achievement;
+package com.swpteam.smokingcessation.domain.dto.goal;
 
 import jakarta.validation.constraints.*;
 
-public record AchievementCreateRequest (
+public record GoalCreateRequest(
 
     @NotBlank(message = "NAME_REQUIRED")
     String name,

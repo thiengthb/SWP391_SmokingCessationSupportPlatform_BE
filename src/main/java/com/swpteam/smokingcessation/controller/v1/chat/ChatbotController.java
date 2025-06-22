@@ -1,4 +1,4 @@
-package com.swpteam.smokingcessation.controller.v1.chatbot;
+package com.swpteam.smokingcessation.controller.v1.chat;
 
 import com.swpteam.smokingcessation.common.ApiResponse;
 import com.swpteam.smokingcessation.constant.SuccessCode;

@@ -12,8 +12,6 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.cache.annotation.CachePut;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,7 +26,6 @@ public class TransactionServiceImpl implements ITransactionService {
 
     @Override
     @Transactional
-    @CachePut(value = "TRANSACTION_CACHE", key = "#result.getId()")
     public Transaction createTransaction(Account account, double amount) {
         accountService.findAccountByIdOrThrowError(account.getId());
 
@@ -47,7 +44,6 @@ public class TransactionServiceImpl implements ITransactionService {
         transactionRepository.save(transaction);
     }
 
-    @Cacheable(value = "TRANSACTION_CACHE", key = "#id")
     private Transaction findTransactionById(String id) {
         Transaction transaction = transactionRepository.findByIdAndIsDeletedFalse(id)
                 .orElseThrow(() -> new AppException(ErrorCode.TRANSACTION_NOT_FOUND));

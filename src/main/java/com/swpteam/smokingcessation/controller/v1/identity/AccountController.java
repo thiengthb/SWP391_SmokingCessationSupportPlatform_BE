@@ -43,7 +43,7 @@ public class AccountController {
     ResponseEntity<ApiResponse<Page<AccountResponse>>> getAccounts(@Valid PageableRequest request) {
         return ResponseEntity.ok(
                 ApiResponse.<Page<AccountResponse>>builder()
-                        .result(accountService.getAccounts(request))
+                        .result(accountService.getAccountsPage(request))
                         .build());
     }
 

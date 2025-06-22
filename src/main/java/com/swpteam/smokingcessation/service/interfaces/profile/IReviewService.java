@@ -8,11 +8,10 @@ import com.swpteam.smokingcessation.domain.entity.Review;
 import org.springframework.data.domain.Page;
 
 public interface IReviewService {
-    Page<ReviewResponse> getReviewPage(PageableRequest request);
 
-    Page<ReviewResponse> getReviewPageByAccount(String accountId, PageableRequest request);
+    Page<ReviewResponse> getMyReviewPageAsMember(String memberId, PageableRequest request);
 
-    Page<ReviewResponse> getReviewPageByCoach(String coachId, PageableRequest request);
+    Page<ReviewResponse> getMyReviewPageAsCoach(String coachId, PageableRequest request);
 
     ReviewResponse getReviewById(String id);
 

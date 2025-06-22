@@ -37,12 +37,12 @@ public class CommentServiceImpl implements ICommentService {
 
     CommentRepository commentRepository;
     CommentMapper commentMapper;
-
     BlogRepository blogRepository;
-
     AuthUtilService authUtilService;
 
     @Override
+    @Cacheable(value = "COMMENT_PAGE_CACHE",
+            key = "#request.page + '-' + #request.size + '-' + #request.sortBy + '-' + #request.direction + '-' + #blogId")
     public Page<CommentResponse> getCommentsByBlogId(String blogId, PageableRequest request) {
         ValidationUtil.checkFieldExist(Comment.class, request.sortBy());
 
@@ -54,6 +54,8 @@ public class CommentServiceImpl implements ICommentService {
 
     @Override
     @PreAuthorize("hasRole('ADMIN')")
+    @Cacheable(value = "COMMENT_PAGE_CACHE",
+            key = "#request.page + '-' + #request.size + '-' + #request.sortBy + '-' + #request.direction")
     public Page<CommentResponse> getCommentPage(PageableRequest request) {
         ValidationUtil.checkFieldExist(Comment.class, request.sortBy());
 
@@ -65,6 +67,7 @@ public class CommentServiceImpl implements ICommentService {
 
     @Override
     @PreAuthorize("hasRole('ADMIN')")
+    @Cacheable(value = "COMMENT_CACHE", key = "#id")
     public CommentResponse getCommentById(String id) {
         Comment comment = findCommentByIdOrThrowError(id);
         return commentMapper.toResponse(comment);
@@ -73,6 +76,7 @@ public class CommentServiceImpl implements ICommentService {
     @Override
     @Transactional
     @CachePut(value = "COMMENT_CACHE", key = "#result.getId()")
+    @CacheEvict(value = "COMMENT_PAGE_CACHE", allEntries = true)
     public CommentResponse createComment(CommentCreateRequest request) {
         Account currentAccount = authUtilService.getCurrentAccountOrThrowError();
 
@@ -89,6 +93,7 @@ public class CommentServiceImpl implements ICommentService {
     @Override
     @Transactional
     @CachePut(value = "COMMENT_CACHE", key = "#result.getId()")
+    @CacheEvict(value = "COMMENT_PAGE_CACHE", allEntries = true)
     public CommentResponse replyComment(CommentReplyRequest request) {
         Account currentAccount = authUtilService.getCurrentAccountOrThrowError();
 
@@ -107,6 +112,7 @@ public class CommentServiceImpl implements ICommentService {
     @Override
     @Transactional
     @CachePut(value = "COMMENT_CACHE", key = "#result.getId()")
+    @CacheEvict(value = "COMMENT_PAGE_CACHE", allEntries = true)
     public CommentResponse updateComment(String id, CommentUpdateRequest request) {
         Comment comment = findCommentByIdOrThrowError(id);
 
@@ -122,7 +128,7 @@ public class CommentServiceImpl implements ICommentService {
 
     @Override
     @Transactional
-    @CacheEvict(value = "COMMENT_CACHE", key = "#id")
+    @CacheEvict(value = {"COMMENT_CACHE", "COMMENT_PAGE_CACHE"}, key = "#id", allEntries = true)
     public void deleteCommentById(String id) {
         Comment comment = findCommentByIdOrThrowError(id);
 
@@ -131,17 +137,24 @@ public class CommentServiceImpl implements ICommentService {
             throw new AppException(ErrorCode.OTHERS_COMMENT_UNCHANGEABLE);
         }
 
-        if (comment.getAccount().isDeleted()) {
-            throw new AppException(ErrorCode.ACCOUNT_DELETED);
-        }
+        comment.setDeleted(true);
 
         commentRepository.deleteById(id);
     }
 
     @Override
-    @Cacheable(value = "COMMENT_CACHE", key = "#id")
+    @Transactional
     public Comment findCommentByIdOrThrowError(String id) {
-        return commentRepository.findById(id)
+        Comment comment =  commentRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.COMMENT_NOT_FOUND));
+
+        if (comment.getAccount().isDeleted() || (comment.getParentComment() != null && comment.getParentComment().isDeleted())) {
+            comment.setDeleted(true);
+            commentRepository.deleteById(id);
+            throw new AppException(ErrorCode.COMMENT_NOT_FOUND);
+        }
+
+        return comment;
     }
+
 }

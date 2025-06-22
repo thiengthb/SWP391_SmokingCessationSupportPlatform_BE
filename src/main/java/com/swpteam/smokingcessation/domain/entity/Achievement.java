@@ -1,9 +1,12 @@
 package com.swpteam.smokingcessation.domain.entity;
 
-import com.swpteam.smokingcessation.common.AuditableEntity;
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -12,19 +15,15 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class Achievement extends AuditableEntity {
+public class Achievement {
 
     @ManyToOne
     @JoinColumn(name = "accountId", nullable = false)
-    private Account account;
+    Account account;
 
-    private String name;
+    @ManyToOne
+    @JoinColumn(name = "goalId", nullable = false)
+    Goal goal;
 
-    private String iconUrl;
-
-    private String description;
-
-    private String criteriaType;
-
-    private int criteriaValue;
+    LocalDateTime earnedAt;
 }

@@ -1,4 +1,4 @@
-package com.swpteam.smokingcessation.service.impl.booking;
+package com.swpteam.smokingcessation.integration.google;
 
 import com.google.api.client.googleapis.javanet.GoogleNetHttpTransport;
 import com.google.api.client.json.jackson2.JacksonFactory;

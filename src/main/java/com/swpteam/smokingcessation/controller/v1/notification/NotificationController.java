@@ -1,7 +1,6 @@
 package com.swpteam.smokingcessation.controller.v1.notification;
 
 
-import com.swpteam.smokingcessation.domain.dto.notification.MarkAsReadRequest;
 import com.swpteam.smokingcessation.domain.dto.notification.NotificationRequest;
 import com.swpteam.smokingcessation.service.interfaces.notification.INotificationService;
 import jakarta.validation.Valid;
@@ -11,6 +10,7 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
 
 @Controller
 @RequiredArgsConstructor
@@ -25,8 +25,8 @@ public class NotificationController {
     }
 
     // /app/mark-as-read
-    @MessageMapping("/notifications/mark-as-read")
-    public void markAsRead(@Valid @Payload MarkAsReadRequest request) {
-        notificationService.markAsRead(request);
+    @MessageMapping("/notifications/mark-as-read/{id}")
+    public void markAsRead(@PathVariable String id) {
+        notificationService.markAsRead(id);
     }
 }

@@ -23,7 +23,7 @@ public interface IBlogService {
 
     BlogResponse updateBlog(String id, BlogUpdateRequest request);
 
-    void deleteBlogById(String id);
+    void softDeleteBlogById(String id);
 
     Blog findBlogBySlugOrThrowError(String slug);
 

@@ -1,7 +1,6 @@
 package com.swpteam.smokingcessation.domain.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.swpteam.smokingcessation.domain.enums.AccountStatus;
 import com.swpteam.smokingcessation.domain.enums.AuthProvider;
@@ -24,9 +23,9 @@ import java.util.List;
 public class Account extends AuditableEntity {
 
     @Enumerated(EnumType.STRING)
-    AuthProvider provider; // Google
+    AuthProvider provider;
 
-    String providerId; // Google sub
+    String providerId;
 
     @Column(unique = true, columnDefinition = "NVARCHAR(30)")
     String username;
@@ -49,71 +48,76 @@ public class Account extends AuditableEntity {
 
     String avatar;
 
-    @OneToOne(mappedBy = "account", cascade = CascadeType.ALL)
     @JsonIgnore
+    @OneToOne(mappedBy = "account", cascade = CascadeType.ALL)
     Member member;
 
-    @Builder.Default
-    @OneToMany(mappedBy = "account")
     @JsonIgnore
+    @Builder.Default
+    @OneToMany(mappedBy = "account", cascade = CascadeType.ALL, orphanRemoval = true)
     List<AITokenUsage> aiTokenUsages = new ArrayList<>();
 
-    @Builder.Default
-    @OneToMany(mappedBy = "account")
     @JsonIgnore
+    @Builder.Default
+    @OneToMany(mappedBy = "account", cascade = CascadeType.ALL, orphanRemoval = true)
     List<Blog> blogs = new ArrayList<>();
 
-    @Builder.Default
-    @OneToMany(mappedBy = "member")
     @JsonIgnore
+    @Builder.Default
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
     List<Booking> bookingsAsMember = new ArrayList<>();
 
-    @Builder.Default
-    @OneToMany(mappedBy = "coach")
     @JsonIgnore
-    List<Booking> bookingsAsCoach = new ArrayList<>();
-
-    @OneToOne(mappedBy = "account", cascade = CascadeType.ALL)
-    @JsonIgnore
-    Coach coach;
-
-    @Builder.Default
-    @OneToMany(mappedBy = "account")
-    @JsonIgnore
-    List<Comment> comments = new ArrayList<>();
-
-    @Builder.Default
-    @OneToMany(mappedBy = "account")
-    @JsonIgnore
-    List<Plan> plans = new ArrayList<>();
-
-    @Builder.Default
-    @OneToMany(mappedBy = "account")
-    @JsonIgnore
-    List<RecordHabit> recordHabits = new ArrayList<>();
-
-    @OneToOne(mappedBy = "account", cascade = CascadeType.ALL)
-    @JsonIgnore
-    Setting setting;
-
-    @Builder.Default
-    @OneToMany(mappedBy = "account")
-    @JsonIgnore
-    List<Subscription> subscriptions = new ArrayList<>();
-
-    @Builder.Default
-    @OneToMany(mappedBy = "account")
-    @JsonIgnore
-    List<Transaction> transactions = new ArrayList<>();
-
     @Builder.Default
     @OneToMany(mappedBy = "coach", cascade = CascadeType.ALL, orphanRemoval = true)
+    List<Booking> bookingsAsCoach = new ArrayList<>();
+
     @JsonIgnore
+    @OneToOne(mappedBy = "account", cascade = CascadeType.ALL)
+    Coach coach;
+
+    @JsonIgnore
+    @Builder.Default
+    @OneToMany(mappedBy = "account", cascade = CascadeType.ALL, orphanRemoval = true)
+    List<Comment> comments = new ArrayList<>();
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "account", cascade = CascadeType.ALL, orphanRemoval = true)
+    List<Notification> notifications = new ArrayList<>();
+
+    @JsonIgnore
+    @Builder.Default
+    @OneToMany(mappedBy = "account", cascade = CascadeType.ALL, orphanRemoval = true)
+    List<Plan> plans = new ArrayList<>();
+
+    @JsonIgnore
+    @Builder.Default
+    @OneToMany(mappedBy = "account", cascade = CascadeType.ALL, orphanRemoval = true)
+    List<RecordHabit> recordHabits = new ArrayList<>();
+
+    @JsonIgnore
+    @OneToOne(mappedBy = "account", cascade = CascadeType.ALL)
+    Setting setting;
+
+    @JsonIgnore
+    @Builder.Default
+    @OneToMany(mappedBy = "account", cascade = CascadeType.ALL, orphanRemoval = true)
+    List<Subscription> subscriptions = new ArrayList<>();
+
+    @JsonIgnore
+    @Builder.Default
+    @OneToMany(mappedBy = "account", cascade = CascadeType.ALL, orphanRemoval = true)
+    List<Transaction> transactions = new ArrayList<>();
+
+    @JsonIgnore
+    @Builder.Default
+    @OneToMany(mappedBy = "coach", cascade = CascadeType.ALL, orphanRemoval = true)
     List<TimeTable> timetables = new ArrayList<>();
 
-    @OneToMany(mappedBy = "account")
     @JsonIgnore
-    List<Notification> notifications;
+    @Builder.Default
+    @OneToMany(mappedBy = "account", cascade = CascadeType.ALL, orphanRemoval = true)
+    List<Streak> streaks = new ArrayList<>();
 
     @JsonIgnore
     public boolean isHavingSubscription() {

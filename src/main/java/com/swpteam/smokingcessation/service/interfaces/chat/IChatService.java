@@ -13,5 +13,5 @@ public interface IChatService {
 
     Page<ChatRestResponse> getChatsById(String id, PageableRequest request);
 
-    void deleteChat(String id);
+    void softDeleteChat(String id);
 }

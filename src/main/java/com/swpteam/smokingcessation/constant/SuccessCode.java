@@ -157,12 +157,12 @@ public enum SuccessCode {
     // Report
     SUMMARY_GET(3101, "Successfully get summary"),
 
-    // Achievement
-    ACHIEVEMENT_GET_ALL(6000, "Successfully retrieved all achievements"),
-    ACHIEVEMENT_GET_BY_NAME(6001, "Successfully retrieved achievement by name"),
-    ACHIEVEMENT_CREATED(6002, "Achievement created successfully"),
-    ACHIEVEMENT_UPDATED(6003, "Achievement updated successfully"),
-    ACHIEVEMENT_DELETED(6004, "Achievement deleted successfully"),
+    // Goal
+    GOAL_GET_ALL(6000, "Successfully retrieved all achievements"),
+    GOAL_GET_BY_NAME(6001, "Successfully retrieved achievement by name"),
+    GOAL_CREATED(6002, "Goal created successfully"),
+    GOAL_UPDATED(6003, "Goal updated successfully"),
+    GOAL_DELETED(6004, "Goal deleted successfully"),
 
     // Feedback
     FEEDBACK_GET_ALL(7000, "Successfully retrieved all feedback"),
@@ -185,6 +185,8 @@ public enum SuccessCode {
     TIMETABLE_GET_BY_ID(2313,"Successfully get timetable"),
     TIMETABLE_CREATED(1232,"Successfully creat timetable"),
     TIMETABLE_GET_ALL(2343,"Successfully return list timetable")
+
+
     ;
     int code;
     String message;

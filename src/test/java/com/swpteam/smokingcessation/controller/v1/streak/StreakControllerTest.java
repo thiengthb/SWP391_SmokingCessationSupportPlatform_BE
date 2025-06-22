@@ -4,11 +4,12 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.swpteam.smokingcessation.common.PageableRequest;
 import com.swpteam.smokingcessation.constant.ErrorCode;
 import com.swpteam.smokingcessation.constant.SuccessCode;
+import com.swpteam.smokingcessation.controller.v1.tracking.StreakController;
 import com.swpteam.smokingcessation.domain.dto.streak.StreakRequest;
 import com.swpteam.smokingcessation.domain.dto.streak.StreakResponse;
 import com.swpteam.smokingcessation.exception.AppException;
 import com.swpteam.smokingcessation.exception.GlobalExceptionHandler;
-import com.swpteam.smokingcessation.service.impl.streak.StreakServiceImpl;
+import com.swpteam.smokingcessation.service.impl.tracking.StreakServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -56,19 +57,6 @@ class StreakControllerTest {
     }
 
     @Test
-    void createStreak_shouldReturnCreatedStreak() throws Exception {
-        when(streakService.createStreak(eq("member1"), any(StreakRequest.class))).thenReturn(streakResponse);
-
-        mockMvc.perform(post("/api/v1/streaks/member1")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(streakRequest)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.code").value(SuccessCode.STREAK_CREATED.getCode()))
-                .andExpect(jsonPath("$.result.id").value("streak1"))
-                .andExpect(jsonPath("$.result.streak").value(5));
-    }
-
-    @Test
     void createStreak_withInvalidRequest_shouldReturnBadRequest() throws Exception {
         StreakRequest invalidRequest = new StreakRequest(-1); // Assuming negative streak is invalid
 
@@ -113,7 +101,7 @@ class StreakControllerTest {
 
     @Test
     void getStreakById_shouldReturnStreak() throws Exception {
-        when(streakService.getStreakById("streak1")).thenReturn(streakResponse);
+        when(streakService.getStreakByAccountId("streak1")).thenReturn(streakResponse);
 
         mockMvc.perform(get("/api/v1/streaks/streak1"))
                 .andExpect(status().isOk())
@@ -124,61 +112,13 @@ class StreakControllerTest {
     // Exception handling: 404 Not Found
     @Test
     void getStreakById_shouldReturn404IfNotFound() throws Exception {
-        when(streakService.getStreakById("notfound"))
+        when(streakService.getStreakByAccountId("notfound"))
                 .thenThrow(new AppException(ErrorCode.ACCOUNT_NOT_BLANK)); // Use your actual STREAK_NOT_FOUND
 
         mockMvc.perform(get("/api/v1/streaks/notfound"))
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.code").value(ErrorCode.ACCOUNT_NOT_BLANK.getCode()))
                 .andExpect(jsonPath("$.message").value(ErrorCode.ACCOUNT_NOT_BLANK.getMessage()));
-    }
-
-    @Test
-    void updateStreak_shouldReturnUpdatedStreak() throws Exception {
-        StreakRequest updateRequest = new StreakRequest(10);
-        StreakResponse updatedResponse = StreakResponse.builder().id("streak1").streak(10).build();
-
-        when(streakService.updateStreak(eq("streak1"), any(StreakRequest.class))).thenReturn(updatedResponse);
-
-        mockMvc.perform(put("/api/v1/streaks/streak1")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(updateRequest)))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.code").value(SuccessCode.STREAK_UPDATED.getCode()))
-                .andExpect(jsonPath("$.result.id").value("streak1"))
-                .andExpect(jsonPath("$.result.streak").value(10));
-    }
-
-    @Test
-    void updateStreak_whenNotFound_shouldReturnError() throws Exception {
-        when(streakService.updateStreak(eq("streakX"), any(StreakRequest.class)))
-                .thenThrow(new AppException(ErrorCode.STREAK_NOT_FOUND));
-
-        mockMvc.perform(put("/api/v1/streaks/streakX")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(streakRequest)))
-                .andExpect(status().is4xxClientError())
-                .andExpect(jsonPath("$.code").value(ErrorCode.STREAK_NOT_FOUND.getCode()));
-    }
-
-    @Test
-    void deleteStreak_shouldReturnSuccess() throws Exception {
-        doNothing().when(streakService).deleteStreak("streak1");
-
-        mockMvc.perform(delete("/api/v1/streaks/streak1"))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.code").value(SuccessCode.STREAK_DELETED.getCode()))
-                .andExpect(jsonPath("$.message").value(SuccessCode.STREAK_DELETED.getMessage()));
-    }
-
-    @Test
-    void deleteStreak_whenNotFound_shouldReturnError() throws Exception {
-        doThrow(new AppException(ErrorCode.STREAK_NOT_FOUND))
-                .when(streakService).deleteStreak("streakX");
-
-        mockMvc.perform(delete("/api/v1/streaks/streakX"))
-                .andExpect(status().is4xxClientError())
-                .andExpect(jsonPath("$.code").value(ErrorCode.STREAK_NOT_FOUND.getCode()));
     }
 
     // Input validation: invalid request body (missing required fields)

@@ -46,7 +46,7 @@ public class ReviewController {
                 ApiResponse.<Page<ReviewResponse>>builder()
                         .code(SuccessCode.REVIEW_GET_BY_ACCOUNT.getCode())
                         .message(SuccessCode.REVIEW_GET_BY_ACCOUNT.getMessage())
-                        .result(reviewService.getReviewPageByAccount(accountId, request))
+                        .result(reviewService.getMyReviewPageAsMember(accountId, request))
                         .build()
         );
     }
@@ -59,7 +59,7 @@ public class ReviewController {
                 ApiResponse.<Page<ReviewResponse>>builder()
                         .code(SuccessCode.REVIEW_GET_BY_COACH.getCode())
                         .message(SuccessCode.REVIEW_GET_BY_COACH.getMessage())
-                        .result(reviewService.getReviewPageByCoach(coachId, request))
+                        .result(reviewService.getMyReviewPageAsCoach(coachId, request))
                         .build()
         );
     }

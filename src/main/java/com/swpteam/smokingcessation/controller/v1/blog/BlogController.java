@@ -106,7 +106,7 @@ public class BlogController {
 
     @DeleteMapping("/{id}")
     ResponseEntity<ApiResponse<String>> deleteBlogById(@PathVariable String id) {
-        blogService.deleteBlogById(id);
+        blogService.softDeleteBlogById(id);
         return ResponseEntity.ok().body(
                 ApiResponse.<String>builder()
                         .code(SuccessCode.BLOG_DELETED.getCode())
