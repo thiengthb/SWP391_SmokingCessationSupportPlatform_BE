@@ -1,37 +1,94 @@
 version: '3.8'
 
 services:
-  backend:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: my-springboot-container
-    depends_on:
-      - db
-    ports:
-      - "8080:8080"
-    networks:
-      - app-network
-
-  db:
+  mysql:
     image: mysql:8.0
-    container_name: mysql-db
-    restart: unless-stopped
+    container_name: mysql
     environment:
+      MYSQL_ROOT_PASSWORD: root
       MYSQL_DATABASE: smoking_cessation_db
       MYSQL_USER: dev
       MYSQL_PASSWORD: 12345
-      MYSQL_ROOT_PASSWORD: 12345
-    ports:
-      - "3306:3306"
     volumes:
       - mysql_data:/var/lib/mysql
+    ports:
+      - "3306:3306"
     networks:
-      - app-network
+      - app_net
+
+  redis:
+    image: redis:7
+    container_name: redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - app_net
+
+  springboot-1:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: springboot-1
+    env_file:
+      - .env
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+    depends_on:
+      - mysql
+      - redis
+    networks:
+      - app_net
+
+  springboot-2:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: springboot-2
+    env_file:
+      - .env
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+    depends_on:
+      - mysql
+      - redis
+    networks:
+      - app_net
+
+  springboot-3:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: springboot-3
+    env_file:
+      - .env
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+    depends_on:
+      - mysql
+      - redis
+    networks:
+      - app_net
+
+  nginx:
+    image: nginx:latest
+    container_name: nginx
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - springboot-1
+      - springboot-2
+      - springboot-3
+    networks:
+      - app_net
 
 volumes:
   mysql_data:
+  redis_data:
 
 networks:
-  app-network:
+  app_net:
     driver: bridge

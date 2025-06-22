@@ -1,5 +1,5 @@
 # Ignore everything except the JAR file
-*
+target/*
 !target/*.jar
 
 # Ignore version control files
@@ -11,12 +11,8 @@
 .vscode
 *.iml
 
-# Ignore environment files
-.env
-
 # Ignore build tools
 .gradle
-.mvn
 build/
 
 # Logs and temp files
