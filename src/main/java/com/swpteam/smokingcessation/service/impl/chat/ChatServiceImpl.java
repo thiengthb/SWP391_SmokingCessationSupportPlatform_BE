@@ -52,7 +52,6 @@ public class ChatServiceImpl implements IChatService {
     }
 
     @Override
-    @PreAuthorize("hasRole('ADMIN')")
     public Page<ChatRestResponse> getChats(PageableRequest request) {
         ValidationUtil.checkFieldExist(Chat.class, request.sortBy());
 
@@ -63,7 +62,6 @@ public class ChatServiceImpl implements IChatService {
     }
 
     @Override
-    @PreAuthorize("hasRole('ADMIN')")
     public Page<ChatRestResponse> getChatsById(String id, PageableRequest request) {
         ValidationUtil.checkFieldExist(Chat.class, request.sortBy());
 

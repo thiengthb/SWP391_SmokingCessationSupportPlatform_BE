@@ -5,6 +5,7 @@ import com.swpteam.smokingcessation.common.PageableRequest;
 import com.swpteam.smokingcessation.constant.SuccessCode;
 import com.swpteam.smokingcessation.domain.dto.goal.*;
 import com.swpteam.smokingcessation.service.interfaces.profile.IGoalService;
+import com.swpteam.smokingcessation.utils.ResponseUtil;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
@@ -26,60 +27,55 @@ public class GoalController {
     IGoalService goalService;
 
     @GetMapping
-    public ResponseEntity<ApiResponse<Page<GoalResponse>>> getGoalPage(@Valid PageableRequest request) {
-        return ResponseEntity.ok(
-                ApiResponse.<Page<GoalResponse>>builder()
-                        .code(SuccessCode.GOAL_GET_ALL.getCode())
-                        .message(SuccessCode.GOAL_GET_ALL.getMessage())
-                        .result(goalService.getPublicGoalPage(request))
-                        .build()
+    public ResponseEntity<ApiResponse<Page<GoalResponse>>> getGoalPage(
+            @Valid PageableRequest request
+    ) {
+        return ResponseUtil.buildResponse(
+                SuccessCode.GOAL_GET_ALL,
+                goalService.getPublicGoalPage(request)
         );
     }
 
     @GetMapping("/{name}")
-    public ResponseEntity<ApiResponse<GoalResponse>> getGoalByName(@PathVariable String name) {
-        return ResponseEntity.ok(
-                ApiResponse.<GoalResponse>builder()
-                        .code(SuccessCode.GOAL_GET_BY_NAME.getCode())
-                        .message(SuccessCode.GOAL_GET_BY_NAME.getMessage())
-                        .result(goalService.getGoalByName(name))
-                        .build()
+    public ResponseEntity<ApiResponse<GoalResponse>> getGoalByName(
+            @PathVariable String name
+    ) {
+        return ResponseUtil.buildResponse(
+                SuccessCode.GOAL_GET_BY_NAME,
+                goalService.getGoalByName(name)
         );
     }
 
     @PostMapping
     public ResponseEntity<ApiResponse<GoalResponse>> createGoal(
-            @RequestBody @Valid GoalCreateRequest request) {
-        return ResponseEntity.ok(
-                ApiResponse.<GoalResponse>builder()
-                        .code(SuccessCode.GOAL_CREATED.getCode())
-                        .message(SuccessCode.GOAL_CREATED.getMessage())
-                        .result(goalService.createGoal(request))
-                        .build()
+            @RequestBody @Valid GoalCreateRequest request
+    ) {
+        return ResponseUtil.buildResponse(
+                SuccessCode.GOAL_CREATED,
+                goalService.createGoal(request)
         );
     }
 
     @PutMapping("/{name}")
     public ResponseEntity<ApiResponse<GoalResponse>> updateGoal(
             @PathVariable String name,
-            @RequestBody @Valid GoalUpdateRequest request) {
-        return ResponseEntity.ok(
-                ApiResponse.<GoalResponse>builder()
-                        .code(SuccessCode.GOAL_UPDATED.getCode())
-                        .message(SuccessCode.GOAL_UPDATED.getMessage())
-                        .result(goalService.updateGoal(name, request))
-                        .build()
+            @RequestBody @Valid GoalUpdateRequest request
+    ) {
+        return ResponseUtil.buildResponse(
+                SuccessCode.GOAL_UPDATED,
+                goalService.updateGoal(name, request)
         );
     }
 
     @DeleteMapping("/{name}")
-    public ResponseEntity<ApiResponse<String>> deleteGoal(@PathVariable String name) {
+    public ResponseEntity<ApiResponse<String>> deleteGoal(
+            @PathVariable String name
+    ) {
         goalService.softDeleteGoal(name);
-        return ResponseEntity.ok(
-                ApiResponse.<String>builder()
-                        .code(SuccessCode.GOAL_DELETED.getCode())
-                        .message(SuccessCode.GOAL_DELETED.getMessage())
-                        .build()
+        return ResponseUtil.buildResponse(
+                SuccessCode.GOAL_DELETED,
+                null
         );
     }
+    
 }

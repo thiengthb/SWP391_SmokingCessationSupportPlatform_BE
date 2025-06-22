@@ -31,7 +31,6 @@ public class MemberServiceImpl implements IMemberService {
     AuthUtilService authUtilService;
 
     @Override
-    @PreAuthorize("hasRole('ADMIN')")
     public Page<MemberResponse> getMembersPage(PageableRequest request) {
         ValidationUtil.checkFieldExist(Member.class, request.sortBy());
 

@@ -37,13 +37,13 @@ import org.springframework.transaction.annotation.Transactional;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class BlogServiceImpl implements IBlogService {
 
-    BlogRepository blogRepository;
     BlogMapper blogMapper;
-
+    BlogRepository blogRepository;
     CategoryRepository categoryRepository;
     ICategoryService categoryService;
-
     AuthUtilService authUtilService;
+
+    HtmlSanitizerService htmlSanitizerService;
 
     @Override
     @Cacheable(value = "BLOG_PAGE_CACHE",
@@ -74,7 +74,7 @@ public class BlogServiceImpl implements IBlogService {
 
     @Override
     @Cacheable(value = "BLOG_PAGE_CACHE",
-            key = "#request.page + '-' + #request.size + '-' + #request.sortBy + '-' + #request.direction '-' + #categoryName")
+            key = "#request.page + '-' + #request.size + '-' + #request.sortBy + '-' + #request.direction + '-' + #categoryName")
     public Page<BlogResponse> getBlogsPageByCategory(String categoryName, PageableRequest request) {
         Category category = categoryService.findCategoryByNameOrThrowError(categoryName);
 
@@ -110,6 +110,8 @@ public class BlogServiceImpl implements IBlogService {
 
         Blog blog = blogMapper.toEntity(request);
 
+        blog.setContent(htmlSanitizerService.sanitize(request.content()));
+
         blog.setAccount(currentAccount);
         blog.setCategory(category);
 
@@ -133,6 +135,8 @@ public class BlogServiceImpl implements IBlogService {
         }
 
         blogMapper.update(blog, request);
+
+        blog.setContent(htmlSanitizerService.sanitize(request.content()));
 
         String baseSlug = SlugUtil.toSlug(blog.getTitle());
         blog.setSlug(ensureUniqueSlug(baseSlug));

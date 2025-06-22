@@ -155,6 +155,12 @@
 			<artifactId>google-api-services-calendar</artifactId>
 			<version>v3-rev411-1.25.0</version>
 		</dependency>
+		<!-- https://mvnrepository.com/artifact/com.googlecode.owasp-java-html-sanitizer/owasp-java-html-sanitizer -->
+		<dependency>
+			<groupId>com.googlecode.owasp-java-html-sanitizer</groupId>
+			<artifactId>owasp-java-html-sanitizer</artifactId>
+			<version>20220608.1</version>
+		</dependency>
     </dependencies>
 
 	<build>

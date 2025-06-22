@@ -39,29 +39,31 @@ public class ReviewServiceImpl implements IReviewService {
     IAccountService accountService;
 
     @Override
+    @PreAuthorize("hasRole('MEMBER')")
     @Cacheable(value = "REVIEW_PAGE_CACHE",
             key = "#request.page + '-' + #request.size + '-' + #request.sortBy + '-' + #request.direction '-' + #memberId")
-    public Page<ReviewResponse> getMyReviewPageAsMember(String memberId, PageableRequest request) {
+    public Page<ReviewResponse> getMyReviewPageAsMember(PageableRequest request) {
         ValidationUtil.checkFieldExist(Review.class, request.sortBy());
 
-        accountService.findAccountByIdOrThrowError(memberId);
+        Account currentAccount = authUtilService.getCurrentAccountOrThrowError();
 
         Pageable pageable = PageableRequest.getPageable(request);
-        Page<Review> reviews = reviewRepository.findByMemberIdAndIsDeletedFalse(memberId, pageable);
+        Page<Review> reviews = reviewRepository.findByMemberIdAndIsDeletedFalse(currentAccount.getId(), pageable);
 
         return reviews.map(reviewMapper::toResponse);
     }
 
     @Override
+    @PreAuthorize("hasRole('COACH')")
     @Cacheable(value = "REVIEW_PAGE_CACHE",
             key = "#request.page + '-' + #request.size + '-' + #request.sortBy + '-' + #request.direction '-' + #coachId")
-    public Page<ReviewResponse> getMyReviewPageAsCoach(String coachId, PageableRequest request) {
+    public Page<ReviewResponse> getMyReviewPageAsCoach(PageableRequest request) {
         ValidationUtil.checkFieldExist(Review.class, request.sortBy());
 
-        accountService.findAccountByIdOrThrowError(coachId);
+        Account currentAccount = authUtilService.getCurrentAccountOrThrowError();
 
         Pageable pageable = PageableRequest.getPageable(request);
-        Page<Review> reviews = reviewRepository.findByCoachIdAndIsDeletedFalse(coachId, pageable);
+        Page<Review> reviews = reviewRepository.findByCoachIdAndIsDeletedFalse(currentAccount.getId(), pageable);
 
         return reviews.map(reviewMapper::toResponse);
     }

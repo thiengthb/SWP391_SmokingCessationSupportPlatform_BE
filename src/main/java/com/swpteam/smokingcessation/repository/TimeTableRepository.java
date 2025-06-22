@@ -10,17 +10,17 @@ import java.time.LocalDateTime;
 import java.util.Optional;
 
 @Repository
-public interface TimeTableRepository extends JpaRepository<TimeTable,String> {
+public interface TimeTableRepository extends JpaRepository<TimeTable, String> {
 
     Page<TimeTable> findAllByIsDeletedFalse(Pageable pageable);
 
-    Page<TimeTable> findAllByAccountIdAndIsDeletedFalse(String accountId, Pageable pageable);
+    Page<TimeTable> findAllByCoach_IdAndIsDeletedFalse(String coachId, Pageable pageable);
 
-    Page<TimeTable> findByCoachIdAndIsDeletedFalse(String coachId, Pageable pageable);
+    Page<TimeTable> findByCoach_IdAndIsDeletedFalse(String coachId, Pageable pageable);
 
     Optional<TimeTable> findByIdAndIsDeletedFalse(String id);
 
-    Optional<TimeTable> findByCoachIdAndStartedAtLessThanEqualAndEndedAtGreaterThanEqual(
+    Optional<TimeTable> findByCoach_IdAndStartedAtLessThanEqualAndEndedAtGreaterThanEqual(
             String coachId, LocalDateTime bookingStart, LocalDateTime bookingEnd
     );
 

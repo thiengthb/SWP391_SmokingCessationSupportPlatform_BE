@@ -9,9 +9,9 @@ import org.springframework.data.domain.Page;
 
 public interface IReviewService {
 
-    Page<ReviewResponse> getMyReviewPageAsMember(String memberId, PageableRequest request);
+    Page<ReviewResponse> getMyReviewPageAsMember(PageableRequest request);
 
-    Page<ReviewResponse> getMyReviewPageAsCoach(String coachId, PageableRequest request);
+    Page<ReviewResponse> getMyReviewPageAsCoach(PageableRequest request);
 
     ReviewResponse getReviewById(String id);
 

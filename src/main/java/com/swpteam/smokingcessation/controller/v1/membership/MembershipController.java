@@ -8,6 +8,7 @@ import com.swpteam.smokingcessation.common.ApiResponse;
 import com.swpteam.smokingcessation.common.PageableRequest;
 import com.swpteam.smokingcessation.constant.SuccessCode;
 import com.swpteam.smokingcessation.service.interfaces.membership.IMembershipService;
+import com.swpteam.smokingcessation.utils.ResponseUtil;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
@@ -29,68 +30,65 @@ public class MembershipController {
     IMembershipService membershipService;
 
     @GetMapping
-    ResponseEntity<ApiResponse<Page<MembershipResponse>>> getMembershipPage(@Valid PageableRequest request) {
-        return ResponseEntity.ok(
-                ApiResponse.<Page<MembershipResponse>>builder()
-                        .code(SuccessCode.MEMBERSHIP_GET_ALL.getCode())
-                        .message(SuccessCode.MEMBERSHIP_GET_ALL.getMessage())
-                        .result(membershipService.getMembershipPage(request))
-                        .build()
+    ResponseEntity<ApiResponse<Page<MembershipResponse>>> getMembershipPage(
+            @Valid PageableRequest request
+    ) {
+        return ResponseUtil.buildResponse(
+                SuccessCode.MEMBERSHIP_GET_ALL,
+                membershipService.getMembershipPage(request)
         );
     }
 
     @GetMapping("/{id}")
-    ResponseEntity<ApiResponse<MembershipResponse>> getMembershipById(@PathVariable String id) {
-        return ResponseEntity.ok(
-                ApiResponse.<MembershipResponse>builder()
-                        .code(SuccessCode.MEMBERSHIP_GET_BY_ID.getCode())
-                        .message(SuccessCode.MEMBERSHIP_GET_BY_ID.getMessage())
-                        .result(membershipService.getMembershipById(id))
-                        .build()
+    ResponseEntity<ApiResponse<MembershipResponse>> getMembershipById(
+            @PathVariable String id
+    ) {
+        return ResponseUtil.buildResponse(
+                SuccessCode.MEMBERSHIP_GET_BY_ID,
+                membershipService.getMembershipById(id)
         );
     }
 
     @PostMapping
-    ResponseEntity<ApiResponse<MembershipResponse>> createMembership(@RequestBody @Valid MembershipCreateRequest request) {
-        return ResponseEntity.ok(
-                ApiResponse.<MembershipResponse>builder()
-                        .code(SuccessCode.MEMBERSHIP_CREATED.getCode())
-                        .message(SuccessCode.MEMBERSHIP_CREATED.getMessage())
-                        .result(membershipService.createMembership(request))
-                        .build()
+    ResponseEntity<ApiResponse<MembershipResponse>> createMembership(
+            @RequestBody @Valid MembershipCreateRequest request
+    ) {
+        return ResponseUtil.buildResponse(
+                SuccessCode.MEMBERSHIP_CREATED,
+                membershipService.createMembership(request)
         );
     }
 
     @PutMapping("/{id}")
-    ResponseEntity<ApiResponse<MembershipResponse>> updateMembership(@PathVariable String id, @RequestBody @Valid MembershipUpdateRequest request) {
-        return ResponseEntity.ok(
-                ApiResponse.<MembershipResponse>builder()
-                        .code(SuccessCode.MEMBERSHIP_UPDATED.getCode())
-                        .message(SuccessCode.MEMBERSHIP_UPDATED.getMessage())
-                        .result(membershipService.updateMembership(id, request))
-                        .build()
+    ResponseEntity<ApiResponse<MembershipResponse>> updateMembership(
+            @PathVariable String id,
+            @RequestBody @Valid MembershipUpdateRequest request
+    ) {
+        return ResponseUtil.buildResponse(
+                SuccessCode.MEMBERSHIP_UPDATED,
+                membershipService.updateMembership(id, request)
         );
     }
 
     @DeleteMapping("/{id}")
-    ResponseEntity<ApiResponse<String>> deleteMembership(@PathVariable String id) {
+    ResponseEntity<ApiResponse<String>> deleteMembership(
+            @PathVariable String id
+    ) {
         membershipService.softDeleteMembershipById(id);
-        return ResponseEntity.ok(
-                ApiResponse.<String>builder()
-                        .code(SuccessCode.MEMBERSHIP_DELETED.getCode())
-                        .message(SuccessCode.MEMBERSHIP_DELETED.getMessage())
-                        .build()
+        return ResponseUtil.buildResponse(
+                SuccessCode.MEMBERSHIP_DELETED,
+                null
         );
     }
 
     @PutMapping("/currency/{id}")
-    ResponseEntity<ApiResponse<MembershipResponse>> updateMembershipCurrency(@PathVariable String id, @RequestBody @Valid MembershipCurrencyUpdateRequest request) {
-        return ResponseEntity.ok(
-                ApiResponse.<MembershipResponse>builder()
-                        .code(SuccessCode.MEMBERSHIP_UPDATED.getCode())
-                        .message(SuccessCode.MEMBERSHIP_UPDATED.getMessage())
-                        .result(membershipService.updateMembershipCurrency(id, request))
-                        .build()
+    ResponseEntity<ApiResponse<MembershipResponse>> updateMembershipCurrency(
+            @PathVariable String id,
+            @RequestBody @Valid MembershipCurrencyUpdateRequest request
+    ) {
+        return ResponseUtil.buildResponse(
+                SuccessCode.MEMBERSHIP_UPDATED,
+                membershipService.updateMembershipCurrency(id, request)
         );
     }
 }

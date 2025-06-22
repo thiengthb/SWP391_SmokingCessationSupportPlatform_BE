@@ -15,7 +15,9 @@ public interface BookingRepository extends JpaRepository<Booking, String> {
 
     Page<Booking> findAllByIsDeletedFalse(Pageable pageable);
 
-    Page<Booking> findAllByAccountIdAndIsDeletedFalse(String accountId, Pageable pageable);
+    Page<Booking> findAllByMemberIdAndIsDeletedFalse(String memberId, Pageable pageable);
+
+    Page<Booking> findAllByCoachIdAndIsDeletedFalse(String coachId, Pageable pageable);
 
     boolean existsByCoachIdAndIsDeletedFalseAndStartedAtLessThanAndEndedAtGreaterThan(
             String coachId,

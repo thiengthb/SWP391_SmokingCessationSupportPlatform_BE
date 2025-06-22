@@ -7,6 +7,7 @@ import com.swpteam.smokingcessation.domain.dto.review.ReviewCreateRequest;
 import com.swpteam.smokingcessation.domain.dto.review.ReviewResponse;
 import com.swpteam.smokingcessation.domain.dto.review.ReviewUpdateRequest;
 import com.swpteam.smokingcessation.service.interfaces.profile.IReviewService;
+import com.swpteam.smokingcessation.utils.ResponseUtil;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
@@ -27,85 +28,65 @@ public class ReviewController {
 
     IReviewService reviewService;
 
-    @GetMapping
-    ResponseEntity<ApiResponse<Page<ReviewResponse>>> getReviewPage(@Valid PageableRequest request) {
-        return ResponseEntity.ok(
-                ApiResponse.<Page<ReviewResponse>>builder()
-                        .code(SuccessCode.REVIEW_GET_ALL.getCode())
-                        .message(SuccessCode.REVIEW_GET_ALL.getMessage())
-                        .result(reviewService.getReviewPage(request))
-                        .build()
+    @GetMapping("/coach/my-review")
+    ResponseEntity<ApiResponse<Page<ReviewResponse>>> getMyReviewPageAsCoach(
+            @Valid PageableRequest request
+    ) {
+        return ResponseUtil.buildResponse(
+                SuccessCode.REVIEW_GET_ALL,
+                reviewService.getMyReviewPageAsCoach(request)
         );
     }
 
-    @GetMapping("/by-account/{accountId}")
-    ResponseEntity<ApiResponse<Page<ReviewResponse>>> getReviewByAccount(
-            @PathVariable String accountId,
-            @Valid PageableRequest request) {
-        return ResponseEntity.ok(
-                ApiResponse.<Page<ReviewResponse>>builder()
-                        .code(SuccessCode.REVIEW_GET_BY_ACCOUNT.getCode())
-                        .message(SuccessCode.REVIEW_GET_BY_ACCOUNT.getMessage())
-                        .result(reviewService.getMyReviewPageAsMember(accountId, request))
-                        .build()
-        );
-    }
-
-    @GetMapping("/by-coach/{coachId}")
-    ResponseEntity<ApiResponse<Page<ReviewResponse>>> getReviewByCoach(
-            @PathVariable String coachId,
-            @Valid PageableRequest request) {
-        return ResponseEntity.ok(
-                ApiResponse.<Page<ReviewResponse>>builder()
-                        .code(SuccessCode.REVIEW_GET_BY_COACH.getCode())
-                        .message(SuccessCode.REVIEW_GET_BY_COACH.getMessage())
-                        .result(reviewService.getMyReviewPageAsCoach(coachId, request))
-                        .build()
+    @GetMapping("/member/my-review")
+    ResponseEntity<ApiResponse<Page<ReviewResponse>>> getMyReviewPageAsMember(
+            @Valid PageableRequest request
+    ) {
+        return ResponseUtil.buildResponse(
+                SuccessCode.REVIEW_GET_ALL,
+                reviewService.getMyReviewPageAsMember(request)
         );
     }
 
     @GetMapping("/{id}")
-    ResponseEntity<ApiResponse<ReviewResponse>> getReviewById(@PathVariable String id) {
-        return ResponseEntity.ok(
-                ApiResponse.<ReviewResponse>builder()
-                        .code(SuccessCode.REVIEW_GET_BY_ID.getCode())
-                        .message(SuccessCode.REVIEW_GET_BY_ID.getMessage())
-                        .result(reviewService.getReviewById(id))
-                        .build()
+    ResponseEntity<ApiResponse<ReviewResponse>> getReviewById(
+            @PathVariable String id
+    ) {
+        return ResponseUtil.buildResponse(
+                SuccessCode.REVIEW_GET_BY_ID,
+                reviewService.getReviewById(id)
         );
     }
 
     @PostMapping
-    ResponseEntity<ApiResponse<ReviewResponse>> createReview(@RequestBody @Valid ReviewCreateRequest request) {
-        return ResponseEntity.ok(
-                ApiResponse.<ReviewResponse>builder()
-                        .code(SuccessCode.REVIEW_CREATED.getCode())
-                        .message(SuccessCode.REVIEW_CREATED.getMessage())
-                        .result(reviewService.createReview(request))
-                        .build()
+    ResponseEntity<ApiResponse<ReviewResponse>> createReview(
+            @RequestBody @Valid ReviewCreateRequest request
+    ) {
+        return ResponseUtil.buildResponse(
+                SuccessCode.REVIEW_CREATED,
+                reviewService.createReview(request)
         );
     }
 
     @PutMapping("/{id}")
-    ResponseEntity<ApiResponse<ReviewResponse>> updateReview(@PathVariable String id,
-                                                             @RequestBody @Valid ReviewUpdateRequest request) {
-        return ResponseEntity.ok(
-                ApiResponse.<ReviewResponse>builder()
-                        .code(SuccessCode.REVIEW_UPDATED.getCode())
-                        .message(SuccessCode.REVIEW_UPDATED.getMessage())
-                        .result(reviewService.updateReview(id, request))
-                        .build()
+    ResponseEntity<ApiResponse<ReviewResponse>> updateReview(
+            @PathVariable String id,
+            @RequestBody @Valid ReviewUpdateRequest request
+    ) {
+        return ResponseUtil.buildResponse(
+                SuccessCode.REVIEW_UPDATED,
+                reviewService.updateReview(id, request)
         );
     }
 
     @DeleteMapping("/{id}")
-    ResponseEntity<ApiResponse<String>> softDeleteReview(@PathVariable String id) {
-        reviewService.softDeleteReview(id);
-        return ResponseEntity.ok(
-                ApiResponse.<String>builder()
-                        .code(SuccessCode.REVIEW_DELETED.getCode())
-                        .message(SuccessCode.REVIEW_DELETED.getMessage())
-                        .build()
+    ResponseEntity<ApiResponse<String>> softDeleteReview(
+            @PathVariable String id
+    ) {
+        return ResponseUtil.buildResponse(
+                SuccessCode.REVIEW_DELETED,
+                null
         );
     }
+    
 }

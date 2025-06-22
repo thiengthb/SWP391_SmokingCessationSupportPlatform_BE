@@ -7,6 +7,7 @@ import com.swpteam.smokingcessation.common.ApiResponse;
 import com.swpteam.smokingcessation.common.PageableRequest;
 import com.swpteam.smokingcessation.constant.SuccessCode;
 import com.swpteam.smokingcessation.service.interfaces.profile.IHealthService;
+import com.swpteam.smokingcessation.utils.ResponseUtil;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
@@ -28,68 +29,65 @@ public class HealthController {
     IHealthService healthService;
 
     @GetMapping
-    ResponseEntity<ApiResponse<Page<HealthResponse>>> getHealthPage(@Valid PageableRequest request) {
-        return ResponseEntity.ok(
-                ApiResponse.<Page<HealthResponse>>builder()
-                        .code(SuccessCode.HEALTH_GET_ALL.getCode())
-                        .message(SuccessCode.HEALTH_GET_ALL.getMessage())
-                        .result(healthService.getHealthPage(request))
-                        .build()
+    ResponseEntity<ApiResponse<Page<HealthResponse>>> getHealthPage(
+            @Valid PageableRequest request
+    ) {
+        return ResponseUtil.buildResponse(
+                SuccessCode.HEALTH_GET_ALL,
+                healthService.getHealthPage(request)
         );
     }
 
     @GetMapping("/{id}")
-    ResponseEntity<ApiResponse<HealthResponse>> getHealthById(@PathVariable String id) {
-        return ResponseEntity.ok(
-                ApiResponse.<HealthResponse>builder()
-                        .code(SuccessCode.HEALTH_GET_BY_ID.getCode())
-                        .message(SuccessCode.HEALTH_GET_BY_ID.getMessage())
-                        .result(healthService.getHealthById(id))
-                        .build()
+    ResponseEntity<ApiResponse<HealthResponse>> getHealthById(
+            @PathVariable String id
+    ) {
+        return ResponseUtil.buildResponse(
+                SuccessCode.HEALTH_GET_BY_ID,
+                healthService.getHealthById(id)
         );
     }
 
     @GetMapping("/account/{id}")
-    ResponseEntity<ApiResponse<Page<HealthResponse>>> getHealthPageByAccountId(@PathVariable String id, @Valid PageableRequest request) {
-        return ResponseEntity.ok(
-                ApiResponse.<Page<HealthResponse>>builder()
-                        .code(SuccessCode.HEALTH_GET_BY_ACCOUNT.getCode())
-                        .message(SuccessCode.HEALTH_GET_BY_ACCOUNT.getMessage())
-                        .result(healthService.getHealthPageByAccountId(id, request))
-                        .build()
+    ResponseEntity<ApiResponse<Page<HealthResponse>>> getHealthPageByAccountId(
+            @PathVariable String id,
+            @Valid PageableRequest request
+    ) {
+        return ResponseUtil.buildResponse(
+                SuccessCode.HEALTH_GET_BY_ACCOUNT,
+                healthService.getHealthPageByAccountId(id, request)
         );
     }
 
     @PostMapping
-    ResponseEntity<ApiResponse<HealthResponse>> createHealth(@RequestBody @Valid HealthCreateRequest request) {
-        return ResponseEntity.ok(
-                ApiResponse.<HealthResponse>builder()
-                        .code(SuccessCode.HEALTH_CREATED.getCode())
-                        .message(SuccessCode.HEALTH_CREATED.getMessage())
-                        .result(healthService.createHealth(request))
-                        .build()
+    ResponseEntity<ApiResponse<HealthResponse>> createHealth(
+            @RequestBody @Valid HealthCreateRequest request
+    ) {
+        return ResponseUtil.buildResponse(
+                SuccessCode.HEALTH_CREATED,
+                healthService.createHealth(request)
         );
     }
 
     @PutMapping("/{id}")
-    ResponseEntity<ApiResponse<HealthResponse>> updateHealth(@PathVariable String id, @RequestBody @Valid HealthUpdateRequest request) {
-        return ResponseEntity.ok(
-                ApiResponse.<HealthResponse>builder()
-                        .code(SuccessCode.HEALTH_UPDATED.getCode())
-                        .message(SuccessCode.HEALTH_UPDATED.getMessage())
-                        .result(healthService.updateHealth(id, request))
-                        .build()
+    ResponseEntity<ApiResponse<HealthResponse>> updateHealth(
+            @PathVariable String id,
+            @RequestBody @Valid HealthUpdateRequest request
+    ) {
+        return ResponseUtil.buildResponse(
+                SuccessCode.HEALTH_UPDATED,
+                healthService.updateHealth(id, request)
         );
     }
 
     @DeleteMapping("/{id}")
-    ResponseEntity<ApiResponse<String>> deleteHealthById(@PathVariable String id) {
+    ResponseEntity<ApiResponse<String>> deleteHealthById(
+            @PathVariable String id
+    ) {
         healthService.softDeleteHealthById(id);
-        return ResponseEntity.ok(
-                ApiResponse.<String>builder()
-                        .code(SuccessCode.HEALTH_DELETED.getCode())
-                        .message(SuccessCode.HEALTH_DELETED.getMessage())
-                        .build()
+        return ResponseUtil.buildResponse(
+                SuccessCode.HEALTH_DELETED,
+                null
         );
     }
 }

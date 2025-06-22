@@ -5,6 +5,7 @@ import com.swpteam.smokingcessation.common.PageableRequest;
 import com.swpteam.smokingcessation.constant.SuccessCode;
 import com.swpteam.smokingcessation.domain.dto.streak.StreakResponse;
 import com.swpteam.smokingcessation.service.interfaces.tracking.IStreakService;
+import com.swpteam.smokingcessation.utils.ResponseUtil;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
@@ -20,32 +21,38 @@ import org.springframework.web.bind.annotation.*;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @Tag(name = "Streak", description = "Manage streak-related operations")
 public class StreakController {
+
     IStreakService streakService;
 
     @GetMapping
-    ResponseEntity<ApiResponse<Page<StreakResponse>>> getStreaks(@Valid PageableRequest request) {
-        return ResponseEntity.ok(
-                ApiResponse.<Page<StreakResponse>>builder()
-                        .result(streakService.getStreakPage(request))
-                        .build());
+    ResponseEntity<ApiResponse<Page<StreakResponse>>> getStreaks(
+            @Valid PageableRequest request
+    ) {
+        return ResponseUtil.buildResponse(
+                SuccessCode.RECORD_DELETED,
+                streakService.getStreakPage(request)
+        );
     }
 
     @GetMapping("/{memberId}")
-    ResponseEntity<ApiResponse<StreakResponse>> getStreakById(@PathVariable String memberId) {
-        return ResponseEntity.ok(
-                ApiResponse.<StreakResponse>builder()
-                        .result(streakService.getStreakByAccountId(memberId))
-                        .build());
+    ResponseEntity<ApiResponse<StreakResponse>> getStreakById(
+            @PathVariable String memberId
+    ) {
+        return ResponseUtil.buildResponse(
+                SuccessCode.RECORD_DELETED,
+                streakService.getStreakByAccountId(memberId)
+        );
     }
 
     @PutMapping("/reset/{memberId}")
-    ResponseEntity<ApiResponse<Void>> resetStreak(@PathVariable String memberId) {
+    ResponseEntity<ApiResponse<Void>> resetStreak(
+            @PathVariable String memberId
+    ) {
         streakService.resetStreak(memberId);
-        return ResponseEntity.ok(
-                ApiResponse.<Void>builder()
-                        .code(SuccessCode.STREAK_RESET.getCode())
-                        .message(SuccessCode.STREAK_RESET.getMessage())
-                        .build());
+        return ResponseUtil.buildResponse(
+                SuccessCode.STREAK_RESET,
+                null
+        );
     }
 
 }

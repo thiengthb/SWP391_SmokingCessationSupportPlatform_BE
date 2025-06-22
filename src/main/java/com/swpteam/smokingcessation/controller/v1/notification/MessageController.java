@@ -6,6 +6,7 @@ import com.swpteam.smokingcessation.common.ApiResponse;
 import com.swpteam.smokingcessation.common.PageableRequest;
 import com.swpteam.smokingcessation.constant.SuccessCode;
 import com.swpteam.smokingcessation.service.interfaces.notification.IMessageService;
+import com.swpteam.smokingcessation.utils.ResponseUtil;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
@@ -27,60 +28,55 @@ public class MessageController {
     IMessageService messageService;
 
     @GetMapping
-    ResponseEntity<ApiResponse<Page<MessageResponse>>> getMessagePage(@Valid PageableRequest request) {
-        return ResponseEntity.ok(
-                ApiResponse.<Page<MessageResponse>>builder()
-                        .code(SuccessCode.MEMBERSHIP_GET_ALL.getCode())
-                        .message(SuccessCode.MEMBERSHIP_GET_ALL.getMessage())
-                        .result(messageService.getMessagePage(request))
-                        .build()
+    ResponseEntity<ApiResponse<Page<MessageResponse>>> getMessagePage(
+            @Valid PageableRequest request
+    ) {
+        return ResponseUtil.buildResponse(
+                SuccessCode.MEMBERSHIP_GET_ALL,
+                messageService.getMessagePage(request)
         );
     }
 
     @GetMapping("/{id}")
-    ResponseEntity<ApiResponse<MessageResponse>> getMessageById(@PathVariable String id) {
-        MessageResponse response = messageService.getById(id);
-        return ResponseEntity.ok(
-                ApiResponse.<MessageResponse>builder()
-                        .code(SuccessCode.MESSAGE_GET_BY_ID.getCode())
-                        .message(SuccessCode.MESSAGE_GET_BY_ID.getMessage())
-                        .result(response)
-                        .build()
+    ResponseEntity<ApiResponse<MessageResponse>> getMessageById(
+            @PathVariable String id
+    ) {
+        return ResponseUtil.buildResponse(
+                SuccessCode.MESSAGE_GET_BY_ID,
+                messageService.getById(id)
         );
     }
 
     @PostMapping
-    ResponseEntity<ApiResponse<MessageResponse>> createMessage(@Valid @RequestBody MessageRequest request) {
-        MessageResponse response = messageService.createMessage(request);
-        return ResponseEntity.ok(
-                ApiResponse.<MessageResponse>builder()
-                        .code(SuccessCode.MESSAGE_CREATED.getCode())
-                        .message(SuccessCode.MESSAGE_CREATED.getMessage())
-                        .result(response)
-                        .build()
+    ResponseEntity<ApiResponse<MessageResponse>> createMessage(
+            @Valid @RequestBody MessageRequest request
+    ) {
+        return ResponseUtil.buildResponse(
+                SuccessCode.MESSAGE_CREATED,
+                messageService.createMessage(request)
         );
     }
 
     @PutMapping("/{id}")
-    ResponseEntity<ApiResponse<MessageResponse>> updateMessage(@PathVariable String id, @Valid @RequestBody MessageRequest request) {
-        MessageResponse response = messageService.updateMessage(id, request);
-        return ResponseEntity.ok(
-                ApiResponse.<MessageResponse>builder()
-                        .code(SuccessCode.MESSAGE_UPDATED.getCode())
-                        .message(SuccessCode.MESSAGE_UPDATED.getMessage())
-                        .result(response)
-                        .build()
+    ResponseEntity<ApiResponse<MessageResponse>> updateMessage(
+            @PathVariable String id,
+            @Valid @RequestBody MessageRequest request
+    ) {
+        return ResponseUtil.buildResponse(
+                SuccessCode.MESSAGE_UPDATED,
+                messageService.updateMessage(id, request)
         );
     }
 
     @DeleteMapping("/{id}")
-    ResponseEntity<ApiResponse<Void>> deleteMessage(@PathVariable String id) {
+    ResponseEntity<ApiResponse<Void>> deleteMessage(
+            @PathVariable String id
+    ) {
         messageService.softDeleteMessageById(id);
-        return ResponseEntity.ok(
-                ApiResponse.<Void>builder()
-                        .code(SuccessCode.MESSAGE_DELETED.getCode())
-                        .message(SuccessCode.MEMBERSHIP_DELETED.getMessage())
-                        .build()
+        return ResponseUtil.buildResponse(
+                SuccessCode.MESSAGE_DELETED,
+                null
         );
     }
+    
 }

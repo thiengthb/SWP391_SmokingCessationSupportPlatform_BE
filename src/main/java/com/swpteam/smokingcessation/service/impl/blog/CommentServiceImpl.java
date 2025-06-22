@@ -53,7 +53,6 @@ public class CommentServiceImpl implements ICommentService {
     }
 
     @Override
-    @PreAuthorize("hasRole('ADMIN')")
     @Cacheable(value = "COMMENT_PAGE_CACHE",
             key = "#request.page + '-' + #request.size + '-' + #request.sortBy + '-' + #request.direction")
     public Page<CommentResponse> getCommentPage(PageableRequest request) {
@@ -66,7 +65,6 @@ public class CommentServiceImpl implements ICommentService {
     }
 
     @Override
-    @PreAuthorize("hasRole('ADMIN')")
     @Cacheable(value = "COMMENT_CACHE", key = "#id")
     public CommentResponse getCommentById(String id) {
         Comment comment = findCommentByIdOrThrowError(id);

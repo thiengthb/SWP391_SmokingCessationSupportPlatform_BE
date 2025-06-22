@@ -5,6 +5,7 @@ import com.swpteam.smokingcessation.constant.SuccessCode;
 import com.swpteam.smokingcessation.domain.dto.chatbot.ChatbotRequest;
 import com.swpteam.smokingcessation.domain.dto.chatbot.ChatbotResponse;
 import com.swpteam.smokingcessation.service.interfaces.chat.IChatbotService;
+import com.swpteam.smokingcessation.utils.ResponseUtil;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
@@ -26,12 +27,12 @@ public class ChatbotController {
     IChatbotService chatbotService;
 
     @PostMapping
-    ResponseEntity<ApiResponse<ChatbotResponse>> createAccount(@RequestBody @Valid ChatbotRequest request) {
-        return ResponseEntity.ok(
-                ApiResponse.<ChatbotResponse>builder()
-                        .code(SuccessCode.RETURN_MESSAGE.getCode())
-                        .message(SuccessCode.RETURN_MESSAGE.getMessage())
-                        .result(chatbotService.chat(request))
-                        .build());
+    ResponseEntity<ApiResponse<ChatbotResponse>> createAccount(
+            @RequestBody @Valid ChatbotRequest request
+    ) {
+        return ResponseUtil.buildResponse(
+                SuccessCode.RETURN_MESSAGE,
+                chatbotService.chat(request)
+        );
     }
 }

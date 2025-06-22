@@ -43,6 +43,7 @@ public class BookingServiceImpl implements IBookingService {
     AuthUtilService authUtilService;
 
     @Override
+    @PreAuthorize("hasRole('ADMIN')")
     @Cacheable(value = "BOOKING_PAGE_CACHE",
             key = "#request.page + '-' + #request.size + '-' + #request.sortBy + '-' + #request.direction")
     public Page<BookingResponse> getBookingPage(PageableRequest request) {
@@ -55,15 +56,31 @@ public class BookingServiceImpl implements IBookingService {
     }
 
     @Override
+    @PreAuthorize("hasRole('MEMBER')")
     @Cacheable(value = "BOOKING_PAGE_CACHE",
             key = "#request.page + '-' + #request.size + '-' + #request.sortBy + '-' + #request.direction + '-' + T(com.swpteam.smokingcessation.utils.AuthUtilService).getCurrentAccountOrThrowError().getId()")
-    public Page<BookingResponse> getMyBookingPage(PageableRequest request) {
+    public Page<BookingResponse> getMyBookingPageAsMember(PageableRequest request) {
         ValidationUtil.checkFieldExist(Booking.class, request.sortBy());
 
         Account currentAccount = authUtilService.getCurrentAccountOrThrowError();
 
         Pageable pageable = PageableRequest.getPageable(request);
-        Page<Booking> bookings = bookingRepository.findAllByAccountIdAndIsDeletedFalse(currentAccount.getId(), pageable);
+        Page<Booking> bookings = bookingRepository.findAllByMemberIdAndIsDeletedFalse(currentAccount.getId(), pageable);
+
+        return bookings.map(bookingMapper::toResponse);
+    }
+
+    @Override
+    @PreAuthorize("hasRole('COACH')")
+    @Cacheable(value = "BOOKING_PAGE_CACHE",
+            key = "#request.page + '-' + #request.size + '-' + #request.sortBy + '-' + #request.direction + '-' + T(com.swpteam.smokingcessation.utils.AuthUtilService).getCurrentAccountOrThrowError().getId()")
+    public Page<BookingResponse> getMyBookingPageAsCoach(PageableRequest request) {
+        ValidationUtil.checkFieldExist(Booking.class, request.sortBy());
+
+        Account currentAccount = authUtilService.getCurrentAccountOrThrowError();
+
+        Pageable pageable = PageableRequest.getPageable(request);
+        Page<Booking> bookings = bookingRepository.findAllByCoachIdAndIsDeletedFalse(currentAccount.getId(), pageable);
 
         return bookings.map(bookingMapper::toResponse);
     }
@@ -84,7 +101,7 @@ public class BookingServiceImpl implements IBookingService {
         Account coach = accountService.findAccountByIdOrThrowError(request.coachId());
 
         boolean inWorkingTime = timeTableRepository
-                .findByCoachIdAndStartedAtLessThanEqualAndEndedAtGreaterThanEqual(
+                .findByCoach_IdAndStartedAtLessThanEqualAndEndedAtGreaterThanEqual(
                         request.coachId(), request.startedAt(), request.endedAt()
                 ).isPresent();
         if (!inWorkingTime) {
@@ -109,18 +126,31 @@ public class BookingServiceImpl implements IBookingService {
 
     @Override
     @Transactional
-    @PreAuthorize("hasAnyRole('ADMIN', 'MEMBER')")
+    @PreAuthorize("hasRole('COACH')")
+    @CachePut(value = "BOOKING_CACHE", key = "#result.getId()")
+    @CacheEvict(value = "BOOKING_PAGE_CACHE", allEntries = true)
+    public BookingResponse updateMyBookingRequest(String id, BookingStatus status) {
+        Booking booking = checkAndGetMyBooking(id);
+
+        booking.setStatus(status);
+
+        return bookingMapper.toResponse(bookingRepository.save(booking));
+    }
+
+    @Override
+    @Transactional
+    @PreAuthorize("hasRole('MEMBER')")
     @CachePut(value = "BOOKING_CACHE", key = "#result.getId()")
     @CacheEvict(value = "BOOKING_PAGE_CACHE", allEntries = true)
     public BookingResponse updateBookingById(String id, BookingRequest request) {
         Booking booking = findBookingByIdOrThrowError(id);
 
-        bookingMapper.update(booking, request);
-
         boolean haveAccess = authUtilService.isAdminOrOwner(booking.getMember().getId());
         if (!haveAccess) {
-            throw new AppException(ErrorCode.INVALID_TOKEN);
+            throw new AppException(ErrorCode.ACCESS_DENIED);
         }
+
+        bookingMapper.update(booking, request);
 
         Account coach = accountService.findAccountByIdOrThrowError(request.coachId());
         booking.setCoach(coach);
@@ -177,6 +207,17 @@ public class BookingServiceImpl implements IBookingService {
             booking.setDeleted(true);
             bookingRepository.save(booking);
             throw new AppException(ErrorCode.BOOKING_NOT_FOUND);
+        }
+
+        return booking;
+    }
+
+    private Booking checkAndGetMyBooking(String id) {
+        Booking booking = findBookingByIdOrThrowError(id);
+
+        boolean haveAccess = authUtilService.isOwner(booking.getCoach().getId());
+        if (!haveAccess) {
+            throw new AppException(ErrorCode.ACCESS_DENIED);
         }
 
         return booking;

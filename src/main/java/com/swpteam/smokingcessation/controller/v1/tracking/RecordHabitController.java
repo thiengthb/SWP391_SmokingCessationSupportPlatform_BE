@@ -7,6 +7,7 @@ import com.swpteam.smokingcessation.domain.dto.record.RecordHabitCreateRequest;
 import com.swpteam.smokingcessation.domain.dto.record.RecordHabitResponse;
 import com.swpteam.smokingcessation.domain.dto.record.RecordHabitUpdateRequest;
 import com.swpteam.smokingcessation.service.interfaces.tracking.IRecordHabitService;
+import com.swpteam.smokingcessation.utils.ResponseUtil;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
@@ -28,68 +29,66 @@ public class RecordHabitController {
     IRecordHabitService recordService;
 
     @GetMapping
-    ResponseEntity<ApiResponse<Page<RecordHabitResponse>>> getMyRecordPage(@Valid PageableRequest request) {
-        return ResponseEntity.ok(
-                ApiResponse.<Page<RecordHabitResponse>>builder()
-                        .code(SuccessCode.RECORD_GET_ALL.getCode())
-                        .message(SuccessCode.RECORD_GET_ALL.getMessage())
-                        .result(recordService.getMyRecordPage(request))
-                        .build()
+    ResponseEntity<ApiResponse<Page<RecordHabitResponse>>> getMyRecordPage(
+            @Valid PageableRequest request
+    ) {
+        return ResponseUtil.buildResponse(
+                SuccessCode.RECORD_GET_ALL,
+                recordService.getMyRecordPage(request)
         );
     }
 
     @GetMapping("/{id}")
-    ResponseEntity<ApiResponse<RecordHabitResponse>> getRecordById(@PathVariable String id) {
-        return ResponseEntity.ok(
-                ApiResponse.<RecordHabitResponse>builder()
-                        .code(SuccessCode.RECORD_GET_BY_ID.getCode())
-                        .message(SuccessCode.RECORD_GET_BY_ID.getMessage())
-                        .result(recordService.getRecordById(id))
-                        .build()
+    ResponseEntity<ApiResponse<RecordHabitResponse>> getRecordById(
+            @PathVariable String id
+    ) {
+        return ResponseUtil.buildResponse(
+                SuccessCode.RECORD_GET_BY_ID,
+                recordService.getRecordById(id)
         );
     }
 
     @GetMapping("/account/{id}")
-    ResponseEntity<ApiResponse<Page<RecordHabitResponse>>> getRecordPageByAccountId(@PathVariable String id, @Valid PageableRequest request) {
-        return ResponseEntity.ok(
-                ApiResponse.<Page<RecordHabitResponse>>builder()
-                        .code(SuccessCode.RECORD_GET_BY_ACCOUNT.getCode())
-                        .message(SuccessCode.RECORD_GET_BY_ACCOUNT.getMessage())
-                        .result(recordService.getRecordPageByAccountId(id, request))
-                        .build()
+    ResponseEntity<ApiResponse<Page<RecordHabitResponse>>> getRecordPageByAccountId(
+            @PathVariable String id,
+            @Valid PageableRequest request
+    ) {
+        return ResponseUtil.buildResponse(
+                SuccessCode.RECORD_GET_BY_ACCOUNT,
+                recordService.getRecordPageByAccountId(id, request)
         );
     }
 
     @PostMapping
-    ResponseEntity<ApiResponse<RecordHabitResponse>> createRecord(@RequestBody @Valid RecordHabitCreateRequest request) {
-        return ResponseEntity.ok(
-                ApiResponse.<RecordHabitResponse>builder()
-                        .code(SuccessCode.RECORD_CREATED.getCode())
-                        .message(SuccessCode.RECORD_CREATED.getMessage())
-                        .result(recordService.createRecord(request))
-                        .build()
+    ResponseEntity<ApiResponse<RecordHabitResponse>> createRecord(
+            @RequestBody @Valid RecordHabitCreateRequest request
+    ) {
+        return ResponseUtil.buildResponse(
+                SuccessCode.RECORD_CREATED,
+                recordService.createRecord(request)
         );
     }
 
     @PutMapping("/{id}")
-    ResponseEntity<ApiResponse<RecordHabitResponse>> updateRecord(@PathVariable String id, @RequestBody @Valid RecordHabitUpdateRequest request) {
-        return ResponseEntity.ok(
-                ApiResponse.<RecordHabitResponse>builder()
-                        .code(SuccessCode.RECORD_UPDATED.getCode())
-                        .message(SuccessCode.RECORD_UPDATED.getMessage())
-                        .result(recordService.updateRecord(id, request))
-                        .build()
+    ResponseEntity<ApiResponse<RecordHabitResponse>> updateRecord(
+            @PathVariable String id,
+            @RequestBody @Valid RecordHabitUpdateRequest request
+    ) {
+        return ResponseUtil.buildResponse(
+                SuccessCode.RECORD_UPDATED,
+                recordService.updateRecord(id, request)
         );
     }
 
     @DeleteMapping("/{id}")
-    ResponseEntity<ApiResponse<String>> delete(@PathVariable String id) {
+    ResponseEntity<ApiResponse<String>> delete(
+            @PathVariable String id
+    ) {
         recordService.softDeleteRecordById(id);
-        return ResponseEntity.ok(
-                ApiResponse.<String>builder()
-                        .code(SuccessCode.RECORD_DELETED.getCode())
-                        .message(SuccessCode.RECORD_DELETED.getMessage())
-                        .build()
+        return ResponseUtil.buildResponse(
+                SuccessCode.RECORD_DELETED,
+                null
         );
     }
+
 }

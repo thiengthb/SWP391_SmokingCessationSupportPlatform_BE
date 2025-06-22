@@ -9,6 +9,7 @@ import com.swpteam.smokingcessation.repository.MemberRepository;
 import com.swpteam.smokingcessation.repository.RecordHabitRepository;
 import com.swpteam.smokingcessation.repository.SettingRepository;
 import com.swpteam.smokingcessation.repository.StreakRepository;
+import com.swpteam.smokingcessation.service.interfaces.profile.IMemberService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -30,6 +31,7 @@ public class StreakScheduler {
     RecordHabitRepository recordHabitRepository;
     StreakRepository streakRepository;
     MemberRepository memberRepository;
+    IMemberService memberService;
 
     @Scheduled(cron = "0 * * * * *")
     public void checkAndResetStreak() {
@@ -51,18 +53,19 @@ public class StreakScheduler {
 
                 boolean hasRecord = recordHabitRepository.existsByAccountIdAndDateAndIsDeletedFalse(accountId, today);
 
-                Streak streak = streakRepository.findByMember_Account_Id(accountId).orElse(null);
-                if (streak == null || hasRecord || streak.getStreak() == 0) {
+                Streak streak = streakRepository.findByAccountIdAndIsDeletedFalse(accountId)
+                        .orElse(null);
+                if (streak == null || hasRecord || streak.getNumber() == 0) {
                     return;
                 }
 
-                Member member = streak.getMember();
+                Member member = memberService.findMemberByIdOrThrowError(streak.getAccount().getId());
 
-                if (member.getHighestStreak() < streak.getStreak()) {
-                    member.setHighestStreak(streak.getStreak());
+                if (member.getHighestStreak() < streak.getNumber()) {
+                    member.setHighestStreak(streak.getNumber());
                     memberRepository.save(member);
                 }
-                streak.setStreak(0);
+                streak.setNumber(0);
                 streakRepository.save(streak);
             } catch (Exception e) {
                 log.error("Failed to reset streak for setting accountId: {}", setting.getAccount().getId(), e);

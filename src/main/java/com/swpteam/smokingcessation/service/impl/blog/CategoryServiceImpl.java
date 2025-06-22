@@ -40,14 +40,12 @@ public class CategoryServiceImpl implements ICategoryService {
     BlogRepository blogRepository;
 
     @Override
-    @PreAuthorize("hasRole('ADMIN')")
     @Cacheable(value = "CATEGORY_LIST_CACHE")
     public List<CategoryResponse> getCategoryList() {
         return categoryRepository.findAll(Sort.by("name")).stream().map(categoryMapper::toResponse).toList();
     }
 
     @Override
-    @PreAuthorize("hasRole('ADMIN')")
     @Cacheable(value = "CATEGORY_PAGE_CACHE",
             key = "#request.page + '-' + #request.size + '-' + #request.sortBy + '-' + #request.direction")
     public Page<CategoryResponse> getCategoryPage(PageableRequest request) {
@@ -60,7 +58,6 @@ public class CategoryServiceImpl implements ICategoryService {
     }
 
     @Override
-    @PreAuthorize("hasRole('ADMIN')")
     @Cacheable(value = "CATEGORY_CACHE", key = "#id")
     public CategoryResponse getCategoryById(String id) {
         return categoryMapper.toResponse(findCategoryByIdOrThrowError(id));

@@ -62,7 +62,7 @@ public class TimeTableServiceImpl implements ITimeTableService {
         Account currentAccount = authUtilService.getCurrentAccountOrThrowError();
 
         Pageable pageable = PageableRequest.getPageable(request);
-        Page<TimeTable> timeTables = timeTableRepository.findAllByAccountIdAndIsDeletedFalse(currentAccount.getId(), pageable);
+        Page<TimeTable> timeTables = timeTableRepository.findAllByCoach_IdAndIsDeletedFalse(currentAccount.getId(), pageable);
 
         return timeTables.map(timeTableMapper::toResponse);
     }
@@ -76,7 +76,7 @@ public class TimeTableServiceImpl implements ITimeTableService {
         accountService.findAccountByIdOrThrowError(coachId);
 
         Pageable pageable = PageableRequest.getPageable(request);
-        Page<TimeTable> timeTables = timeTableRepository.findByCoachIdAndIsDeletedFalse(coachId, pageable);
+        Page<TimeTable> timeTables = timeTableRepository.findByCoach_IdAndIsDeletedFalse(coachId, pageable);
 
         return timeTables.map(timeTableMapper::toResponse);
     }
@@ -108,14 +108,16 @@ public class TimeTableServiceImpl implements ITimeTableService {
     @CacheEvict(value = "TIMETABLE_PAGE_CACHE", allEntries = true)
     public TimeTableResponse updateTimeTableById(String id, TimeTableRequest request) {
         TimeTable timeTable = findTimeTableByIdOrThrowError(id);
+
         boolean haveAccess = authUtilService.isAdminOrOwner(timeTable.getCoach().getId());
         if (!haveAccess) {
-            throw new AppException(ErrorCode.INVALID_TOKEN);
+            throw new AppException(ErrorCode.ACCESS_DENIED);
         }
-        Account coach=authUtilService.getCurrentAccountOrThrowError();
-        timeTableMapper.update(timeTable, request);
-        timeTable.setCoach(coach);
 
+        timeTableMapper.update(timeTable, request);
+
+        Account coach = authUtilService.getCurrentAccountOrThrowError();
+        timeTable.setCoach(coach);
         return timeTableMapper.toResponse(timeTableRepository.save(timeTable));
     }
 
@@ -126,8 +128,12 @@ public class TimeTableServiceImpl implements ITimeTableService {
     public void softDeleteTimeTableById(String id) {
         TimeTable timeTable = findTimeTableByIdOrThrowError(id);
 
-        timeTable.setDeleted(true);
+        boolean haveAccess = authUtilService.isAdminOrOwner(timeTable.getCoach().getId());
+        if (!haveAccess) {
+            throw new AppException(ErrorCode.ACCESS_DENIED);
+        }
 
+        timeTable.setDeleted(true);
         timeTableRepository.save(timeTable);
     }
 

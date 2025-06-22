@@ -15,7 +15,7 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Streak extends AuditableEntity {
 
-    @OneToMany
+    @ManyToOne
     @JoinColumn(name = "accountId", nullable = false)
     Account account;
 
