@@ -1,5 +1,6 @@
 package com.swpteam.smokingcessation.controller.v1.profile;
 
+import com.swpteam.smokingcessation.common.PageResponse;
 import com.swpteam.smokingcessation.domain.dto.health.HealthCreateRequest;
 import com.swpteam.smokingcessation.domain.dto.health.HealthResponse;
 import com.swpteam.smokingcessation.domain.dto.health.HealthUpdateRequest;
@@ -14,7 +15,6 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,7 +29,7 @@ public class HealthController {
     IHealthService healthService;
 
     @GetMapping
-    ResponseEntity<ApiResponse<Page<HealthResponse>>> getHealthPage(
+    ResponseEntity<ApiResponse<PageResponse<HealthResponse>>> getHealthPage(
             @Valid PageableRequest request
     ) {
         return ResponseUtil.buildResponse(
@@ -49,7 +49,7 @@ public class HealthController {
     }
 
     @GetMapping("/account/{id}")
-    ResponseEntity<ApiResponse<Page<HealthResponse>>> getHealthPageByAccountId(
+    ResponseEntity<ApiResponse<PageResponse<HealthResponse>>> getHealthPageByAccountId(
             @PathVariable String id,
             @Valid PageableRequest request
     ) {

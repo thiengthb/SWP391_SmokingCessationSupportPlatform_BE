@@ -1,5 +1,6 @@
 package com.swpteam.smokingcessation.service.impl.tracking;
 
+import com.swpteam.smokingcessation.common.PageResponse;
 import com.swpteam.smokingcessation.common.PageableRequest;
 import com.swpteam.smokingcessation.constant.ErrorCode;
 import com.swpteam.smokingcessation.domain.dto.record.RecordHabitCreateRequest;
@@ -40,7 +41,7 @@ public class RecordHabitServiceImpl implements IRecordHabitService {
     AuthUtilService authUtilService;
 
     @Override
-    public Page<RecordHabitResponse> getMyRecordPage(PageableRequest request) {
+    public PageResponse<RecordHabitResponse> getMyRecordPage(PageableRequest request) {
         ValidationUtil.checkFieldExist(RecordHabitMapper.class, request.sortBy());
 
         Account currentAccount = authUtilService.getCurrentAccountOrThrowError();
@@ -48,7 +49,7 @@ public class RecordHabitServiceImpl implements IRecordHabitService {
         Pageable pageable = PageableRequest.getPageable(request);
         Page<RecordHabit> records = recordHabitRepository.findByAccountIdAndIsDeletedFalse(currentAccount.getId(), pageable);
 
-        return records.map(recordHabitMapper::toResponse);
+        return new PageResponse<>(records.map(recordHabitMapper::toResponse));
     }
 
     @Override
@@ -57,7 +58,7 @@ public class RecordHabitServiceImpl implements IRecordHabitService {
     }
 
     @Override
-    public Page<RecordHabitResponse> getRecordPageByAccountId(String accountId, PageableRequest request) {
+    public PageResponse<RecordHabitResponse> getRecordPageByAccountId(String accountId, PageableRequest request) {
         ValidationUtil.checkFieldExist(RecordHabitMapper.class, request.sortBy());
 
         accountService.findAccountByIdOrThrowError(accountId);
@@ -65,7 +66,7 @@ public class RecordHabitServiceImpl implements IRecordHabitService {
         Pageable pageable = PageableRequest.getPageable(request);
         Page<RecordHabit> records = recordHabitRepository.findByAccountIdAndIsDeletedFalse(accountId, pageable);
 
-        return records.map(recordHabitMapper::toResponse);
+        return new PageResponse<>(records.map(recordHabitMapper::toResponse));
     }
 
     @Override

@@ -1,5 +1,6 @@
 package com.swpteam.smokingcessation.service.impl.booking;
 
+import com.swpteam.smokingcessation.common.PageResponse;
 import com.swpteam.smokingcessation.common.PageableRequest;
 import com.swpteam.smokingcessation.constant.ErrorCode;
 
@@ -43,20 +44,20 @@ public class TimeTableServiceImpl implements ITimeTableService {
     @Override
     @Cacheable(value = "TIMETABLE_PAGE_CACHE",
             key = "#request.page + '-' + #request.size + '-' + #request.sortBy + '-' + #request.direction")
-    public Page<TimeTableResponse> getTimeTablePage(PageableRequest request) {
+    public PageResponse<TimeTableResponse> getTimeTablePage(PageableRequest request) {
         ValidationUtil.checkFieldExist(Booking.class, request.sortBy());
 
         Pageable pageable = PageableRequest.getPageable(request);
         Page<TimeTable> timeTables = timeTableRepository.findAllByIsDeletedFalse(pageable);
 
-        return timeTables.map(timeTableMapper::toResponse);
+        return new PageResponse<>(timeTables.map(timeTableMapper::toResponse));
     }
 
     @Override
     @PreAuthorize("hasRole('COACH')")
     @Cacheable(value = "TIMETABLE_PAGE_CACHE",
             key = "#request.page + '-' + #request.size + '-' + #request.sortBy + '-' + #request.direction + '-' + T(com.swpteam.smokingcessation.utils.AuthUtilService).getCurrentAccountOrThrowError().getId()")
-    public Page<TimeTableResponse> getMyTimeTablePage(PageableRequest request) {
+    public PageResponse<TimeTableResponse> getMyTimeTablePage(PageableRequest request) {
         ValidationUtil.checkFieldExist(Booking.class, request.sortBy());
 
         Account currentAccount = authUtilService.getCurrentAccountOrThrowError();
@@ -64,13 +65,13 @@ public class TimeTableServiceImpl implements ITimeTableService {
         Pageable pageable = PageableRequest.getPageable(request);
         Page<TimeTable> timeTables = timeTableRepository.findAllByCoach_IdAndIsDeletedFalse(currentAccount.getId(), pageable);
 
-        return timeTables.map(timeTableMapper::toResponse);
+        return new PageResponse<>(timeTables.map(timeTableMapper::toResponse));
     }
 
     @Override
     @Cacheable(value = "TIMETABLE_PAGE_CACHE",
             key = "#coachId + '-' + #request.page + '-' + #request.size + '-' + #request.sortBy + '-' + #request.direction")
-    public Page<TimeTableResponse> getTimeTablesByCoachId(String coachId, PageableRequest request) {
+    public PageResponse<TimeTableResponse> getTimeTablesByCoachId(String coachId, PageableRequest request) {
         ValidationUtil.checkFieldExist(Booking.class, request.sortBy());
 
         accountService.findAccountByIdOrThrowError(coachId);
@@ -78,7 +79,7 @@ public class TimeTableServiceImpl implements ITimeTableService {
         Pageable pageable = PageableRequest.getPageable(request);
         Page<TimeTable> timeTables = timeTableRepository.findByCoach_IdAndIsDeletedFalse(coachId, pageable);
 
-        return timeTables.map(timeTableMapper::toResponse);
+        return new PageResponse<>(timeTables.map(timeTableMapper::toResponse));
     }
 
     @Override

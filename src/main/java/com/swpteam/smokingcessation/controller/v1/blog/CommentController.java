@@ -1,6 +1,7 @@
 package com.swpteam.smokingcessation.controller.v1.blog;
 
 import com.swpteam.smokingcessation.common.ApiResponse;
+import com.swpteam.smokingcessation.common.PageResponse;
 import com.swpteam.smokingcessation.common.PageableRequest;
 import com.swpteam.smokingcessation.constant.SuccessCode;
 import com.swpteam.smokingcessation.domain.dto.comment.CommentCreateRequest;
@@ -15,7 +16,6 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -30,7 +30,7 @@ public class CommentController {
     ICommentService commentService;
 
     @GetMapping("/blog/{id}")
-    ResponseEntity<ApiResponse<Page<CommentResponse>>> getCommentsByBlogId(
+    ResponseEntity<ApiResponse<PageResponse<CommentResponse>>> getCommentsByBlogId(
             @PathVariable String id,
             @Valid PageableRequest request
     ) {
@@ -41,7 +41,7 @@ public class CommentController {
     }
 
     @GetMapping
-    ResponseEntity<ApiResponse<Page<CommentResponse>>> getCommentPage(
+    ResponseEntity<ApiResponse<PageResponse<CommentResponse>>> getCommentPage(
             @Valid PageableRequest request
     ) {
         return ResponseUtil.buildResponse(

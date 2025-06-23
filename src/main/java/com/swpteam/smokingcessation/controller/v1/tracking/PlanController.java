@@ -34,10 +34,8 @@ public class PlanController {
                 planService.getMyCurrentPlan()
         );
     }
-
-    //template
+    
     @GetMapping("/template")
-    //template
     public ResponseEntity<ApiResponse<PlanResponse>> getPlanTemplate(
             @RequestParam int ftndScore
     ) {

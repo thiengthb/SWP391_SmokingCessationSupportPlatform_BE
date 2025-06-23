@@ -2,28 +2,23 @@ version: '3.8'
 
 services:
   mysql:
-    image: mysql:8.0
-    container_name: mysql
+    image: mysql
+    container_name: mysql-db-ctn
     environment:
-      MYSQL_ROOT_PASSWORD_FILE: /run/secrets/db_root_password
-      MYSQL_DATABASE_FILE: /run/secrets/mysql_database
-      MYSQL_USER_FILE: /run/secrets/mysql_user
-      MYSQL_PASSWORD_FILE: /run/secrets/mysql_user_password
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     volumes:
       - mysql_data:/var/lib/mysql
     ports:
       - "3306:3306"
-    secrets:
-      - db_root_password
-      - mysql_database
-      - mysql_user
-      - mysql_user_password
     networks:
       - app_net
 
   redis:
-    image: redis:7
-    container_name: redis
+    image: redis
+    container_name: redis-cache-ctn
     ports:
       - "6379:6379"
     volumes:
@@ -34,48 +29,10 @@ services:
   springboot-1: &springboot-1
     build:
       context: ..
-      dockerfile: ../Dockerfile
+      dockerfile: docker/Dockerfile
     container_name: springboot-1
-    environment:
-      SPRING_PROFILES_ACTIVE: prod
-    secrets:
-      - front_end_domain
-      - admin_email
-      - admin_password
-
-      - db_root_password
-      - db_user_password
-      - dbms_connection
-      - mysql_database
-      - mysql_user
-      - mysql_user_password
-
-      - google_client_id
-      - google_client_secret
-
-      - jwt_access_token_signer_key
-      - jwt_refresh_token_signer_key
-      - jwt_password_reset_token_signer_key
-      - jwt_access_token_duration
-      - jwt_refresh_token_duration
-      - jwt_password_reset_token_duration
-
-      - stripe_secret_key
-      - stripe_webhook_secret_key
-      - stripe_success_url
-      - stripe_cancel_url
-
-      - email_app_username
-      - email_app_password
-
-      - currency_api_url
-      - currency_api_key
-
-      - openai_secret_key
-
-      - cloudinary_cloud_name
-      - cloudinary_api_key
-      - cloudinary_api_secret
+    env_file:
+      - .env.docker
     depends_on:
       - mysql
       - redis
@@ -91,8 +48,8 @@ services:
     container_name: springboot-3
 
   nginx:
-    image: nginx:latest
-    container_name: nginx
+    image: nginx
+    container_name: nginx-app
     ports:
       - "80:80"
     volumes:
@@ -111,71 +68,3 @@ volumes:
 networks:
   app_net:
     driver: bridge
-
-secrets:
-  front_end_domain:
-    external: true
-  admin_email:
-    external: true
-  admin_password:
-    external: true
-
-  db_root_password:
-    external: true
-  db_user_password:
-    external: true
-  dbms_connection:
-    external: true
-  mysql_database:
-    external: true
-  mysql_user:
-    external: true
-  mysql_user_password:
-    external: true
-
-  google_client_id:
-    external: true
-  google_client_secret:
-    external: true
-
-  jwt_access_token_signer_key:
-    external: true
-  jwt_refresh_token_signer_key:
-    external: true
-  jwt_password_reset_token_signer_key:
-    external: true
-  jwt_access_token_duration:
-    external: true
-  jwt_refresh_token_duration:
-    external: true
-  jwt_password_reset_token_duration:
-    external: true
-
-  stripe_secret_key:
-    external: true
-  stripe_webhook_secret_key:
-    external: true
-  stripe_success_url:
-    external: true
-  stripe_cancel_url:
-    external: true
-
-  email_app_username:
-    external: true
-  email_app_password:
-    external: true
-
-  currency_api_url:
-    external: true
-  currency_api_key:
-    external: true
-
-  openai_secret_key:
-    external: true
-
-  cloudinary_cloud_name:
-    external: true
-  cloudinary_api_key:
-    external: true
-  cloudinary_api_secret:
-    external: true

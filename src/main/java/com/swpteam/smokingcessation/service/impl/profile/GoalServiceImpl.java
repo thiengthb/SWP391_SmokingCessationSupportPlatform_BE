@@ -1,5 +1,6 @@
 package com.swpteam.smokingcessation.service.impl.profile;
 
+import com.swpteam.smokingcessation.common.PageResponse;
 import com.swpteam.smokingcessation.common.PageableRequest;
 import com.swpteam.smokingcessation.constant.ErrorCode;
 import com.swpteam.smokingcessation.domain.dto.goal.*;
@@ -38,19 +39,19 @@ public class GoalServiceImpl implements IGoalService {
     @Override
     @Cacheable(value = "GOAL_PAGE_CACHE",
             key = "#request.page + '-' + #request.size + '-' + #request.sortBy + '-' + #request.direction")
-    public Page<GoalResponse> getPublicGoalPage(PageableRequest request) {
+    public PageResponse<GoalResponse> getPublicGoalPage(PageableRequest request) {
         ValidationUtil.checkFieldExist(Goal.class, request.sortBy());
 
         Pageable pageable = PageableRequest.getPageable(request);
         Page<Goal> achievements = goalRepository.findAllByAccountIsNullAndIsDeletedFalse(pageable);
 
-        return achievements.map(goalMapper::toResponse);
+        return new PageResponse<>(achievements.map(goalMapper::toResponse));
     }
 
     @Override
     @Cacheable(value = "GOAL_PAGE_CACHE",
             key = "#request.page + '-' + #request.size + '-' + #request.sortBy + '-' + #request.direction + '-' + T(com.swpteam.smokingcessation.utils.AuthUtilService).getCurrentAccountOrThrowError().getId()")
-    public Page<GoalResponse> getMyGoalPage(PageableRequest request) {
+    public PageResponse<GoalResponse> getMyGoalPage(PageableRequest request) {
         ValidationUtil.checkFieldExist(Goal.class, request.sortBy());
 
         Account currentAccount = authUtilService.getCurrentAccountOrThrowError();
@@ -58,7 +59,7 @@ public class GoalServiceImpl implements IGoalService {
         Pageable pageable = PageableRequest.getPageable(request);
         Page<Goal> achievements = goalRepository.findAllByAccountIdAndIsDeletedFalse(currentAccount.getId(), pageable);
 
-        return achievements.map(goalMapper::toResponse);
+        return new PageResponse<>(achievements.map(goalMapper::toResponse));
     }
 
     @Override

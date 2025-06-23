@@ -1,5 +1,6 @@
 package com.swpteam.smokingcessation.service.impl.membership;
 
+import com.swpteam.smokingcessation.common.PageResponse;
 import com.swpteam.smokingcessation.domain.entity.Account;
 import com.swpteam.smokingcessation.domain.mapper.SubscriptionMapper;
 import com.swpteam.smokingcessation.domain.entity.Membership;
@@ -41,18 +42,18 @@ public class SubscriptionServiceImpl implements ISubscriptionService {
 
     @Override
     @PreAuthorize("hasRole('ADMIN')")
-    public Page<SubscriptionResponse> getSubscriptionPage(PageableRequest request) {
+    public PageResponse<SubscriptionResponse> getSubscriptionPage(PageableRequest request) {
         ValidationUtil.checkFieldExist(Subscription.class, request.sortBy());
 
         Pageable pageable = PageableRequest.getPageable(request);
         Page<Subscription> subscriptions = subscriptionRepository.findAllByIsDeletedFalse(pageable);
 
-        return subscriptions.map(subscriptionMapper::toResponse);
+        return new PageResponse<>(subscriptions.map(subscriptionMapper::toResponse));
     }
 
     @Override
     @PreAuthorize("hasRole('ADMIN')")
-    public Page<SubscriptionResponse> getMySubscriptionPage(PageableRequest request) {
+    public PageResponse<SubscriptionResponse> getMySubscriptionPage(PageableRequest request) {
         ValidationUtil.checkFieldExist(Subscription.class, request.sortBy());
 
         Account currentAccount = authUtilService.getCurrentAccountOrThrowError();
@@ -60,18 +61,18 @@ public class SubscriptionServiceImpl implements ISubscriptionService {
         Pageable pageable = PageableRequest.getPageable(request);
         Page<Subscription> subscriptions = subscriptionRepository.findByAccountIdAndIsDeletedFalse(currentAccount.getId(), pageable);
 
-        return subscriptions.map(subscriptionMapper::toResponse);
+        return new PageResponse<>(subscriptions.map(subscriptionMapper::toResponse));
     }
 
     @Override
     @PreAuthorize("hasRole('ADMIN')")
-    public Page<SubscriptionResponse> getSubscriptionPageByAccountId(String accountId, PageableRequest request) {
+    public PageResponse<SubscriptionResponse> getSubscriptionPageByAccountId(String accountId, PageableRequest request) {
         ValidationUtil.checkFieldExist(Subscription.class, request.sortBy());
 
         Pageable pageable = PageableRequest.getPageable(request);
         Page<Subscription> subscriptions = subscriptionRepository.findByAccountIdAndIsDeletedFalse(accountId, pageable);
 
-        return subscriptions.map(subscriptionMapper::toResponse);
+        return new PageResponse<>(subscriptions.map(subscriptionMapper::toResponse));
     }
 
     @Override

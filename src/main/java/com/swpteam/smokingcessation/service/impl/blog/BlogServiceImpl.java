@@ -1,5 +1,6 @@
 package com.swpteam.smokingcessation.service.impl.blog;
 
+import com.swpteam.smokingcessation.common.PageResponse;
 import com.swpteam.smokingcessation.common.PageableRequest;
 import com.swpteam.smokingcessation.constant.App;
 import com.swpteam.smokingcessation.constant.ErrorCode;
@@ -48,20 +49,20 @@ public class BlogServiceImpl implements IBlogService {
     @Override
     @Cacheable(value = "BLOG_PAGE_CACHE",
             key = "#request.page + '-' + #request.size + '-' + #request.sortBy + '-' + #request.direction")
-    public Page<BlogResponse> getAllBlogsPage(PageableRequest request) {
+    public PageResponse<BlogResponse> getAllBlogsPage(PageableRequest request) {
         ValidationUtil.checkFieldExist(Blog.class, request.sortBy());
 
         Pageable pageable = PageableRequest.getPageable(request);
         Page<Blog> blogs = blogRepository.findAllByIsDeletedFalse(pageable);
 
-        return blogs.map(blogMapper::toResponse);
+        return new PageResponse<>(blogs.map(blogMapper::toResponse));
     }
 
     @Override
     @PreAuthorize("hasRole('ADMIN')")
     @Cacheable(value = "BLOG_PAGE_CACHE",
             key = "#request.page + '-' + #request.size + '-' + #request.sortBy + '-' + #request.direction + '-' + T(com.swpteam.smokingcessation.utils.AuthUtilService).getCurrentAccountOrThrowError().getId()")
-    public Page<BlogResponse> getMyBlogsPage(PageableRequest request) {
+    public PageResponse<BlogResponse> getMyBlogsPage(PageableRequest request) {
         ValidationUtil.checkFieldExist(Blog.class, request.sortBy());
 
         Account currentAccount = authUtilService.getCurrentAccountOrThrowError();
@@ -69,19 +70,19 @@ public class BlogServiceImpl implements IBlogService {
         Pageable pageable = PageableRequest.getPageable(request);
         Page<Blog> blogs = blogRepository.findAllByAccountIdAndIsDeletedFalse(currentAccount.getId(), pageable);
 
-        return blogs.map(blogMapper::toResponse);
+        return new PageResponse<>(blogs.map(blogMapper::toResponse));
     }
 
     @Override
     @Cacheable(value = "BLOG_PAGE_CACHE",
             key = "#request.page + '-' + #request.size + '-' + #request.sortBy + '-' + #request.direction + '-' + #categoryName")
-    public Page<BlogResponse> getBlogsPageByCategory(String categoryName, PageableRequest request) {
+    public PageResponse<BlogResponse> getBlogsPageByCategory(String categoryName, PageableRequest request) {
         Category category = categoryService.findCategoryByNameOrThrowError(categoryName);
 
         Pageable pageable = PageableRequest.getPageable(request);
         Page<Blog> blogs = blogRepository.findByCategoryIdAndIsDeletedFalse(category.getId(), pageable);
 
-        return blogs.map(blogMapper::toResponse);
+        return new PageResponse<>(blogs.map(blogMapper::toResponse));
     }
 
     @Override

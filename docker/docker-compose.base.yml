@@ -2,13 +2,13 @@ version: '3.8'
 
 services:
   mysql:
-    image: mysql:8.0
+    image: mysql
     container_name: mysql-db-ctn
     environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: smoking_cessation_db
-      MYSQL_USER: dev
-      MYSQL_PASSWORD: 12345
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     volumes:
       - mysql_data:/var/lib/mysql
     ports:
@@ -22,7 +22,7 @@ services:
       retries: 5
 
   redis:
-    image: redis:7
+    image: redis
     container_name: redis-cache-ctn
     ports:
       - "6379:6379"

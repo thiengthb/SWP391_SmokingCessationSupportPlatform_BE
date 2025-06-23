@@ -1,5 +1,6 @@
 package com.swpteam.smokingcessation.service.impl.profile;
 
+import com.swpteam.smokingcessation.common.PageResponse;
 import com.swpteam.smokingcessation.domain.dto.member.MemberRequest;
 import com.swpteam.smokingcessation.domain.entity.Account;
 import com.swpteam.smokingcessation.domain.mapper.MemberMapper;
@@ -31,13 +32,13 @@ public class MemberServiceImpl implements IMemberService {
     AuthUtilService authUtilService;
 
     @Override
-    public Page<MemberResponse> getMembersPage(PageableRequest request) {
+    public PageResponse<MemberResponse> getMembersPage(PageableRequest request) {
         ValidationUtil.checkFieldExist(Member.class, request.sortBy());
 
         Pageable pageable = PageableRequest.getPageable(request);
         Page<Member> members = memberRepository.findAllByIsDeletedFalse(pageable);
 
-        return members.map(memberMapper::toResponse);
+        return new PageResponse<>(members.map(memberMapper::toResponse));
     }
 
     @Override

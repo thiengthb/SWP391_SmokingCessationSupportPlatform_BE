@@ -1,5 +1,6 @@
 package com.swpteam.smokingcessation.service.impl.tracking;
 
+import com.swpteam.smokingcessation.common.PageResponse;
 import com.swpteam.smokingcessation.common.PageableRequest;
 import com.swpteam.smokingcessation.domain.dto.phase.PhaseRequest;
 import com.swpteam.smokingcessation.domain.dto.phase.PhaseResponse;
@@ -52,7 +53,7 @@ public class PlanServiceImpl implements IPlanService {
     @PreAuthorize("hasRole('MEMBER')")
     @Cacheable(value = "PLAN_PAGE_CACHE",
             key = "#request.page + '-' + #request.size + '-' + #request.sortBy + '-' + #request.direction")
-    public Page<PlanResponse> getMyPlanPage(PageableRequest request) {
+    public PageResponse<PlanResponse> getMyPlanPage(PageableRequest request) {
         ValidationUtil.checkFieldExist(Plan.class, request.sortBy());
 
         Account currentAccount = authUtilService.getCurrentAccountOrThrowError();
@@ -60,7 +61,7 @@ public class PlanServiceImpl implements IPlanService {
         Pageable pageable = PageableRequest.getPageable(request);
         Page<Plan> plans = planRepository.findAllByAccountIdAndIsDeletedFalse(currentAccount.getId(), pageable);
 
-        return plans.map(planMapper::toResponse);
+        return new PageResponse<>(plans.map(planMapper::toResponse));
     }
 
     @Override

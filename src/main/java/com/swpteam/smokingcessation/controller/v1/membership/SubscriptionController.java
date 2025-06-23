@@ -1,5 +1,6 @@
 package com.swpteam.smokingcessation.controller.v1.membership;
 
+import com.swpteam.smokingcessation.common.PageResponse;
 import com.swpteam.smokingcessation.domain.dto.subscription.SubscriptionRequest;
 import com.swpteam.smokingcessation.domain.dto.subscription.SubscriptionResponse;
 import com.swpteam.smokingcessation.common.ApiResponse;
@@ -13,7 +14,6 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,7 +28,7 @@ public class SubscriptionController {
     ISubscriptionService subscriptionService;
 
     @GetMapping
-    ResponseEntity<ApiResponse<Page<SubscriptionResponse>>> getSubscriptionPage(
+    ResponseEntity<ApiResponse<PageResponse<SubscriptionResponse>>> getSubscriptionPage(
             @Valid PageableRequest request
     ) {
         return ResponseUtil.buildResponse(
@@ -48,7 +48,7 @@ public class SubscriptionController {
     }
 
     @GetMapping("/account/{id}")
-    ResponseEntity<ApiResponse<Page<SubscriptionResponse>>> getSubscriptionPageByAccountId(
+    ResponseEntity<ApiResponse<PageResponse<SubscriptionResponse>>> getSubscriptionPageByAccountId(
             @PathVariable String id,
             @Valid PageableRequest request
     ) {

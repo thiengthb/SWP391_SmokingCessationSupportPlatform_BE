@@ -1,5 +1,6 @@
 package com.swpteam.smokingcessation.service.interfaces.profile;
 
+import com.swpteam.smokingcessation.common.PageResponse;
 import com.swpteam.smokingcessation.common.PageableRequest;
 import com.swpteam.smokingcessation.domain.dto.member.MemberRequest;
 import com.swpteam.smokingcessation.domain.dto.member.MemberResponse;
@@ -10,7 +11,7 @@ public interface IMemberService {
 
     MemberResponse createMember(MemberRequest request);
 
-    Page<MemberResponse> getMembersPage(PageableRequest request);
+    PageResponse<MemberResponse> getMembersPage(PageableRequest request);
 
     MemberResponse getMemberById(String accountId);
 

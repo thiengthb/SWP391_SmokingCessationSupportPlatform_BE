@@ -1,5 +1,6 @@
 package com.swpteam.smokingcessation.service.interfaces.tracking;
 
+import com.swpteam.smokingcessation.common.PageResponse;
 import com.swpteam.smokingcessation.common.PageableRequest;
 import com.swpteam.smokingcessation.domain.dto.streak.StreakRequest;
 import com.swpteam.smokingcessation.domain.dto.streak.StreakResponse;
@@ -16,9 +17,9 @@ public interface IStreakService {
 
     StreakResponse getStreakByAccountId(String accountId);
 
-    Page<StreakResponse> getMyStreakPage(PageableRequest request);
+    PageResponse<StreakResponse> getMyStreakPage(PageableRequest request);
 
-    Page<StreakResponse> getStreakPage(PageableRequest request);
+    PageResponse<StreakResponse> getStreakPage(PageableRequest request);
 
     Streak findStreakByAccountIdOrThrowError(String id);
     

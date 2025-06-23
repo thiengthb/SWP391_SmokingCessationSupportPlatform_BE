@@ -1,6 +1,7 @@
 package com.swpteam.smokingcessation.controller.v1.identity;
 
 import com.swpteam.smokingcessation.common.ApiResponse;
+import com.swpteam.smokingcessation.common.PageResponse;
 import com.swpteam.smokingcessation.common.PageableRequest;
 import com.swpteam.smokingcessation.constant.SuccessCode;
 import com.swpteam.smokingcessation.domain.dto.account.AccountRequest;
@@ -15,7 +16,6 @@ import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -39,7 +39,7 @@ public class AccountController {
     }
 
     @GetMapping
-    ResponseEntity<ApiResponse<Page<AccountResponse>>> getAccounts(@Valid PageableRequest request) {
+    ResponseEntity<ApiResponse<PageResponse<AccountResponse>>> getAccounts(@Valid PageableRequest request) {
         return ResponseUtil.buildResponse(
                 SuccessCode.ACCOUNT_CREATED,
                 accountService.getAccountsPage(request)

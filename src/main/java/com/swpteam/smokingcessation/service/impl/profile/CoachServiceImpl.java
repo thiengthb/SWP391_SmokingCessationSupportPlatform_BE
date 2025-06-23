@@ -1,5 +1,6 @@
 package com.swpteam.smokingcessation.service.impl.profile;
 
+import com.swpteam.smokingcessation.common.PageResponse;
 import com.swpteam.smokingcessation.common.PageableRequest;
 import com.swpteam.smokingcessation.constant.ErrorCode;
 import com.swpteam.smokingcessation.domain.dto.coach.CoachRequest;
@@ -33,13 +34,13 @@ public class CoachServiceImpl implements ICoachService {
     AuthUtilService authUtilService;
 
     @Override
-    public Page<CoachResponse> getCoachPage(PageableRequest request) {
+    public PageResponse<CoachResponse> getCoachPage(PageableRequest request) {
         ValidationUtil.checkFieldExist(Coach.class, request.sortBy());
 
         Pageable pageable = PageableRequest.getPageable(request);
         Page<Coach> coaches = coachRepository.findAllByIsDeletedFalse(pageable);
 
-        return coaches.map(coachMapper::toResponse);
+        return new PageResponse<>(coaches.map(coachMapper::toResponse));
     }
 
     @Override

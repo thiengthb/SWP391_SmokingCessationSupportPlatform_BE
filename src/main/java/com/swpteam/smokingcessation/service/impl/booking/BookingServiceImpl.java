@@ -1,5 +1,6 @@
 package com.swpteam.smokingcessation.service.impl.booking;
 
+import com.swpteam.smokingcessation.common.PageResponse;
 import com.swpteam.smokingcessation.common.PageableRequest;
 import com.swpteam.smokingcessation.constant.ErrorCode;
 import com.swpteam.smokingcessation.domain.dto.booking.BookingRequest;
@@ -46,20 +47,20 @@ public class BookingServiceImpl implements IBookingService {
     @PreAuthorize("hasRole('ADMIN')")
     @Cacheable(value = "BOOKING_PAGE_CACHE",
             key = "#request.page + '-' + #request.size + '-' + #request.sortBy + '-' + #request.direction")
-    public Page<BookingResponse> getBookingPage(PageableRequest request) {
+    public PageResponse<BookingResponse> getBookingPage(PageableRequest request) {
         ValidationUtil.checkFieldExist(Booking.class, request.sortBy());
 
         Pageable pageable = PageableRequest.getPageable(request);
         Page<Booking> bookings = bookingRepository.findAllByIsDeletedFalse(pageable);
 
-        return bookings.map(bookingMapper::toResponse);
+        return new PageResponse<>(bookings.map(bookingMapper::toResponse));
     }
 
     @Override
     @PreAuthorize("hasRole('MEMBER')")
     @Cacheable(value = "BOOKING_PAGE_CACHE",
             key = "#request.page + '-' + #request.size + '-' + #request.sortBy + '-' + #request.direction + '-' + T(com.swpteam.smokingcessation.utils.AuthUtilService).getCurrentAccountOrThrowError().getId()")
-    public Page<BookingResponse> getMyBookingPageAsMember(PageableRequest request) {
+    public PageResponse<BookingResponse> getMyBookingPageAsMember(PageableRequest request) {
         ValidationUtil.checkFieldExist(Booking.class, request.sortBy());
 
         Account currentAccount = authUtilService.getCurrentAccountOrThrowError();
@@ -67,14 +68,14 @@ public class BookingServiceImpl implements IBookingService {
         Pageable pageable = PageableRequest.getPageable(request);
         Page<Booking> bookings = bookingRepository.findAllByMemberIdAndIsDeletedFalse(currentAccount.getId(), pageable);
 
-        return bookings.map(bookingMapper::toResponse);
+        return new PageResponse<>(bookings.map(bookingMapper::toResponse));
     }
 
     @Override
     @PreAuthorize("hasRole('COACH')")
     @Cacheable(value = "BOOKING_PAGE_CACHE",
             key = "#request.page + '-' + #request.size + '-' + #request.sortBy + '-' + #request.direction + '-' + T(com.swpteam.smokingcessation.utils.AuthUtilService).getCurrentAccountOrThrowError().getId()")
-    public Page<BookingResponse> getMyBookingPageAsCoach(PageableRequest request) {
+    public PageResponse<BookingResponse> getMyBookingPageAsCoach(PageableRequest request) {
         ValidationUtil.checkFieldExist(Booking.class, request.sortBy());
 
         Account currentAccount = authUtilService.getCurrentAccountOrThrowError();
@@ -82,7 +83,7 @@ public class BookingServiceImpl implements IBookingService {
         Pageable pageable = PageableRequest.getPageable(request);
         Page<Booking> bookings = bookingRepository.findAllByCoachIdAndIsDeletedFalse(currentAccount.getId(), pageable);
 
-        return bookings.map(bookingMapper::toResponse);
+        return new PageResponse<>(bookings.map(bookingMapper::toResponse));
     }
 
     @Override

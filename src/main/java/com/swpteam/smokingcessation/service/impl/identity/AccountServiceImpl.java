@@ -1,6 +1,7 @@
 package com.swpteam.smokingcessation.service.impl.identity;
 
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
+import com.swpteam.smokingcessation.common.PageResponse;
 import com.swpteam.smokingcessation.domain.dto.account.AccountRequest;
 import com.swpteam.smokingcessation.domain.dto.account.AccountResponse;
 import com.swpteam.smokingcessation.domain.dto.account.AccountUpdateRequest;
@@ -96,13 +97,13 @@ public class AccountServiceImpl implements IAccountService {
 
     @Override
     @PreAuthorize("hasRole('ADMIN')")
-    public Page<AccountResponse> getAccountsPage(PageableRequest request) {
+    public PageResponse<AccountResponse> getAccountsPage(PageableRequest request) {
         ValidationUtil.checkFieldExist(Account.class, request.sortBy());
 
         Pageable pageable = PageableRequest.getPageable(request);
         Page<Account> accounts = accountRepository.findAllByIsDeletedFalse(pageable);
 
-        return accounts.map(accountMapper::toResponse);
+        return new PageResponse<>(accounts.map(accountMapper::toResponse));
     }
 
     @Override

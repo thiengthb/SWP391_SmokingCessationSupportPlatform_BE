@@ -1,5 +1,6 @@
 package com.swpteam.smokingcessation.controller.v1.notification;
 
+import com.swpteam.smokingcessation.common.PageResponse;
 import com.swpteam.smokingcessation.domain.dto.message.MessageRequest;
 import com.swpteam.smokingcessation.domain.dto.message.MessageResponse;
 import com.swpteam.smokingcessation.common.ApiResponse;
@@ -28,7 +29,7 @@ public class MessageController {
     IMessageService messageService;
 
     @GetMapping
-    ResponseEntity<ApiResponse<Page<MessageResponse>>> getMessagePage(
+    ResponseEntity<ApiResponse<PageResponse<MessageResponse>>> getMessagePage(
             @Valid PageableRequest request
     ) {
         return ResponseUtil.buildResponse(

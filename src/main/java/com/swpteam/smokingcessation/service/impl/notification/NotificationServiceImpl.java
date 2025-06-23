@@ -1,5 +1,6 @@
 package com.swpteam.smokingcessation.service.impl.notification;
 
+import com.swpteam.smokingcessation.common.PageResponse;
 import com.swpteam.smokingcessation.common.PageableRequest;
 import com.swpteam.smokingcessation.constant.ErrorCode;
 import com.swpteam.smokingcessation.domain.dto.notification.NotificationRequest;
@@ -88,7 +89,7 @@ public class NotificationServiceImpl implements INotificationService {
     @Override
     @Cacheable(value = "NOTIFICATION_PAGE_CACHE",
             key = "#request.page + '-' + #request.size + '-' + #request.sortBy + '-' + #request.direction + '-' + T(com.swpteam.smokingcessation.utils.AuthUtilService).getCurrentAccountOrThrowError().getId()")
-    public Page<NotificationResponse> getMyNotificationsPage(PageableRequest request) {
+    public PageResponse<NotificationResponse> getMyNotificationsPage(PageableRequest request) {
         ValidationUtil.checkFieldExist(Notification.class, request.sortBy());
 
         Account currentAccount = authUtilService.getCurrentAccountOrThrowError();
@@ -96,7 +97,7 @@ public class NotificationServiceImpl implements INotificationService {
         Pageable pageable = PageableRequest.getPageable(request);
         Page<Notification> notifications = notificationRepository.findAllByAccountIdAndIsDeletedFalse(currentAccount.getId(), pageable);
 
-        return notifications.map(notificationMapper::toResponse);
+        return new PageResponse<>(notifications.map(notificationMapper::toResponse));
     }
 
     @Override

@@ -1,6 +1,7 @@
 package com.swpteam.smokingcessation.service.interfaces.identity;
 
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
+import com.swpteam.smokingcessation.common.PageResponse;
 import com.swpteam.smokingcessation.common.PageableRequest;
 import com.swpteam.smokingcessation.domain.dto.account.AccountRequest;
 import com.swpteam.smokingcessation.domain.dto.account.AccountResponse;
@@ -17,7 +18,7 @@ public interface IAccountService {
 
     void changePassword(String accountId, String newPassword);
 
-    Page<AccountResponse> getAccountsPage(PageableRequest request);
+    PageResponse<AccountResponse> getAccountsPage(PageableRequest request);
 
     AccountResponse createAccount(AccountRequest request);
 

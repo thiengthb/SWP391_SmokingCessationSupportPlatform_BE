@@ -1,5 +1,6 @@
 package com.swpteam.smokingcessation.service.interfaces.membership;
 
+import com.swpteam.smokingcessation.common.PageResponse;
 import com.swpteam.smokingcessation.common.PageableRequest;
 import com.swpteam.smokingcessation.domain.dto.subscription.SubscriptionRequest;
 import com.swpteam.smokingcessation.domain.dto.subscription.SubscriptionResponse;
@@ -8,13 +9,13 @@ import org.springframework.data.domain.Page;
 
 public interface ISubscriptionService {
 
-    Page<SubscriptionResponse> getSubscriptionPage(PageableRequest request);
+    PageResponse<SubscriptionResponse> getSubscriptionPage(PageableRequest request);
 
-    Page<SubscriptionResponse> getMySubscriptionPage(PageableRequest request);
+    PageResponse<SubscriptionResponse> getMySubscriptionPage(PageableRequest request);
+
+    PageResponse<SubscriptionResponse> getSubscriptionPageByAccountId(String accountId, PageableRequest request);
 
     SubscriptionResponse getSubscriptionById(String id);
-
-    Page<SubscriptionResponse> getSubscriptionPageByAccountId(String accountId, PageableRequest request);
 
     Subscription createSubscription(String accountId, String membershipName);
 

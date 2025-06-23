@@ -1,5 +1,6 @@
 package com.swpteam.smokingcessation.controller.v1.membership;
 
+import com.swpteam.smokingcessation.common.PageResponse;
 import com.swpteam.smokingcessation.domain.dto.membership.MembershipCreateRequest;
 import com.swpteam.smokingcessation.domain.dto.membership.MembershipCurrencyUpdateRequest;
 import com.swpteam.smokingcessation.domain.dto.membership.MembershipResponse;
@@ -15,7 +16,6 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -30,7 +30,7 @@ public class MembershipController {
     IMembershipService membershipService;
 
     @GetMapping
-    ResponseEntity<ApiResponse<Page<MembershipResponse>>> getMembershipPage(
+    ResponseEntity<ApiResponse<PageResponse<MembershipResponse>>> getMembershipPage(
             @Valid PageableRequest request
     ) {
         return ResponseUtil.buildResponse(

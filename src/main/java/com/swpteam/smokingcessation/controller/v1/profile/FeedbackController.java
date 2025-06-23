@@ -1,6 +1,7 @@
 package com.swpteam.smokingcessation.controller.v1.profile;
 
 import com.swpteam.smokingcessation.common.ApiResponse;
+import com.swpteam.smokingcessation.common.PageResponse;
 import com.swpteam.smokingcessation.common.PageableRequest;
 import com.swpteam.smokingcessation.constant.SuccessCode;
 import com.swpteam.smokingcessation.domain.dto.feedback.FeedbackRequest;
@@ -12,7 +13,6 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,7 +29,7 @@ public class FeedbackController {
     IFeedbackService feedbackService;
 
     @GetMapping
-    ResponseEntity<ApiResponse<Page<FeedbackResponse>>> getFeedbackPage(
+    ResponseEntity<ApiResponse<PageResponse<FeedbackResponse>>> getFeedbackPage(
             @RequestBody @Valid PageableRequest request
     ) {
         return ResponseUtil.buildResponse(
@@ -49,7 +49,7 @@ public class FeedbackController {
     }
 
     @GetMapping("/account/{id}")
-    ResponseEntity<ApiResponse<Page<FeedbackResponse>>> getFeedbackPageByAccountId(
+    ResponseEntity<ApiResponse<PageResponse<FeedbackResponse>>> getFeedbackPageByAccountId(
             @PathVariable String id,
             @RequestBody @Valid PageableRequest request
     ) {
