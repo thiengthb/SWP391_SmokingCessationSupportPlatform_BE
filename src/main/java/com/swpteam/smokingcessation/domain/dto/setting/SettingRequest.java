@@ -6,32 +6,26 @@ import com.swpteam.smokingcessation.domain.enums.Theme;
 import com.swpteam.smokingcessation.domain.enums.TrackingMode;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import lombok.*;
-import lombok.experimental.FieldDefaults;
 
 import java.time.LocalTime;
 
-@Data
-@Builder
-@NoArgsConstructor
-@AllArgsConstructor
-@FieldDefaults(level = AccessLevel.PRIVATE)
-public class SettingRequest {
-    @NotBlank(message = "ACCOUNT_NOT_BLANK")
-    private String accountId;
+public record SettingRequest(
 
-    @NotNull(message = "THEME_REQUIRED")
-    private Theme theme;
+        @NotBlank(message = "ACCOUNT_NOT_BLANK")
+        String accountId,
 
-    @NotNull(message = "Language is required")
-    private Language language;
+        @NotNull(message = "THEME_REQUIRED")
+        Theme theme,
 
-    @NotNull(message = "Tracking mode is required")
-    private TrackingMode trackingMode;
+        @NotNull(message = "Language is required")
+        Language language,
 
-    @NotNull(message = "Motivation frequency is required")
-    private MotivationFrequency motivationFrequency;
+        @NotNull(message = "Tracking mode is required")
+        TrackingMode trackingMode,
 
-    @NotNull(message = "Report deadline is required")
-    private LocalTime reportDeadline;
-}
+        @NotNull(message = "Motivation frequency is required")
+        MotivationFrequency motivationFrequency,
+
+        @NotNull(message = "Report deadline is required")
+        LocalTime reportDeadlineF
+) {}

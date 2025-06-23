@@ -1,10 +1,14 @@
 package com.swpteam.smokingcessation.config;
 
+import com.swpteam.smokingcessation.constant.App;
 import com.swpteam.smokingcessation.domain.entity.Account;
-import com.swpteam.smokingcessation.feature.repository.AccountRepository;
+import com.swpteam.smokingcessation.domain.entity.Category;
+import com.swpteam.smokingcessation.domain.enums.AccountStatus;
+import com.swpteam.smokingcessation.domain.enums.AuthProvider;
+import com.swpteam.smokingcessation.repository.AccountRepository;
 import com.swpteam.smokingcessation.domain.enums.Role;
 import com.swpteam.smokingcessation.domain.entity.Setting;
-import com.swpteam.smokingcessation.feature.repository.SettingRepository;
+import com.swpteam.smokingcessation.repository.CategoryRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -33,7 +37,8 @@ public class ApplicationInitConfig {
 
     PasswordEncoder passwordEncoder;
 
-    SettingRepository settingRepository;
+    AccountRepository accountRepository;
+    CategoryRepository categoryRepository;
 
     @Bean
     @ConditionalOnProperty(
@@ -41,29 +46,53 @@ public class ApplicationInitConfig {
             value = "datasource.driver-class-name",
             havingValue = "com.mysql.cj.jdbc.Driver"
     )
-    ApplicationRunner applicationRunner(AccountRepository accountRepository) {
+    ApplicationRunner applicationRunner() {
         log.info("Initializing application ...");
 
         return args -> {
+
             if (accountRepository.findByEmail(adminEmail).isEmpty()) {
-                Account account = Account.builder()
-                        .email(adminEmail)
-                        .password(passwordEncoder.encode(defaultPassword))
-                        .role(Role.ADMIN)
-                        .build();
+                makeDefaultAccount(adminEmail, defaultPassword, Role.ADMIN);
+            }
 
+            if (accountRepository.findByEmail(App.INIT_TEST_MEMBER_EMAIL).isEmpty()) {
+                makeDefaultAccount(App.INIT_TEST_MEMBER_EMAIL, App.INIT_TEST_MEMBER_PASS, Role.MEMBER);
+            }
 
-                Setting setting = Setting.getDefaultSetting(account);
+            if (accountRepository.findByEmail(App.INIT_TEST_COACH_EMAIL).isEmpty()) {
+                makeDefaultAccount(App.INIT_TEST_COACH_EMAIL, App.INIT_TEST_COACH_PASS, Role.COACH);
+            }
 
-                account.setSetting(setting);
-
-                accountRepository.save(account);
-                settingRepository.save(setting);
-
-                log.info("An admin account has been created with email: {}, default password: {}. Please change the password immediately.", adminEmail, defaultPassword);
+            if (categoryRepository.findByName(App.DEFAULT_CATEGORY).isEmpty()) {
+                makeDefaultUncategorized();
             }
 
             log.info("Application initialization completed ...");
         };
+    }
+
+    private void makeDefaultAccount(String email, String password, Role role) {
+        Account account = Account.builder()
+                .username(role.name().toLowerCase())
+                .password(passwordEncoder.encode(password))
+                .email(email)
+                .provider(AuthProvider.LOCAL)
+                .role(role)
+                .status(AccountStatus.ONLINE)
+                .build();
+
+        account.setSetting(Setting.getDefaultSetting(account));
+        accountRepository.save(account);
+
+        log.info("An {} account has been created with email: {}, default password: {}. Please change the password immediately.", role.name().toLowerCase(), email, password);
+    }
+
+    private void makeDefaultUncategorized() {
+        Category uncategorized = Category.builder()
+                .name(App.DEFAULT_CATEGORY)
+                .build();
+
+        categoryRepository.save(uncategorized);
+        log.info("Default category has been created");
     }
 }

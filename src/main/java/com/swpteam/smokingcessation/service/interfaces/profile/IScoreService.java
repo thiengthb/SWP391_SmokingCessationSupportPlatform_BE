@@ -1,0 +1,4 @@
+package com.swpteam.smokingcessation.service.interfaces.profile;
+
+public interface IScoreService {
+}

@@ -1,0 +1,92 @@
+package com.swpteam.smokingcessation.controller.v1.membership;
+
+import com.swpteam.smokingcessation.common.PageResponse;
+import com.swpteam.smokingcessation.domain.dto.subscription.SubscriptionRequest;
+import com.swpteam.smokingcessation.domain.dto.subscription.SubscriptionResponse;
+import com.swpteam.smokingcessation.common.ApiResponse;
+import com.swpteam.smokingcessation.common.PageableRequest;
+import com.swpteam.smokingcessation.constant.SuccessCode;
+import com.swpteam.smokingcessation.service.interfaces.membership.ISubscriptionService;
+import com.swpteam.smokingcessation.utils.ResponseUtil;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+@Slf4j
+@RestController
+@RequestMapping("/api/v1/subscriptions")
+@RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
+@Tag(name = "Subscription", description = "Manage subscription-related operations")
+public class SubscriptionController {
+
+    ISubscriptionService subscriptionService;
+
+    @GetMapping
+    ResponseEntity<ApiResponse<PageResponse<SubscriptionResponse>>> getSubscriptionPage(
+            @Valid PageableRequest request
+    ) {
+        return ResponseUtil.buildResponse(
+                SuccessCode.SUBSCRIPTION_GET_ALL,
+                subscriptionService.getSubscriptionPage(request)
+        );
+    }
+
+    @GetMapping("/{id}")
+    ResponseEntity<ApiResponse<SubscriptionResponse>> getSubscriptionById(
+            @PathVariable String id
+    ) {
+        return ResponseUtil.buildResponse(
+                SuccessCode.SUBSCRIPTION_GET_BY_ID,
+                subscriptionService.getSubscriptionById(id)
+        );
+    }
+
+    @GetMapping("/account/{id}")
+    ResponseEntity<ApiResponse<PageResponse<SubscriptionResponse>>> getSubscriptionPageByAccountId(
+            @PathVariable String id,
+            @Valid PageableRequest request
+    ) {
+        return ResponseUtil.buildResponse(
+                SuccessCode.SUBSCRIPTION_GET_BY_ACCOUNT,
+                subscriptionService.getSubscriptionPageByAccountId(id, request)
+        );
+    }
+
+    @PostMapping
+    ResponseEntity<ApiResponse<SubscriptionResponse>> createSubscription(
+            @RequestBody @Valid SubscriptionRequest request
+    ) {
+        return ResponseUtil.buildResponse(
+                SuccessCode.SUBSCRIPTION_CREATED,
+                subscriptionService.createSubscription(request)
+        );
+    }
+
+    @PutMapping("/{id}")
+    ResponseEntity<ApiResponse<SubscriptionResponse>> updateSubscription(
+            @PathVariable String id,
+            @RequestBody @Valid SubscriptionRequest request
+    ) {
+        return ResponseUtil.buildResponse(
+                SuccessCode.SUBSCRIPTION_UPDATED,
+                subscriptionService.updateSubscription(id, request)
+        );
+    }
+
+    @DeleteMapping("/{id}")
+    ResponseEntity<ApiResponse<String>> deleteSubscription(
+            @PathVariable String id
+    ) {
+        subscriptionService.softDeleteSubscription(id);
+        return ResponseUtil.buildResponse(
+                SuccessCode.SUBSCRIPTION_DELETED,
+                null
+        );
+    }
+}

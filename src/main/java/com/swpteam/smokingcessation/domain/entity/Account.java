@@ -1,12 +1,16 @@
 package com.swpteam.smokingcessation.domain.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.swpteam.smokingcessation.domain.enums.AccountStatus;
+import com.swpteam.smokingcessation.domain.enums.AuthProvider;
 import com.swpteam.smokingcessation.domain.enums.Role;
-import com.swpteam.smokingcessation.common.BaseEntity;
+import com.swpteam.smokingcessation.common.AuditableEntity;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -16,14 +20,21 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class Account extends BaseEntity {
+public class Account extends AuditableEntity {
 
-    private String username;
+    @Enumerated(EnumType.STRING)
+    AuthProvider provider;
+
+    String providerId;
+
+    @Column(unique = true, columnDefinition = "NVARCHAR(30)")
+    String username;
 
     @Column(nullable = false, unique = true, columnDefinition = "NVARCHAR(30)")
     String email;
 
-    @Column(nullable = false, columnDefinition = "NVARCHAR(100)")
+    @Column(columnDefinition = "NVARCHAR(100)")
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     String password;
 
     @Column(unique = true, columnDefinition = "NVARCHAR(10)")
@@ -37,12 +48,80 @@ public class Account extends BaseEntity {
 
     String avatar;
 
-    @OneToMany(mappedBy = "account")
-    List<Subscription> subscriptions;
-
-    @OneToOne(mappedBy = "account", cascade = CascadeType.ALL, optional = false)
-    Setting setting;
-
+    @JsonIgnore
     @OneToOne(mappedBy = "account", cascade = CascadeType.ALL)
     Member member;
+
+    @JsonIgnore
+    @Builder.Default
+    @OneToMany(mappedBy = "account", cascade = CascadeType.ALL, orphanRemoval = true)
+    List<AITokenUsage> aiTokenUsages = new ArrayList<>();
+
+    @JsonIgnore
+    @Builder.Default
+    @OneToMany(mappedBy = "account", cascade = CascadeType.ALL, orphanRemoval = true)
+    List<Blog> blogs = new ArrayList<>();
+
+    @JsonIgnore
+    @Builder.Default
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
+    List<Booking> bookingsAsMember = new ArrayList<>();
+
+    @JsonIgnore
+    @Builder.Default
+    @OneToMany(mappedBy = "coach", cascade = CascadeType.ALL, orphanRemoval = true)
+    List<Booking> bookingsAsCoach = new ArrayList<>();
+
+    @JsonIgnore
+    @OneToOne(mappedBy = "account", cascade = CascadeType.ALL)
+    Coach coach;
+
+    @JsonIgnore
+    @Builder.Default
+    @OneToMany(mappedBy = "account", cascade = CascadeType.ALL, orphanRemoval = true)
+    List<Comment> comments = new ArrayList<>();
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "account", cascade = CascadeType.ALL, orphanRemoval = true)
+    List<Notification> notifications = new ArrayList<>();
+
+    @JsonIgnore
+    @Builder.Default
+    @OneToMany(mappedBy = "account", cascade = CascadeType.ALL, orphanRemoval = true)
+    List<Plan> plans = new ArrayList<>();
+
+    @JsonIgnore
+    @Builder.Default
+    @OneToMany(mappedBy = "account", cascade = CascadeType.ALL, orphanRemoval = true)
+    List<RecordHabit> recordHabits = new ArrayList<>();
+
+    @JsonIgnore
+    @OneToOne(mappedBy = "account", cascade = CascadeType.ALL)
+    Setting setting;
+
+    @JsonIgnore
+    @Builder.Default
+    @OneToMany(mappedBy = "account", cascade = CascadeType.ALL, orphanRemoval = true)
+    List<Subscription> subscriptions = new ArrayList<>();
+
+    @JsonIgnore
+    @Builder.Default
+    @OneToMany(mappedBy = "account", cascade = CascadeType.ALL, orphanRemoval = true)
+    List<Transaction> transactions = new ArrayList<>();
+
+    @JsonIgnore
+    @Builder.Default
+    @OneToMany(mappedBy = "coach", cascade = CascadeType.ALL, orphanRemoval = true)
+    List<TimeTable> timetables = new ArrayList<>();
+
+    @JsonIgnore
+    @Builder.Default
+    @OneToMany(mappedBy = "account", cascade = CascadeType.ALL, orphanRemoval = true)
+    List<Streak> streaks = new ArrayList<>();
+
+    @JsonIgnore
+    public boolean isHavingSubscription() {
+        return subscriptions != null &&
+                subscriptions.stream().anyMatch(Subscription::isActive);
+    }
 }

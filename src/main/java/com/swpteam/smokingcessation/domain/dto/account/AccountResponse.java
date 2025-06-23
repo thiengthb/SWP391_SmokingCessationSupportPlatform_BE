@@ -15,7 +15,9 @@ import java.time.LocalDateTime;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class AccountResponse {
+
     String id;
+    String username;
     String email;
     String phoneNumber;
     Role role;

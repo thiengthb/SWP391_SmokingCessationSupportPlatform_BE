@@ -8,6 +8,7 @@ import org.mapstruct.MappingTarget;
 
 @Mapper(componentModel = "spring")
 public interface SettingMapper {
+
     Setting toEntity(SettingRequest request);
 
     SettingResponse toResponse(Setting setting);

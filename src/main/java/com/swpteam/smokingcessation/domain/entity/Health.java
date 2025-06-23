@@ -1,6 +1,6 @@
 package com.swpteam.smokingcessation.domain.entity;
 
-import com.swpteam.smokingcessation.common.BaseEntity;
+import com.swpteam.smokingcessation.common.AuditableEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
@@ -14,28 +14,16 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class Health extends BaseEntity {
+public class Health extends AuditableEntity {
 
     @ManyToOne
-    @JoinColumn(name = "accountId", nullable = false)
+    @JoinColumn(name = "accountId", nullable = false, updatable = false)
     Account account;
 
     int cigarettesPerDay;
     int cigarettesPerPack;
-    int fndLevel;
+    int ftndLevel;
     double packPrice;
     String reasonToQuit;
     int smokeYear;
-
-    public static Health getDefaultHealth(Account account) {
-        return Health.builder()
-                .account(account)
-                .cigarettesPerDay(0)
-                .cigarettesPerPack(0)
-                .fndLevel(0)
-                .packPrice(0f)
-                .reasonToQuit("")
-                .smokeYear(0)
-                .build();
-    }
 }
