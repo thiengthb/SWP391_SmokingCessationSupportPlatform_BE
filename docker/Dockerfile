@@ -8,13 +8,13 @@ FROM maven:3.9.6-eclipse-temurin-21 AS builder
 
 WORKDIR /app
 
-COPY pom.xml .
-COPY .mvn/ .mvn
-COPY mvnw mvnw.cmd ./
+COPY ../pom.xml .
+COPY ../.mvn .mvn
+COPY ../mvnw mvnw.cmd ./
 
 RUN mvn dependency:go-offline
 
-COPY src ./src
+COPY ../src ./src
 
 RUN mvn clean package -DskipTests
 

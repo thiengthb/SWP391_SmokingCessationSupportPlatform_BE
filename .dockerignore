@@ -18,3 +18,9 @@ build/
 # Logs and temp files
 *.log
 *.tmp
+
+# Docker
+docker/secrets.sh
+docker/secrets.sh.example
+docker-compose.base.yml
+docker-compose.nginx.yml
