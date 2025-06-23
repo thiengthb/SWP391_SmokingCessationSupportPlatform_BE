@@ -18,10 +18,12 @@ public interface PlanMapper {
     @Mapping(target = "phases", source = "phases")
     void update(@MappingTarget Plan plan, PlanRequest request);
 
-    @AfterMapping
-    default void linkPhases(@MappingTarget Plan plan) {
-        if (plan.getPhases() != null) {
-            plan.getPhases().forEach(phase -> phase.setPlan(plan));
+        /*
+        @AfterMapping
+        default void linkPhases(@MappingTarget Plan plan) {
+            if (plan.getPhases() != null) {
+                plan.getPhases().forEach(phase -> phase.setPlan(plan));
+            }
         }
-    }
+         */
 }

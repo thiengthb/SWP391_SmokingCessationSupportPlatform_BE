@@ -6,6 +6,9 @@ import com.swpteam.smokingcessation.domain.dto.phase.PhaseResponse;
 import com.swpteam.smokingcessation.domain.dto.phase.PhaseTemplateResponse;
 import com.swpteam.smokingcessation.domain.dto.plan.PlanTemplateResponse;
 import com.swpteam.smokingcessation.domain.entity.Account;
+import com.swpteam.smokingcessation.domain.entity.Phase;
+import com.swpteam.smokingcessation.domain.enums.MotivationFrequency;
+import com.swpteam.smokingcessation.domain.enums.PlanStatus;
 import com.swpteam.smokingcessation.domain.mapper.PlanMapper;
 import com.swpteam.smokingcessation.domain.dto.plan.PlanRequest;
 import com.swpteam.smokingcessation.domain.dto.plan.PlanResponse;
@@ -27,6 +30,7 @@ import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -95,15 +99,19 @@ public class PlanServiceImpl implements IPlanService {
     public PlanResponse createPlan(PlanRequest request) {
         Account currentAccount = authUtilService.getCurrentAccountOrThrowError();
 
-        if (request.phases() == null || request.phases().isEmpty()) {
-            throw new AppException(ErrorCode.PHASE_REQUIRED);
-        }
-
-        validateNoOverlapInPhases(request.phases());
+        validatePhaseDates(request.phases());
 
         Plan plan = planMapper.toEntity(request);
 
+        if (plan.getPhases() != null) {
+            plan.getPhases().forEach(phase -> phase.setPlan(plan));
+        }
+
         plan.setAccount(currentAccount);
+        plan.getPhases().sort(Comparator.comparing(Phase::getStartDate));
+        plan.setStartDate(plan.getPhases().getFirst().getStartDate());
+        plan.setEndDate(plan.getPhases().getLast().getEndDate());
+        plan.setPlanStatus(PlanStatus.PENDING);
 
         return planMapper.toResponse(planRepository.save(plan));
     }
@@ -120,8 +128,7 @@ public class PlanServiceImpl implements IPlanService {
             throw new AppException(ErrorCode.PHASE_REQUIRED);
         }
 
-        validateNoOverlapInPhases(request.phases());
-
+        validatePhaseDates(request.phases());
         planMapper.update(plan, request);
 
         return planMapper.toResponse(planRepository.save(plan));
@@ -207,19 +214,68 @@ public class PlanServiceImpl implements IPlanService {
         else return 5;
     }
 
-    private void validateNoOverlapInPhases(List<PhaseRequest> phases) {
-        phases.sort(Comparator.comparing(PhaseRequest::startDate));
+    /*
+            private void validateNoOverlapInPhases(List<PhaseRequest> phases) {
+                phases.sort(Comparator.comparing(PhaseRequest::startDate));
 
+                for (int i = 0; i < phases.size() - 1; i++) {
+                    PhaseRequest current = phases.get(i);
+                    PhaseRequest next = phases.get(i + 1);
+
+                    if (!current.endDate().isBefore(next.startDate())) {
+                        throw new AppException(ErrorCode.PHASE_OVERLAP,
+                                "Phase " + i + " [" + current.startDate() + " - " + current.endDate() + "] overlaps with " +
+                                "Phase " + (i + 1) + " [" + next.startDate() + " - " + next.endDate() + "]");
+                    }
+                }
+            }
+
+     */
+    private void validatePhaseDates(List<PhaseRequest> phases) {
+        if (phases == null || phases.isEmpty()) {
+            throw new AppException(ErrorCode.PHASE_REQUIRED);
+        }
+
+        for (PhaseRequest phase : phases) {
+            if (!phase.endDate().isAfter(phase.startDate())) {
+                throw new AppException(ErrorCode.INVALID_PHASE_DATE);
+            }
+            long days = phase.startDate().until(phase.endDate()).getDays() + 1; // tính cả ngày bắt đầu
+            if (days < 7) {
+                throw new AppException(ErrorCode.PHASE_TOO_SHORT);
+            }
+        }
+
+        phases.sort(Comparator.comparing(PhaseRequest::startDate));
         for (int i = 0; i < phases.size() - 1; i++) {
             PhaseRequest current = phases.get(i);
             PhaseRequest next = phases.get(i + 1);
-
-            if (!current.endDate().isBefore(next.startDate())) {
-                throw new AppException(ErrorCode.PHASE_OVERLAP,
-                        "Phase " + i + " [" + current.startDate() + " - " + current.endDate() + "] overlaps with " +
-                        "Phase " + (i + 1) + " [" + next.startDate() + " - " + next.endDate() + "]");
+            if (!next.startDate().equals(current.endDate().plusDays(1))) {
+                throw new AppException(ErrorCode.NEW_PHASE_CONFLICT);
             }
         }
+        LocalDate planStart = phases.getFirst().startDate();
+        LocalDate planEnd = phases.getLast().endDate();
+        long totalDays = planStart.until(planEnd).getDays() + 1;
+
+        if (totalDays < 14) {
+            throw new AppException(ErrorCode.INVALID_PLAN_DURATION);
+        }
+    }
+
+    @Scheduled(cron = "0 0 0 * * *")
+    public void DailyCheckingPlanStatus() {
+        LocalDate today = LocalDate.now();
+        List<Plan> pendingPlans = planRepository.findAllByPlanStatusAndIsDeletedFalse(PlanStatus.PENDING);
+        if (pendingPlans.isEmpty()) {
+            return;
+        }
+        for (Plan plan : pendingPlans) {
+            if (plan.getStartDate().isEqual(today)) {
+                plan.setPlanStatus(PlanStatus.ACTIVE);
+            }
+        }
+        planRepository.saveAll(pendingPlans);
     }
 
 }

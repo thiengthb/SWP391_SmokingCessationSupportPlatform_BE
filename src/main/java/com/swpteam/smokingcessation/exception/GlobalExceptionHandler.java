@@ -110,6 +110,18 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<ApiResponse<Void>> handleInvalidBody(HttpMessageNotReadableException ex) {
+        if (ex.getCause() instanceof com.fasterxml.jackson.databind.exc.InvalidFormatException &&
+                ex.getCause().getCause() instanceof java.time.format.DateTimeParseException dtpe) {
+
+            log.warn("Invalid date format: {}", dtpe.getParsedString());
+
+            return ResponseEntity.badRequest().body(
+                    ApiResponse.<Void>builder()
+                            .code(ErrorCode.INVALID_DATE_FORMAT.getCode())
+                            .message(ErrorCode.INVALID_DATE_FORMAT.getMessage())
+                            .build()
+            );
+        }
         return ResponseEntity.badRequest().body(
                 ApiResponse.<Void>builder()
                         .code(400)

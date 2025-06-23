@@ -86,6 +86,7 @@ public class AccountServiceImpl implements IAccountService {
                             .username(RandomUtil.generateRandomUsername())
                             .email(payload.getEmail())
                             .provider(AuthProvider.GOOGLE)
+                            .role(Role.MEMBER)
                             .avatar((String) payload.get("picture"))
                             .build();
                     return accountRepository.save(newAccount);

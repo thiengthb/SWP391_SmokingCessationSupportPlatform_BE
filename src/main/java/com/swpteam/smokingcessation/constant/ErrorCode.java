@@ -11,6 +11,8 @@ import org.springframework.http.HttpStatusCode;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public enum ErrorCode {
+    // LocalDate parse
+    INVALID_DATE_FORMAT(9999, "Invalid date", HttpStatus.BAD_REQUEST),
 
     UNCATEGORIZED_EXCEPTION(9999, "Uncategorized error", HttpStatus.INTERNAL_SERVER_ERROR),
     INVALID_MESSAGE_KEY(9999, "Invalid message key", HttpStatus.BAD_REQUEST),
@@ -151,7 +153,9 @@ public enum ErrorCode {
     SUCCESS_LEVEL_INVALID_MAX(2183, "Success max is invalid", HttpStatus.BAD_REQUEST),
     PLAN_ID_REQUIRED(2312, "PlanId is required", HttpStatus.BAD_REQUEST),
     INVALID_FTND_SCORE(2332, "ftnd score must greater than 0 and less than 10", HttpStatus.BAD_REQUEST),
-
+    INVALID_PHASE_DATE(2343, "End date must be after start date", HttpStatus.BAD_REQUEST),
+    NEW_PHASE_CONFLICT(2346, "New phase conflict with old phase", HttpStatus.BAD_REQUEST),
+    INVALID_PLAN_DURATION(23123, "Plan need to be at least 2 weeks", HttpStatus.BAD_REQUEST),
 
     // Phase
     PHASE_START_DATE_REQUIRED(1023, "start date required", HttpStatus.BAD_REQUEST),
@@ -166,7 +170,7 @@ public enum ErrorCode {
     CIGARETTE_NEGATIVE(4005, "Cigarette bound must be a positive number", HttpStatus.BAD_REQUEST),
     PHASE_OVERLAP(1323, "Phase overlaps with existing phase(s) in the plan", HttpStatus.BAD_REQUEST),
     PHASE_REQUIRED(1323, "Phase for plan is required, at least have one phase", HttpStatus.BAD_REQUEST),
-
+    PHASE_TOO_SHORT(1233, "phase need to be at least 7 days", HttpStatus.BAD_REQUEST),
     // Chatbot
     PROMPT_NOT_BLANK(4000, "Prompt cannot be blank", HttpStatus.BAD_REQUEST),
     PROMPT_MAX_SIZE(4000, "Prompt must not exceed 200 characters", HttpStatus.BAD_REQUEST),
@@ -179,7 +183,7 @@ public enum ErrorCode {
     COACH_SPECIALIZATION_REQUIRED(1232, "Coach specialization required", HttpStatus.BAD_REQUEST),
     COACH_CERTIFICATES_REQUIRED(2212, "Coach certificate required", HttpStatus.BAD_REQUEST),
     COACH_ALREADY_EXISTED(2212, "Coach certificate required", HttpStatus.BAD_REQUEST),
-    
+
     // Booking
     BOOKING_NOT_FOUND(1000, "Booking not found", HttpStatus.BAD_REQUEST),
     COACH_ACCOUNT_ID_REQUIRED(1003, "Coach account ID is required", HttpStatus.BAD_REQUEST),
@@ -190,8 +194,8 @@ public enum ErrorCode {
     ENDED_AT_REQUIRED(1008, "Ended at is required", HttpStatus.BAD_REQUEST),
     ENDED_AT_MUST_BE_IN_FUTURE(1009, "Ended at must be in the future", HttpStatus.BAD_REQUEST),
     IS_APPROVED_REQUIRED(1010, "Approval status is required", HttpStatus.BAD_REQUEST),
-    BOOKING_OUT_OF_WORKING_TIME(3213,"Out of coach working time",HttpStatus.BAD_REQUEST),
-    BOOKING_TIME_CONFLICT(4123,"Booking time conflict",HttpStatus.BAD_REQUEST),
+    BOOKING_OUT_OF_WORKING_TIME(3213, "Out of coach working time", HttpStatus.BAD_REQUEST),
+    BOOKING_TIME_CONFLICT(4123, "Booking time conflict", HttpStatus.BAD_REQUEST),
 
     // Category
     CATEGORY_NAME_REQUIRED(4000, "Category name must not be blank", HttpStatus.BAD_REQUEST),
@@ -275,9 +279,9 @@ public enum ErrorCode {
     REVIEW_COACH_ID_REQUIRED(8004, "Coach ID is required", HttpStatus.BAD_REQUEST),
 
     // TimeTable
-    TIMETABLE_NOT_FOUND(2312,"TimeTable does not exist",HttpStatus.BAD_REQUEST),
-    TIMETABLE_NAME_REQUIRED(1232,"TimeTable name required",HttpStatus.BAD_REQUEST),
-    TIMETABLE_DESCRIPTION_REQUIRED(1232,"TimeTable desctiption required",HttpStatus.BAD_REQUEST),
+    TIMETABLE_NOT_FOUND(2312, "TimeTable does not exist", HttpStatus.BAD_REQUEST),
+    TIMETABLE_NAME_REQUIRED(1232, "TimeTable name required", HttpStatus.BAD_REQUEST),
+    TIMETABLE_DESCRIPTION_REQUIRED(1232, "TimeTable desctiption required", HttpStatus.BAD_REQUEST),
 
 
     ;
