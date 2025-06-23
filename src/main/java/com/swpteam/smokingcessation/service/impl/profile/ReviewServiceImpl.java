@@ -1,5 +1,6 @@
 package com.swpteam.smokingcessation.service.impl.profile;
 
+import com.swpteam.smokingcessation.common.PageResponse;
 import com.swpteam.smokingcessation.common.PageableRequest;
 import com.swpteam.smokingcessation.constant.ErrorCode;
 import com.swpteam.smokingcessation.domain.dto.review.ReviewCreateRequest;
@@ -39,37 +40,37 @@ public class ReviewServiceImpl implements IReviewService {
     IAccountService accountService;
 
     @Override
-    public Page<ReviewResponse> getReviewPage(PageableRequest request) {
+    @PreAuthorize("hasRole('MEMBER')")
+    @Cacheable(value = "REVIEW_PAGE_CACHE",
+            key = "#request.page + '-' + #request.size + '-' + #request.sortBy + '-' + #request.direction '-' + #memberId")
+    public PageResponse<ReviewResponse> getMyReviewPageAsMember(PageableRequest request) {
         ValidationUtil.checkFieldExist(Review.class, request.sortBy());
 
-        Pageable pageable = PageableRequest.getPageable(request);
-        Page<Review> reviews = reviewRepository.findAllByIsDeletedFalse(pageable);
+        Account currentAccount = authUtilService.getCurrentAccountOrThrowError();
 
-        return reviews.map(reviewMapper::toResponse);
+        Pageable pageable = PageableRequest.getPageable(request);
+        Page<Review> reviews = reviewRepository.findByMemberIdAndIsDeletedFalse(currentAccount.getId(), pageable);
+
+        return new PageResponse<>(reviews.map(reviewMapper::toResponse));
     }
 
     @Override
-    public Page<ReviewResponse> getReviewPageByAccount(String accountId, PageableRequest request) {
+    @PreAuthorize("hasRole('COACH')")
+    @Cacheable(value = "REVIEW_PAGE_CACHE",
+            key = "#request.page + '-' + #request.size + '-' + #request.sortBy + '-' + #request.direction '-' + #coachId")
+    public PageResponse<ReviewResponse> getMyReviewPageAsCoach(PageableRequest request) {
         ValidationUtil.checkFieldExist(Review.class, request.sortBy());
 
-        Pageable pageable = PageableRequest.getPageable(request);
-        Page<Review> reviews = reviewRepository.findByMemberIdAndIsDeletedFalse(accountId, pageable);
+        Account currentAccount = authUtilService.getCurrentAccountOrThrowError();
 
-        return reviews.map(reviewMapper::toResponse);
+        Pageable pageable = PageableRequest.getPageable(request);
+        Page<Review> reviews = reviewRepository.findByCoachIdAndIsDeletedFalse(currentAccount.getId(), pageable);
+
+        return new PageResponse<>(reviews.map(reviewMapper::toResponse));
     }
 
     @Override
-    public Page<ReviewResponse> getReviewPageByCoach(String coachId, PageableRequest request) {
-        ValidationUtil.checkFieldExist(Review.class, request.sortBy());
-
-        Pageable pageable = PageableRequest.getPageable(request);
-        Page<Review> reviews = reviewRepository.findByCoachIdAndIsDeletedFalse(coachId, pageable);
-
-        return reviews.map(reviewMapper::toResponse);
-    }
-
-
-    @Override
+    @Cacheable(value = "REVIEW_CACHE", key = "#id")
     public ReviewResponse getReviewById(String id) {
         return reviewMapper.toResponse(findReviewById(id));
     }
@@ -77,7 +78,8 @@ public class ReviewServiceImpl implements IReviewService {
     @Override
     @Transactional
     @PreAuthorize("hasRole('MEMBER')")
-    @CachePut(value = "REVIEW_CACHE", key = "#result.id")
+    @CachePut(value = "REVIEW_CACHE", key = "#result.getId()")
+    @CacheEvict(value = "REVIEW_PAGE_CACHE", allEntries = true)
     public ReviewResponse createReview(ReviewCreateRequest request) {
         Account currentAccount = authUtilService.getCurrentAccountOrThrowError();
 
@@ -93,7 +95,8 @@ public class ReviewServiceImpl implements IReviewService {
     @Override
     @Transactional
     @PreAuthorize("hasAnyRole('MEMBER')")
-    @CachePut(value = "REVIEW_CACHE", key = "#id")
+    @CachePut(value = "REVIEW_CACHE", key = "#result.getId()")
+    @CacheEvict(value = "REVIEW_PAGE_CACHE", allEntries = true)
     public ReviewResponse updateReview(String id, ReviewUpdateRequest request) {
         Account currentAccount = authUtilService.getCurrentAccountOrThrowError();
 
@@ -108,8 +111,8 @@ public class ReviewServiceImpl implements IReviewService {
 
     @Override
     @Transactional
-    @CacheEvict(value = "REVIEW_CACHE", key = "#id")
-    @PreAuthorize("hasanyRole('ADMIN', 'MEMBER')")
+    @PreAuthorize("hasAnyRole('ADMIN', 'MEMBER')")
+    @CacheEvict(value = {"REVIEW_CACHE", "REVIEW_PAGE_CACHE"}, key = "#id", allEntries = true)
     public void softDeleteReview(String id) {
         Review review = findReviewById(id);
         Account currentAccount = authUtilService.getCurrentAccountOrThrowError();
@@ -124,8 +127,6 @@ public class ReviewServiceImpl implements IReviewService {
     }
 
     @Override
-    @Transactional
-    @Cacheable(value = "REVIEW_CACHE", key = "#id")
     public Review findReviewById(String id) {
         Review review = reviewRepository.findByIdAndIsDeletedFalse(id)
                 .orElseThrow(() -> new AppException(ErrorCode.REVIEW_NOT_FOUND));
@@ -136,4 +137,5 @@ public class ReviewServiceImpl implements IReviewService {
 
         return review;
     }
+
 }

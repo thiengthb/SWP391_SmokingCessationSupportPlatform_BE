@@ -10,6 +10,7 @@ import java.util.Optional;
 
 @Repository
 public interface ReviewRepository extends JpaRepository<Review, String> {
+
     Optional<Review> findByIdAndIsDeletedFalse(String id);
 
     Page<Review> findByMemberIdAndIsDeletedFalse(String memberId, Pageable pageable);

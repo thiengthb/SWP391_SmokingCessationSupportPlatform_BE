@@ -1,5 +1,6 @@
 package com.swpteam.smokingcessation.service.impl.blog;
 
+import com.swpteam.smokingcessation.common.PageResponse;
 import com.swpteam.smokingcessation.common.PageableRequest;
 import com.swpteam.smokingcessation.constant.ErrorCode;
 import com.swpteam.smokingcessation.domain.dto.comment.CommentCreateRequest;
@@ -37,34 +38,35 @@ public class CommentServiceImpl implements ICommentService {
 
     CommentRepository commentRepository;
     CommentMapper commentMapper;
-
     BlogRepository blogRepository;
-
     AuthUtilService authUtilService;
 
     @Override
-    public Page<CommentResponse> getCommentsByBlogId(String blogId, PageableRequest request) {
+    @Cacheable(value = "COMMENT_PAGE_CACHE",
+            key = "#request.page + '-' + #request.size + '-' + #request.sortBy + '-' + #request.direction + '-' + #blogId")
+    public PageResponse<CommentResponse> getCommentsByBlogId(String blogId, PageableRequest request) {
         ValidationUtil.checkFieldExist(Comment.class, request.sortBy());
 
         Pageable pageable = PageableRequest.getPageable(request);
         Page<Comment> topLevelComments = commentRepository.findByBlogIdAndLevel(blogId, 0, pageable);
 
-        return topLevelComments.map(commentMapper::toResponse);
+        return new PageResponse<>(topLevelComments.map(commentMapper::toResponse));
     }
 
     @Override
-    @PreAuthorize("hasRole('ADMIN')")
-    public Page<CommentResponse> getCommentPage(PageableRequest request) {
+    @Cacheable(value = "COMMENT_PAGE_CACHE",
+            key = "#request.page + '-' + #request.size + '-' + #request.sortBy + '-' + #request.direction")
+    public PageResponse<CommentResponse> getCommentPage(PageableRequest request) {
         ValidationUtil.checkFieldExist(Comment.class, request.sortBy());
 
         Pageable pageable = PageableRequest.getPageable(request);
         Page<Comment> comments = commentRepository.findAll(pageable);
 
-        return comments.map(commentMapper::toResponse);
+        return new PageResponse<>(comments.map(commentMapper::toResponse));
     }
 
     @Override
-    @PreAuthorize("hasRole('ADMIN')")
+    @Cacheable(value = "COMMENT_CACHE", key = "#id")
     public CommentResponse getCommentById(String id) {
         Comment comment = findCommentByIdOrThrowError(id);
         return commentMapper.toResponse(comment);
@@ -73,6 +75,7 @@ public class CommentServiceImpl implements ICommentService {
     @Override
     @Transactional
     @CachePut(value = "COMMENT_CACHE", key = "#result.getId()")
+    @CacheEvict(value = "COMMENT_PAGE_CACHE", allEntries = true)
     public CommentResponse createComment(CommentCreateRequest request) {
         Account currentAccount = authUtilService.getCurrentAccountOrThrowError();
 
@@ -89,6 +92,7 @@ public class CommentServiceImpl implements ICommentService {
     @Override
     @Transactional
     @CachePut(value = "COMMENT_CACHE", key = "#result.getId()")
+    @CacheEvict(value = "COMMENT_PAGE_CACHE", allEntries = true)
     public CommentResponse replyComment(CommentReplyRequest request) {
         Account currentAccount = authUtilService.getCurrentAccountOrThrowError();
 
@@ -107,6 +111,7 @@ public class CommentServiceImpl implements ICommentService {
     @Override
     @Transactional
     @CachePut(value = "COMMENT_CACHE", key = "#result.getId()")
+    @CacheEvict(value = "COMMENT_PAGE_CACHE", allEntries = true)
     public CommentResponse updateComment(String id, CommentUpdateRequest request) {
         Comment comment = findCommentByIdOrThrowError(id);
 
@@ -122,7 +127,7 @@ public class CommentServiceImpl implements ICommentService {
 
     @Override
     @Transactional
-    @CacheEvict(value = "COMMENT_CACHE", key = "#id")
+    @CacheEvict(value = {"COMMENT_CACHE", "COMMENT_PAGE_CACHE"}, key = "#id", allEntries = true)
     public void deleteCommentById(String id) {
         Comment comment = findCommentByIdOrThrowError(id);
 
@@ -131,17 +136,24 @@ public class CommentServiceImpl implements ICommentService {
             throw new AppException(ErrorCode.OTHERS_COMMENT_UNCHANGEABLE);
         }
 
-        if (comment.getAccount().isDeleted()) {
-            throw new AppException(ErrorCode.ACCOUNT_DELETED);
-        }
+        comment.setDeleted(true);
 
         commentRepository.deleteById(id);
     }
 
     @Override
-    @Cacheable(value = "COMMENT_CACHE", key = "#id")
+    @Transactional
     public Comment findCommentByIdOrThrowError(String id) {
-        return commentRepository.findById(id)
+        Comment comment =  commentRepository.findById(id)
                 .orElseThrow(() -> new AppException(ErrorCode.COMMENT_NOT_FOUND));
+
+        if (comment.getAccount().isDeleted() || (comment.getParentComment() != null && comment.getParentComment().isDeleted())) {
+            comment.setDeleted(true);
+            commentRepository.deleteById(id);
+            throw new AppException(ErrorCode.COMMENT_NOT_FOUND);
+        }
+
+        return comment;
     }
+
 }

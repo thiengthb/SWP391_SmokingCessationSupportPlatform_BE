@@ -4,9 +4,9 @@ import com.swpteam.smokingcessation.common.ApiResponse;
 import com.swpteam.smokingcessation.constant.SuccessCode;
 import com.swpteam.smokingcessation.domain.dto.auth.request.*;
 import com.swpteam.smokingcessation.domain.dto.auth.response.AuthenticationResponse;
-import com.swpteam.smokingcessation.domain.dto.auth.response.GoogleTokenResponse;
 import com.swpteam.smokingcessation.service.interfaces.identity.IAuthenticationService;
 import com.swpteam.smokingcessation.utils.CookieUtil;
+import com.swpteam.smokingcessation.utils.ResponseUtil;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -28,96 +28,109 @@ public class AuthenticationController {
     CookieUtil cookieUtil;
 
     @PostMapping("/google/login")
-    ResponseEntity<ApiResponse<AuthenticationResponse>> getGoogleToken(@RequestBody GoogleLoginRequest request, HttpServletResponse response) {
+    ResponseEntity<ApiResponse<AuthenticationResponse>> getGoogleToken(
+            @RequestBody GoogleLoginRequest request,
+            HttpServletResponse response
+    ) {
         AuthenticationResponse authenticationResponse = authenticationService.googleLogin(request);
 
         cookieUtil.setRefreshTokenCookie(response, authenticationResponse.getRefreshToken());
         authenticationResponse.setRefreshToken(null);
-        return ResponseEntity.ok(
-                ApiResponse.<AuthenticationResponse>builder()
-                        .code(SuccessCode.GOOGLE_LOGIN_SUCCESS.getCode())
-                        .message(SuccessCode.GOOGLE_LOGIN_SUCCESS.getMessage())
-                        .result(authenticationResponse)
-                        .build());
+
+        return ResponseUtil.buildResponse(
+                SuccessCode.GOOGLE_LOGIN_SUCCESS,
+                authenticationResponse
+        );
     }
 
     @PostMapping("/login")
-    ResponseEntity<ApiResponse<AuthenticationResponse>> authenticate(@RequestBody @Valid AuthenticationRequest request, HttpServletResponse response) {
+    ResponseEntity<ApiResponse<AuthenticationResponse>> authenticate(
+            @RequestBody @Valid AuthenticationRequest request,
+            HttpServletResponse response
+    ) {
         AuthenticationResponse authenticationResponse = authenticationService.login(request);
 
         cookieUtil.setRefreshTokenCookie(response, authenticationResponse.getRefreshToken());
         authenticationResponse.setRefreshToken(null);
-        return ResponseEntity.ok()
-                .body(ApiResponse.<AuthenticationResponse>builder()
-                        .code(SuccessCode.LOGIN_SUCCESS.getCode())
-                        .message(SuccessCode.LOGIN_SUCCESS.getMessage())
-                        .result(authenticationResponse)
-                        .build());
+
+        return ResponseUtil.buildResponse(
+                SuccessCode.LOGIN_SUCCESS,
+                authenticationResponse
+        );
     }
 
     @PostMapping("/refresh-token")
-    ResponseEntity<ApiResponse<AuthenticationResponse>> refreshToken(@CookieValue(value = "refreshToken", required = false) String refreshToken, HttpServletResponse response) {
+    ResponseEntity<ApiResponse<AuthenticationResponse>> refreshToken(
+            @CookieValue(value = "refreshToken", required = false) String refreshToken,
+            HttpServletResponse response
+    ) {
         AuthenticationResponse authenticationResponse = authenticationService.refreshingToken(refreshToken);
 
         cookieUtil.setRefreshTokenCookie(response, authenticationResponse.getRefreshToken());
         authenticationResponse.setRefreshToken(null);
-        return ResponseEntity.ok()
-                .body(ApiResponse.<AuthenticationResponse>builder()
-                        .code(SuccessCode.TOKEN_REFRESH_SUCCESS.getCode())
-                        .message(SuccessCode.TOKEN_REFRESH_SUCCESS.getMessage())
-                        .result(authenticationResponse)
-                        .build());
+
+        return ResponseUtil.buildResponse(
+                SuccessCode.TOKEN_REFRESH_SUCCESS,
+                authenticationResponse
+        );
     }
 
     @PostMapping("/register")
-    ResponseEntity<ApiResponse<AuthenticationResponse>> register(@RequestBody @Valid RegisterRequest request, HttpServletResponse response) {
+    ResponseEntity<ApiResponse<AuthenticationResponse>> register(
+            @RequestBody @Valid RegisterRequest request,
+            HttpServletResponse response
+    ) {
         AuthenticationResponse authenticationResponse = authenticationService.register(request);
 
         cookieUtil.setRefreshTokenCookie(response, authenticationResponse.getRefreshToken());
         authenticationResponse.setRefreshToken(null);
-        return ResponseEntity.ok(
-                ApiResponse.<AuthenticationResponse>builder()
-                        .code(SuccessCode.REGISTER_SUCCESS.getCode())
-                        .message(SuccessCode.REGISTER_SUCCESS.getMessage())
-                        .result(authenticationResponse)
-                        .build());
+
+        return ResponseUtil.buildResponse(
+                SuccessCode.REGISTER_SUCCESS,
+                authenticationResponse
+        );
     }
 
     @PostMapping("/forgot-password")
-    ResponseEntity<ApiResponse<String>> forgotPassword(@RequestBody @Valid ForgotPasswordRequest request) {
+    ResponseEntity<ApiResponse<Void>> forgotPassword(
+            @RequestBody @Valid ForgotPasswordRequest request
+    ) {
         authenticationService.sendResetPasswordEmail(request.email());
-        return ResponseEntity.ok(
-                ApiResponse.<String>builder()
-                        .code(SuccessCode.SEND_MAIL_SUCCESS.getCode())
-                        .message(SuccessCode.SEND_MAIL_SUCCESS.getMessage())
-                        .result("Reset password link sent to your email if it exists in our system.")
-                        .build());
+
+        return ResponseUtil.buildResponse(
+                SuccessCode.SEND_MAIL_SUCCESS,
+                null
+        );
     }
 
     @PostMapping("/reset-password")
-    ResponseEntity<ApiResponse<Void>> resetPassword(@RequestBody @Valid ResetPasswordRequest request) {
+    ResponseEntity<ApiResponse<Void>> resetPassword(
+            @RequestBody @Valid ResetPasswordRequest request
+    ) {
         authenticationService.resetPassword(request);
 
-        return ResponseEntity.ok(
-                ApiResponse.<Void>builder()
-                        .code(SuccessCode.PASSWORD_RESET_SUCCESS.getCode())
-                        .message(SuccessCode.PASSWORD_RESET_SUCCESS.getMessage())
-                        .build());
+        return ResponseUtil.buildResponse(
+                SuccessCode.PASSWORD_RESET_SUCCESS,
+                null
+        );
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<ApiResponse<Void>> logout(HttpServletRequest request, HttpServletResponse response) {
-        String refreshToken = cookieUtil.getRefreshTokenFromCookie(request).orElse(null);
+    public ResponseEntity<ApiResponse<Void>> logout(
+            HttpServletRequest request,
+            HttpServletResponse response
+    ) {
+        String refreshToken = cookieUtil.getRefreshTokenFromCookie(request)
+                .orElse(null);
+
         if (refreshToken != null) {
-            authenticationService.logout(refreshToken); // pass only the token
+            authenticationService.logout(refreshToken);
             cookieUtil.clearRefreshTokenCookie(response);
         }
 
-        return ResponseEntity.ok(
-                ApiResponse.<Void>builder()
-                        .code(SuccessCode.LOGOUT_SUCCESS.getCode())
-                        .message(SuccessCode.LOGOUT_SUCCESS.getMessage())
-                        .build()
+        return ResponseUtil.buildResponse(
+                SuccessCode.LOGOUT_SUCCESS,
+                null
         );
     }
 

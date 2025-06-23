@@ -1,22 +1,21 @@
 package com.swpteam.smokingcessation.service.interfaces.tracking;
 
-import com.swpteam.smokingcessation.common.PageableRequest;
 import com.swpteam.smokingcessation.domain.dto.phase.PhaseRequest;
 import com.swpteam.smokingcessation.domain.dto.phase.PhaseResponse;
 import com.swpteam.smokingcessation.domain.entity.Phase;
-import org.springframework.data.domain.Page;
+import com.swpteam.smokingcessation.domain.entity.Plan;
+
+import java.time.LocalDate;
+import java.util.List;
 
 public interface IPhaseService {
 
-    Page<PhaseResponse> getPhasePage(PageableRequest request);
+    List<PhaseResponse> getPhaseListByPlanId(String planId);
 
     PhaseResponse getPhaseById(String id);
-
-    PhaseResponse createPhase(PhaseRequest request);
-
-    PhaseResponse updatePhaseById(String id, PhaseRequest request);
 
     void softDeletePhaseById(String id);
 
     Phase findPhaseByIdOrThrowError(String id);
+
 }

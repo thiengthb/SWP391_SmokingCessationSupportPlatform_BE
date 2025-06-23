@@ -116,6 +116,8 @@ public enum ErrorCode {
     SMOKE_YEAR_INVALID(4009, "Smoke year must be non-negative", HttpStatus.BAD_REQUEST),
     ACCESS_DENIED(4001, "Access denied", HttpStatus.FORBIDDEN),
     PACK_PRICE_TOO_HIGH(4010, "Pack price must not exceed 500.0", HttpStatus.BAD_REQUEST),
+    HEALTH_RECORD_DOWN_GRADE(4010, "Health record can not be down grade", HttpStatus.BAD_REQUEST),
+    HEALTH_RECORD_NOT_UPDATE(4010, "Health record not seem to be updated ", HttpStatus.BAD_REQUEST),
 
     // Record
     RECORD_NOT_FOUND(5000, "Record does not exist", HttpStatus.NOT_FOUND),
@@ -133,6 +135,7 @@ public enum ErrorCode {
 
     // Plan
     PLAN_NOT_FOUND(9000, "Plan does not exist", HttpStatus.BAD_REQUEST),
+    NO_PLAN_CREATED(9000, "No plan has been created", HttpStatus.BAD_REQUEST),
     PLAN_START_DATE_MUST_BE_TODAY_OR_FUTURE(9001, "Start date must be today or in the future", HttpStatus.BAD_REQUEST),
     PLAN_END_DATE_MUST_BE_IN_FUTURE(9002, "End date must in the future", HttpStatus.BAD_REQUEST),
     PLAN_START_DATE_REQUIRED(1013, "start date required", HttpStatus.BAD_REQUEST),
@@ -161,6 +164,8 @@ public enum ErrorCode {
     PHASE_DESCRIPTION_TOO_LONG(1111, "Phase description is too long", HttpStatus.BAD_REQUEST),
     PHASE_CIGARETTE_BOUND_REQUIRED(1323, "Phase bound is required", HttpStatus.BAD_REQUEST),
     CIGARETTE_NEGATIVE(4005, "Cigarette bound must be a positive number", HttpStatus.BAD_REQUEST),
+    PHASE_OVERLAP(1323, "Phase overlaps with existing phase(s) in the plan", HttpStatus.BAD_REQUEST),
+    PHASE_REQUIRED(1323, "Phase for plan is required, at least have one phase", HttpStatus.BAD_REQUEST),
 
     // Chatbot
     PROMPT_NOT_BLANK(4000, "Prompt cannot be blank", HttpStatus.BAD_REQUEST),
@@ -173,7 +178,8 @@ public enum ErrorCode {
     COACH_SOCIAL_LINK_REQUIRED(1221, "Coach social link required", HttpStatus.BAD_REQUEST),
     COACH_SPECIALIZATION_REQUIRED(1232, "Coach specialization required", HttpStatus.BAD_REQUEST),
     COACH_CERTIFICATES_REQUIRED(2212, "Coach certificate required", HttpStatus.BAD_REQUEST),
-
+    COACH_ALREADY_EXISTED(2212, "Coach certificate required", HttpStatus.BAD_REQUEST),
+    
     // Booking
     BOOKING_NOT_FOUND(1000, "Booking not found", HttpStatus.BAD_REQUEST),
     COACH_ACCOUNT_ID_REQUIRED(1003, "Coach account ID is required", HttpStatus.BAD_REQUEST),
@@ -186,6 +192,7 @@ public enum ErrorCode {
     IS_APPROVED_REQUIRED(1010, "Approval status is required", HttpStatus.BAD_REQUEST),
     BOOKING_OUT_OF_WORKING_TIME(3213,"Out of coach working time",HttpStatus.BAD_REQUEST),
     BOOKING_TIME_CONFLICT(4123,"Booking time conflict",HttpStatus.BAD_REQUEST),
+
     // Category
     CATEGORY_NAME_REQUIRED(4000, "Category name must not be blank", HttpStatus.BAD_REQUEST),
     CATEGORY_EXISTED(4000, "Category name already existed", HttpStatus.BAD_REQUEST),
@@ -228,6 +235,7 @@ public enum ErrorCode {
     NOTIFICATION_CONTENT_REQUIRED(2101, "Content for notification is required", HttpStatus.BAD_REQUEST),
     NOTIFICATION_ID_REQUIRED(2102, "Notification ID is required to mark as read", HttpStatus.BAD_REQUEST),
     NOTIFICATION_NOT_FOUND(2103, "Notification does not exist or have been deleted", HttpStatus.BAD_REQUEST),
+    NOTIFICATION_HAS_BEEN_READ(2103, "Notification has been read", HttpStatus.BAD_REQUEST),
 
     // Streak
     STREAK_RESET_FAILED(3100, "Failure in resetting the streak", HttpStatus.INTERNAL_SERVER_ERROR),
@@ -236,21 +244,22 @@ public enum ErrorCode {
     STREAK_REQUIRED(3103, "Streak field must be entered", HttpStatus.BAD_REQUEST),
     OTHERS_STREAK_CANNOT_BE_DELETED(3104, "Other's streak counter cannot be deleted", HttpStatus.FORBIDDEN),
     STREAK_ALREADY_EXISTS(3105, "Streak already exists in the system", HttpStatus.CONFLICT),
+    STREAK_DOWN_GRADE(3105, "Streak can not be down grade", HttpStatus.BAD_REQUEST),
 
     // Report
     PAST_FROM_DATE(4100, "The from date needs to be in the past", HttpStatus.BAD_REQUEST),
     PAST_TO_DATE(4101, "The to date needs to be in the past or present", HttpStatus.BAD_REQUEST),
     FROM_DATE_REQUIRED(4102, "The from date cannot be empty", HttpStatus.BAD_REQUEST),
 
-    // Achievement
-    ACHIEVEMENT_NOT_FOUND(6000, "Achievement does not exist or have been deleted", HttpStatus.BAD_REQUEST),
-    ACHIEVEMENT_ALREADY_EXISTS(6001, "Achievement already exists", HttpStatus.BAD_REQUEST),
-    ACHIEVEMENT_NAME_REQUIRED(6002, "Achievement name is required", HttpStatus.BAD_REQUEST),
-    ACHIEVEMENT_DESCRIPTION_REQUIRED(6003, "Achievement description is required", HttpStatus.BAD_REQUEST),
-    ACHIEVEMENT_ICON_URL_REQUIRED(6004, "Achievement icon URL is required", HttpStatus.BAD_REQUEST),
-    ACHIEVEMENT_CRITERIA_TYPE_REQUIRED(6005, "Achievement criteria type is required", HttpStatus.BAD_REQUEST),
-    ACHIEVEMENT_CRITERIA_VALUE_REQUIRED(6006, "Achievement criteria value is required", HttpStatus.BAD_REQUEST),
-    ACHIEVEMENT_CRITERIA_VALUE_INVALID(6007, "Achievement criteria value must be positive", HttpStatus.BAD_REQUEST),
+    // Goal
+    GOAL_NOT_FOUND(6000, "Goal does not exist or have been deleted", HttpStatus.BAD_REQUEST),
+    GOAL_ALREADY_EXISTS(6001, "Goal already exists", HttpStatus.BAD_REQUEST),
+    GOAL_NAME_REQUIRED(6002, "Goal name is required", HttpStatus.BAD_REQUEST),
+    GOAL_DESCRIPTION_REQUIRED(6003, "Goal description is required", HttpStatus.BAD_REQUEST),
+    GOAL_ICON_URL_REQUIRED(6004, "Goal icon URL is required", HttpStatus.BAD_REQUEST),
+    GOAL_CRITERIA_TYPE_REQUIRED(6005, "Goal criteria type is required", HttpStatus.BAD_REQUEST),
+    GOAL_CRITERIA_VALUE_REQUIRED(6006, "Goal criteria value is required", HttpStatus.BAD_REQUEST),
+    GOAL_CRITERIA_VALUE_INVALID(6007, "Goal criteria value must be positive", HttpStatus.BAD_REQUEST),
 
     // Feedback
     FEEDBACK_NOT_FOUND(7000, "Feedback does not exist or have been deleted", HttpStatus.BAD_REQUEST),
@@ -269,6 +278,8 @@ public enum ErrorCode {
     TIMETABLE_NOT_FOUND(2312,"TimeTable does not exist",HttpStatus.BAD_REQUEST),
     TIMETABLE_NAME_REQUIRED(1232,"TimeTable name required",HttpStatus.BAD_REQUEST),
     TIMETABLE_DESCRIPTION_REQUIRED(1232,"TimeTable desctiption required",HttpStatus.BAD_REQUEST),
+
+
     ;
     int code;
     String message;

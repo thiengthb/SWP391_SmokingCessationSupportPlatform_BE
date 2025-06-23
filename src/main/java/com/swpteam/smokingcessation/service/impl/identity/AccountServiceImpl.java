@@ -1,6 +1,7 @@
 package com.swpteam.smokingcessation.service.impl.identity;
 
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
+import com.swpteam.smokingcessation.common.PageResponse;
 import com.swpteam.smokingcessation.domain.dto.account.AccountRequest;
 import com.swpteam.smokingcessation.domain.dto.account.AccountResponse;
 import com.swpteam.smokingcessation.domain.dto.account.AccountUpdateRequest;
@@ -23,17 +24,12 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.CachePut;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.Random;
 
 @Slf4j
 @Service
@@ -68,7 +64,6 @@ public class AccountServiceImpl implements IAccountService {
     @Override
     @Transactional
     @PreAuthorize("hasRole('ADMIN')")
-    @CachePut(value = "ACCOUNT_CACHE", key = "#result.getId()")
     public AccountResponse createAccount(AccountRequest request) {
         checkExistByEmail(request.email());
         checkExistByPhoneNumber(request.phoneNumber());
@@ -84,9 +79,7 @@ public class AccountServiceImpl implements IAccountService {
 
     @Override
     @Transactional
-    @CachePut(value = "ACCOUNT_CACHE", key = "#result.getId()")
     public Account createAccountByGoogle(GoogleIdToken.Payload payload) {
-
         String email = payload.getEmail();
         return accountRepository.findByEmail(email)
                 .orElseGet(() -> {
@@ -94,6 +87,7 @@ public class AccountServiceImpl implements IAccountService {
                             .username(RandomUtil.generateRandomUsername())
                             .email(payload.getEmail())
                             .provider(AuthProvider.GOOGLE)
+                            .role(Role.MEMBER)
                             .avatar((String) payload.get("picture"))
                             .build();
                     return accountRepository.save(newAccount);
@@ -103,13 +97,13 @@ public class AccountServiceImpl implements IAccountService {
 
     @Override
     @PreAuthorize("hasRole('ADMIN')")
-    public Page<AccountResponse> getAccounts(PageableRequest request) {
+    public PageResponse<AccountResponse> getAccountsPage(PageableRequest request) {
         ValidationUtil.checkFieldExist(Account.class, request.sortBy());
 
         Pageable pageable = PageableRequest.getPageable(request);
         Page<Account> accounts = accountRepository.findAllByIsDeletedFalse(pageable);
 
-        return accounts.map(accountMapper::toResponse);
+        return new PageResponse<>(accounts.map(accountMapper::toResponse));
     }
 
     @Override
@@ -120,15 +114,12 @@ public class AccountServiceImpl implements IAccountService {
 
     @Override
     public AccountResponse getCurrentAccount() {
-        Account account = authUtilService.getCurrentAccountOrThrowError();
-
-        return accountMapper.toResponse(account);
+        return accountMapper.toResponse(authUtilService.getCurrentAccountOrThrowError());
     }
 
     @Override
     @Transactional
     @PreAuthorize("hasRole('ADMIN')")
-    @CachePut(value = "ACCOUNT_CACHE", key = "#result.getId()")
     public AccountResponse updateAccountRole(String id, Role role) {
         Account account = findAccountByIdOrThrowError(id);
 
@@ -153,28 +144,27 @@ public class AccountServiceImpl implements IAccountService {
     @Override
     @Transactional
     @PreAuthorize("hasRole('ADMIN')")
-    @CacheEvict(value = "ACCOUNT_CACHE", key = "#id")
     public void deleteAccount(String id) {
         Account account = findAccountByIdOrThrowError(id);
 
         account.setDeleted(true);
+
         accountRepository.save(account);
     }
 
     @Override
     @Transactional
     public AccountResponse changePassword(ChangePasswordRequest request) {
-        Account account = authUtilService.getCurrentAccount()
-                .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FOUND));
+        Account currentAccount = authUtilService.getCurrentAccountOrThrowError();
 
-        if (!passwordEncoder.matches(request.oldPassword(), account.getPassword())) {
+        if (!passwordEncoder.matches(request.oldPassword(), currentAccount.getPassword())) {
             throw new AppException(ErrorCode.WRONG_PASSWORD);
         }
 
-        account.setPassword(passwordEncoder.encode(request.newPassword()));
-        accountRepository.save(account);
+        currentAccount.setPassword(passwordEncoder.encode(request.newPassword()));
+        accountRepository.save(currentAccount);
 
-        return accountMapper.toResponse(account);
+        return accountMapper.toResponse(currentAccount);
     }
 
     @Override
@@ -182,8 +172,8 @@ public class AccountServiceImpl implements IAccountService {
     @PreAuthorize("hasRole('ADMIN')")
     public void banAccount(String id) {
         Account account = findAccountByIdOrThrowError(id);
-        Account currentAccount = authUtilService.getCurrentAccountOrThrowError();
 
+        Account currentAccount = authUtilService.getCurrentAccountOrThrowError();
         if (account == currentAccount)
             throw new AppException(ErrorCode.SELF_BAN);
 
@@ -198,14 +188,12 @@ public class AccountServiceImpl implements IAccountService {
     }
 
     @Override
-    @Cacheable(value = "ACCOUNT_CACHE", key = "#id")
     public Account findAccountByIdOrThrowError(String id) {
         return accountRepository.findByIdAndIsDeletedFalse(id)
                 .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FOUND));
     }
 
     @Override
-    @Cacheable(value = "ACCOUNT_CACHE", key = "#username")
     public Account findAccountByUsernameOrThrowError(String username) {
         return accountRepository.findByUsernameAndIsDeletedFalse(username)
                 .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FOUND));

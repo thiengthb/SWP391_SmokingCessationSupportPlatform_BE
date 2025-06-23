@@ -1,6 +1,7 @@
 package com.swpteam.smokingcessation.repository;
 
 import com.swpteam.smokingcessation.domain.entity.Account;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -31,7 +32,6 @@ public interface AccountRepository extends JpaRepository<Account, String> {
 
     Page<Account> findAll(Pageable pageable);
 
-    // Get admin emails
     @Query("SELECT a.email FROM Account a WHERE a.role = 'ADMIN' AND a.isDeleted = false")
     List<String> findAllAdminEmails();
 }

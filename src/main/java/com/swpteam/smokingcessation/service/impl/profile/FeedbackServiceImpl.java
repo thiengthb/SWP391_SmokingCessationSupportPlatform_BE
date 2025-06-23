@@ -1,5 +1,6 @@
 package com.swpteam.smokingcessation.service.impl.profile;
 
+import com.swpteam.smokingcessation.common.PageResponse;
 import com.swpteam.smokingcessation.common.PageableRequest;
 import com.swpteam.smokingcessation.constant.ErrorCode;
 import com.swpteam.smokingcessation.domain.dto.feedback.FeedbackRequest;
@@ -34,39 +35,47 @@ public class FeedbackServiceImpl implements IFeedbackService {
     AuthUtilService authUtilService;
 
     @Override
-    public Page<FeedbackResponse> getFeedbackPage(PageableRequest request) {
+    @Cacheable(value = "FEEDBACK_PAGE_CACHE",
+            key = "#request.page + '-' + #request.size + '-' + #request.sortBy + '-' + #request.direction")
+    public PageResponse<FeedbackResponse> getFeedbackPage(PageableRequest request) {
         ValidationUtil.checkFieldExist(Feedback.class, request.sortBy());
 
         Pageable pageable = PageableRequest.getPageable(request);
         Page<Feedback> feedbacks = feedbackRepository.findAllByIsDeletedFalse(pageable);
-        return feedbacks.map(feedbackMapper::toRespone);
+
+        return new PageResponse<>(feedbacks.map(feedbackMapper::toResponse));
     }
 
     @Override
+    @Cacheable(value = "FEEDBACK_CACHE", key = "#id")
     public FeedbackResponse getFeedbackById(String id) {
-        return feedbackMapper.toRespone(findFeedbackById(id));
+        return feedbackMapper.toResponse(findFeedbackById(id));
     }
 
     @Override
-    public Page<FeedbackResponse> getFeedbackPageByAccountId(String accountId, PageableRequest request) {
+    @Cacheable(value = "FEEDBACK_PAGE_CACHE",
+            key = "#request.page + '-' + #request.size + '-' + #request.sortBy + '-' + #request.direction + '-' + #accountId")
+    public PageResponse<FeedbackResponse> getFeedbackPageByAccountId(String accountId, PageableRequest request) {
         ValidationUtil.checkFieldExist(Feedback.class, request.sortBy());
 
         Pageable pageable = PageableRequest.getPageable(request);
         Page<Feedback> feedbacks = feedbackRepository.findByAccountIdAndIsDeletedFalse(accountId, pageable);
 
-        return feedbacks.map(feedbackMapper::toRespone);
+        return new PageResponse<>(feedbacks.map(feedbackMapper::toResponse));
     }
+
     @Override
     @Transactional
     @PreAuthorize("hasAnyRole('MEMBER', 'COACH')")
     @CachePut(value = "FEEDBACK_CACHE", key = "#result.getId()")
+    @CacheEvict(value = "FEEDBACK_PAGE_CACHE", allEntries = true)
     public FeedbackResponse createFeedback(FeedbackRequest request) {
         Account currentAccount = authUtilService.getCurrentAccountOrThrowError();
 
         Feedback feedback = feedbackMapper.toEntity(request);
         feedback.setAccount(currentAccount);
 
-        return feedbackMapper.toRespone(feedbackRepository.save(feedback));
+        return feedbackMapper.toResponse(feedbackRepository.save(feedback));
     }
 
 
@@ -74,33 +83,32 @@ public class FeedbackServiceImpl implements IFeedbackService {
     @Transactional
     @PreAuthorize("hasAnyRole('MEMBER', 'COACH')")
     @CachePut(value = "FEEDBACK_CACHE", key = "#result.getId()")
+    @CacheEvict(value = "FEEDBACK_PAGE_CACHE", allEntries = true)
     public FeedbackResponse updateFeedback(String id, FeedbackRequest request) {
-        Account currentAccount = authUtilService.getCurrentAccountOrThrowError();
-
         Feedback feedback = findFeedbackById(id);
-        if (!feedback.getAccount().getId().equals(currentAccount.getId())) {
+
+        boolean haveAccess = authUtilService.isAdminOrOwner(feedback.getAccount().getId());
+        if (!haveAccess) {
             throw new AppException(ErrorCode.ACCESS_DENIED);
         }
 
         feedbackMapper.update(feedback, request);
-        return feedbackMapper.toRespone(feedbackRepository.save(feedback));
+        return feedbackMapper.toResponse(feedbackRepository.save(feedback));
     }
 
     @Override
     @Transactional
-    @PreAuthorize("hasAnyRole('MEMBER', 'COACH')")
-    @CacheEvict(value = "FEEDBACK_CACHE", key = "#id")
+    @CacheEvict(value = {"FEEDBACK_CACHE", "FEEDBACK_PAGE_CACHE"}, key = "#id", allEntries = true)
     public void softDeleteFeedbackById(String id) {
         Feedback feedback = findFeedbackById(id);
-        Account currentAccount = authUtilService.getCurrentAccountOrThrowError();
 
-        if (authUtilService.isAdminOrOwner(currentAccount.getId()) ||
-                feedback.getAccount().getId().equals(currentAccount.getId())) {
-            feedback.setDeleted(true);
-            feedbackRepository.save(feedback);
-        } else {
+        boolean haveAccess = authUtilService.isAdminOrOwner(feedback.getAccount().getId());
+        if (!haveAccess) {
             throw new AppException(ErrorCode.ACCESS_DENIED);
         }
+
+        feedback.setDeleted(true);
+        feedbackRepository.save(feedback);
     }
 
     @Cacheable(value = "FEEDBACK_CACHE", key = "#id")

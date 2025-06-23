@@ -18,7 +18,7 @@ public interface NotificationMapper {
     NotificationResponse toResponse(Notification notification);
 
     @Named("accountToId")
-    static String mapAccountToId(Account account) {
+    static String accountToId(Account account) {
         return account != null ? account.getId() : null;
     }
 }

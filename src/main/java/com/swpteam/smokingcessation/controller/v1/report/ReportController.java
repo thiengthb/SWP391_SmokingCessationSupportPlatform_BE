@@ -5,6 +5,7 @@ import com.swpteam.smokingcessation.constant.SuccessCode;
 import com.swpteam.smokingcessation.domain.dto.report.ReportSummaryRequest;
 import com.swpteam.smokingcessation.domain.dto.report.ReportSummaryResponse;
 import com.swpteam.smokingcessation.service.interfaces.report.IReportService;
+import com.swpteam.smokingcessation.utils.ResponseUtil;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
@@ -25,13 +26,13 @@ public class ReportController {
     IReportService reportService;
 
     @GetMapping("/summary")
-    public ResponseEntity<ApiResponse<ReportSummaryResponse>> getReportSummary(@Valid ReportSummaryRequest reportSummaryRequest) {
-        return ResponseEntity.ok(
-                ApiResponse.<ReportSummaryResponse>builder()
-                        .code(SuccessCode.SUMMARY_GET.getCode())
-                        .message(SuccessCode.SUMMARY_GET.getMessage())
-                        .result(reportService.getSummary(reportSummaryRequest))
-                        .build()
+    public ResponseEntity<ApiResponse<ReportSummaryResponse>> getReportSummary(
+            @Valid ReportSummaryRequest reportSummaryRequest
+    ) {
+        return ResponseUtil.buildResponse(
+                SuccessCode.SUMMARY_GET,
+                reportService.getSummary(reportSummaryRequest)
         );
     }
+
 }

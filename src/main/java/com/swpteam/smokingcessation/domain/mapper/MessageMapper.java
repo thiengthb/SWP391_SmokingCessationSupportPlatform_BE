@@ -8,6 +8,7 @@ import org.mapstruct.MappingTarget;
 
 @Mapper(componentModel = "spring")
 public interface MessageMapper {
+
     MessageResponse toMessageResponse(Message message);
 
     Message toMessage(MessageRequest request);

@@ -1,5 +1,6 @@
 package com.swpteam.smokingcessation.service.impl.profile;
 
+import com.swpteam.smokingcessation.common.PageResponse;
 import com.swpteam.smokingcessation.domain.entity.Account;
 import com.swpteam.smokingcessation.domain.mapper.HealthMapper;
 import com.swpteam.smokingcessation.domain.dto.health.HealthCreateRequest;
@@ -39,13 +40,25 @@ public class HealthServiceImpl implements IHealthService {
     AuthUtilService authUtilService;
 
     @Override
-    public Page<HealthResponse> getHealthPage(PageableRequest request) {
+    public PageResponse<HealthResponse> getHealthPage(PageableRequest request) {
         ValidationUtil.checkFieldExist(Health.class, request.sortBy());
 
         Pageable pageable = PageableRequest.getPageable(request);
         Page<Health> healths = healthRepository.findAllByIsDeletedFalse(pageable);
 
-        return healths.map(healthMapper::toResponse);
+        return new PageResponse<>(healths.map(healthMapper::toResponse));
+    }
+
+    @Override
+    public PageResponse<HealthResponse> getMyHealthPage(PageableRequest request) {
+        ValidationUtil.checkFieldExist(Health.class, request.sortBy());
+
+        Account currentAccount = authUtilService.getCurrentAccountOrThrowError();
+
+        Pageable pageable = PageableRequest.getPageable(request);
+        Page<Health> healths = healthRepository.findAllByAccountIdAndIsDeletedFalse(currentAccount.getId(), pageable);
+
+        return new PageResponse<>(healths.map(healthMapper::toResponse));
     }
 
     @Override
@@ -54,7 +67,7 @@ public class HealthServiceImpl implements IHealthService {
     }
 
     @Override
-    public Page<HealthResponse> getHealthPageByAccountId(String accountId, PageableRequest request) {
+    public PageResponse<HealthResponse> getHealthPageByAccountId(String accountId, PageableRequest request) {
         ValidationUtil.checkFieldExist(Health.class, request.sortBy());
 
         accountService.findAccountByIdOrThrowError(accountId);
@@ -62,12 +75,11 @@ public class HealthServiceImpl implements IHealthService {
         Pageable pageable = PageableRequest.getPageable(request);
         Page<Health> healths = healthRepository.findByAccountIdAndIsDeletedFalse(accountId, pageable);
 
-        return healths.map(healthMapper::toResponse);
+        return new PageResponse<>(healths.map(healthMapper::toResponse));
     }
 
     @Override
     @Transactional
-    @CachePut(value = "HEALTH_CACHE", key = "#result.getId()")
     public HealthResponse createHealth(HealthCreateRequest request) {
         Account account = authUtilService.getCurrentAccountOrThrowError();
 
@@ -79,7 +91,6 @@ public class HealthServiceImpl implements IHealthService {
 
     @Override
     @Transactional
-    @CachePut(value = "HEALTH_CACHE", key = "#result.getId()")
     public HealthResponse updateHealth(String id, HealthUpdateRequest request) {
         Health health = findHealthByIdOrThrowError(id);
 
@@ -90,21 +101,20 @@ public class HealthServiceImpl implements IHealthService {
 
     @Override
     @Transactional
-    @CacheEvict(value = "HEALTH_CACHE", key = "#id")
     public void softDeleteHealthById(String id) {
         Health health = findHealthByIdOrThrowError(id);
 
         health.setDeleted(true);
+        
         healthRepository.save(health);
     }
 
-    @Cacheable(value = "HEALTH_CACHE", key = "#id")
     public Health findHealthByIdOrThrowError(String id) {
         Health health = healthRepository.findByIdAndIsDeletedFalse(id)
                 .orElseThrow(() -> new AppException(ErrorCode.HEALTH_RECORD_NOT_FOUND));
 
         if (health.getAccount().isDeleted()) {
-            throw new AppException(ErrorCode.ACCOUNT_DELETED);
+            throw new AppException(ErrorCode.HEALTH_RECORD_NOT_FOUND);
         }
 
         return health;

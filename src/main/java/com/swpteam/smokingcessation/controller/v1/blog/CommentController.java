@@ -1,6 +1,7 @@
 package com.swpteam.smokingcessation.controller.v1.blog;
 
 import com.swpteam.smokingcessation.common.ApiResponse;
+import com.swpteam.smokingcessation.common.PageResponse;
 import com.swpteam.smokingcessation.common.PageableRequest;
 import com.swpteam.smokingcessation.constant.SuccessCode;
 import com.swpteam.smokingcessation.domain.dto.comment.CommentCreateRequest;
@@ -8,13 +9,13 @@ import com.swpteam.smokingcessation.domain.dto.comment.CommentReplyRequest;
 import com.swpteam.smokingcessation.domain.dto.comment.CommentResponse;
 import com.swpteam.smokingcessation.domain.dto.comment.CommentUpdateRequest;
 import com.swpteam.smokingcessation.service.interfaces.blog.ICommentService;
+import com.swpteam.smokingcessation.utils.ResponseUtil;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,79 +30,76 @@ public class CommentController {
     ICommentService commentService;
 
     @GetMapping("/blog/{id}")
-    ResponseEntity<ApiResponse<Page<CommentResponse>>> getCommentsByBlogId(@PathVariable String id, @Valid PageableRequest request) {
-        return ResponseEntity.ok().body(
-                ApiResponse.<Page<CommentResponse>>builder()
-                        .code(SuccessCode.COMMENT_GET_BY_BLOG.getCode())
-                        .message(SuccessCode.COMMENT_GET_BY_BLOG.getMessage())
-                        .result(commentService.getCommentsByBlogId(id, request))
-                        .build()
+    ResponseEntity<ApiResponse<PageResponse<CommentResponse>>> getCommentsByBlogId(
+            @PathVariable String id,
+            @Valid PageableRequest request
+    ) {
+        return ResponseUtil.buildResponse(
+                SuccessCode.COMMENT_GET_BY_BLOG,
+                commentService.getCommentsByBlogId(id, request)
         );
     }
 
     @GetMapping
-    ResponseEntity<ApiResponse<Page<CommentResponse>>> getCommentPage(@Valid PageableRequest request) {
-        return ResponseEntity.ok().body(
-                ApiResponse.<Page<CommentResponse>>builder()
-                        .code(SuccessCode.COMMENT_LIST_ALL.getCode())
-                        .message(SuccessCode.COMMENT_LIST_ALL.getMessage())
-                        .result(commentService.getCommentPage(request))
-                        .build()
+    ResponseEntity<ApiResponse<PageResponse<CommentResponse>>> getCommentPage(
+            @Valid PageableRequest request
+    ) {
+        return ResponseUtil.buildResponse(
+                SuccessCode.COMMENT_LIST_ALL,
+                commentService.getCommentPage(request)
         );
     }
 
     @GetMapping("/{id}")
-    ResponseEntity<ApiResponse<CommentResponse>> getCommentById(@PathVariable String id) {
-        return ResponseEntity.ok(
-                ApiResponse.<CommentResponse>builder()
-                        .code(SuccessCode.COMMENT_GET_BY_ID.getCode())
-                        .message(SuccessCode.COMMENT_GET_BY_ID.getMessage())
-                        .result(commentService.getCommentById(id))
-                        .build()
+    ResponseEntity<ApiResponse<CommentResponse>> getCommentById(
+            @PathVariable String id
+    ) {
+        return ResponseUtil.buildResponse(
+                SuccessCode.COMMENT_GET_BY_ID,
+                commentService.getCommentById(id)
         );
     }
 
     @PostMapping
-    ResponseEntity<ApiResponse<CommentResponse>> createSubscription(@RequestBody @Valid CommentCreateRequest request) {
-        return ResponseEntity.ok().body(
-                ApiResponse.<CommentResponse>builder()
-                        .code(SuccessCode.COMMENT_CREATED.getCode())
-                        .message(SuccessCode.COMMENT_CREATED.getMessage())
-                        .result(commentService.createComment(request))
-                        .build()
+    ResponseEntity<ApiResponse<CommentResponse>> createSubscription(
+            @RequestBody @Valid CommentCreateRequest request
+    ) {
+        return ResponseUtil.buildResponse(
+                SuccessCode.COMMENT_CREATED,
+                commentService.createComment(request)
         );
     }
 
     @PostMapping("/reply")
-    ResponseEntity<ApiResponse<CommentResponse>> createSubscription(@RequestBody @Valid CommentReplyRequest request) {
-        return ResponseEntity.ok().body(
-                ApiResponse.<CommentResponse>builder()
-                        .code(SuccessCode.COMMENT_CREATED.getCode())
-                        .message(SuccessCode.COMMENT_CREATED.getMessage())
-                        .result(commentService.replyComment(request))
-                        .build()
+    ResponseEntity<ApiResponse<CommentResponse>> createSubscription(
+            @RequestBody @Valid CommentReplyRequest request
+    ) {
+        return ResponseUtil.buildResponse(
+                SuccessCode.COMMENT_CREATED,
+                commentService.replyComment(request)
         );
     }
 
     @PutMapping("/{id}")
-    ResponseEntity<ApiResponse<CommentResponse>> updateComment(@PathVariable String id, @RequestBody @Valid CommentUpdateRequest request) {
-        return ResponseEntity.ok().body(
-                ApiResponse.<CommentResponse>builder()
-                        .code(SuccessCode.COMMENT_UPDATED.getCode())
-                        .message(SuccessCode.COMMENT_UPDATED.getMessage())
-                        .result(commentService.updateComment(id, request))
-                        .build()
+    ResponseEntity<ApiResponse<CommentResponse>> updateComment(
+            @PathVariable String id,
+            @RequestBody @Valid CommentUpdateRequest request
+    ) {
+        return ResponseUtil.buildResponse(
+                SuccessCode.COMMENT_UPDATED,
+                commentService.updateComment(id, request)
         );
     }
 
     @DeleteMapping("/{id}")
-    ResponseEntity<ApiResponse<String>> deleteCommentById(@PathVariable String id) {
+    ResponseEntity<ApiResponse<String>> deleteCommentById(
+            @PathVariable String id
+    ) {
         commentService.deleteCommentById(id);
-        return ResponseEntity.ok().body(
-                ApiResponse.<String>builder()
-                        .code(SuccessCode.COMMENT_DELETED.getCode())
-                        .message(SuccessCode.COMMENT_DELETED.getMessage())
-                        .build()
+        return ResponseUtil.buildResponse(
+                SuccessCode.COMMENT_DELETED,
+                null
         );
     }
+    
 }

@@ -1,5 +1,6 @@
 package com.swpteam.smokingcessation.service.impl.profile;
 
+import com.swpteam.smokingcessation.common.PageResponse;
 import com.swpteam.smokingcessation.domain.dto.member.MemberRequest;
 import com.swpteam.smokingcessation.domain.entity.Account;
 import com.swpteam.smokingcessation.domain.mapper.MemberMapper;
@@ -9,15 +10,13 @@ import com.swpteam.smokingcessation.constant.ErrorCode;
 import com.swpteam.smokingcessation.domain.entity.Member;
 import com.swpteam.smokingcessation.exception.AppException;
 import com.swpteam.smokingcessation.repository.MemberRepository;
-import com.swpteam.smokingcessation.service.interfaces.identity.IAccountService;
 import com.swpteam.smokingcessation.service.interfaces.profile.IMemberService;
+import com.swpteam.smokingcessation.utils.AuthUtilService;
 import com.swpteam.smokingcessation.utils.ValidationUtil;
 import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.springframework.cache.annotation.CachePut;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -30,18 +29,16 @@ public class MemberServiceImpl implements IMemberService {
 
     MemberMapper memberMapper;
     MemberRepository memberRepository;
-
-    IAccountService accountService;
+    AuthUtilService authUtilService;
 
     @Override
-    @PreAuthorize("hasRole('ADMIN')")
-    public Page<MemberResponse> getMembers(PageableRequest request) {
+    public PageResponse<MemberResponse> getMembersPage(PageableRequest request) {
         ValidationUtil.checkFieldExist(Member.class, request.sortBy());
 
         Pageable pageable = PageableRequest.getPageable(request);
         Page<Member> members = memberRepository.findAllByIsDeletedFalse(pageable);
 
-        return members.map(memberMapper::toResponse);
+        return new PageResponse<>(members.map(memberMapper::toResponse));
     }
 
     @Override
@@ -51,24 +48,37 @@ public class MemberServiceImpl implements IMemberService {
 
     @Override
     @Transactional
-    @CachePut(value = "MEMBER_CACHE", key = "#result.getId()")
-    public MemberResponse createMember(String accountId, MemberRequest request) {
-        Account account = accountService.findAccountByIdOrThrowError(accountId);
+    @PreAuthorize("hasRole('MEMBER')")
+    public MemberResponse createMember(MemberRequest request) {
+        Account currentAccount = authUtilService.getCurrentAccountOrThrowError();
 
-        if (memberRepository.existsByFullName(request.fullName())) {
+        if (memberRepository.existsById(currentAccount.getId())) {
             throw new AppException(ErrorCode.MEMBER_EXISTED);
         }
 
         Member member = memberMapper.toEntity(request);
-        member.setAccount(account);
+        member.setAccount(currentAccount);
 
         return memberMapper.toResponse(memberRepository.save(member));
     }
 
     @Override
     @Transactional
-    @CachePut(value = "MEMBER_CACHE", key = "#result.getId()")
-    public MemberResponse updateMember(String accountId, MemberRequest request) {
+    @PreAuthorize("hasRole('MEMBER')")
+    public MemberResponse updateMyMemberProfile(MemberRequest request) {
+        Account currentAccount = authUtilService.getCurrentAccountOrThrowError();
+
+        Member member = findMemberByIdOrThrowError(currentAccount.getId());
+
+        memberMapper.updateMember(member, request);
+
+        return memberMapper.toResponse(memberRepository.save(member));
+    }
+
+    @Override
+    @Transactional
+    @PreAuthorize("hasRole('ADMIN')")
+    public MemberResponse updateMemberById(String accountId, MemberRequest request) {
         Member member = findMemberByIdOrThrowError(accountId);
 
         memberMapper.updateMember(member, request);
@@ -76,7 +86,7 @@ public class MemberServiceImpl implements IMemberService {
         return memberMapper.toResponse(memberRepository.save(member));
     }
 
-    @Cacheable(value = "MEMBER_CACHE", key = "#accountId")
+    @Override
     public Member findMemberByIdOrThrowError(String accountId) {
         Member member = memberRepository.findByIdAndIsDeletedFalse(accountId)
                 .orElseThrow(() -> new AppException(ErrorCode.MEMBER_NOT_FOUND));

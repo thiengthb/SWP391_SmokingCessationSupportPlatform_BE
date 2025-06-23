@@ -1,8 +1,8 @@
 package com.swpteam.smokingcessation.service.impl.notification;
 
+import com.swpteam.smokingcessation.common.PageResponse;
 import com.swpteam.smokingcessation.common.PageableRequest;
 import com.swpteam.smokingcessation.constant.ErrorCode;
-import com.swpteam.smokingcessation.domain.dto.notification.MarkAsReadRequest;
 import com.swpteam.smokingcessation.domain.dto.notification.NotificationRequest;
 import com.swpteam.smokingcessation.domain.dto.notification.NotificationResponse;
 import com.swpteam.smokingcessation.domain.entity.Account;
@@ -17,13 +17,12 @@ import com.swpteam.smokingcessation.utils.ValidationUtil;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.core.annotation.Order;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -44,7 +43,8 @@ public class NotificationServiceImpl implements INotificationService {
 
     @Override
     @Transactional
-    @CachePut(value = "MESSAGE_CACHE", key = "#result.getId()")
+    @CachePut(value = "NOTIFICATION_CACHE", key = "#result.getId()")
+    @CacheEvict(value = "NOTIFICATION_PAGE_CACHE", allEntries = true)
     public void sendNotification(NotificationRequest request) {
         Notification notification = notificationMapper.toEntity(request);
 
@@ -68,38 +68,46 @@ public class NotificationServiceImpl implements INotificationService {
 
     @Override
     @Transactional
-    public void markAsRead(MarkAsReadRequest request) {
-        Notification notification = findNotificationByIdOrThrowError(request.notificationId());
+    @CachePut(value = "NOTIFICATION_CACHE", key = "#result.getId()")
+    @CacheEvict(value = "NOTIFICATION_PAGE_CACHE", allEntries = true)
+    public void markAsRead(String id) {
+        Notification notification = findNotificationByIdOrThrowError(id);
+
+        boolean haveAccess = authUtilService.isOwner(notification.getAccount().getId());
+        if (!haveAccess) {
+            throw new AppException(ErrorCode.ACCESS_DENIED);
+        }
 
         if (!notification.isRead()) {
             notification.setRead(true);
             notificationRepository.save(notification);
+        } else {
+            throw new AppException(ErrorCode.NOTIFICATION_HAS_BEEN_READ);
         }
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
     @Override
-    public Page<NotificationResponse> getNotifications(PageableRequest request) {
+    @Cacheable(value = "NOTIFICATION_PAGE_CACHE",
+            key = "#request.page + '-' + #request.size + '-' + #request.sortBy + '-' + #request.direction + '-' + T(com.swpteam.smokingcessation.utils.AuthUtilService).getCurrentAccountOrThrowError().getId()")
+    public PageResponse<NotificationResponse> getMyNotificationsPage(PageableRequest request) {
         ValidationUtil.checkFieldExist(Notification.class, request.sortBy());
 
-        Pageable pageable = PageableRequest.getPageable(request);
-        Page<Notification> notifications = notificationRepository.findAllByIsDeletedFalse(pageable);
-
-        return notifications.map(notificationMapper::toResponse);
-    }
-
-    @PreAuthorize("hasRole('ADMIN')")
-    @Override
-    public Page<NotificationResponse> getNotificationsById(String id, PageableRequest request) {
-        ValidationUtil.checkFieldExist(Notification.class, request.sortBy());
+        Account currentAccount = authUtilService.getCurrentAccountOrThrowError();
 
         Pageable pageable = PageableRequest.getPageable(request);
-        Page<Notification> notifications = notificationRepository.findByAccountIdAndIsDeletedFalse(id, pageable);
+        Page<Notification> notifications = notificationRepository.findAllByAccountIdAndIsDeletedFalse(currentAccount.getId(), pageable);
 
-        return notifications.map(notificationMapper::toResponse);
+        return new PageResponse<>(notifications.map(notificationMapper::toResponse));
     }
 
     @Override
+    @Cacheable(value = "NOTIFICATION_CACHE", key = "#id")
+    public NotificationResponse getNotificationsById(String id) {
+        return notificationMapper.toResponse(findNotificationByIdOrThrowError(id));
+    }
+
+    @Override
+    @CacheEvict(value = {"NOTIFICATION_CACHE", "NOTIFICATION_PAGE_CACHE"}, key = "#id", allEntries = true)
     public void deleteNotification(String id) {
         Notification notification = findNotificationByIdOrThrowError(id);
 
@@ -113,12 +121,15 @@ public class NotificationServiceImpl implements INotificationService {
     }
 
     @Override
-    public void deleteAllNotification(String id) {
-        List<Notification> notifications = notificationRepository.findAllByAccountIdAndIsDeletedFalse(id);
+    @CacheEvict(value = "NOTIFICATION_PAGE_CACHE", allEntries = true)
+    public void deleteAllMyNotification() {
+        Account currentAccount = authUtilService.getCurrentAccountOrThrowError();
 
+        List<Notification> notifications = notificationRepository.findAllByAccountIdAndIsDeletedFalse(currentAccount.getId());
         if (notifications.isEmpty()) {
             throw new AppException(ErrorCode.NOTIFICATION_NOT_FOUND);
         }
+
         boolean haveAccess = authUtilService.isAdminOrOwner(notifications.getFirst().getAccount().getId());
         if (!haveAccess) {
             throw new AppException(ErrorCode.OTHERS_NOTIFICATION_CANNOT_BE_DELETED);
@@ -129,9 +140,9 @@ public class NotificationServiceImpl implements INotificationService {
     }
 
     @Override
-    @Cacheable(value = "MESSAGE_CACHE", key = "#id")
     public Notification findNotificationByIdOrThrowError(String id) {
         return notificationRepository.findByIdAndIsDeletedFalse(id)
                 .orElseThrow(() -> new AppException(ErrorCode.NOTIFICATION_NOT_FOUND));
     }
+
 }

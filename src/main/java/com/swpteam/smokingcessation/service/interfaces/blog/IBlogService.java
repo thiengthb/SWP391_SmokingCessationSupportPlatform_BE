@@ -1,5 +1,6 @@
 package com.swpteam.smokingcessation.service.interfaces.blog;
 
+import com.swpteam.smokingcessation.common.PageResponse;
 import com.swpteam.smokingcessation.common.PageableRequest;
 import com.swpteam.smokingcessation.domain.dto.blog.BlogCreateRequest;
 import com.swpteam.smokingcessation.domain.dto.blog.BlogResponse;
@@ -9,11 +10,11 @@ import org.springframework.data.domain.Page;
 
 public interface IBlogService {
 
-    Page<BlogResponse> getAllBlogsPage(PageableRequest request);
+    PageResponse<BlogResponse> getAllBlogsPage(PageableRequest request);
 
-    Page<BlogResponse> getMyBlogsPage(PageableRequest request);
+    PageResponse<BlogResponse> getMyBlogsPage(PageableRequest request);
 
-    Page<BlogResponse> getBlogsPageByCategory(String categoryName, PageableRequest request);
+    PageResponse<BlogResponse> getBlogsPageByCategory(String categoryName, PageableRequest request);
 
     BlogResponse getBlogBySlug(String slug);
 
@@ -23,7 +24,7 @@ public interface IBlogService {
 
     BlogResponse updateBlog(String id, BlogUpdateRequest request);
 
-    void deleteBlogById(String id);
+    void softDeleteBlogById(String id);
 
     Blog findBlogBySlugOrThrowError(String slug);
 

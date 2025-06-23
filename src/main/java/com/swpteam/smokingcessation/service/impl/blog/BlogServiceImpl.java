@@ -1,5 +1,6 @@
 package com.swpteam.smokingcessation.service.impl.blog;
 
+import com.swpteam.smokingcessation.common.PageResponse;
 import com.swpteam.smokingcessation.common.PageableRequest;
 import com.swpteam.smokingcessation.constant.App;
 import com.swpteam.smokingcessation.constant.ErrorCode;
@@ -37,56 +38,60 @@ import org.springframework.transaction.annotation.Transactional;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class BlogServiceImpl implements IBlogService {
 
-    BlogRepository blogRepository;
     BlogMapper blogMapper;
-
+    BlogRepository blogRepository;
     CategoryRepository categoryRepository;
     ICategoryService categoryService;
-
     AuthUtilService authUtilService;
 
+    HtmlSanitizerService htmlSanitizerService;
+
     @Override
-    @PreAuthorize("hasRole('ADMIN')")
-    public Page<BlogResponse> getAllBlogsPage(PageableRequest request) {
+    @Cacheable(value = "BLOG_PAGE_CACHE",
+            key = "#request.page + '-' + #request.size + '-' + #request.sortBy + '-' + #request.direction")
+    public PageResponse<BlogResponse> getAllBlogsPage(PageableRequest request) {
         ValidationUtil.checkFieldExist(Blog.class, request.sortBy());
 
         Pageable pageable = PageableRequest.getPageable(request);
         Page<Blog> blogs = blogRepository.findAllByIsDeletedFalse(pageable);
 
-        return blogs.map(blogMapper::toResponse);
+        return new PageResponse<>(blogs.map(blogMapper::toResponse));
     }
 
     @Override
     @PreAuthorize("hasRole('ADMIN')")
-    public Page<BlogResponse> getMyBlogsPage(PageableRequest request) {
-        Account account = authUtilService.getCurrentAccountOrThrowError();
+    @Cacheable(value = "BLOG_PAGE_CACHE",
+            key = "#request.page + '-' + #request.size + '-' + #request.sortBy + '-' + #request.direction + '-' + T(com.swpteam.smokingcessation.utils.AuthUtilService).getCurrentAccountOrThrowError().getId()")
+    public PageResponse<BlogResponse> getMyBlogsPage(PageableRequest request) {
+        ValidationUtil.checkFieldExist(Blog.class, request.sortBy());
+
+        Account currentAccount = authUtilService.getCurrentAccountOrThrowError();
 
         Pageable pageable = PageableRequest.getPageable(request);
-        Page<Blog> blogs = blogRepository.findAllByAccountIdAndIsDeletedFalse(account.getId(), pageable);
+        Page<Blog> blogs = blogRepository.findAllByAccountIdAndIsDeletedFalse(currentAccount.getId(), pageable);
 
-        return blogs.map(blogMapper::toResponse);
+        return new PageResponse<>(blogs.map(blogMapper::toResponse));
     }
 
     @Override
-    @PreAuthorize("hasRole('ADMIN')")
-    public Page<BlogResponse> getBlogsPageByCategory(String categoryName, PageableRequest request) {
+    @Cacheable(value = "BLOG_PAGE_CACHE",
+            key = "#request.page + '-' + #request.size + '-' + #request.sortBy + '-' + #request.direction + '-' + #categoryName")
+    public PageResponse<BlogResponse> getBlogsPageByCategory(String categoryName, PageableRequest request) {
         Category category = categoryService.findCategoryByNameOrThrowError(categoryName);
 
         Pageable pageable = PageableRequest.getPageable(request);
         Page<Blog> blogs = blogRepository.findByCategoryIdAndIsDeletedFalse(category.getId(), pageable);
 
-        return blogs.map(blogMapper::toResponse);
+        return new PageResponse<>(blogs.map(blogMapper::toResponse));
     }
 
     @Override
-    @PreAuthorize("hasRole('ADMIN')")
     @Cacheable(value = "BLOG_CACHE", key = "#slug")
     public BlogResponse getBlogBySlug(String slug) {
         return blogMapper.toResponse(findBlogBySlugOrThrowError(slug));
     }
 
     @Override
-    @PreAuthorize("hasRole('ADMIN')")
     @Cacheable(value = "BLOG_CACHE", key = "#id")
     public BlogResponse getBlogById(String id) {
         return blogMapper.toResponse(findBlogByIdOrThrowError(id));
@@ -96,8 +101,9 @@ public class BlogServiceImpl implements IBlogService {
     @Transactional
     @PreAuthorize("hasRole('ADMIN')")
     @CachePut(value = "BLOG_CACHE", key = "#result.getId()")
+    @CacheEvict(value = "BLOG_PAGE_CACHE", allEntries = true)
     public BlogResponse createBlog(BlogCreateRequest request) {
-        Account account = authUtilService.getCurrentAccountOrThrowError();
+        Account currentAccount = authUtilService.getCurrentAccountOrThrowError();
 
         Category category = categoryRepository.findByName(request.categoryName())
                 .or(() -> categoryRepository.findByName(App.DEFAULT_CATEGORY))
@@ -105,7 +111,9 @@ public class BlogServiceImpl implements IBlogService {
 
         Blog blog = blogMapper.toEntity(request);
 
-        blog.setAccount(account);
+        blog.setContent(htmlSanitizerService.sanitize(request.content()));
+
+        blog.setAccount(currentAccount);
         blog.setCategory(category);
 
         String baseSlug = SlugUtil.toSlug(blog.getTitle());
@@ -118,6 +126,7 @@ public class BlogServiceImpl implements IBlogService {
     @Transactional
     @PreAuthorize("hasRole('ADMIN')")
     @CachePut(value = "BLOG_CACHE", key = "#result.getId()")
+    @CacheEvict(value = "BLOG_PAGE_CACHE", allEntries = true)
     public BlogResponse updateBlog(String id, BlogUpdateRequest request) {
         Blog blog = findBlogByIdOrThrowError(id);
 
@@ -128,6 +137,8 @@ public class BlogServiceImpl implements IBlogService {
 
         blogMapper.update(blog, request);
 
+        blog.setContent(htmlSanitizerService.sanitize(request.content()));
+
         String baseSlug = SlugUtil.toSlug(blog.getTitle());
         blog.setSlug(ensureUniqueSlug(baseSlug));
 
@@ -137,35 +148,43 @@ public class BlogServiceImpl implements IBlogService {
     @Override
     @Transactional
     @PreAuthorize("hasRole('ADMIN')")
-    @CacheEvict(value = "BLOG_CACHE", key = "#id")
-    public void deleteBlogById(String id) {
+    @CacheEvict(value = {"BLOG_CACHE", "BLOG_PAGE_CACHE"}, key = "#id", allEntries = true)
+    public void softDeleteBlogById(String id) {
         Blog blog = findBlogByIdOrThrowError(id);
 
-        boolean haveAccess = authUtilService.isAdminOrOwner(blog.getAccount().getId());
-        if (!haveAccess) {
-            throw new AppException(ErrorCode.OTHERS_COMMENT_UNCHANGEABLE);
-        }
-
-        if (blog.getAccount().isDeleted()) {
-            throw new AppException(ErrorCode.ACCOUNT_DELETED);
-        }
-
         blog.setDeleted(true);
+
         blogRepository.save(blog);
     }
 
     @Override
-    @Cacheable(value = "BLOG_CACHE", key = "#slug")
+    @Transactional
     public Blog findBlogBySlugOrThrowError(String slug) {
-        return blogRepository.findBySlugAndIsDeletedFalse(slug)
+        Blog blog =  blogRepository.findBySlugAndIsDeletedFalse(slug)
                 .orElseThrow(() -> new AppException(ErrorCode.BLOG_NOT_FOUND));
+
+        if (blog.getAccount().isDeleted()) {
+            blog.setDeleted(true);
+            blogRepository.save(blog);
+            throw new AppException(ErrorCode.ACCOUNT_DELETED);
+        }
+
+        return blog;
     }
 
     @Override
-    @Cacheable(value = "BLOG_CACHE", key = "#id")
+    @Transactional
     public Blog findBlogByIdOrThrowError(String id) {
-        return blogRepository.findByIdAndIsDeletedFalse(id)
+        Blog blog = blogRepository.findByIdAndIsDeletedFalse(id)
                 .orElseThrow(() -> new AppException(ErrorCode.BLOG_NOT_FOUND));
+
+        if (blog.getAccount().isDeleted()) {
+            blog.setDeleted(true);
+            blogRepository.save(blog);
+            throw new AppException(ErrorCode.ACCOUNT_DELETED);
+        }
+
+        return blog;
     }
 
     private String ensureUniqueSlug(String slug) {

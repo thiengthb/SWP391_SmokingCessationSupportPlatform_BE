@@ -15,11 +15,14 @@ import org.springframework.stereotype.Controller;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class ChatController {
+
     IChatService chatService;
 
     @MessageMapping("/chat/send")
     @SendTo("/topic/public")
-    public ChatResponse sendChatMessage(@Valid ChatRequest request) {
+    public ChatResponse sendChatMessage(
+            @Valid ChatRequest request
+    ) {
         return chatService.sendChatMessage(request);
     }
 }

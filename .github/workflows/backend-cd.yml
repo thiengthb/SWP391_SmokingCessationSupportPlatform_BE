@@ -1,65 +1,50 @@
-name: Deploy Spring Boot to EC2
+name: Deploy Spring Boot App to VPS
 
 on:
   push:
-    branches:
-      - main
+    branches: [main]
 
 jobs:
-  build-and-deploy:
+  deploy:
     runs-on: ubuntu-latest
 
     steps:
-      # Checkout the repository code
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
-      # Set up JDK for Spring Boot
-      - name: Set up JDK 21
-        uses: actions/setup-java@v4
+      - name: Setup SSH agent
+        uses: webfactory/ssh-agent@v0.7.0
         with:
-          java-version: '21'
-          distribution: 'temurin'
+          ssh-private-key: ${{ secrets.VPS_SSH_KEY }}
 
-      # Build the Spring Boot application
-      - name: Build with Maven
-        run: mvn clean package -DskipTests
-
-      # Log in to DockerHub
-      - name: Log in to DockerHub
-        uses: docker/login-action@v3
-        with:
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
-
-      # Build and push Docker image
-      - name: Build and push Docker image
+      - name: Deploy to VPS
+        env:
+          ENV_DOCKER: ${{ secrets.ENV_DOCKER }}
+          ENV_MYSQL: ${{ secrets.ENV_MYSQL }}
         run: |
-          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/my-springboot-app:${{ github.sha }} .
-          docker tag ${{ secrets.DOCKERHUB_USERNAME }}/my-springboot-app:${{ github.sha }} ${{ secrets.DOCKERHUB_USERNAME }}/my-springboot-app:latest
-          docker push ${{ secrets.DOCKERHUB_USERNAME }}/my-springboot-app:${{ github.sha }}
-          docker push ${{ secrets.DOCKERHUB_USERNAME }}/my-springboot-app:latest
-
-      # Deploy to EC2
-      - name: Deploy to EC2
-        uses: appleboy/ssh-action@v1.0.0
-        with:
-          host: ${{ secrets.EC2_HOST }}
-          username: ${{ secrets.EC2_USER }}
-          key: ${{ secrets.EC2_SSH_KEY }}
-          script: |
-            # Log in to DockerHub
-            sudo docker login -u ${{ secrets.DOCKERHUB_USERNAME }} -p ${{ secrets.DOCKERHUB_TOKEN }}
-            
-            # Stop and remove existing container if it exists
-            sudo docker stop my-springboot-container || true
-            sudo docker rm my-springboot-container || true
-            
-            # Pull the latest image
-            sudo docker pull ${{ secrets.DOCKERHUB_USERNAME }}/my-springboot-app:latest
-            
-            # Run the new container
-            sudo docker run --network app-network -d --name my-springboot-container -p 8080:8080 ${{ secrets.DOCKERHUB_USERNAME }}/my-springboot-app:latest
-            
-            # Clean up unused images
-            sudo docker image prune -f
+          ssh -o StrictHostKeyChecking=no ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} << 'EOF'
+            set -e
+          
+            APP_DIR=/home/${USER}/my-app
+          
+            # Clone nếu lần đầu
+            if [ ! -d "$APP_DIR" ]; then
+              git clone https://github.com/thiengthb/SWP391_SmokingCessationSupportPlatform_BE.git $APP_DIR
+            fi
+          
+            cd $APP_DIR
+          
+            # Pull code mới
+            git pull origin main
+          
+            # Tạo lại file env từ secrets
+            echo "$ENV_DOCKER" > docker/.env.docker
+            echo "$ENV_MYSQL" > docker/.env.mysql
+          
+            # Build & Run
+            docker compose -f docker/docker-compose.nginx.yml \
+              --env-file docker/.env.mysql \
+              up -d --build
+          
+            docker image prune -af
+          EOF

@@ -12,7 +12,7 @@ public interface FeedbackMapper {
     Feedback toEntity(FeedbackRequest request);
 
     @Mapping(source = "account.id", target = "accountId")
-    FeedbackResponse toRespone(Feedback feedback);
+    FeedbackResponse toResponse(Feedback feedback);
 
     void update(@MappingTarget Feedback feedback, FeedbackRequest request);
 }

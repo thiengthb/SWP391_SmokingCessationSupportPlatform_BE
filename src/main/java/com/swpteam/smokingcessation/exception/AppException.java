@@ -12,9 +12,17 @@ import lombok.experimental.FieldDefaults;
 public class AppException extends RuntimeException {
 
     ErrorCode errorCode;
+    String infoMessage;
 
     public AppException(ErrorCode errorCode) {
         super(errorCode.getMessage());
         this.errorCode = errorCode;
     }
+
+    public AppException(ErrorCode errorCode, String infoMessage) {
+        super(errorCode.getMessage() + " [MORE INFO]: " + infoMessage);
+        this.errorCode = errorCode;
+        this.infoMessage = infoMessage;
+    }
+
 }

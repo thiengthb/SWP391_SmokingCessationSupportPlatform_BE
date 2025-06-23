@@ -1,18 +1,19 @@
 package com.swpteam.smokingcessation.controller.v1.booking;
 
 import com.swpteam.smokingcessation.common.ApiResponse;
+import com.swpteam.smokingcessation.common.PageResponse;
 import com.swpteam.smokingcessation.common.PageableRequest;
 import com.swpteam.smokingcessation.constant.SuccessCode;
 import com.swpteam.smokingcessation.domain.dto.booking.BookingRequest;
 import com.swpteam.smokingcessation.domain.dto.booking.BookingResponse;
 import com.swpteam.smokingcessation.service.interfaces.booking.IBookingService;
+import com.swpteam.smokingcessation.utils.ResponseUtil;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,70 +28,65 @@ public class BookingController {
     IBookingService bookingService;
 
     @GetMapping
-    ResponseEntity<ApiResponse<Page<BookingResponse>>> getBookingPage(@Valid PageableRequest request) {
-        return ResponseEntity.ok(
-                ApiResponse.<Page<BookingResponse>>builder()
-                        .code(SuccessCode.BOOKING_GET_ALL.getCode())
-                        .message(SuccessCode.BOOKING_GET_ALL.getMessage())
-                        .result(bookingService.getBookingPage(request))
-                        .build()
+    ResponseEntity<ApiResponse<PageResponse<BookingResponse>>> getBookingPage(
+            @Valid PageableRequest request
+    ) {
+        return ResponseUtil.buildResponse(
+                SuccessCode.BOOKING_GET_ALL,
+                bookingService.getBookingPage(request)
         );
     }
 
     @GetMapping("/{id}")
-    ResponseEntity<?> getBookingById(@PathVariable String id) {
-        return ResponseEntity.ok(
-                ApiResponse.<BookingResponse>builder()
-                        .code(SuccessCode.BOOKING_GET_BY_ID.getCode())
-                        .message(SuccessCode.BOOKING_GET_BY_ID.getMessage())
-                        .result(bookingService.getBookingById(id))
-                        .build()
+    ResponseEntity<?> getBookingById(
+            @PathVariable String id
+    ) {
+        return ResponseUtil.buildResponse(
+                SuccessCode.BOOKING_GET_BY_ID,
+                bookingService.getBookingById(id)
         );
     }
 
     @PostMapping
-    ResponseEntity<?> createBooking(@Valid @RequestBody BookingRequest request) {
-        return ResponseEntity.ok(
-                ApiResponse.<BookingResponse>builder()
-                        .code(SuccessCode.BOOKING_CREATED.getCode())
-                        .message(SuccessCode.BOOKING_CREATED.getMessage())
-                        .result(bookingService.createBooking(request))
-                        .build()
+    ResponseEntity<?> createBooking(
+            @Valid @RequestBody BookingRequest request
+    ) {
+        return ResponseUtil.buildResponse(
+                SuccessCode.BOOKING_CREATED,
+                bookingService.createBooking(request)
         );
     }
 
     @PutMapping("/{id}")
-    ResponseEntity<?> updateBookingById(@PathVariable String id, @Valid @RequestBody BookingRequest request) {
-        return ResponseEntity.ok(
-                ApiResponse.<BookingResponse>builder()
-                        .code(SuccessCode.BOOKING_UPDATED.getCode())
-                        .message(SuccessCode.BOOKING_UPDATED.getMessage())
-                        .result(bookingService.updateBookingById(id, request))
-                        .build()
+    ResponseEntity<?> updateBookingById(
+            @PathVariable String id,
+            @Valid @RequestBody BookingRequest request
+    ) {
+        return ResponseUtil.buildResponse(
+                SuccessCode.BOOKING_UPDATED,
+                bookingService.updateBookingById(id, request)
         );
     }
 
     @DeleteMapping("/{id}")
-    ResponseEntity<?> softDeleteBookingById(@PathVariable String id) {
-        bookingService.DeleteBookingById(id);
-        return ResponseEntity.ok(
-                ApiResponse.<Void>builder()
-                        .code(SuccessCode.BOOKING_DELETED.getCode())
-                        .message(SuccessCode.BOOKING_DELETED.getMessage())
-                        .build()
+    ResponseEntity<?> softDeleteBookingById(
+            @PathVariable String id
+    ) {
+        bookingService.deleteBookingById(id);
+        return ResponseUtil.buildResponse(
+                SuccessCode.BOOKING_DELETED,
+                null
         );
     }
-
 
     @PostMapping("/with-meet")
-    public ResponseEntity<ApiResponse<BookingResponse>> createBookingWithMeet(@Valid @RequestBody BookingRequest request) {
-        BookingResponse response = bookingService.createBookingWithMeet(request);
-        return ResponseEntity.ok(
-                ApiResponse.<BookingResponse>builder()
-                        .code(SuccessCode.BOOKING_CREATED.getCode())
-                        .message(SuccessCode.BOOKING_CREATED.getMessage())
-                        .result(response)
-                        .build()
+    public ResponseEntity<ApiResponse<BookingResponse>> createBookingWithMeet(
+            @Valid @RequestBody BookingRequest request
+    ) {
+        return ResponseUtil.buildResponse(
+                SuccessCode.BOOKING_CREATED,
+                bookingService.createBookingWithMeet(request)
         );
     }
+
 }
