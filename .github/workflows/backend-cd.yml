@@ -17,45 +17,41 @@ jobs:
         with:
           ssh-private-key: ${{ secrets.VPS_SSH_KEY }}
 
-      - name: Deploy to VPS
-        env:
-          ENV_DOCKER: ${{ secrets.ENV_DOCKER }}
-          ENV_MYSQL: ${{ secrets.ENV_MYSQL }}
+      - name: Write secrets to files
         run: |
-          ssh -o StrictHostKeyChecking=no ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} << EOF
+          echo "${{ secrets.ENV_DOCKER }}" > .env.docker
+          echo "${{ secrets.ENV_MYSQL }}" > .env.mysql
+
+      - name: Copy .env files to VPS
+        run: |
+          scp -o StrictHostKeyChecking=no .env.docker .env.mysql ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}:/home/${{ secrets.VPS_USER }}/
+
+      - name: Deploy on VPS
+        run: |
+          ssh -o StrictHostKeyChecking=no ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} << 'ENDSSH'
             set -e
 
-            APP_DIR=/home/\$USER/my-app
+            APP_DIR=/home/$USER/my-app
 
-            # Clone nếu lần đầu
-            if [ ! -d "\$APP_DIR" ]; then
-              git clone https://github.com/thiengthb/SWP391_SmokingCessationSupportPlatform_BE.git \$APP_DIR
+            if [ ! -d "$APP_DIR" ]; then
+              git clone https://github.com/thiengthb/SWP391_SmokingCessationSupportPlatform_BE.git $APP_DIR
             fi
 
-            cd \$APP_DIR
-
-            # Pull code mới
+            cd $APP_DIR
             git pull origin main
 
-            # Tạo lại file env từ secrets
-            cat <<EOD > docker/.env.docker
-            ${{ secrets.ENV_DOCKER }}
-            EOD
-            
-            cat <<EOM > docker/.env.mysql
-            ${{ secrets.ENV_MYSQL }}
-            EOM
-            
-            echo "File .env.mysql:"
+            mv /home/$USER/.env.docker docker/.env.docker
+            mv /home/$USER/.env.mysql docker/.env.mysql
+
+            echo ".env.mysql:"
             cat docker/.env.mysql
-            
-            echo "File .env.docker:"
+
+            echo ".env.docker:"
             cat docker/.env.docker
-            
-            # Build & Run
+
             docker compose -f docker/docker-compose.nginx.yml \
-            --env-file docker/.env.mysql \
-            up -d --build
-            
+              --env-file docker/.env.mysql \
+              up -d --build
+
             docker image prune -af
-            EOF
+          ENDSSH
