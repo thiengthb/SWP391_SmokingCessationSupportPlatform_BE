@@ -155,6 +155,10 @@
 			<artifactId>owasp-java-html-sanitizer</artifactId>
 			<version>20220608.1</version>
 		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-actuator</artifactId>
+		</dependency>
     </dependencies>
 
 	<build>
