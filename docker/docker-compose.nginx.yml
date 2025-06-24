@@ -27,6 +27,8 @@ services:
     container_name: phpmyadmin-ctn
     environment:
       PMA_HOST: mysql-db-ctn
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      PMA_ABSOLUTE_URI: http://backendsmokingcessation.site/phpmyadmin/
     networks:
       - app_net
 
