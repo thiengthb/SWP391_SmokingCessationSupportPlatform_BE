@@ -48,7 +48,7 @@ services:
       retries: 5
 
   springboot-1: &springboot-1
-    image: springboot-1:lastest
+    image: springboot-1:latest
     build:
       context: ..
       dockerfile: docker/Dockerfile
@@ -75,7 +75,7 @@ services:
 
   springboot-2:
     <<: *springboot-1
-    image: springboot-2:lastest
+    image: springboot-2:latest
     container_name: springboot-2-con
     environment:
       - SERVER_PORT=8082
@@ -97,7 +97,7 @@ services:
 
   springboot-3:
     <<: *springboot-1
-    image: springboot-3:lastest
+    image: springboot-3:latest
     container_name: springboot-3-con
     environment:
       - SERVER_PORT=8083
