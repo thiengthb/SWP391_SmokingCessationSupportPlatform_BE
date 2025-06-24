@@ -21,6 +21,16 @@ services:
       timeout: 5s
       retries: 5
 
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: phpmyadmin
+    environment:
+      PMA_HOST: mysql-db-ctn
+    ports:
+      - "4000:80"
+    networks:
+      - app_net
+
   redis:
     image: redis
     container_name: redis-cache-ctn
