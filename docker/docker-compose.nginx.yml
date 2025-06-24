@@ -24,7 +24,7 @@ services:
 
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
-    container_name: phpmyadmin
+    container_name: phpmyadmin-ctn
     environment:
       PMA_HOST: mysql-db-ctn
     networks:
@@ -117,7 +117,7 @@ services:
 
   nginx:
     image: nginx
-    container_name: nginx-app
+    container_name: nginx-ctn
     ports:
       - "80:80"
       - "443:443"
