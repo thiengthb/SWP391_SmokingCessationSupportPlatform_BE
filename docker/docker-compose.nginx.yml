@@ -27,8 +27,6 @@ services:
     container_name: phpmyadmin
     environment:
       PMA_HOST: mysql-db-ctn
-    ports:
-      - "4000:80"
     networks:
       - app_net
 
@@ -52,7 +50,7 @@ services:
     build:
       context: ..
       dockerfile: docker/Dockerfile
-    container_name: springboot-1-con
+    container_name: springboot-1-ctn
     environment:
       - SERVER_PORT=8081
     env_file:
@@ -76,7 +74,7 @@ services:
   springboot-2:
     <<: *springboot-1
     image: springboot-2:latest
-    container_name: springboot-2-con
+    container_name: springboot-2-ctn
     environment:
       - SERVER_PORT=8082
     ports:
@@ -98,7 +96,7 @@ services:
   springboot-3:
     <<: *springboot-1
     image: springboot-3:latest
-    container_name: springboot-3-con
+    container_name: springboot-3-ctn
     environment:
       - SERVER_PORT=8083
     ports:
