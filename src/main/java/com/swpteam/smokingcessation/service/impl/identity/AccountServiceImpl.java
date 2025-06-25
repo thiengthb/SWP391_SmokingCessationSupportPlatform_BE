@@ -206,7 +206,7 @@ public class AccountServiceImpl implements IAccountService {
     }
 
     private void checkExistByPhoneNumber(String phoneNumber) {
-        if (accountRepository.existsByEmail(phoneNumber))
+        if (accountRepository.existsByPhoneNumber(phoneNumber))
             throw new AppException(ErrorCode.PHONE_NUMBER_EXISTED);
     }
 

@@ -48,10 +48,10 @@ jobs:
 
             echo ".env.docker:"
             cat docker/.env.docker
-
+            
             docker compose -f docker/docker-compose.nginx.yml \
               --env-file docker/.env.mysql \
-              up -d --build
+              up -d --build --force-recreate
 
             docker image prune -af
           ENDSSH
