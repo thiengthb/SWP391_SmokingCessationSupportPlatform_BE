@@ -33,7 +33,7 @@ public class CategoryController {
     ResponseEntity<ApiResponse<List<CategoryResponse>>> getCategoryList(
             @Valid PageableRequest request)
     {
-        return ResponseUtil.buildResponse(
+        return ResponseUtil.buildSuccessResponse(
                 SuccessCode.CATEGORY_LIST_ALL,
                 categoryService.getCategoryList()
         );
@@ -43,7 +43,7 @@ public class CategoryController {
     ResponseEntity<ApiResponse<PageResponse<CategoryResponse>>> getCategoryPage(
             @Valid PageableRequest request
     ) {
-        return ResponseUtil.buildResponse(
+        return ResponseUtil.buildSuccessResponse(
                 SuccessCode.CATEGORY_GET_ALL,
                 categoryService.getCategoryPage(request)
         );
@@ -53,7 +53,7 @@ public class CategoryController {
     ResponseEntity<ApiResponse<CategoryResponse>> getCategoryById(
             @PathVariable String id
     ) {
-        return ResponseUtil.buildResponse(
+        return ResponseUtil.buildSuccessResponse(
                 SuccessCode.CATEGORY_GET_BY_ID,
                 categoryService.getCategoryById(id)
         );
@@ -63,7 +63,7 @@ public class CategoryController {
     ResponseEntity<ApiResponse<CategoryResponse>> createCategory(
             @RequestBody @Valid CategoryRequest request
     ) {
-        return ResponseUtil.buildResponse(
+        return ResponseUtil.buildSuccessResponse(
                 SuccessCode.CATEGORY_CREATED,
                 categoryService.createCategory(request)
         );
@@ -74,7 +74,7 @@ public class CategoryController {
             @PathVariable String id,
             @RequestBody @Valid CategoryRequest request
     ) {
-        return ResponseUtil.buildResponse(
+        return ResponseUtil.buildSuccessResponse(
                 SuccessCode.CATEGORY_UPDATED,
                 categoryService.updateCategory(id, request)
         );
@@ -85,7 +85,7 @@ public class CategoryController {
             @PathVariable String id
     ) {
         categoryService.deleteCategoryById(id);
-        return ResponseUtil.buildResponse(
+        return ResponseUtil.buildSuccessResponse(
                 SuccessCode.CATEGORY_DELETED,
                 null
         );

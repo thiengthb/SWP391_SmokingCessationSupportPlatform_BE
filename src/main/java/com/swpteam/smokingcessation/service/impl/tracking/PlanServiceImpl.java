@@ -45,7 +45,6 @@ public class PlanServiceImpl implements IPlanService {
 
     PlanMapper planMapper;
     PlanRepository planRepository;
-    FileLoaderUtil fileLoaderUtil;
     AuthUtilService authUtilService;
     IPhaseService phaseService;
 
@@ -141,7 +140,7 @@ public class PlanServiceImpl implements IPlanService {
         }
 
         int level = mapFtndScoreToLevel(ftndScore);
-        List<PlanTemplateResponse> templates = fileLoaderUtil.loadPlanTemplate("quitplan/template-plan.json");
+        List<PlanTemplateResponse> templates = FileLoaderUtil.loadPlanTemplate("quitplan/template-plan.json");
 
         PlanTemplateResponse selectedPlan = templates.stream()
                 .filter(t -> t.getLevel() == level)

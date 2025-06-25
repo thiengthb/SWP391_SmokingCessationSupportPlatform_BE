@@ -30,7 +30,7 @@ public class SettingController {
             @PathVariable String accountId,
             @RequestBody @Valid SettingRequest request
     ) {
-        return ResponseUtil.buildResponse(
+        return ResponseUtil.buildSuccessResponse(
                 SuccessCode.SETTING_UPDATED,
                 settingService.updateSetting(accountId, request)
         );
@@ -40,7 +40,7 @@ public class SettingController {
     ResponseEntity<ApiResponse<SettingResponse>> getSettingById(
             @PathVariable String accountId
     ) {
-        return ResponseUtil.buildResponse(
+        return ResponseUtil.buildSuccessResponse(
                 SuccessCode.SETTING_GOTTEN,
                 settingService.getSettingByAccountId(accountId)
         );

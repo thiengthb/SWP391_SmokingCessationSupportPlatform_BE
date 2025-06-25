@@ -28,7 +28,7 @@ public class StreakController {
     ResponseEntity<ApiResponse<PageResponse<StreakResponse>>> getStreaks(
             @Valid PageableRequest request
     ) {
-        return ResponseUtil.buildResponse(
+        return ResponseUtil.buildSuccessResponse(
                 SuccessCode.RECORD_DELETED,
                 streakService.getStreakPage(request)
         );
@@ -38,7 +38,7 @@ public class StreakController {
     ResponseEntity<ApiResponse<StreakResponse>> getStreakById(
             @PathVariable String memberId
     ) {
-        return ResponseUtil.buildResponse(
+        return ResponseUtil.buildSuccessResponse(
                 SuccessCode.RECORD_DELETED,
                 streakService.getStreakByAccountId(memberId)
         );
@@ -49,7 +49,7 @@ public class StreakController {
             @PathVariable String memberId
     ) {
         streakService.resetStreak(memberId);
-        return ResponseUtil.buildResponse(
+        return ResponseUtil.buildSuccessResponse(
                 SuccessCode.STREAK_RESET,
                 null
         );

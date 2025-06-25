@@ -16,11 +16,9 @@ import java.util.Map;
 public class AIService implements IAIService {
 
     ChatClient chatClient;
-    FileLoaderUtil fileLoaderUtil;
 
-    public AIService(ChatClient.Builder builder, FileLoaderUtil fileLoaderUtil) {
+    public AIService(ChatClient.Builder builder) {
         chatClient = builder.build();
-        this.fileLoaderUtil = fileLoaderUtil;
     }
 
     @Override
@@ -38,7 +36,7 @@ public class AIService implements IAIService {
     }
 
     private String getPlatformContextPrompt() {
-        Map<String, String> context = fileLoaderUtil.loadJsonAsMap(ResourceFilePaths.PLATFORM_CONTEXT);
+        Map<String, String> context = FileLoaderUtil.loadJsonAsMap(ResourceFilePaths.PLATFORM_CONTEXT);
 
         StringBuilder prompt = new StringBuilder("""
                 You are a helpful assistant for a Smoking Cessation Platform.

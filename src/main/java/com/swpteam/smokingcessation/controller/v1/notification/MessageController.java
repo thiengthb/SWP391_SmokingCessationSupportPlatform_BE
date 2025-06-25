@@ -14,7 +14,6 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -32,7 +31,7 @@ public class MessageController {
     ResponseEntity<ApiResponse<PageResponse<MessageResponse>>> getMessagePage(
             @Valid PageableRequest request
     ) {
-        return ResponseUtil.buildResponse(
+        return ResponseUtil.buildSuccessResponse(
                 SuccessCode.MEMBERSHIP_GET_ALL,
                 messageService.getMessagePage(request)
         );
@@ -42,7 +41,7 @@ public class MessageController {
     ResponseEntity<ApiResponse<MessageResponse>> getMessageById(
             @PathVariable String id
     ) {
-        return ResponseUtil.buildResponse(
+        return ResponseUtil.buildSuccessResponse(
                 SuccessCode.MESSAGE_GET_BY_ID,
                 messageService.getById(id)
         );
@@ -52,7 +51,7 @@ public class MessageController {
     ResponseEntity<ApiResponse<MessageResponse>> createMessage(
             @Valid @RequestBody MessageRequest request
     ) {
-        return ResponseUtil.buildResponse(
+        return ResponseUtil.buildSuccessResponse(
                 SuccessCode.MESSAGE_CREATED,
                 messageService.createMessage(request)
         );
@@ -63,7 +62,7 @@ public class MessageController {
             @PathVariable String id,
             @Valid @RequestBody MessageRequest request
     ) {
-        return ResponseUtil.buildResponse(
+        return ResponseUtil.buildSuccessResponse(
                 SuccessCode.MESSAGE_UPDATED,
                 messageService.updateMessage(id, request)
         );
@@ -74,7 +73,7 @@ public class MessageController {
             @PathVariable String id
     ) {
         messageService.softDeleteMessageById(id);
-        return ResponseUtil.buildResponse(
+        return ResponseUtil.buildSuccessResponse(
                 SuccessCode.MESSAGE_DELETED,
                 null
         );
