@@ -39,7 +39,7 @@ public class GoalController {
     }
 
     @GetMapping("/my-goals")
-    public ResponseEntity<ApiResponse<Page<GoalResponse>>> getMyGoalPage(
+    public ResponseEntity<ApiResponse<PageResponse<GoalResponse>>> getMyGoalPage(
             @Valid PageableRequest request
     ) {
         return ResponseUtil.buildResponse(

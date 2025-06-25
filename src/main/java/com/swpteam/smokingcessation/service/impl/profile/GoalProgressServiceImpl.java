@@ -15,7 +15,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -79,7 +78,7 @@ public class GoalProgressServiceImpl implements IGoalProgressService {
         };
 
         if (progress != null && goalValue.compareTo(BigDecimal.ZERO) > 0) {
-            BigDecimal percentage = progress.divide(goalValue, 1, RoundingMode.DOWN);
+            BigDecimal percentage = progress.divide(goalValue);
             goalProgress.setProgress(percentage);
         } else {
             goalProgress.setProgress(BigDecimal.ZERO);

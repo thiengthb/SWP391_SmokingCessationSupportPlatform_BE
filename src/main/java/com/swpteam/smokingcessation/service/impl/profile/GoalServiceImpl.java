@@ -20,6 +20,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
@@ -39,6 +40,7 @@ public class GoalServiceImpl implements IGoalService {
     GoalMapper goalMapper;
     AuthUtilService authUtilService;
     IGoalProgressService goalProgressService;
+
 
     @Override
     @Cacheable(value = "GOAL_PAGE_CACHE",
@@ -60,11 +62,12 @@ public class GoalServiceImpl implements IGoalService {
 
     @Override
     @Cacheable(value = "GOAL_PAGE_CACHE",
-            key = "#request.page + '-' + #request.size + '-' + #request.sortBy + '-' + #request.direction + '-' + T(com.swpteam.smokingcessation.utils.AuthUtilService).getCurrentAccountOrThrowError().getId()")
+            key = "#request.page + '-' + #request.size + '-' + #request.sortBy + '-' + #request.direction + '-' + @authUtilService.getCurrentAccountOrThrowError().id")
     public PageResponse<GoalResponse> getMyGoalPage(PageableRequest request) {
         ValidationUtil.checkFieldExist(Goal.class, request.sortBy());
 
         Account currentAccount = authUtilService.getCurrentAccountOrThrowError();
+        String accountId = currentAccount.getId();
 
         Pageable pageable = PageableRequest.getPageable(request);
         Page<Goal> goals = goalRepository.findAllByAccountIdAndIsDeletedFalse(currentAccount.getId(), pageable);

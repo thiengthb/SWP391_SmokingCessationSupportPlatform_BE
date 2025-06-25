@@ -13,6 +13,7 @@ import java.math.BigDecimal;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class GoalProgressResponse {
-    String goalId;
+    String id;
+
     BigDecimal progress;
 }

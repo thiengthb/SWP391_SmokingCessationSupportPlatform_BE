@@ -29,8 +29,8 @@ public interface GoalMapper {
                 .filter(p -> p.getAccount().getId().equals(accountId))
                 .findFirst()
                 .map(p -> GoalProgressResponse.builder()
-                        .goalId(p.getGoal().getId())
-                        .progress(p.getProgress())
+                        .id(p.getId())
+                        .progress(p.getProgress().setScale(4))
                         .build()) // or use your mapper
                 .orElse(null);
     }

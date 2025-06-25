@@ -34,6 +34,6 @@ public class GoalProgress {
 
     @DecimalMin("0.0")
     @DecimalMax("1.0")
-    @Column(precision = 3, scale = 1)
+    @Column(precision = 5, scale = 4)
     BigDecimal progress;
 }
