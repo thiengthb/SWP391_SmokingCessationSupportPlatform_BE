@@ -37,7 +37,7 @@ public class AuthenticationController {
         cookieUtil.setRefreshTokenCookie(response, authenticationResponse.getRefreshToken());
         authenticationResponse.setRefreshToken(null);
 
-        return ResponseUtil.buildResponse(
+        return ResponseUtil.buildSuccessResponse(
                 SuccessCode.GOOGLE_LOGIN_SUCCESS,
                 authenticationResponse
         );
@@ -53,7 +53,7 @@ public class AuthenticationController {
         cookieUtil.setRefreshTokenCookie(response, authenticationResponse.getRefreshToken());
         authenticationResponse.setRefreshToken(null);
 
-        return ResponseUtil.buildResponse(
+        return ResponseUtil.buildSuccessResponse(
                 SuccessCode.LOGIN_SUCCESS,
                 authenticationResponse
         );
@@ -69,7 +69,7 @@ public class AuthenticationController {
         cookieUtil.setRefreshTokenCookie(response, authenticationResponse.getRefreshToken());
         authenticationResponse.setRefreshToken(null);
 
-        return ResponseUtil.buildResponse(
+        return ResponseUtil.buildSuccessResponse(
                 SuccessCode.TOKEN_REFRESH_SUCCESS,
                 authenticationResponse
         );
@@ -85,7 +85,7 @@ public class AuthenticationController {
         cookieUtil.setRefreshTokenCookie(response, authenticationResponse.getRefreshToken());
         authenticationResponse.setRefreshToken(null);
 
-        return ResponseUtil.buildResponse(
+        return ResponseUtil.buildSuccessResponse(
                 SuccessCode.REGISTER_SUCCESS,
                 authenticationResponse
         );
@@ -97,7 +97,7 @@ public class AuthenticationController {
     ) {
         authenticationService.sendResetPasswordEmail(request.email());
 
-        return ResponseUtil.buildResponse(
+        return ResponseUtil.buildSuccessResponse(
                 SuccessCode.SEND_MAIL_SUCCESS,
                 null
         );
@@ -109,7 +109,7 @@ public class AuthenticationController {
     ) {
         authenticationService.resetPassword(request);
 
-        return ResponseUtil.buildResponse(
+        return ResponseUtil.buildSuccessResponse(
                 SuccessCode.PASSWORD_RESET_SUCCESS,
                 null
         );
@@ -128,7 +128,7 @@ public class AuthenticationController {
             cookieUtil.clearRefreshTokenCookie(response);
         }
 
-        return ResponseUtil.buildResponse(
+        return ResponseUtil.buildSuccessResponse(
                 SuccessCode.LOGOUT_SUCCESS,
                 null
         );

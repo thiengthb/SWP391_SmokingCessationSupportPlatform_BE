@@ -1,6 +1,7 @@
 package com.swpteam.smokingcessation.controller.v1.identity;
 
 import com.swpteam.smokingcessation.common.ApiResponse;
+import com.swpteam.smokingcessation.common.PageResponse;
 import com.swpteam.smokingcessation.common.PageableRequest;
 import com.swpteam.smokingcessation.constant.SuccessCode;
 import com.swpteam.smokingcessation.domain.dto.account.AccountRequest;
@@ -15,7 +16,6 @@ import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -32,15 +32,15 @@ public class AccountController {
     ResponseEntity<ApiResponse<AccountResponse>> createAccount(
             @RequestBody @Valid AccountRequest request
     ) {
-        return ResponseUtil.buildResponse(
+        return ResponseUtil.buildSuccessResponse(
                 SuccessCode.ACCOUNT_CREATED,
                 accountService.createAccount(request)
         );
     }
 
     @GetMapping
-    ResponseEntity<ApiResponse<Page<AccountResponse>>> getAccounts(@Valid PageableRequest request) {
-        return ResponseUtil.buildResponse(
+    ResponseEntity<ApiResponse<PageResponse<AccountResponse>>> getAccounts(@Valid PageableRequest request) {
+        return ResponseUtil.buildSuccessResponse(
                 SuccessCode.ACCOUNT_CREATED,
                 accountService.getAccountsPage(request)
         );
@@ -50,7 +50,7 @@ public class AccountController {
     ResponseEntity<ApiResponse<AccountResponse>> getAccountById(
             @PathVariable String id
     ) {
-        return ResponseUtil.buildResponse(
+        return ResponseUtil.buildSuccessResponse(
                 SuccessCode.ACCOUNT_CREATED,
                 accountService.getAccountById(id)
         );
@@ -61,7 +61,7 @@ public class AccountController {
             @PathVariable String id,
             @RequestParam Role role
     ) {
-        return ResponseUtil.buildResponse(
+        return ResponseUtil.buildSuccessResponse(
                 SuccessCode.ROLE_UPDATED,
                 accountService.updateAccountRole(id, role)
         );
@@ -72,7 +72,7 @@ public class AccountController {
             @PathVariable String id,
             @RequestBody AccountUpdateRequest request
     ) {
-        return ResponseUtil.buildResponse(
+        return ResponseUtil.buildSuccessResponse(
                 SuccessCode.ACCOUNT_UPDATED,
                 accountService.updateAccountWithoutRole(id, request)
         );
@@ -81,7 +81,7 @@ public class AccountController {
     @DeleteMapping("/{id}")
     ResponseEntity<ApiResponse<String>> deleteAccount(@PathVariable String id) {
         accountService.deleteAccount(id);
-        return ResponseUtil.buildResponse(
+        return ResponseUtil.buildSuccessResponse(
                 SuccessCode.ACCOUNT_DELETED,
                 null
         );
@@ -91,7 +91,7 @@ public class AccountController {
     ResponseEntity<ApiResponse<AccountResponse>> changePassword(
             @RequestBody @Valid ChangePasswordRequest request
     ) {
-        return ResponseUtil.buildResponse(
+        return ResponseUtil.buildSuccessResponse(
                 SuccessCode.PASSWORD_CHANGE_SUCCESS,
                 accountService.changePassword(request)
         );
@@ -99,7 +99,7 @@ public class AccountController {
 
     @GetMapping("/me")
     ResponseEntity<ApiResponse<AccountResponse>> getMe() {
-        return ResponseUtil.buildResponse(
+        return ResponseUtil.buildSuccessResponse(
                 SuccessCode.GET_ME,
                 accountService.getCurrentAccount()
         );
@@ -110,7 +110,7 @@ public class AccountController {
             @PathVariable String id
     ) {
         accountService.banAccount(id);
-        return ResponseUtil.buildResponse(
+        return ResponseUtil.buildSuccessResponse(
                 SuccessCode.ACCOUNT_BANNED,
                 null
         );

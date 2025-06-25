@@ -1,5 +1,6 @@
 package com.swpteam.smokingcessation.service.interfaces.blog;
 
+import com.swpteam.smokingcessation.common.PageResponse;
 import com.swpteam.smokingcessation.common.PageableRequest;
 import com.swpteam.smokingcessation.domain.dto.comment.CommentCreateRequest;
 import com.swpteam.smokingcessation.domain.dto.comment.CommentReplyRequest;
@@ -10,9 +11,9 @@ import org.springframework.data.domain.Page;
 
 public interface ICommentService {
 
-    Page<CommentResponse> getCommentsByBlogId(String blogId, PageableRequest request);
+    PageResponse<CommentResponse> getCommentsByBlogId(String blogId, PageableRequest request);
 
-    Page<CommentResponse> getCommentPage(PageableRequest request);
+    PageResponse<CommentResponse> getCommentPage(PageableRequest request);
 
     CommentResponse getCommentById(String id);
 

@@ -1,5 +1,6 @@
 package com.swpteam.smokingcessation.service.interfaces.notification;
 
+import com.swpteam.smokingcessation.common.PageResponse;
 import com.swpteam.smokingcessation.common.PageableRequest;
 import com.swpteam.smokingcessation.domain.dto.notification.MarkAsReadRequest;
 import com.swpteam.smokingcessation.domain.dto.notification.NotificationRequest;
@@ -13,7 +14,7 @@ public interface INotificationService {
 
     void markAsRead(String id);
 
-    Page<NotificationResponse> getMyNotificationsPage(PageableRequest request);
+    PageResponse<NotificationResponse> getMyNotificationsPage(PageableRequest request);
 
     NotificationResponse getNotificationsById(String id);
 

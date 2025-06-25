@@ -1,20 +1,14 @@
-#FROM openjdk:25-ea-21-slim
-#WORKDIR /app
-#COPY target/*.jar app.jar
-#EXPOSE 8080
-#ENTRYPOINT ["java", "-jar", "/app/app.jar"]
-
 FROM maven:3.9.6-eclipse-temurin-21 AS builder
 
 WORKDIR /app
 
-COPY pom.xml .
-COPY .mvn/ .mvn
-COPY mvnw mvnw.cmd ./
+COPY ../pom.xml .
+COPY ../.mvn .mvn
+COPY ../mvnw mvnw.cmd ./
 
 RUN mvn dependency:go-offline
 
-COPY src ./src
+COPY ../src ./src
 
 RUN mvn clean package -DskipTests
 
@@ -23,6 +17,8 @@ FROM eclipse-temurin:21-jre AS runtime
 WORKDIR /app
 
 COPY --from=builder /app/target/*.jar app.jar
+
+RUN apt-get update && apt-get install -y curl
 
 EXPOSE 8080
 

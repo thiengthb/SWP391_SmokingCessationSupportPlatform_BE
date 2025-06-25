@@ -1,5 +1,6 @@
 package com.swpteam.smokingcessation.service.impl.profile;
 
+import com.swpteam.smokingcessation.common.PageResponse;
 import com.swpteam.smokingcessation.domain.entity.Account;
 import com.swpteam.smokingcessation.domain.mapper.HealthMapper;
 import com.swpteam.smokingcessation.domain.dto.health.HealthCreateRequest;
@@ -39,17 +40,17 @@ public class HealthServiceImpl implements IHealthService {
     AuthUtilService authUtilService;
 
     @Override
-    public Page<HealthResponse> getHealthPage(PageableRequest request) {
+    public PageResponse<HealthResponse> getHealthPage(PageableRequest request) {
         ValidationUtil.checkFieldExist(Health.class, request.sortBy());
 
         Pageable pageable = PageableRequest.getPageable(request);
         Page<Health> healths = healthRepository.findAllByIsDeletedFalse(pageable);
 
-        return healths.map(healthMapper::toResponse);
+        return new PageResponse<>(healths.map(healthMapper::toResponse));
     }
 
     @Override
-    public Page<HealthResponse> getMyHealthPage(PageableRequest request) {
+    public PageResponse<HealthResponse> getMyHealthPage(PageableRequest request) {
         ValidationUtil.checkFieldExist(Health.class, request.sortBy());
 
         Account currentAccount = authUtilService.getCurrentAccountOrThrowError();
@@ -57,7 +58,7 @@ public class HealthServiceImpl implements IHealthService {
         Pageable pageable = PageableRequest.getPageable(request);
         Page<Health> healths = healthRepository.findAllByAccountIdAndIsDeletedFalse(currentAccount.getId(), pageable);
 
-        return healths.map(healthMapper::toResponse);
+        return new PageResponse<>(healths.map(healthMapper::toResponse));
     }
 
     @Override
@@ -66,7 +67,7 @@ public class HealthServiceImpl implements IHealthService {
     }
 
     @Override
-    public Page<HealthResponse> getHealthPageByAccountId(String accountId, PageableRequest request) {
+    public PageResponse<HealthResponse> getHealthPageByAccountId(String accountId, PageableRequest request) {
         ValidationUtil.checkFieldExist(Health.class, request.sortBy());
 
         accountService.findAccountByIdOrThrowError(accountId);
@@ -74,7 +75,7 @@ public class HealthServiceImpl implements IHealthService {
         Pageable pageable = PageableRequest.getPageable(request);
         Page<Health> healths = healthRepository.findByAccountIdAndIsDeletedFalse(accountId, pageable);
 
-        return healths.map(healthMapper::toResponse);
+        return new PageResponse<>(healths.map(healthMapper::toResponse));
     }
 
     @Override

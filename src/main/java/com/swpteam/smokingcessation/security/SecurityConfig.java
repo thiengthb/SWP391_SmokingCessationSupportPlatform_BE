@@ -1,6 +1,5 @@
 package com.swpteam.smokingcessation.security;
 
-import com.swpteam.smokingcessation.constant.App;
 import com.swpteam.smokingcessation.service.interfaces.identity.IAuthenticationService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -32,13 +31,16 @@ import java.util.List;
 public class SecurityConfig {
 
     public final String[] PUBLIC_ENDPOINTS = {
+            "/",
+            "/index.html",
+            "/actuator/health",
             "/swagger-ui.html",
             "/swagger-ui/**",
             "/v3/api-docs/**",
             "/ws/**",
             "/api/webhook/stripe",
             "/api/v1/auth/**",
-            "/api/v1/test",
+            "/api/test/**",
     };
 
     JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
@@ -57,8 +59,10 @@ public class SecurityConfig {
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
+                .exceptionHandling(exception -> exception
+                        .authenticationEntryPoint(jwtAuthenticationEntryPoint)
+                )
                 .authorizeHttpRequests(request -> request
-                        .requestMatchers("/").permitAll()
                         .requestMatchers(PUBLIC_ENDPOINTS).permitAll()
                         .anyRequest().authenticated()
                 )
@@ -77,7 +81,7 @@ public class SecurityConfig {
         config.setAllowCredentials(true);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/api/**", config);
+        source.registerCorsConfiguration("/**", config);
         return source;
     }
 }

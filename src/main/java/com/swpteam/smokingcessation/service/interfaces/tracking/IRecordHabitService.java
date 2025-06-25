@@ -1,5 +1,6 @@
 package com.swpteam.smokingcessation.service.interfaces.tracking;
 
+import com.swpteam.smokingcessation.common.PageResponse;
 import com.swpteam.smokingcessation.common.PageableRequest;
 import com.swpteam.smokingcessation.domain.dto.record.RecordHabitCreateRequest;
 import com.swpteam.smokingcessation.domain.dto.record.RecordHabitResponse;
@@ -12,11 +13,11 @@ import java.util.List;
 
 public interface IRecordHabitService {
 
-    Page<RecordHabitResponse> getMyRecordPage(PageableRequest request);
+    PageResponse<RecordHabitResponse> getMyRecordPage(PageableRequest request);
 
     RecordHabitResponse getRecordById(String id);
 
-    Page<RecordHabitResponse> getRecordPageByAccountId(String accountId, PageableRequest request);
+    PageResponse<RecordHabitResponse> getRecordPageByAccountId(String accountId, PageableRequest request);
 
     RecordHabitResponse createRecord(RecordHabitCreateRequest request);
 

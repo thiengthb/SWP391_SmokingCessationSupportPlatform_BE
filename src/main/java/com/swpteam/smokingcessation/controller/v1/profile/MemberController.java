@@ -1,5 +1,6 @@
 package com.swpteam.smokingcessation.controller.v1.profile;
 
+import com.swpteam.smokingcessation.common.PageResponse;
 import com.swpteam.smokingcessation.domain.dto.member.MemberRequest;
 import com.swpteam.smokingcessation.domain.dto.member.MemberResponse;
 import com.swpteam.smokingcessation.common.ApiResponse;
@@ -12,7 +13,6 @@ import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
-import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,17 +29,17 @@ public class MemberController {
     ResponseEntity<ApiResponse<MemberResponse>> createMember(
             @RequestBody @Valid MemberRequest request
     ) {
-        return ResponseUtil.buildResponse(
+        return ResponseUtil.buildSuccessResponse(
                 SuccessCode.MEMBER_CREATED,
                 memberService.createMember(request)
         );
     }
 
     @GetMapping
-    ResponseEntity<ApiResponse<Page<MemberResponse>>> getUsers(
+    ResponseEntity<ApiResponse<PageResponse<MemberResponse>>> getUsers(
             @Valid PageableRequest request
     ) {
-        return ResponseUtil.buildResponse(
+        return ResponseUtil.buildSuccessResponse(
                 SuccessCode.HEALTH_DELETED,
                 memberService.getMembersPage(request)
         );
@@ -49,7 +49,7 @@ public class MemberController {
     ResponseEntity<ApiResponse<MemberResponse>> getMemberById(
             @PathVariable String accountId
     ) {
-        return ResponseUtil.buildResponse(
+        return ResponseUtil.buildSuccessResponse(
                 SuccessCode.HEALTH_DELETED,
                 memberService.getMemberById(accountId)
         );
@@ -60,7 +60,7 @@ public class MemberController {
             @PathVariable String accountId,
             @RequestBody MemberRequest request
     ) {
-        return ResponseUtil.buildResponse(
+        return ResponseUtil.buildSuccessResponse(
                 SuccessCode.ACCOUNT_UPDATED,
                 memberService.updateMemberById(accountId, request)
         );

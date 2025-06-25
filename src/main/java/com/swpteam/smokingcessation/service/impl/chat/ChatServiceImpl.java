@@ -1,5 +1,6 @@
 package com.swpteam.smokingcessation.service.impl.chat;
 
+import com.swpteam.smokingcessation.common.PageResponse;
 import com.swpteam.smokingcessation.common.PageableRequest;
 import com.swpteam.smokingcessation.constant.ErrorCode;
 import com.swpteam.smokingcessation.domain.dto.chat.ChatRequest;
@@ -52,23 +53,23 @@ public class ChatServiceImpl implements IChatService {
     }
 
     @Override
-    public Page<ChatRestResponse> getChats(PageableRequest request) {
+    public PageResponse<ChatRestResponse> getChats(PageableRequest request) {
         ValidationUtil.checkFieldExist(Chat.class, request.sortBy());
 
         Pageable pageable = PageableRequest.getPageable(request);
         Page<Chat> chats = chatRepository.findAllByIsDeletedFalse(pageable);
 
-        return chats.map(chatMapper::toRestResponse);
+        return new PageResponse<>(chats.map(chatMapper::toRestResponse));
     }
 
     @Override
-    public Page<ChatRestResponse> getChatsById(String id, PageableRequest request) {
+    public PageResponse<ChatRestResponse> getChatsById(String id, PageableRequest request) {
         ValidationUtil.checkFieldExist(Chat.class, request.sortBy());
 
         Pageable pageable = PageableRequest.getPageable(request);
         Page<Chat> chats = chatRepository.findByAccountIdAndIsDeletedFalse(id, pageable);
 
-        return chats.map(chatMapper::toRestResponse);
+        return new PageResponse<>(chats.map(chatMapper::toRestResponse));
     }
 
     @Override

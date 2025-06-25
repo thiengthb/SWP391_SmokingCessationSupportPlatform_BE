@@ -29,7 +29,7 @@ public class ReportController {
     public ResponseEntity<ApiResponse<ReportSummaryResponse>> getReportSummary(
             @Valid ReportSummaryRequest reportSummaryRequest
     ) {
-        return ResponseUtil.buildResponse(
+        return ResponseUtil.buildSuccessResponse(
                 SuccessCode.SUMMARY_GET,
                 reportService.getSummary(reportSummaryRequest)
         );

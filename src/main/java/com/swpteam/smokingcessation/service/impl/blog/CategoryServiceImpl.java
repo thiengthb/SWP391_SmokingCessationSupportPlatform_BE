@@ -1,5 +1,6 @@
 package com.swpteam.smokingcessation.service.impl.blog;
 
+import com.swpteam.smokingcessation.common.PageResponse;
 import com.swpteam.smokingcessation.common.PageableRequest;
 import com.swpteam.smokingcessation.constant.App;
 import com.swpteam.smokingcessation.constant.ErrorCode;
@@ -48,13 +49,13 @@ public class CategoryServiceImpl implements ICategoryService {
     @Override
     @Cacheable(value = "CATEGORY_PAGE_CACHE",
             key = "#request.page + '-' + #request.size + '-' + #request.sortBy + '-' + #request.direction")
-    public Page<CategoryResponse> getCategoryPage(PageableRequest request) {
+    public PageResponse<CategoryResponse> getCategoryPage(PageableRequest request) {
         ValidationUtil.checkFieldExist(Category.class, request.sortBy());
 
         Pageable pageable = PageableRequest.getPageable(request);
         Page<Category> categories = categoryRepository.findAll(pageable);
 
-        return categories.map(categoryMapper::toResponse);
+        return new PageResponse<>(categories.map(categoryMapper::toResponse));
     }
 
     @Override

@@ -1,5 +1,6 @@
 package com.swpteam.smokingcessation.controller.v1.profile;
 
+import com.swpteam.smokingcessation.common.PageResponse;
 import com.swpteam.smokingcessation.domain.dto.health.HealthCreateRequest;
 import com.swpteam.smokingcessation.domain.dto.health.HealthResponse;
 import com.swpteam.smokingcessation.domain.dto.health.HealthUpdateRequest;
@@ -14,7 +15,6 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,10 +29,10 @@ public class HealthController {
     IHealthService healthService;
 
     @GetMapping
-    ResponseEntity<ApiResponse<Page<HealthResponse>>> getHealthPage(
+    ResponseEntity<ApiResponse<PageResponse<HealthResponse>>> getHealthPage(
             @Valid PageableRequest request
     ) {
-        return ResponseUtil.buildResponse(
+        return ResponseUtil.buildSuccessResponse(
                 SuccessCode.HEALTH_GET_ALL,
                 healthService.getHealthPage(request)
         );
@@ -42,18 +42,18 @@ public class HealthController {
     ResponseEntity<ApiResponse<HealthResponse>> getHealthById(
             @PathVariable String id
     ) {
-        return ResponseUtil.buildResponse(
+        return ResponseUtil.buildSuccessResponse(
                 SuccessCode.HEALTH_GET_BY_ID,
                 healthService.getHealthById(id)
         );
     }
 
     @GetMapping("/account/{id}")
-    ResponseEntity<ApiResponse<Page<HealthResponse>>> getHealthPageByAccountId(
+    ResponseEntity<ApiResponse<PageResponse<HealthResponse>>> getHealthPageByAccountId(
             @PathVariable String id,
             @Valid PageableRequest request
     ) {
-        return ResponseUtil.buildResponse(
+        return ResponseUtil.buildSuccessResponse(
                 SuccessCode.HEALTH_GET_BY_ACCOUNT,
                 healthService.getHealthPageByAccountId(id, request)
         );
@@ -63,7 +63,7 @@ public class HealthController {
     ResponseEntity<ApiResponse<HealthResponse>> createHealth(
             @RequestBody @Valid HealthCreateRequest request
     ) {
-        return ResponseUtil.buildResponse(
+        return ResponseUtil.buildSuccessResponse(
                 SuccessCode.HEALTH_CREATED,
                 healthService.createHealth(request)
         );
@@ -74,7 +74,7 @@ public class HealthController {
             @PathVariable String id,
             @RequestBody @Valid HealthUpdateRequest request
     ) {
-        return ResponseUtil.buildResponse(
+        return ResponseUtil.buildSuccessResponse(
                 SuccessCode.HEALTH_UPDATED,
                 healthService.updateHealth(id, request)
         );
@@ -85,7 +85,7 @@ public class HealthController {
             @PathVariable String id
     ) {
         healthService.softDeleteHealthById(id);
-        return ResponseUtil.buildResponse(
+        return ResponseUtil.buildSuccessResponse(
                 SuccessCode.HEALTH_DELETED,
                 null
         );

@@ -1,6 +1,7 @@
 package com.swpteam.smokingcessation.service.interfaces.identity;
 
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
+import com.swpteam.smokingcessation.common.PageResponse;
 import com.swpteam.smokingcessation.common.PageableRequest;
 import com.swpteam.smokingcessation.domain.dto.account.AccountRequest;
 import com.swpteam.smokingcessation.domain.dto.account.AccountResponse;
@@ -9,21 +10,20 @@ import com.swpteam.smokingcessation.domain.dto.account.ChangePasswordRequest;
 import com.swpteam.smokingcessation.domain.entity.Account;
 import com.swpteam.smokingcessation.domain.enums.AccountStatus;
 import com.swpteam.smokingcessation.domain.enums.Role;
-import org.springframework.data.domain.Page;
 
 public interface IAccountService {
 
-    void updateStatus(String accountId, AccountStatus status);
+    PageResponse<AccountResponse> getAccountsPage(PageableRequest request);
 
-    void changePassword(String accountId, String newPassword);
+    AccountResponse getAccountById(String id);
 
-    Page<AccountResponse> getAccountsPage(PageableRequest request);
+    AccountResponse getCurrentAccount();
 
     AccountResponse createAccount(AccountRequest request);
 
     Account createAccountByGoogle(GoogleIdToken.Payload payload);
 
-    AccountResponse getAccountById(String id);
+    void updateStatus(String accountId, AccountStatus status);
 
     AccountResponse updateAccountRole(String id, Role role);
 
@@ -31,11 +31,9 @@ public interface IAccountService {
 
     AccountResponse changePassword(ChangePasswordRequest request);
 
-    AccountResponse getCurrentAccount();
+    void changePassword(String accountId, String newPassword);
 
     Account findAccountByIdOrThrowError(String id);
-
-    Account findAccountByUsernameOrThrowError(String username);
 
     Account findAccountByEmailOrThrowError(String email);
 
@@ -43,6 +41,6 @@ public interface IAccountService {
 
     void banAccount(String id);
 
-    void checkExistByEmail(String email);
+    void checkExistByEmailOrThrowError(String email);
 
 }

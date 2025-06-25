@@ -1,6 +1,6 @@
 package com.swpteam.smokingcessation.service.impl.membership;
 
-import com.swpteam.smokingcessation.domain.dto.category.CategoryResponse;
+import com.swpteam.smokingcessation.common.PageResponse;
 import com.swpteam.smokingcessation.domain.dto.membership.MembershipCreateRequest;
 import com.swpteam.smokingcessation.domain.dto.membership.MembershipCurrencyUpdateRequest;
 import com.swpteam.smokingcessation.domain.dto.membership.MembershipResponse;
@@ -52,13 +52,13 @@ public class MembershipServiceImpl implements IMembershipService {
     @Override
     @Cacheable(value = "MEMBERSHIP_PAGE_CACHE",
             key = "#request.page + '-' + #request.size + '-' + #request.sortBy + '-' + #request.direction")
-    public Page<MembershipResponse> getMembershipPage(PageableRequest request) {
+    public PageResponse<MembershipResponse> getMembershipPage(PageableRequest request) {
         ValidationUtil.checkFieldExist(Membership.class, request.sortBy());
 
         Pageable pageable = PageableRequest.getPageable(request);
         Page<Membership> memberships = membershipRepository.findAllByIsDeletedFalse(pageable);
 
-        return memberships.map(membershipMapper::toResponse);
+        return new PageResponse<>(memberships.map(membershipMapper::toResponse));
     }
 
     @Override

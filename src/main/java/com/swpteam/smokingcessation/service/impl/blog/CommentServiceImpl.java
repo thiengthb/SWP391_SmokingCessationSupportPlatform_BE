@@ -1,5 +1,6 @@
 package com.swpteam.smokingcessation.service.impl.blog;
 
+import com.swpteam.smokingcessation.common.PageResponse;
 import com.swpteam.smokingcessation.common.PageableRequest;
 import com.swpteam.smokingcessation.constant.ErrorCode;
 import com.swpteam.smokingcessation.domain.dto.comment.CommentCreateRequest;
@@ -43,25 +44,25 @@ public class CommentServiceImpl implements ICommentService {
     @Override
     @Cacheable(value = "COMMENT_PAGE_CACHE",
             key = "#request.page + '-' + #request.size + '-' + #request.sortBy + '-' + #request.direction + '-' + #blogId")
-    public Page<CommentResponse> getCommentsByBlogId(String blogId, PageableRequest request) {
+    public PageResponse<CommentResponse> getCommentsByBlogId(String blogId, PageableRequest request) {
         ValidationUtil.checkFieldExist(Comment.class, request.sortBy());
 
         Pageable pageable = PageableRequest.getPageable(request);
         Page<Comment> topLevelComments = commentRepository.findByBlogIdAndLevel(blogId, 0, pageable);
 
-        return topLevelComments.map(commentMapper::toResponse);
+        return new PageResponse<>(topLevelComments.map(commentMapper::toResponse));
     }
 
     @Override
     @Cacheable(value = "COMMENT_PAGE_CACHE",
             key = "#request.page + '-' + #request.size + '-' + #request.sortBy + '-' + #request.direction")
-    public Page<CommentResponse> getCommentPage(PageableRequest request) {
+    public PageResponse<CommentResponse> getCommentPage(PageableRequest request) {
         ValidationUtil.checkFieldExist(Comment.class, request.sortBy());
 
         Pageable pageable = PageableRequest.getPageable(request);
         Page<Comment> comments = commentRepository.findAll(pageable);
 
-        return comments.map(commentMapper::toResponse);
+        return new PageResponse<>(comments.map(commentMapper::toResponse));
     }
 
     @Override

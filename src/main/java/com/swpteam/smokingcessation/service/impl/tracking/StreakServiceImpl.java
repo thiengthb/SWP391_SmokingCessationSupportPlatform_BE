@@ -1,5 +1,6 @@
 package com.swpteam.smokingcessation.service.impl.tracking;
 
+import com.swpteam.smokingcessation.common.PageResponse;
 import com.swpteam.smokingcessation.common.PageableRequest;
 import com.swpteam.smokingcessation.constant.ErrorCode;
 import com.swpteam.smokingcessation.domain.dto.streak.StreakResponse;
@@ -38,16 +39,16 @@ public class StreakServiceImpl implements IStreakService {
 
     @Override
     @PreAuthorize("hasRole('ADMIN')")
-    public Page<StreakResponse> getStreakPage(PageableRequest request) {
+    public PageResponse<StreakResponse> getStreakPage(PageableRequest request) {
         ValidationUtil.checkFieldExist(Streak.class, request.sortBy());
 
         Pageable pageable = PageableRequest.getPageable(request);
-        return streakRepository.findAll(pageable).map(streakMapper::toResponse);
+        return new PageResponse<>(streakRepository.findAll(pageable).map(streakMapper::toResponse));
     }
 
     @Override
     @PreAuthorize("hasRole('MEMBER')")
-    public Page<StreakResponse> getMyStreakPage(PageableRequest request) {
+    public PageResponse<StreakResponse> getMyStreakPage(PageableRequest request) {
         ValidationUtil.checkFieldExist(Streak.class, request.sortBy());
 
         Account currentAccount = authUtilService.getCurrentAccountOrThrowError();
@@ -55,7 +56,7 @@ public class StreakServiceImpl implements IStreakService {
         Pageable pageable = PageableRequest.getPageable(request);
         Page<Streak> streaks = streakRepository.findAllByAccountIdAndIsDeletedFalse(currentAccount.getId(), pageable);
 
-        return streaks.map(streakMapper::toResponse);
+        return new PageResponse<>(streaks.map(streakMapper::toResponse));
     }
 
     @Override
@@ -85,6 +86,8 @@ public class StreakServiceImpl implements IStreakService {
             throw new AppException(ErrorCode.STREAK_DOWN_GRADE);
         }
 
+        streak.setNumber(number);
+
         return streakRepository.save(streak);
     }
 
@@ -109,7 +112,7 @@ public class StreakServiceImpl implements IStreakService {
     @Override
     @Transactional
     public Streak findStreakByAccountIdOrThrowError(String id) {
-        Streak streak = streakRepository.findById(id)
+        Streak streak = streakRepository.findByAccountIdAndIsDeletedFalse(id)
                 .orElseThrow(() -> new AppException(ErrorCode.STREAK_NOT_FOUND));
 
         if (streak.getAccount().isDeleted()) {

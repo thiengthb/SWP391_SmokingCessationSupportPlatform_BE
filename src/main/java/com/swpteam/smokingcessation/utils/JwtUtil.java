@@ -47,17 +47,16 @@ public class JwtUtil {
         try {
             SignedJWT jwt = SignedJWT.parse(token);
 
-//            Object claim = jwt.getJWTClaimsSet().getClaim("token_type");
-//            if (!(claim instanceof String tokenTypeStr)) {
-//                throw new AppException(ErrorCode.INVALID_TOKEN);
-//            }
-//
-//            TokenType tokenType;
-//            try {
-//                tokenType = TokenType.valueOf(tokenTypeStr.toUpperCase()); // nếu enum của bạn viết hoa
-//            } catch (IllegalArgumentException e) {
-//                throw new AppException(ErrorCode.INVALID_TOKEN);
-//            }
+            Object claim = jwt.getJWTClaimsSet().getClaim("token_type");
+            if (!(claim instanceof String tokenTypeStr)) {
+                throw new AppException(ErrorCode.INVALID_TOKEN);
+            }
+
+            try {
+                TokenType tokenType = TokenType.valueOf(tokenTypeStr.toUpperCase());
+            } catch (IllegalArgumentException e) {
+                throw new AppException(ErrorCode.INVALID_TOKEN);
+            }
 
             if (!jwt.verify(verifier))
                 throw new AppException(ErrorCode.INVALID_TOKEN);

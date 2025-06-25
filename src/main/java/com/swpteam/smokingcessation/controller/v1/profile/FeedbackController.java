@@ -1,6 +1,7 @@
 package com.swpteam.smokingcessation.controller.v1.profile;
 
 import com.swpteam.smokingcessation.common.ApiResponse;
+import com.swpteam.smokingcessation.common.PageResponse;
 import com.swpteam.smokingcessation.common.PageableRequest;
 import com.swpteam.smokingcessation.constant.SuccessCode;
 import com.swpteam.smokingcessation.domain.dto.feedback.FeedbackRequest;
@@ -12,7 +13,6 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,10 +29,10 @@ public class FeedbackController {
     IFeedbackService feedbackService;
 
     @GetMapping
-    ResponseEntity<ApiResponse<Page<FeedbackResponse>>> getFeedbackPage(
+    ResponseEntity<ApiResponse<PageResponse<FeedbackResponse>>> getFeedbackPage(
             @RequestBody @Valid PageableRequest request
     ) {
-        return ResponseUtil.buildResponse(
+        return ResponseUtil.buildSuccessResponse(
                 SuccessCode.FEEDBACK_GET_ALL,
                 feedbackService.getFeedbackPage(request)
         );
@@ -42,18 +42,18 @@ public class FeedbackController {
     ResponseEntity<ApiResponse<FeedbackResponse>> getFeedbackById(
             @PathVariable String id
     ) {
-        return ResponseUtil.buildResponse(
+        return ResponseUtil.buildSuccessResponse(
                 SuccessCode.FEEDBACK_GET_BY_ID,
                 feedbackService.getFeedbackById(id)
         );
     }
 
     @GetMapping("/account/{id}")
-    ResponseEntity<ApiResponse<Page<FeedbackResponse>>> getFeedbackPageByAccountId(
+    ResponseEntity<ApiResponse<PageResponse<FeedbackResponse>>> getFeedbackPageByAccountId(
             @PathVariable String id,
             @RequestBody @Valid PageableRequest request
     ) {
-        return ResponseUtil.buildResponse(
+        return ResponseUtil.buildSuccessResponse(
                 SuccessCode.FEEDBACK_GET_BY_ACCOUNT,
                 feedbackService.getFeedbackPageByAccountId(id, request)
         );
@@ -63,7 +63,7 @@ public class FeedbackController {
     ResponseEntity<ApiResponse<FeedbackResponse>> createFeedback(
             @RequestBody @Valid FeedbackRequest request
     ) {
-        return ResponseUtil.buildResponse(
+        return ResponseUtil.buildSuccessResponse(
                 SuccessCode.FEEDBACK_CREATED,
                 feedbackService.createFeedback(request)
         );
@@ -74,7 +74,7 @@ public class FeedbackController {
             @PathVariable String id,
             @RequestBody @Valid FeedbackRequest request
     ) {
-        return ResponseUtil.buildResponse(
+        return ResponseUtil.buildSuccessResponse(
                 SuccessCode.FEEDBACK_UPDATED,
                 feedbackService.updateFeedback(id, request)
         );
@@ -83,7 +83,7 @@ public class FeedbackController {
     @DeleteMapping("/{id}")
     ResponseEntity<ApiResponse<String>> deleteFeedbackById(@PathVariable String id) {
         feedbackService.softDeleteFeedbackById(id);
-        return ResponseUtil.buildResponse(
+        return ResponseUtil.buildSuccessResponse(
                 SuccessCode.FEEDBACK_DELETED,
                 null
         );

@@ -1,5 +1,6 @@
 package com.swpteam.smokingcessation.service.impl.tracking;
 
+import com.swpteam.smokingcessation.common.PageResponse;
 import com.swpteam.smokingcessation.common.PageableRequest;
 import com.swpteam.smokingcessation.domain.dto.phase.PhaseRequest;
 import com.swpteam.smokingcessation.domain.dto.phase.PhaseResponse;
@@ -35,7 +36,6 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Optional;
 
 @Slf4j
 @Service
@@ -45,16 +45,14 @@ public class PlanServiceImpl implements IPlanService {
 
     PlanMapper planMapper;
     PlanRepository planRepository;
-    FileLoaderUtil fileLoaderUtil;
     AuthUtilService authUtilService;
     IPhaseService phaseService;
-
 
     @Override
     @PreAuthorize("hasRole('MEMBER')")
     @Cacheable(value = "PLAN_PAGE_CACHE",
             key = "#request.page + '-' + #request.size + '-' + #request.sortBy + '-' + #request.direction")
-    public Page<PlanResponse> getMyPlanPage(PageableRequest request) {
+    public PageResponse<PlanResponse> getMyPlanPage(PageableRequest request) {
         ValidationUtil.checkFieldExist(Plan.class, request.sortBy());
 
         Account currentAccount = authUtilService.getCurrentAccountOrThrowError();
@@ -62,7 +60,7 @@ public class PlanServiceImpl implements IPlanService {
         Pageable pageable = PageableRequest.getPageable(request);
         Page<Plan> plans = planRepository.findAllByAccountIdAndIsDeletedFalse(currentAccount.getId(), pageable);
 
-        return plans.map(planMapper::toResponse);
+        return new PageResponse<>(plans.map(planMapper::toResponse));
     }
 
     @Override
@@ -95,7 +93,6 @@ public class PlanServiceImpl implements IPlanService {
     @CachePut(value = "PLAN_CACHE", key = "#result.getId()")
     @CacheEvict(value = "PLAN_PAGE_CACHE", allEntries = true)
     public PlanResponse createPlan(PlanRequest request) {
-        LocalDate now = LocalDate.now();
         Account currentAccount = authUtilService.getCurrentAccountOrThrowError();
 
         Optional<Plan> existingActivePlan = planRepository.findByAccountIdAndPlanStatusAndIsDeletedFalse(
@@ -158,7 +155,7 @@ public class PlanServiceImpl implements IPlanService {
         }
 
         int level = mapFtndScoreToLevel(ftndScore);
-        List<PlanTemplateResponse> templates = fileLoaderUtil.loadPlanTemplate("quitplan/template-plan.json");
+        List<PlanTemplateResponse> templates = FileLoaderUtil.loadPlanTemplate("quitplan/template-plan.json");
 
         PlanTemplateResponse selectedPlan = templates.stream()
                 .filter(t -> t.getLevel() == level)

@@ -1,5 +1,6 @@
 package com.swpteam.smokingcessation.service.impl.profile;
 
+import com.swpteam.smokingcessation.common.PageResponse;
 import com.swpteam.smokingcessation.common.PageableRequest;
 import com.swpteam.smokingcessation.constant.ErrorCode;
 import com.swpteam.smokingcessation.domain.dto.feedback.FeedbackRequest;
@@ -36,13 +37,13 @@ public class FeedbackServiceImpl implements IFeedbackService {
     @Override
     @Cacheable(value = "FEEDBACK_PAGE_CACHE",
             key = "#request.page + '-' + #request.size + '-' + #request.sortBy + '-' + #request.direction")
-    public Page<FeedbackResponse> getFeedbackPage(PageableRequest request) {
+    public PageResponse<FeedbackResponse> getFeedbackPage(PageableRequest request) {
         ValidationUtil.checkFieldExist(Feedback.class, request.sortBy());
 
         Pageable pageable = PageableRequest.getPageable(request);
         Page<Feedback> feedbacks = feedbackRepository.findAllByIsDeletedFalse(pageable);
 
-        return feedbacks.map(feedbackMapper::toResponse);
+        return new PageResponse<>(feedbacks.map(feedbackMapper::toResponse));
     }
 
     @Override
@@ -54,13 +55,13 @@ public class FeedbackServiceImpl implements IFeedbackService {
     @Override
     @Cacheable(value = "FEEDBACK_PAGE_CACHE",
             key = "#request.page + '-' + #request.size + '-' + #request.sortBy + '-' + #request.direction + '-' + #accountId")
-    public Page<FeedbackResponse> getFeedbackPageByAccountId(String accountId, PageableRequest request) {
+    public PageResponse<FeedbackResponse> getFeedbackPageByAccountId(String accountId, PageableRequest request) {
         ValidationUtil.checkFieldExist(Feedback.class, request.sortBy());
 
         Pageable pageable = PageableRequest.getPageable(request);
         Page<Feedback> feedbacks = feedbackRepository.findByAccountIdAndIsDeletedFalse(accountId, pageable);
 
-        return feedbacks.map(feedbackMapper::toResponse);
+        return new PageResponse<>(feedbacks.map(feedbackMapper::toResponse));
     }
 
     @Override

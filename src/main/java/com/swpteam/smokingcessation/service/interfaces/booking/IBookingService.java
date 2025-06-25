@@ -1,5 +1,6 @@
 package com.swpteam.smokingcessation.service.interfaces.booking;
 
+import com.swpteam.smokingcessation.common.PageResponse;
 import com.swpteam.smokingcessation.common.PageableRequest;
 import com.swpteam.smokingcessation.domain.dto.booking.BookingRequest;
 import com.swpteam.smokingcessation.domain.dto.booking.BookingResponse;
@@ -9,11 +10,11 @@ import org.springframework.data.domain.Page;
 
 public interface IBookingService {
 
-    Page<BookingResponse> getBookingPage(PageableRequest request);
+    PageResponse<BookingResponse> getBookingPage(PageableRequest request);
 
-    Page<BookingResponse> getMyBookingPageAsMember(PageableRequest request);
+    PageResponse<BookingResponse> getMyBookingPageAsMember(PageableRequest request);
 
-    Page<BookingResponse> getMyBookingPageAsCoach(PageableRequest request);
+    PageResponse<BookingResponse> getMyBookingPageAsCoach(PageableRequest request);
 
     BookingResponse getBookingById(String id);
 

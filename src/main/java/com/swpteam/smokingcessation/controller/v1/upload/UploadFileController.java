@@ -35,7 +35,7 @@ public class UploadFileController {
 
         String resultUrl = cloudinaryService.uploadImage(file);
 
-        return ResponseUtil.buildResponse(
+        return ResponseUtil.buildSuccessResponse(
                 SuccessCode.UPLOAD_IMAGE,
                 resultUrl
         );

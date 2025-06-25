@@ -1,5 +1,6 @@
 package com.swpteam.smokingcessation.service.impl.profile;
 
+import com.swpteam.smokingcessation.common.PageResponse;
 import com.swpteam.smokingcessation.common.PageableRequest;
 import com.swpteam.smokingcessation.constant.ErrorCode;
 import com.swpteam.smokingcessation.domain.dto.review.ReviewCreateRequest;
@@ -42,7 +43,7 @@ public class ReviewServiceImpl implements IReviewService {
     @PreAuthorize("hasRole('MEMBER')")
     @Cacheable(value = "REVIEW_PAGE_CACHE",
             key = "#request.page + '-' + #request.size + '-' + #request.sortBy + '-' + #request.direction '-' + #memberId")
-    public Page<ReviewResponse> getMyReviewPageAsMember(PageableRequest request) {
+    public PageResponse<ReviewResponse> getMyReviewPageAsMember(PageableRequest request) {
         ValidationUtil.checkFieldExist(Review.class, request.sortBy());
 
         Account currentAccount = authUtilService.getCurrentAccountOrThrowError();
@@ -50,14 +51,14 @@ public class ReviewServiceImpl implements IReviewService {
         Pageable pageable = PageableRequest.getPageable(request);
         Page<Review> reviews = reviewRepository.findByMemberIdAndIsDeletedFalse(currentAccount.getId(), pageable);
 
-        return reviews.map(reviewMapper::toResponse);
+        return new PageResponse<>(reviews.map(reviewMapper::toResponse));
     }
 
     @Override
     @PreAuthorize("hasRole('COACH')")
     @Cacheable(value = "REVIEW_PAGE_CACHE",
             key = "#request.page + '-' + #request.size + '-' + #request.sortBy + '-' + #request.direction '-' + #coachId")
-    public Page<ReviewResponse> getMyReviewPageAsCoach(PageableRequest request) {
+    public PageResponse<ReviewResponse> getMyReviewPageAsCoach(PageableRequest request) {
         ValidationUtil.checkFieldExist(Review.class, request.sortBy());
 
         Account currentAccount = authUtilService.getCurrentAccountOrThrowError();
@@ -65,7 +66,7 @@ public class ReviewServiceImpl implements IReviewService {
         Pageable pageable = PageableRequest.getPageable(request);
         Page<Review> reviews = reviewRepository.findByCoachIdAndIsDeletedFalse(currentAccount.getId(), pageable);
 
-        return reviews.map(reviewMapper::toResponse);
+        return new PageResponse<>(reviews.map(reviewMapper::toResponse));
     }
 
     @Override

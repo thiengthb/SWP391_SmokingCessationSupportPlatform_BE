@@ -21,7 +21,7 @@ import org.springframework.web.context.request.ServletRequestAttributes;
 import java.util.Optional;
 
 @Slf4j
-@Service
+@Service("authUtilService")
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class AuthUtilService {

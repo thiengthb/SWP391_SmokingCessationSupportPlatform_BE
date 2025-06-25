@@ -1,6 +1,7 @@
 package com.swpteam.smokingcessation.controller.v1.blog;
 
 import com.swpteam.smokingcessation.common.ApiResponse;
+import com.swpteam.smokingcessation.common.PageResponse;
 import com.swpteam.smokingcessation.common.PageableRequest;
 import com.swpteam.smokingcessation.constant.SuccessCode;
 import com.swpteam.smokingcessation.domain.dto.category.CategoryRequest;
@@ -13,7 +14,6 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -33,17 +33,17 @@ public class CategoryController {
     ResponseEntity<ApiResponse<List<CategoryResponse>>> getCategoryList(
             @Valid PageableRequest request)
     {
-        return ResponseUtil.buildResponse(
+        return ResponseUtil.buildSuccessResponse(
                 SuccessCode.CATEGORY_LIST_ALL,
                 categoryService.getCategoryList()
         );
     }
 
     @GetMapping
-    ResponseEntity<ApiResponse<Page<CategoryResponse>>> getCategoryPage(
+    ResponseEntity<ApiResponse<PageResponse<CategoryResponse>>> getCategoryPage(
             @Valid PageableRequest request
     ) {
-        return ResponseUtil.buildResponse(
+        return ResponseUtil.buildSuccessResponse(
                 SuccessCode.CATEGORY_GET_ALL,
                 categoryService.getCategoryPage(request)
         );
@@ -53,7 +53,7 @@ public class CategoryController {
     ResponseEntity<ApiResponse<CategoryResponse>> getCategoryById(
             @PathVariable String id
     ) {
-        return ResponseUtil.buildResponse(
+        return ResponseUtil.buildSuccessResponse(
                 SuccessCode.CATEGORY_GET_BY_ID,
                 categoryService.getCategoryById(id)
         );
@@ -63,7 +63,7 @@ public class CategoryController {
     ResponseEntity<ApiResponse<CategoryResponse>> createCategory(
             @RequestBody @Valid CategoryRequest request
     ) {
-        return ResponseUtil.buildResponse(
+        return ResponseUtil.buildSuccessResponse(
                 SuccessCode.CATEGORY_CREATED,
                 categoryService.createCategory(request)
         );
@@ -74,7 +74,7 @@ public class CategoryController {
             @PathVariable String id,
             @RequestBody @Valid CategoryRequest request
     ) {
-        return ResponseUtil.buildResponse(
+        return ResponseUtil.buildSuccessResponse(
                 SuccessCode.CATEGORY_UPDATED,
                 categoryService.updateCategory(id, request)
         );
@@ -85,7 +85,7 @@ public class CategoryController {
             @PathVariable String id
     ) {
         categoryService.deleteCategoryById(id);
-        return ResponseUtil.buildResponse(
+        return ResponseUtil.buildSuccessResponse(
                 SuccessCode.CATEGORY_DELETED,
                 null
         );

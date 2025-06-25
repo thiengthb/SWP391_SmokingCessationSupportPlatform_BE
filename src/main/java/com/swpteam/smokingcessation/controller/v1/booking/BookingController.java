@@ -1,6 +1,7 @@
 package com.swpteam.smokingcessation.controller.v1.booking;
 
 import com.swpteam.smokingcessation.common.ApiResponse;
+import com.swpteam.smokingcessation.common.PageResponse;
 import com.swpteam.smokingcessation.common.PageableRequest;
 import com.swpteam.smokingcessation.constant.SuccessCode;
 import com.swpteam.smokingcessation.domain.dto.booking.BookingRequest;
@@ -13,7 +14,6 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,10 +28,10 @@ public class BookingController {
     IBookingService bookingService;
 
     @GetMapping
-    ResponseEntity<ApiResponse<Page<BookingResponse>>> getBookingPage(
+    ResponseEntity<ApiResponse<PageResponse<BookingResponse>>> getBookingPage(
             @Valid PageableRequest request
     ) {
-        return ResponseUtil.buildResponse(
+        return ResponseUtil.buildSuccessResponse(
                 SuccessCode.BOOKING_GET_ALL,
                 bookingService.getBookingPage(request)
         );
@@ -41,7 +41,7 @@ public class BookingController {
     ResponseEntity<?> getBookingById(
             @PathVariable String id
     ) {
-        return ResponseUtil.buildResponse(
+        return ResponseUtil.buildSuccessResponse(
                 SuccessCode.BOOKING_GET_BY_ID,
                 bookingService.getBookingById(id)
         );
@@ -51,7 +51,7 @@ public class BookingController {
     ResponseEntity<?> createBooking(
             @Valid @RequestBody BookingRequest request
     ) {
-        return ResponseUtil.buildResponse(
+        return ResponseUtil.buildSuccessResponse(
                 SuccessCode.BOOKING_CREATED,
                 bookingService.createBooking(request)
         );
@@ -62,7 +62,7 @@ public class BookingController {
             @PathVariable String id,
             @Valid @RequestBody BookingRequest request
     ) {
-        return ResponseUtil.buildResponse(
+        return ResponseUtil.buildSuccessResponse(
                 SuccessCode.BOOKING_UPDATED,
                 bookingService.updateBookingById(id, request)
         );
@@ -73,7 +73,7 @@ public class BookingController {
             @PathVariable String id
     ) {
         bookingService.deleteBookingById(id);
-        return ResponseUtil.buildResponse(
+        return ResponseUtil.buildSuccessResponse(
                 SuccessCode.BOOKING_DELETED,
                 null
         );
@@ -83,7 +83,7 @@ public class BookingController {
     public ResponseEntity<ApiResponse<BookingResponse>> createBookingWithMeet(
             @Valid @RequestBody BookingRequest request
     ) {
-        return ResponseUtil.buildResponse(
+        return ResponseUtil.buildSuccessResponse(
                 SuccessCode.BOOKING_CREATED,
                 bookingService.createBookingWithMeet(request)
         );

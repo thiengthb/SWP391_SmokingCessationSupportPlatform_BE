@@ -16,6 +16,10 @@ public enum ErrorCode {
 
     UNCATEGORIZED_EXCEPTION(9999, "Uncategorized error", HttpStatus.INTERNAL_SERVER_ERROR),
     INVALID_MESSAGE_KEY(9999, "Invalid message key", HttpStatus.BAD_REQUEST),
+    ENTITY_NOT_FOUND(400, "Entity Not Found", HttpStatus.NOT_FOUND),
+    SECURITY_EXCEPTION(401, "Security Exception", HttpStatus.UNAUTHORIZED),
+    INVALID_BODY(400, "Malformed or missing request body", HttpStatus.BAD_REQUEST),
+    MESSAGE_EXCEPTION(400, "Message exception", HttpStatus.INTERNAL_SERVER_ERROR),
 
     // Common
     ACCOUNT_REQUIRED(1000, "Account is required", HttpStatus.BAD_REQUEST),
@@ -130,7 +134,7 @@ public enum ErrorCode {
     RECORD_ALREADY_EXISTS(5005, "Record for this date already exists", HttpStatus.BAD_REQUEST),
 
     // Currency
-    CURRENCY_RATE_ERROR(8000, "Error while updating currency rates", HttpStatus.BAD_REQUEST),
+    CURRENCY_RATE_ERROR(8000, "Error while updating currency rates", HttpStatus.INTERNAL_SERVER_ERROR),
     INVALID_CURRENCY(8000, "Invalid currency", HttpStatus.BAD_REQUEST),
 
     // Transaction
