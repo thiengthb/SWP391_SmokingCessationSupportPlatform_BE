@@ -1,6 +1,7 @@
 package com.swpteam.smokingcessation.schedule;
 
 import com.swpteam.smokingcessation.domain.entity.*;
+import com.swpteam.smokingcessation.domain.enums.PhaseStatus;
 import com.swpteam.smokingcessation.domain.enums.PlanStatus;
 import com.swpteam.smokingcessation.service.interfaces.profile.ISettingService;
 import com.swpteam.smokingcessation.service.interfaces.tracking.IPhaseService;
@@ -54,6 +55,33 @@ public class PhaseAndPlanUpdater {
                     phaseService.calculateSuccessRateAndUpdatePhase(phase, recordHabits);
                 }
             }
+            boolean allPhasesHaveCompleted = true;
+            for (Phase phase : plan.getPhases()) {
+                if (phase.getSuccessRate() == null) {
+                    allPhasesHaveCompleted = false;
+                    break;
+                }
+            }
+            if (allPhasesHaveCompleted) {
+                int totalPhases = plan.getPhases().size();
+                int successCount = 0;
+                double totalSuccessRate = 0;
+                for (Phase phase : plan.getPhases()) {
+                    if (phase.getPhaseStatus().equals(PhaseStatus.SUCCESS)) {
+                        successCount++;
+                    }
+                    }
+                    double successRatio = (double) successCount / totalPhases;
+                    PlanStatus planStatus = (successCount > totalPhases / 2) ? PlanStatus.COMPLETE : PlanStatus.FAILED;
+                    plan.setPlanStatus(planStatus);
+                    planService.updateCompletedPlan(plan, successRatio * 100.0, plan.getPlanStatus());
+                }
+            }
         }
+
+        @Scheduled(cron = "0 0 0 * * *")
+        public void checkPendingPlans () {
+            planService.dailyCheckingPlanStatus();
+        }
+
     }
-}

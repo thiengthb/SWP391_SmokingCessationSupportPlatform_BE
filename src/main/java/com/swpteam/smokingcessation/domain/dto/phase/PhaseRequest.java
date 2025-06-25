@@ -18,7 +18,8 @@ public record PhaseRequest(
         Integer cigaretteBound,
 
         @NotNull(message = "PHASE_START_DATE_REQUIRED")
-        @FutureOrPresent(message = "PHASE_START_DATE_MUST_BE_TODAY_OR_FUTURE")
+        //@FutureOrPresent(message = "PHASE_START_DATE_MUST_BE_TODAY_OR_FUTURE")
+        //tắt để demo plan
         LocalDate startDate,
 
         @NotNull(message = "PHASE_END_DATE_REQUIRED")

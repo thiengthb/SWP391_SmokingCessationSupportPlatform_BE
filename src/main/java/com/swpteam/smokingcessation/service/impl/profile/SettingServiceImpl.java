@@ -97,7 +97,7 @@ public class SettingServiceImpl implements ISettingService {
 
     @Override
     public List<Setting> getAllSetting(){
-        List<Setting> settings= settingRepository.findAllByIsDeletedFalse();
+        List<Setting> settings= settingRepository.findAllWhereAccountNotAdminOrCoach();
         if(settings.isEmpty()){
             throw new AppException(ErrorCode.SETTING_NOT_FOUND);
         }

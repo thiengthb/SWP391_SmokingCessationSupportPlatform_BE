@@ -9,6 +9,7 @@ import org.mapstruct.MappingTarget;
 
 @Mapper(componentModel = "spring")
 public interface PhaseMapper {
+    @Mapping(target = "successRate", expression = "java(roundToTwoDecimal(phase.getSuccessRate()))")
     @Mapping(source = "phase", target = "phase")
     @Mapping(source = "plan.id",target = "planId")
     PhaseResponse toResponse(Phase phase);
@@ -16,4 +17,8 @@ public interface PhaseMapper {
     Phase toEntity(PhaseRequest phaseRequest);
 
     void update(@MappingTarget Phase phase, PhaseRequest request);
+
+    default double roundToTwoDecimal(Double value) {
+        return value == null ? 0.0 : Math.round(value * 100.0) / 100.0;
+    }
 }

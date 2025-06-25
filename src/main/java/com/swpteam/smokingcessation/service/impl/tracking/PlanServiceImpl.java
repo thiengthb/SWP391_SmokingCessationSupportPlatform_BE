@@ -36,6 +36,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -78,11 +79,11 @@ public class PlanServiceImpl implements IPlanService {
     public PlanResponse getMyCurrentPlan() {
         Account currentAccount = authUtilService.getCurrentAccountOrThrowError();
 
-        Plan plan = planRepository.findTopByAccountIdAndIsDeletedFalseOrderByCreatedAtDesc(currentAccount.getId())
-                .orElseThrow(() -> new AppException(ErrorCode.NO_PLAN_CREATED));
+        Plan plan = planRepository.findByAccountIdAndPlanStatusAndIsDeletedFalse(currentAccount.getId(), PlanStatus.ACTIVE)
+                .orElseThrow(() -> new AppException(ErrorCode.PLAN_NOT_FOUND));
 
         PlanResponse planResponse = planMapper.toResponse(plan);
-        planResponse.setPhases(phaseService.getPhaseListByPlanId(plan.getId()));
+        planResponse.setPhases(phaseService.getPhaseListByPlanIdAndStartDate(plan.getId()));
 
         return planResponse;
     }
@@ -94,7 +95,6 @@ public class PlanServiceImpl implements IPlanService {
     @CacheEvict(value = "PLAN_PAGE_CACHE", allEntries = true)
     public PlanResponse createPlan(PlanRequest request) {
         Account currentAccount = authUtilService.getCurrentAccountOrThrowError();
-
         Optional<Plan> existingActivePlan = planRepository.findByAccountIdAndPlanStatusAndIsDeletedFalse(
                 currentAccount.getId(), PlanStatus.ACTIVE
         );
@@ -120,7 +120,8 @@ public class PlanServiceImpl implements IPlanService {
         plan.getPhases().sort(Comparator.comparing(Phase::getStartDate));
         plan.setStartDate(plan.getPhases().getFirst().getStartDate());
         plan.setEndDate(plan.getPhases().getLast().getEndDate());
-        if (plan.getStartDate().isEqual(now)) {
+
+        if (plan.getStartDate().isEqual(LocalDate.now())) {
             plan.setPlanStatus(PlanStatus.ACTIVE);
         } else {
             plan.setPlanStatus(PlanStatus.PENDING);
@@ -278,7 +279,7 @@ public class PlanServiceImpl implements IPlanService {
         Plan plan = planRepository.findByAccountIdAndPlanStatusAndIsDeletedFalse(accountId, planStatus)
                 .orElseThrow(() -> new AppException(ErrorCode.PLAN_NOT_FOUND));
 
-        log.info("✅ Found Plan: ID={}, Status={}, AccountID={}, Start={}, End={}",
+        log.info("Found Plan: ID={}, Status={}, AccountID={}, Start={}, End={}",
                 plan.getId(),
                 plan.getPlanStatus(),
                 plan.getAccount().getId(),
@@ -289,5 +290,10 @@ public class PlanServiceImpl implements IPlanService {
         return plan;
     }
 
-
+    @Override
+    public void updateCompletedPlan(Plan plan, double successRate, PlanStatus planStatus) {
+        plan.setSuccessRate(successRate);
+        plan.setPlanStatus(planStatus);
+        planRepository.save(plan);
+    }
 }

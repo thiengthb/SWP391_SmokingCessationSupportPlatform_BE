@@ -19,5 +19,7 @@ public interface IPhaseService {
 
     Phase findPhaseByIdOrThrowError(String id);
 
-    double calculateSuccessRateAndUpdatePhase(Phase phase, List<RecordHabit> allRecords);
+    void calculateSuccessRateAndUpdatePhase(Phase phase, List<RecordHabit> allRecords);
+
+    List<PhaseResponse> getPhaseListByPlanIdAndStartDate(String planId);
 }

@@ -138,6 +138,25 @@ public class MailServiceImpl implements IMailService {
         log.info("Report mail sent to {}", to);
     }
 
+    @Override
+    public void sendPlanSummaryEmail(Account account, PlanSummaryResponse summary) {
+        buildAndSendMail(
+                "Kết quả kế hoạch bỏ thuốc của bạn",
+                account.getEmail(),
+                "plan-summary-template",
+                List.of(
+                        Map.entry("username", account.getUsername()),
+                        Map.entry("successRate", summary.getSuccessRate()),
+                        Map.entry("leastSmokeDay", summary.getLeastSmokeDay()),
+                        Map.entry("mostSmokeDay", summary.getMostSmokeDay()),
+                        Map.entry("reportedDays", summary.getReportedDays()),
+                        Map.entry("missedDays", summary.getMissedDays()),
+                        Map.entry("sendTime", LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
+                )
+        );
+        log.info("📧 Plan summary mail sent successfully to {} <{}>", account.getId(), account.getEmail());
+    }
+
     private void buildAndSendMail(
             String title,
             String to,
@@ -166,25 +185,6 @@ public class MailServiceImpl implements IMailService {
             log.error(exception.getMessage());
             throw new AppException(ErrorCode.EMAIL_SEND_FAILED);
         }
-    }
-
-        @Override
-    public void sendPlanSummaryEmail(Account account, PlanSummaryResponse summary) {
-        buildAndSendMail(
-                "Kết quả kế hoạch bỏ thuốc của bạn",
-                account.getEmail(),
-                "plan-summary-template",
-                List.of(
-                        Map.entry("username", account.getUsername()),
-                        Map.entry("successRate", summary.getSuccessRate()),
-                        Map.entry("leastSmokeDay", summary.getLeastSmokeDay()),
-                        Map.entry("mostSmokeDay", summary.getMostSmokeDay()),
-                        Map.entry("reportedDays", summary.getReportedDays()),
-                        Map.entry("missedDays", summary.getMissedDays()),
-                        Map.entry("sendTime", LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
-                )
-        );
-        log.info("📧 Plan summary mail sent successfully to {} <{}>", account.getId(), account.getEmail());
     }
 
 }

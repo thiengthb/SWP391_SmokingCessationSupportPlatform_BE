@@ -32,4 +32,6 @@ public interface IPlanService {
     Plan findByAccountIdAndPlanStatusAndIsDeletedFalse(String accountId, PlanStatus planStatus);
 
     void dailyCheckingPlanStatus();
+
+    void updateCompletedPlan(Plan plan, double successRate, PlanStatus planStatus);
 }

@@ -77,21 +77,19 @@ public class PhaseServiceImpl implements IPhaseService {
     }
 
     @Override
-    public double calculateSuccessRateAndUpdatePhase(Phase phase, List<RecordHabit> allRecords) {
+    public void calculateSuccessRateAndUpdatePhase(Phase phase, List<RecordHabit> allRecords) {
         LocalDate start = phase.getStartDate();
         LocalDate end = phase.getEndDate();
-        int maxCigs = phase.getCigaretteBound();
-
+        int maxCigPerDay = phase.getCigaretteBound();
+        double successRate;
         long totalDays = ChronoUnit.DAYS.between(start, end) + 1;
         long successDays = 0;
         long missingDays = 0;
+        int totalCigs = 0;
 
         Map<LocalDate, RecordHabit> recordMap = new HashMap<>();
         for (RecordHabit record : allRecords) {
-            LocalDate date = record.getDate();
-            if (!record.isDeleted() && !date.isBefore(start) && !date.isAfter(end)) {
-                recordMap.put(date, record);
-            }
+            recordMap.put(record.getDate(), record);
         }
 
         for (int i = 0; i < totalDays; i++) {
@@ -100,33 +98,43 @@ public class PhaseServiceImpl implements IPhaseService {
 
             if (record == null) {
                 missingDays++;
-            } else if (record.getCigarettesSmoked() <= maxCigs) {
-                successDays++;
+            } else {
+                totalCigs += record.getCigarettesSmoked();
+                if (record.getCigarettesSmoked() <= maxCigPerDay) {
+                    successDays++;
+                }
             }
         }
 
-        long validDays = totalDays - missingDays;
-        if (validDays == 0) {
-            phase.setSuccessRate(0.0);
-            phase.setPhaseStatus(PhaseStatus.FAILED);
-            return 0.0;
+        long allowedTotalCigs = maxCigPerDay * totalDays;
+        boolean failedDueToMissingRecords = missingDays > (totalDays / 2);
+        boolean failedDueToCigaretteOveruse = totalCigs > allowedTotalCigs;
+        if (allowedTotalCigs == 0) {
+            successRate = (totalCigs == 0) ? 100.0 : 0.0;
+        } else {
+            successRate = ((allowedTotalCigs - totalCigs) * 100.0) / allowedTotalCigs;
         }
 
-        double successRate = (successDays * 100.0) / validDays;
-
-        phase.setSuccessRate(successRate);
-
-        if (successRate >= 50.0) {
-            phase.setPhaseStatus(PhaseStatus.SUCCESS);
-        } else {
+        if (failedDueToCigaretteOveruse || failedDueToMissingRecords) {
+            phase.setSuccessRate(0.0);
             phase.setPhaseStatus(PhaseStatus.FAILED);
+        } else {
+            phase.setSuccessRate(successRate);
+            phase.setPhaseStatus(PhaseStatus.SUCCESS);
         }
 
         log.info("Calculated successRate={} for Phase ID={}, successDays={}, totalDays={}, missingDays={}",
                 successRate, phase.getId(), successDays, totalDays, missingDays);
 
         phaseRepository.save(phase);
-        return successRate;
+    }
+
+    @Override
+    public List<PhaseResponse> getPhaseListByPlanIdAndStartDate(String planId) {
+        List<Phase> phases = phaseRepository.findAllByPlanIdAndIsDeletedFalseOrderByStartDateAsc(planId);
+        return phases.stream()
+                .map(phaseMapper::toResponse)
+                .toList();
     }
 }
 

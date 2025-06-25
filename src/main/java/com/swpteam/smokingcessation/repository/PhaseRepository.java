@@ -25,5 +25,7 @@ public interface PhaseRepository extends JpaRepository<Phase, String> {
                                       @Param("startDate") LocalDate startDate,
                                       @Param("endDate") LocalDate endDate);
 
+    List<Phase> findAllByPlanIdAndIsDeletedFalseOrderByStartDateAsc(String planId);
+
 
 }
