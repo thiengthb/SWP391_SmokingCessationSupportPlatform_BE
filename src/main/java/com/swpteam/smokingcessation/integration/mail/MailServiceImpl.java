@@ -1,6 +1,7 @@
 package com.swpteam.smokingcessation.integration.mail;
 
 import com.swpteam.smokingcessation.constant.ErrorCode;
+import com.swpteam.smokingcessation.domain.dto.report.PlanSummaryResponse;
 import com.swpteam.smokingcessation.domain.dto.report.ReportSummaryResponse;
 import com.swpteam.smokingcessation.domain.entity.Account;
 import com.swpteam.smokingcessation.domain.entity.Message;
@@ -163,6 +164,37 @@ public class MailServiceImpl implements IMailService {
             throw new AppException(ErrorCode.EMAIL_SEND_FAILED);
         }
     }
+
+    public void sendPlanSummaryEmail(Account account, PlanSummaryResponse summary) {
+        try {
+            log.info("📧 Sending plan summary mail to user: {} <{}>", account.getId(),account.getEmail());
+            MimeMessage mimeMessage = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
+
+            Context context = new Context();
+            context.setVariable("username", account.getUsername());
+            context.setVariable("successRate", summary.getSuccessRate());
+            context.setVariable("leastSmokeDay", summary.getLeastSmokeDay());
+            context.setVariable("mostSmokeDay", summary.getMostSmokeDay());
+            context.setVariable("reportedDays", summary.getReportedDays());
+            context.setVariable("missedDays", summary.getMissedDays());
+            context.setVariable("sendTime", LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+
+            String htmlContent = templateEngine.process("plan-summary-template", context);
+
+            helper.setTo(account.getEmail());
+            helper.setSubject(" Kết quả kế hoạch bỏ thuốc của bạn");
+            helper.setText(htmlContent, true);
+
+            mailSender.send(mimeMessage);
+            log.info("Plan summary mail sent successfully to {}", summary.getEmail());
+
+        } catch (MessagingException e) {
+            log.error(" Failed to send summary mail: {}", e.getMessage());
+            throw new AppException(ErrorCode.EMAIL_SEND_FAILED);
+        }
+    }
+
 }
 
 
