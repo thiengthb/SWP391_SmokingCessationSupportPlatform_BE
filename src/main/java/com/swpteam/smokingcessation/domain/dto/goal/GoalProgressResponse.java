@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.time.LocalDateTime;
+import java.math.BigDecimal;
 
 @Data
 @Builder
@@ -12,16 +12,8 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class GoalResponse {
-
+public class GoalProgressResponse {
     String id;
-    String name;
-    String description;
-    String iconUrl;
-    String criteriaType;
-    int criteriaValue;
-    LocalDateTime createdAt;
-    LocalDateTime updatedAt;
 
-    GoalProgressResponse goalProgress;
+    BigDecimal progress;
 }

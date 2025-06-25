@@ -61,7 +61,7 @@ public class BlogServiceImpl implements IBlogService {
     @Override
     @PreAuthorize("hasRole('ADMIN')")
     @Cacheable(value = "BLOG_PAGE_CACHE",
-            key = "#request.page + '-' + #request.size + '-' + #request.sortBy + '-' + #request.direction + '-' + T(com.swpteam.smokingcessation.utils.AuthUtilService).getCurrentAccountOrThrowError().getId()")
+            key = "#request.page + '-' + #request.size + '-' + #request.sortBy + '-' + #request.direction + '-' + @authUtilService.getCurrentAccountOrThrowError().id")
     public PageResponse<BlogResponse> getMyBlogsPage(PageableRequest request) {
         ValidationUtil.checkFieldExist(Blog.class, request.sortBy());
 

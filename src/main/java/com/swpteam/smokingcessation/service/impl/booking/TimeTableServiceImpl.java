@@ -56,7 +56,7 @@ public class TimeTableServiceImpl implements ITimeTableService {
     @Override
     @PreAuthorize("hasRole('COACH')")
     @Cacheable(value = "TIMETABLE_PAGE_CACHE",
-            key = "#request.page + '-' + #request.size + '-' + #request.sortBy + '-' + #request.direction + '-' + T(com.swpteam.smokingcessation.utils.AuthUtilService).getCurrentAccountOrThrowError().getId()")
+            key = "#request.page + '-' + #request.size + '-' + #request.sortBy + '-' + #request.direction + '-' + @authUtilService.getCurrentAccountOrThrowError().id")
     public PageResponse<TimeTableResponse> getMyTimeTablePage(PageableRequest request) {
         ValidationUtil.checkFieldExist(Booking.class, request.sortBy());
 

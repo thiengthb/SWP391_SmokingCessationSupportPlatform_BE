@@ -59,7 +59,7 @@ public class BookingServiceImpl implements IBookingService {
     @Override
     @PreAuthorize("hasRole('MEMBER')")
     @Cacheable(value = "BOOKING_PAGE_CACHE",
-            key = "#request.page + '-' + #request.size + '-' + #request.sortBy + '-' + #request.direction + '-' + T(com.swpteam.smokingcessation.utils.AuthUtilService).getCurrentAccountOrThrowError().getId()")
+            key = "#request.page + '-' + #request.size + '-' + #request.sortBy + '-' + #request.direction + '-' + @authUtilService.getCurrentAccountOrThrowError().id")
     public PageResponse<BookingResponse> getMyBookingPageAsMember(PageableRequest request) {
         ValidationUtil.checkFieldExist(Booking.class, request.sortBy());
 
@@ -74,7 +74,7 @@ public class BookingServiceImpl implements IBookingService {
     @Override
     @PreAuthorize("hasRole('COACH')")
     @Cacheable(value = "BOOKING_PAGE_CACHE",
-            key = "#request.page + '-' + #request.size + '-' + #request.sortBy + '-' + #request.direction + '-' + T(com.swpteam.smokingcessation.utils.AuthUtilService).getCurrentAccountOrThrowError().getId()")
+            key = "#request.page + '-' + #request.size + '-' + #request.sortBy + '-' + #request.direction + '-' + @authUtilService.getCurrentAccountOrThrowError().id")
     public PageResponse<BookingResponse> getMyBookingPageAsCoach(PageableRequest request) {
         ValidationUtil.checkFieldExist(Booking.class, request.sortBy());
 

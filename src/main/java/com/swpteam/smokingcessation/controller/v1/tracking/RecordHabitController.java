@@ -81,7 +81,7 @@ public class RecordHabitController {
     }
 
     @DeleteMapping("/{id}")
-    ResponseEntity<ApiResponse<String>> delete(
+    ResponseEntity<ApiResponse<Void>> delete(
             @PathVariable String id
     ) {
         recordService.softDeleteRecordById(id);

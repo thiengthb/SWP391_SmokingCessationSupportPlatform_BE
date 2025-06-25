@@ -88,7 +88,7 @@ public class NotificationServiceImpl implements INotificationService {
 
     @Override
     @Cacheable(value = "NOTIFICATION_PAGE_CACHE",
-            key = "#request.page + '-' + #request.size + '-' + #request.sortBy + '-' + #request.direction + '-' + T(com.swpteam.smokingcessation.utils.AuthUtilService).getCurrentAccountOrThrowError().getId()")
+            key = "#request.page + '-' + #request.size + '-' + #request.sortBy + '-' + #request.direction + '-' + @authUtilService.getCurrentAccountOrThrowError().id")
     public PageResponse<NotificationResponse> getMyNotificationsPage(PageableRequest request) {
         ValidationUtil.checkFieldExist(Notification.class, request.sortBy());
 
