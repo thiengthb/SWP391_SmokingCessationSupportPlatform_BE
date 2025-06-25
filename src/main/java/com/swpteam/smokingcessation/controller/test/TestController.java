@@ -8,11 +8,9 @@ import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import org.springframework.core.env.Environment;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -21,18 +19,11 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name = "Testing", description = "For testing services")
 public class TestController {
 
-    AuthUtilService authUtilService;
+    Environment environment;
 
-    @PostMapping
-    ResponseEntity<ApiResponse<Object>> createAccount(@RequestBody @Valid TestRequest request) {
-
-        Account result = authUtilService.getCurrentAccountOrThrowError();
-
-        return ResponseEntity.ok(
-                ApiResponse.<Object>builder()
-                        .code(200)
-                        .message("Success")
-                        .result(result)
-                        .build());
+    @GetMapping("/ping")
+    String ping() {
+        String port = environment.getProperty("server.port");
+        return "Pinging from server with port: " + port;
     }
 }
