@@ -40,7 +40,7 @@ public class SecurityConfig {
             "/ws/**",
             "/api/webhook/stripe",
             "/api/v1/auth/**",
-            "/api/v1/test",
+            "/api/test/**",
     };
 
     JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
