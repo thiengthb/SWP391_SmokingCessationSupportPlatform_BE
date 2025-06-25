@@ -6,7 +6,6 @@ import com.swpteam.smokingcessation.domain.dto.booking.BookingRequest;
 import com.swpteam.smokingcessation.domain.dto.booking.BookingResponse;
 import com.swpteam.smokingcessation.domain.entity.Booking;
 import com.swpteam.smokingcessation.domain.enums.BookingStatus;
-import org.springframework.data.domain.Page;
 
 public interface IBookingService {
 
@@ -22,7 +21,7 @@ public interface IBookingService {
 
     BookingResponse updateBookingById(String id, BookingRequest request);
 
-    BookingResponse updateMyBookingRequest(String id, BookingStatus status);
+    BookingResponse updateMyBookingRequestStatus(String id, BookingStatus status);
 
     void deleteBookingById(String id);
 

@@ -130,7 +130,7 @@ public class BookingServiceImpl implements IBookingService {
     @PreAuthorize("hasRole('COACH')")
     @CachePut(value = "BOOKING_CACHE", key = "#result.getId()")
     @CacheEvict(value = "BOOKING_PAGE_CACHE", allEntries = true)
-    public BookingResponse updateMyBookingRequest(String id, BookingStatus status) {
+    public BookingResponse updateMyBookingRequestStatus(String id, BookingStatus status) {
         Booking booking = checkAndGetMyBooking(id);
 
         booking.setStatus(status);
