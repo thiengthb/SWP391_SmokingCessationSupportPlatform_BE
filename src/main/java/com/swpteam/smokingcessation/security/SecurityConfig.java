@@ -1,6 +1,5 @@
 package com.swpteam.smokingcessation.security;
 
-import com.swpteam.smokingcessation.constant.App;
 import com.swpteam.smokingcessation.service.interfaces.identity.IAuthenticationService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -32,6 +31,9 @@ import java.util.List;
 public class SecurityConfig {
 
     public final String[] PUBLIC_ENDPOINTS = {
+            "/",
+            "/index.html",
+            "/actuator/health",
             "/swagger-ui.html",
             "/swagger-ui/**",
             "/v3/api-docs/**",
@@ -58,8 +60,6 @@ public class SecurityConfig {
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
                 .authorizeHttpRequests(request -> request
-                        .requestMatchers("/").permitAll()
-                        .requestMatchers("/actuator/health").permitAll()
                         .requestMatchers(PUBLIC_ENDPOINTS).permitAll()
                         .anyRequest().authenticated()
                 )

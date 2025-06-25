@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Spring Boot Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f3f4f6;
+            padding: 50px;
+            text-align: center;
+        }
+        h1 {
+            color: #333;
+            margin-bottom: 30px;
+        }
+        .btn {
+            display: inline-block;
+            margin: 10px;
+            padding: 15px 30px;
+            font-size: 16px;
+            background-color: #2563eb;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: background-color 0.3s ease;
+        }
+        .btn:hover {
+            background-color: #1e40af;
+        }
+    </style>
+</head>
+<body>
+<h1>Spring Boot Dashboard</h1>
+
+<a class="btn" href="/swagger-ui/index.html" target="_blank">Open Swagger UI</a>
+<a class="btn" href="/phpmyadmin" target="_blank">Open phpMyAdmin</a>
+<a class="btn" href="/actuator/health" target="_blank">Check Health</a>
+</body>
+</html>
