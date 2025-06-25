@@ -5,15 +5,12 @@ import com.swpteam.smokingcessation.domain.dto.phase.PhaseRequest;
 import com.swpteam.smokingcessation.domain.dto.phase.PhaseResponse;
 import com.swpteam.smokingcessation.domain.dto.phase.PhaseTemplateResponse;
 import com.swpteam.smokingcessation.domain.dto.plan.PlanTemplateResponse;
-import com.swpteam.smokingcessation.domain.entity.Account;
-import com.swpteam.smokingcessation.domain.entity.Phase;
-import com.swpteam.smokingcessation.domain.enums.MotivationFrequency;
+import com.swpteam.smokingcessation.domain.entity.*;
 import com.swpteam.smokingcessation.domain.enums.PlanStatus;
 import com.swpteam.smokingcessation.domain.mapper.PlanMapper;
 import com.swpteam.smokingcessation.domain.dto.plan.PlanRequest;
 import com.swpteam.smokingcessation.domain.dto.plan.PlanResponse;
 import com.swpteam.smokingcessation.constant.ErrorCode;
-import com.swpteam.smokingcessation.domain.entity.Plan;
 import com.swpteam.smokingcessation.exception.AppException;
 import com.swpteam.smokingcessation.repository.PlanRepository;
 import com.swpteam.smokingcessation.service.interfaces.tracking.IPhaseService;
@@ -30,7 +27,6 @@ import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,6 +35,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -51,6 +48,7 @@ public class PlanServiceImpl implements IPlanService {
     FileLoaderUtil fileLoaderUtil;
     AuthUtilService authUtilService;
     IPhaseService phaseService;
+
 
     @Override
     @PreAuthorize("hasRole('MEMBER')")
@@ -97,7 +95,16 @@ public class PlanServiceImpl implements IPlanService {
     @CachePut(value = "PLAN_CACHE", key = "#result.getId()")
     @CacheEvict(value = "PLAN_PAGE_CACHE", allEntries = true)
     public PlanResponse createPlan(PlanRequest request) {
+        LocalDate now = LocalDate.now();
         Account currentAccount = authUtilService.getCurrentAccountOrThrowError();
+
+        Optional<Plan> existingActivePlan = planRepository.findByAccountIdAndPlanStatusAndIsDeletedFalse(
+                currentAccount.getId(), PlanStatus.ACTIVE
+        );
+        if (existingActivePlan.isPresent()) {
+            throw new AppException(ErrorCode.PLAN_ALREADY_EXISTS);
+        }
+
 
         validatePhaseDates(request.phases());
 
@@ -106,13 +113,21 @@ public class PlanServiceImpl implements IPlanService {
         if (plan.getPhases() != null) {
             plan.getPhases().forEach(phase -> phase.setPlan(plan));
         }
+        plan.getPhases().sort(Comparator.comparing(Phase::getStartDate));
+
+        for (int i = 0; i < plan.getPhases().size(); i++) {
+            plan.getPhases().get(i).setPhase(i + 1);
+        }
 
         plan.setAccount(currentAccount);
         plan.getPhases().sort(Comparator.comparing(Phase::getStartDate));
         plan.setStartDate(plan.getPhases().getFirst().getStartDate());
         plan.setEndDate(plan.getPhases().getLast().getEndDate());
-        plan.setPlanStatus(PlanStatus.PENDING);
-
+        if (plan.getStartDate().isEqual(now)) {
+            plan.setPlanStatus(PlanStatus.ACTIVE);
+        } else {
+            plan.setPlanStatus(PlanStatus.PENDING);
+        }
         return planMapper.toResponse(planRepository.save(plan));
     }
 
@@ -214,23 +229,6 @@ public class PlanServiceImpl implements IPlanService {
         else return 5;
     }
 
-    /*
-            private void validateNoOverlapInPhases(List<PhaseRequest> phases) {
-                phases.sort(Comparator.comparing(PhaseRequest::startDate));
-
-                for (int i = 0; i < phases.size() - 1; i++) {
-                    PhaseRequest current = phases.get(i);
-                    PhaseRequest next = phases.get(i + 1);
-
-                    if (!current.endDate().isBefore(next.startDate())) {
-                        throw new AppException(ErrorCode.PHASE_OVERLAP,
-                                "Phase " + i + " [" + current.startDate() + " - " + current.endDate() + "] overlaps with " +
-                                "Phase " + (i + 1) + " [" + next.startDate() + " - " + next.endDate() + "]");
-                    }
-                }
-            }
-
-     */
     private void validatePhaseDates(List<PhaseRequest> phases) {
         if (phases == null || phases.isEmpty()) {
             throw new AppException(ErrorCode.PHASE_REQUIRED);
@@ -263,8 +261,8 @@ public class PlanServiceImpl implements IPlanService {
         }
     }
 
-    @Scheduled(cron = "0 0 0 * * *")
-    public void DailyCheckingPlanStatus() {
+    @Override
+    public void dailyCheckingPlanStatus() {
         LocalDate today = LocalDate.now();
         List<Plan> pendingPlans = planRepository.findAllByPlanStatusAndIsDeletedFalse(PlanStatus.PENDING);
         if (pendingPlans.isEmpty()) {
@@ -277,5 +275,22 @@ public class PlanServiceImpl implements IPlanService {
         }
         planRepository.saveAll(pendingPlans);
     }
+
+    @Override
+    public Plan findByAccountIdAndPlanStatusAndIsDeletedFalse(String accountId, PlanStatus planStatus) {
+        Plan plan = planRepository.findByAccountIdAndPlanStatusAndIsDeletedFalse(accountId, planStatus)
+                .orElseThrow(() -> new AppException(ErrorCode.PLAN_NOT_FOUND));
+
+        log.info("✅ Found Plan: ID={}, Status={}, AccountID={}, Start={}, End={}",
+                plan.getId(),
+                plan.getPlanStatus(),
+                plan.getAccount().getId(),
+                plan.getStartDate(),
+                plan.getEndDate()
+        );
+
+        return plan;
+    }
+
 
 }

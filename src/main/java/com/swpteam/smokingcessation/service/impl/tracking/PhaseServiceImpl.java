@@ -1,5 +1,7 @@
 package com.swpteam.smokingcessation.service.impl.tracking;
 
+import com.swpteam.smokingcessation.domain.entity.RecordHabit;
+import com.swpteam.smokingcessation.domain.enums.PhaseStatus;
 import com.swpteam.smokingcessation.domain.mapper.PhaseMapper;
 import com.swpteam.smokingcessation.domain.dto.phase.PhaseResponse;
 import com.swpteam.smokingcessation.constant.ErrorCode;
@@ -10,14 +12,20 @@ import com.swpteam.smokingcessation.service.interfaces.tracking.IPhaseService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+@Slf4j
 @Service
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 @RequiredArgsConstructor
@@ -68,4 +76,58 @@ public class PhaseServiceImpl implements IPhaseService {
         return phase;
     }
 
+    @Override
+    public double calculateSuccessRateAndUpdatePhase(Phase phase, List<RecordHabit> allRecords) {
+        LocalDate start = phase.getStartDate();
+        LocalDate end = phase.getEndDate();
+        int maxCigs = phase.getCigaretteBound();
+
+        long totalDays = ChronoUnit.DAYS.between(start, end) + 1;
+        long successDays = 0;
+        long missingDays = 0;
+
+        Map<LocalDate, RecordHabit> recordMap = new HashMap<>();
+        for (RecordHabit record : allRecords) {
+            LocalDate date = record.getDate();
+            if (!record.isDeleted() && !date.isBefore(start) && !date.isAfter(end)) {
+                recordMap.put(date, record);
+            }
+        }
+
+        for (int i = 0; i < totalDays; i++) {
+            LocalDate currentDate = start.plusDays(i);
+            RecordHabit record = recordMap.get(currentDate);
+
+            if (record == null) {
+                missingDays++;
+            } else if (record.getCigarettesSmoked() <= maxCigs) {
+                successDays++;
+            }
+        }
+
+        long validDays = totalDays - missingDays;
+        if (validDays == 0) {
+            phase.setSuccessRate(0.0);
+            phase.setPhaseStatus(PhaseStatus.FAILED);
+            return 0.0;
+        }
+
+        double successRate = (successDays * 100.0) / validDays;
+
+        phase.setSuccessRate(successRate);
+
+        if (successRate >= 50.0) {
+            phase.setPhaseStatus(PhaseStatus.SUCCESS);
+        } else {
+            phase.setPhaseStatus(PhaseStatus.FAILED);
+        }
+
+        log.info("Calculated successRate={} for Phase ID={}, successDays={}, totalDays={}, missingDays={}",
+                successRate, phase.getId(), successDays, totalDays, missingDays);
+
+        phaseRepository.save(phase);
+        return successRate;
+    }
 }
+
+

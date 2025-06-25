@@ -21,12 +21,16 @@ public class Phase extends AuditableEntity {
     @JoinColumn(name = "planId", nullable = false, updatable = false)
     Plan plan;
 
+    int phase;
     String phaseName;
     String description;
     int cigaretteBound;
     LocalDate startDate;
     LocalDate endDate;
+    Double successRate;
 
     @Enumerated(EnumType.STRING)
     PhaseStatus phaseStatus;
+
+
 }

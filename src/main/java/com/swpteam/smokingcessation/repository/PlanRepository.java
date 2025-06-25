@@ -4,6 +4,7 @@ import com.swpteam.smokingcessation.domain.entity.Plan;
 import com.swpteam.smokingcessation.domain.enums.PlanStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -20,4 +21,9 @@ public interface PlanRepository extends JpaRepository<Plan, String> {
     Optional<Plan> findByIdAndIsDeletedFalse(String id);
 
     List<Plan> findAllByPlanStatusAndIsDeletedFalse(PlanStatus planStatus);
+
+    @EntityGraph(attributePaths = {"account", "phases"})
+    Optional<Plan> findByAccountIdAndPlanStatusAndIsDeletedFalse(String accountId, PlanStatus planStatus);
+
+
 }

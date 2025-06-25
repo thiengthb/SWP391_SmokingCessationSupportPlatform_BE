@@ -4,6 +4,7 @@ import com.swpteam.smokingcessation.domain.dto.phase.PhaseRequest;
 import com.swpteam.smokingcessation.domain.dto.phase.PhaseResponse;
 import com.swpteam.smokingcessation.domain.entity.Phase;
 import com.swpteam.smokingcessation.domain.entity.Plan;
+import com.swpteam.smokingcessation.domain.entity.RecordHabit;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -18,4 +19,5 @@ public interface IPhaseService {
 
     Phase findPhaseByIdOrThrowError(String id);
 
+    double calculateSuccessRateAndUpdatePhase(Phase phase, List<RecordHabit> allRecords);
 }

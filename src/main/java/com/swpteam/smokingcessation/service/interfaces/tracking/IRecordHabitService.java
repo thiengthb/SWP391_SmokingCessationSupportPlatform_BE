@@ -7,6 +7,9 @@ import com.swpteam.smokingcessation.domain.dto.record.RecordHabitUpdateRequest;
 import com.swpteam.smokingcessation.domain.entity.RecordHabit;
 import org.springframework.data.domain.Page;
 
+import java.time.LocalDate;
+import java.util.List;
+
 public interface IRecordHabitService {
 
     Page<RecordHabitResponse> getMyRecordPage(PageableRequest request);
@@ -22,5 +25,7 @@ public interface IRecordHabitService {
     void softDeleteRecordById(String id);
 
     RecordHabit findRecordByIdOrThrowError(String id);
+
+    List<RecordHabit> findAllByAccountIdAndDateBetweenAndIsDeletedFalse(String accountId, LocalDate start, LocalDate end);
 
 }

@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -22,4 +22,7 @@ public interface RecordHabitRepository extends JpaRepository<RecordHabit, String
     Page<RecordHabit> findAllByIsDeletedFalse(Pageable pageable);
 
     boolean existsByAccountIdAndDateAndIsDeletedFalse(String id, LocalDate time);
+
+    Optional<List<RecordHabit>> findAllByAccountIdAndDateBetweenAndIsDeletedFalse(String accountId, LocalDate start, LocalDate end);
+
 }
