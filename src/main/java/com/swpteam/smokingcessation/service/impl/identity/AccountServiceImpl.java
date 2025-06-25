@@ -195,12 +195,12 @@ public class AccountServiceImpl implements IAccountService {
 
     @Override
     public void checkExistByEmailOrThrowError(String email) {
-        if (!accountRepository.existsByEmail(email))
+        if (accountRepository.existsByEmail(email))
             throw new AppException(ErrorCode.EMAIL_EXISTED);
     }
 
     private void checkExistByPhoneNumber(String phoneNumber) {
-        if (!accountRepository.existsByPhoneNumber(phoneNumber))
+        if (accountRepository.existsByPhoneNumber(phoneNumber))
             throw new AppException(ErrorCode.PHONE_NUMBER_EXISTED);
     }
 

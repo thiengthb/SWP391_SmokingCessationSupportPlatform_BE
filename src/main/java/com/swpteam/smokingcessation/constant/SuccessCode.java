@@ -99,6 +99,7 @@ public enum SuccessCode {
     BOOKING_CREATED(2012, "Booking created successfully"),
     BOOKING_UPDATED(2013, "Booking updated successfully"),
     BOOKING_DELETED(2014, "Booking deleted successfully"),
+    BOOKING_ANSWERED(2015, "Booking answered successfully"),
 
     // Chatbot
     RETURN_MESSAGE(1000, "Success returning response"),
@@ -183,16 +184,16 @@ public enum SuccessCode {
     REVIEW_DELETED(8006, "Review deleted successfully"),
 
     // TimeTable
-    TIMETABLE_GET_BY_ID(2313,"Successfully get timetable"),
-    TIMETABLE_CREATED(1232,"Successfully created timetable"),
-    TIMETABLE_GET_ALL(2343,"Successfully return list timetable"),
+    TIMETABLE_GET_BY_ID(2313, "Successfully get timetable"),
+    TIMETABLE_CREATED(1232, "Successfully created timetable"),
+    TIMETABLE_GET_ALL(2343, "Successfully return list timetable"),
 
     // Setting
-    SETTING_UPDATED(1232,"Successfully updated setting"),
-    SETTING_GOTTEN(2343,"Successfully gotten setting"),
+    SETTING_UPDATED(1232, "Successfully updated setting"),
+    SETTING_GOTTEN(2343, "Successfully gotten setting"),
 
     // Stripe
-    CHECKOUT_SUCCESS(1232,"Successfully checkout"),
+    CHECKOUT_SUCCESS(1232, "Successfully checkout"),
 
 
     ;

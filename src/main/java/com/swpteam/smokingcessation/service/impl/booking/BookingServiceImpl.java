@@ -3,6 +3,7 @@ package com.swpteam.smokingcessation.service.impl.booking;
 import com.swpteam.smokingcessation.common.PageResponse;
 import com.swpteam.smokingcessation.common.PageableRequest;
 import com.swpteam.smokingcessation.constant.ErrorCode;
+import com.swpteam.smokingcessation.domain.dto.booking.BookingAnswerRequest;
 import com.swpteam.smokingcessation.domain.dto.booking.BookingRequest;
 import com.swpteam.smokingcessation.domain.dto.booking.BookingResponse;
 import com.swpteam.smokingcessation.domain.entity.Account;
@@ -149,10 +150,19 @@ public class BookingServiceImpl implements IBookingService {
     @PreAuthorize("hasRole('COACH')")
     @CachePut(value = "BOOKING_CACHE", key = "#result.getId()")
     @CacheEvict(value = "BOOKING_PAGE_CACHE", allEntries = true)
-    public BookingResponse updateMyBookingRequestStatus(String id, BookingStatus status) {
+    public BookingResponse updateMyBookingRequestStatus(String id, BookingAnswerRequest request) {
         Booking booking = checkAndGetMyBooking(id);
 
-        booking.setStatus(status);
+        if (!booking.getStatus().equals(BookingStatus.PENDING)) {
+            throw new AppException(ErrorCode.BOOKING_ALREADY_PROCESSED);
+        }
+
+        if (request.accepted()) {
+            booking.setStatus(BookingStatus.APPROVED);
+        } else {
+            booking.setStatus(BookingStatus.REJECTED);
+            booking.setDeclineReason(request.declineReason());
+        }
 
         return bookingMapper.toResponse(bookingRepository.save(booking));
     }

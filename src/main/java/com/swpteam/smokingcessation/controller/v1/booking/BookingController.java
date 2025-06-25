@@ -4,6 +4,7 @@ import com.swpteam.smokingcessation.common.ApiResponse;
 import com.swpteam.smokingcessation.common.PageResponse;
 import com.swpteam.smokingcessation.common.PageableRequest;
 import com.swpteam.smokingcessation.constant.SuccessCode;
+import com.swpteam.smokingcessation.domain.dto.booking.BookingAnswerRequest;
 import com.swpteam.smokingcessation.domain.dto.booking.BookingRequest;
 import com.swpteam.smokingcessation.domain.dto.booking.BookingResponse;
 import com.swpteam.smokingcessation.service.interfaces.booking.IBookingService;
@@ -75,6 +76,17 @@ public class BookingController {
         return ResponseUtil.buildSuccessResponse(
                 SuccessCode.BOOKING_UPDATED,
                 bookingService.updateBookingById(id, request)
+        );
+    }
+
+    @PutMapping("/answer/{id}")
+    ResponseEntity<?> answerBookingRequest(
+            @PathVariable String id,
+            @Valid @RequestBody BookingAnswerRequest request
+    ) {
+        return ResponseUtil.buildSuccessResponse(
+                SuccessCode.BOOKING_ANSWERED,
+                bookingService.updateMyBookingRequestStatus(id, request)
         );
     }
 
