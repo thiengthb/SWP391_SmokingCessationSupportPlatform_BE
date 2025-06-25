@@ -30,7 +30,7 @@ public class ChatbotController {
     ResponseEntity<ApiResponse<ChatbotResponse>> createAccount(
             @RequestBody @Valid ChatbotRequest request
     ) {
-        return ResponseUtil.buildResponse(
+        return ResponseUtil.buildSuccessResponse(
                 SuccessCode.RETURN_MESSAGE,
                 chatbotService.chat(request)
         );

@@ -33,7 +33,7 @@ public class MembershipController {
     ResponseEntity<ApiResponse<PageResponse<MembershipResponse>>> getMembershipPage(
             @Valid PageableRequest request
     ) {
-        return ResponseUtil.buildResponse(
+        return ResponseUtil.buildSuccessResponse(
                 SuccessCode.MEMBERSHIP_GET_ALL,
                 membershipService.getMembershipPage(request)
         );
@@ -43,7 +43,7 @@ public class MembershipController {
     ResponseEntity<ApiResponse<MembershipResponse>> getMembershipById(
             @PathVariable String id
     ) {
-        return ResponseUtil.buildResponse(
+        return ResponseUtil.buildSuccessResponse(
                 SuccessCode.MEMBERSHIP_GET_BY_ID,
                 membershipService.getMembershipById(id)
         );
@@ -53,7 +53,7 @@ public class MembershipController {
     ResponseEntity<ApiResponse<MembershipResponse>> createMembership(
             @RequestBody @Valid MembershipCreateRequest request
     ) {
-        return ResponseUtil.buildResponse(
+        return ResponseUtil.buildSuccessResponse(
                 SuccessCode.MEMBERSHIP_CREATED,
                 membershipService.createMembership(request)
         );
@@ -64,7 +64,7 @@ public class MembershipController {
             @PathVariable String id,
             @RequestBody @Valid MembershipUpdateRequest request
     ) {
-        return ResponseUtil.buildResponse(
+        return ResponseUtil.buildSuccessResponse(
                 SuccessCode.MEMBERSHIP_UPDATED,
                 membershipService.updateMembership(id, request)
         );
@@ -75,7 +75,7 @@ public class MembershipController {
             @PathVariable String id
     ) {
         membershipService.softDeleteMembershipById(id);
-        return ResponseUtil.buildResponse(
+        return ResponseUtil.buildSuccessResponse(
                 SuccessCode.MEMBERSHIP_DELETED,
                 null
         );
@@ -86,7 +86,7 @@ public class MembershipController {
             @PathVariable String id,
             @RequestBody @Valid MembershipCurrencyUpdateRequest request
     ) {
-        return ResponseUtil.buildResponse(
+        return ResponseUtil.buildSuccessResponse(
                 SuccessCode.MEMBERSHIP_UPDATED,
                 membershipService.updateMembershipCurrency(id, request)
         );

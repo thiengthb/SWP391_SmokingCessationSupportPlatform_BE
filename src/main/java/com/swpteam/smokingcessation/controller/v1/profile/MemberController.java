@@ -29,7 +29,7 @@ public class MemberController {
     ResponseEntity<ApiResponse<MemberResponse>> createMember(
             @RequestBody @Valid MemberRequest request
     ) {
-        return ResponseUtil.buildResponse(
+        return ResponseUtil.buildSuccessResponse(
                 SuccessCode.MEMBER_CREATED,
                 memberService.createMember(request)
         );
@@ -39,7 +39,7 @@ public class MemberController {
     ResponseEntity<ApiResponse<PageResponse<MemberResponse>>> getUsers(
             @Valid PageableRequest request
     ) {
-        return ResponseUtil.buildResponse(
+        return ResponseUtil.buildSuccessResponse(
                 SuccessCode.HEALTH_DELETED,
                 memberService.getMembersPage(request)
         );
@@ -49,7 +49,7 @@ public class MemberController {
     ResponseEntity<ApiResponse<MemberResponse>> getMemberById(
             @PathVariable String accountId
     ) {
-        return ResponseUtil.buildResponse(
+        return ResponseUtil.buildSuccessResponse(
                 SuccessCode.HEALTH_DELETED,
                 memberService.getMemberById(accountId)
         );
@@ -60,7 +60,7 @@ public class MemberController {
             @PathVariable String accountId,
             @RequestBody MemberRequest request
     ) {
-        return ResponseUtil.buildResponse(
+        return ResponseUtil.buildSuccessResponse(
                 SuccessCode.ACCOUNT_UPDATED,
                 memberService.updateMemberById(accountId, request)
         );

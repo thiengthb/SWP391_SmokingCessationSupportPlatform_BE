@@ -32,7 +32,7 @@ public class ReviewController {
     ResponseEntity<ApiResponse<PageResponse<ReviewResponse>>> getMyReviewPageAsCoach(
             @Valid PageableRequest request
     ) {
-        return ResponseUtil.buildResponse(
+        return ResponseUtil.buildSuccessResponse(
                 SuccessCode.REVIEW_GET_ALL,
                 reviewService.getMyReviewPageAsCoach(request)
         );
@@ -42,7 +42,7 @@ public class ReviewController {
     ResponseEntity<ApiResponse<PageResponse<ReviewResponse>>> getMyReviewPageAsMember(
             @Valid PageableRequest request
     ) {
-        return ResponseUtil.buildResponse(
+        return ResponseUtil.buildSuccessResponse(
                 SuccessCode.REVIEW_GET_ALL,
                 reviewService.getMyReviewPageAsMember(request)
         );
@@ -52,7 +52,7 @@ public class ReviewController {
     ResponseEntity<ApiResponse<ReviewResponse>> getReviewById(
             @PathVariable String id
     ) {
-        return ResponseUtil.buildResponse(
+        return ResponseUtil.buildSuccessResponse(
                 SuccessCode.REVIEW_GET_BY_ID,
                 reviewService.getReviewById(id)
         );
@@ -62,7 +62,7 @@ public class ReviewController {
     ResponseEntity<ApiResponse<ReviewResponse>> createReview(
             @RequestBody @Valid ReviewCreateRequest request
     ) {
-        return ResponseUtil.buildResponse(
+        return ResponseUtil.buildSuccessResponse(
                 SuccessCode.REVIEW_CREATED,
                 reviewService.createReview(request)
         );
@@ -73,7 +73,7 @@ public class ReviewController {
             @PathVariable String id,
             @RequestBody @Valid ReviewUpdateRequest request
     ) {
-        return ResponseUtil.buildResponse(
+        return ResponseUtil.buildSuccessResponse(
                 SuccessCode.REVIEW_UPDATED,
                 reviewService.updateReview(id, request)
         );
@@ -83,7 +83,7 @@ public class ReviewController {
     ResponseEntity<ApiResponse<String>> softDeleteReview(
             @PathVariable String id
     ) {
-        return ResponseUtil.buildResponse(
+        return ResponseUtil.buildSuccessResponse(
                 SuccessCode.REVIEW_DELETED,
                 null
         );

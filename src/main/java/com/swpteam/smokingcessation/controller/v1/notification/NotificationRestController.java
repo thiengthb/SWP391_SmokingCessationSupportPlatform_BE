@@ -29,7 +29,7 @@ public class NotificationRestController {
     ResponseEntity<ApiResponse<PageResponse<NotificationResponse>>> getChats(
             @Valid PageableRequest request
     ) {
-        return ResponseUtil.buildResponse(
+        return ResponseUtil.buildSuccessResponse(
                 SuccessCode.NOTIFICATION_GET_ALL,
                 notificationService.getMyNotificationsPage(request)
         );
@@ -40,7 +40,7 @@ public class NotificationRestController {
     ResponseEntity<ApiResponse<NotificationResponse>> getChatsById(
             @PathVariable String id
     ) {
-        return ResponseUtil.buildResponse(
+        return ResponseUtil.buildSuccessResponse(
                 SuccessCode.NOTIFICATION_GET_BY_ID,
                 notificationService.getNotificationsById(id)
         );
@@ -51,7 +51,7 @@ public class NotificationRestController {
             @PathVariable String id
     ) {
         notificationService.deleteNotification(id);
-        return ResponseUtil.buildResponse(
+        return ResponseUtil.buildSuccessResponse(
                 SuccessCode.NOTIFICATION_DELETED,
                 null
         );
@@ -60,7 +60,7 @@ public class NotificationRestController {
     @DeleteMapping("/all/{accountId}")
     public ResponseEntity<ApiResponse<Void>> deleteAllNotifications() {
         notificationService.deleteAllMyNotification();
-        return ResponseUtil.buildResponse(
+        return ResponseUtil.buildSuccessResponse(
                 SuccessCode.ALL_NOTIFICATION_DELETED,
                 null
         );

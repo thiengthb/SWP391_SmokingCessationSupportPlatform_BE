@@ -31,7 +31,7 @@ public class StripePaymentController {
     public ResponseEntity<ApiResponse<StripeResponse>> checkoutSubscription(
             @RequestBody StripeSubscriptionRequest request
     ) {
-        return ResponseUtil.buildResponse(
+        return ResponseUtil.buildSuccessResponse(
                 SuccessCode.CHECKOUT_SUCCESS,
                 stripeService.checkoutSubscription(request)
         );

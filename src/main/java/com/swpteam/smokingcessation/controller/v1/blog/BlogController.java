@@ -32,7 +32,7 @@ public class BlogController {
     ResponseEntity<ApiResponse<PageResponse<BlogResponse>>> getAllBlogsPage(
             @Valid PageableRequest request
     ) {
-        return ResponseUtil.buildResponse(
+        return ResponseUtil.buildSuccessResponse(
                 SuccessCode.BLOG_GET_ALL,
                 blogService.getAllBlogsPage(request)
         );
@@ -42,7 +42,7 @@ public class BlogController {
     ResponseEntity<ApiResponse<PageResponse<BlogResponse>>> getMyBlogsPage(
             @Valid PageableRequest request
     ) {
-        return ResponseUtil.buildResponse(
+        return ResponseUtil.buildSuccessResponse(
                 SuccessCode.MY_BLOG,
                 blogService.getMyBlogsPage(request)
         );
@@ -53,7 +53,7 @@ public class BlogController {
             @PathVariable String name,
             @Valid PageableRequest request
     ) {
-        return ResponseUtil.buildResponse(
+        return ResponseUtil.buildSuccessResponse(
                 SuccessCode.BLOG_GET_BY_CATEGORY,
                 blogService.getBlogsPageByCategory(name, request)
         );
@@ -63,7 +63,7 @@ public class BlogController {
     ResponseEntity<ApiResponse<BlogResponse>> getBlogBySlug(
             @PathVariable String slugName
     ) {
-        return ResponseUtil.buildResponse(
+        return ResponseUtil.buildSuccessResponse(
                 SuccessCode.BLOG_GET_BY_SLUG,
                 blogService.getBlogBySlug(slugName)
         );
@@ -73,7 +73,7 @@ public class BlogController {
     ResponseEntity<ApiResponse<BlogResponse>> getBlogById(
             @PathVariable String id
     ) {
-        return ResponseUtil.buildResponse(
+        return ResponseUtil.buildSuccessResponse(
                 SuccessCode.BLOG_GET_BY_ID,
                 blogService.getBlogById(id)
         );
@@ -83,7 +83,7 @@ public class BlogController {
     ResponseEntity<ApiResponse<BlogResponse>> createBlog(
             @RequestBody @Valid BlogCreateRequest request
     ) {
-        return ResponseUtil.buildResponse(
+        return ResponseUtil.buildSuccessResponse(
                 SuccessCode.BLOG_CREATED,
                 blogService.createBlog(request)
         );
@@ -94,7 +94,7 @@ public class BlogController {
             @PathVariable String id,
             @RequestBody @Valid BlogUpdateRequest request
     ) {
-        return ResponseUtil.buildResponse(
+        return ResponseUtil.buildSuccessResponse(
                 SuccessCode.BLOG_UPDATED,
                 blogService.updateBlog(id, request)
         );
@@ -105,7 +105,7 @@ public class BlogController {
             @PathVariable String id
     ) {
         blogService.softDeleteBlogById(id);
-        return ResponseUtil.buildResponse(
+        return ResponseUtil.buildSuccessResponse(
                 SuccessCode.BLOG_DELETED,
                 null
         );

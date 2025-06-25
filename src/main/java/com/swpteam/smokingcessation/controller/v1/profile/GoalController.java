@@ -32,7 +32,7 @@ public class GoalController {
     public ResponseEntity<ApiResponse<PageResponse<GoalResponse>>> getGoalPage(
             @Valid PageableRequest request
     ) {
-        return ResponseUtil.buildResponse(
+        return ResponseUtil.buildSuccessResponse(
                 SuccessCode.GOAL_GET_ALL,
                 goalService.getPublicGoalPage(request)
         );
@@ -42,7 +42,7 @@ public class GoalController {
     public ResponseEntity<ApiResponse<PageResponse<GoalResponse>>> getMyGoalPage(
             @Valid PageableRequest request
     ) {
-        return ResponseUtil.buildResponse(
+        return ResponseUtil.buildSuccessResponse(
                 SuccessCode.GOAL_GET_ALL,
                 goalService.getMyGoalPage(request)
         );
@@ -52,7 +52,7 @@ public class GoalController {
     public ResponseEntity<ApiResponse<GoalResponse>> getGoalByName(
             @PathVariable String name
     ) {
-        return ResponseUtil.buildResponse(
+        return ResponseUtil.buildSuccessResponse(
                 SuccessCode.GOAL_GET_BY_NAME,
                 goalService.getGoalByName(name)
         );
@@ -62,7 +62,7 @@ public class GoalController {
     public ResponseEntity<ApiResponse<GoalResponse>> createGoal(
             @RequestBody @Valid GoalCreateRequest request
     ) {
-        return ResponseUtil.buildResponse(
+        return ResponseUtil.buildSuccessResponse(
                 SuccessCode.GOAL_CREATED,
                 goalService.createGoal(request)
         );
@@ -73,7 +73,7 @@ public class GoalController {
             @PathVariable String name,
             @RequestBody @Valid GoalUpdateRequest request
     ) {
-        return ResponseUtil.buildResponse(
+        return ResponseUtil.buildSuccessResponse(
                 SuccessCode.GOAL_UPDATED,
                 goalService.updateGoal(name, request)
         );
@@ -84,7 +84,7 @@ public class GoalController {
             @PathVariable String name
     ) {
         goalService.softDeleteGoal(name);
-        return ResponseUtil.buildResponse(
+        return ResponseUtil.buildSuccessResponse(
                 SuccessCode.GOAL_DELETED,
                 null
         );

@@ -30,7 +30,7 @@ public class CoachController {
     ResponseEntity<ApiResponse<PageResponse<CoachResponse>>> getCoachPage(
             @Valid PageableRequest request
     ) {
-        return ResponseUtil.buildResponse(
+        return ResponseUtil.buildSuccessResponse(
                 SuccessCode.COACH_GET_ALL,
                 coachService.getCoachPage(request)
         );
@@ -40,7 +40,7 @@ public class CoachController {
     ResponseEntity<ApiResponse<CoachResponse>> getCoachById(
             @PathVariable String id
     ) {
-        return ResponseUtil.buildResponse(
+        return ResponseUtil.buildSuccessResponse(
                 SuccessCode.COACH_GET_BY_ID,
                 coachService.getCoachById(id)
         );
@@ -50,7 +50,7 @@ public class CoachController {
     ResponseEntity<ApiResponse<CoachResponse>> createCoach(
             @Valid @RequestBody CoachRequest request
     ) {
-        return ResponseUtil.buildResponse(
+        return ResponseUtil.buildSuccessResponse(
                 SuccessCode.COACH_CREATED,
                 coachService.registerCoachProfile(request)
         );
@@ -61,7 +61,7 @@ public class CoachController {
             @PathVariable String id,
             @Valid @RequestBody CoachRequest request
     ) {
-        return ResponseUtil.buildResponse(
+        return ResponseUtil.buildSuccessResponse(
                 SuccessCode.COACH_UPDATED,
                 coachService.updateCoachById(id, request)
         );

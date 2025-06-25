@@ -10,21 +10,20 @@ import com.swpteam.smokingcessation.domain.dto.account.ChangePasswordRequest;
 import com.swpteam.smokingcessation.domain.entity.Account;
 import com.swpteam.smokingcessation.domain.enums.AccountStatus;
 import com.swpteam.smokingcessation.domain.enums.Role;
-import org.springframework.data.domain.Page;
 
 public interface IAccountService {
 
-    void updateStatus(String accountId, AccountStatus status);
-
-    void changePassword(String accountId, String newPassword);
-
     PageResponse<AccountResponse> getAccountsPage(PageableRequest request);
+
+    AccountResponse getAccountById(String id);
+
+    AccountResponse getCurrentAccount();
 
     AccountResponse createAccount(AccountRequest request);
 
     Account createAccountByGoogle(GoogleIdToken.Payload payload);
 
-    AccountResponse getAccountById(String id);
+    void updateStatus(String accountId, AccountStatus status);
 
     AccountResponse updateAccountRole(String id, Role role);
 
@@ -32,11 +31,9 @@ public interface IAccountService {
 
     AccountResponse changePassword(ChangePasswordRequest request);
 
-    AccountResponse getCurrentAccount();
+    void changePassword(String accountId, String newPassword);
 
     Account findAccountByIdOrThrowError(String id);
-
-    Account findAccountByUsernameOrThrowError(String username);
 
     Account findAccountByEmailOrThrowError(String email);
 
@@ -44,6 +41,6 @@ public interface IAccountService {
 
     void banAccount(String id);
 
-    void checkExistByEmail(String email);
+    void checkExistByEmailOrThrowError(String email);
 
 }

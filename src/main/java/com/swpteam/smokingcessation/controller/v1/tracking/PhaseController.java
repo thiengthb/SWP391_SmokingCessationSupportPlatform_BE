@@ -29,7 +29,7 @@ public class PhaseController {
     ResponseEntity<ApiResponse<List<PhaseResponse>>> getPhasePage(
             @PathVariable String planId
     ) {
-        return ResponseUtil.buildResponse(
+        return ResponseUtil.buildSuccessResponse(
                 SuccessCode.PHASE_GET_ALL,
                 phaseService.getPhaseListByPlanId(planId)
         );
@@ -39,7 +39,7 @@ public class PhaseController {
     ResponseEntity<ApiResponse<PhaseResponse>> getPhaseById(
             @PathVariable String id
     ) {
-        return ResponseUtil.buildResponse(
+        return ResponseUtil.buildSuccessResponse(
                 SuccessCode.PHASE_GET_BY_ID,
                 phaseService.getPhaseById(id)
         );
@@ -48,7 +48,7 @@ public class PhaseController {
     @DeleteMapping("/{id}")
     ResponseEntity<ApiResponse<Void>> deletePhaseById(@PathVariable String id) {
         phaseService.softDeletePhaseById(id);
-        return ResponseUtil.buildResponse(
+        return ResponseUtil.buildSuccessResponse(
                 SuccessCode.PHASE_DELETED,
                 null
         );
