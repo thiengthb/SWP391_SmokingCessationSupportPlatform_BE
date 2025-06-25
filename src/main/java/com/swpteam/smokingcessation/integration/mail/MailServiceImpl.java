@@ -26,6 +26,7 @@ import org.thymeleaf.spring6.SpringTemplateEngine;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 
@@ -167,34 +168,23 @@ public class MailServiceImpl implements IMailService {
         }
     }
 
+        @Override
     public void sendPlanSummaryEmail(Account account, PlanSummaryResponse summary) {
-        try {
-            log.info("📧 Sending plan summary mail to user: {} <{}>", account.getId(),account.getEmail());
-            MimeMessage mimeMessage = mailSender.createMimeMessage();
-            MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
-
-            Context context = new Context();
-            context.setVariable("username", account.getUsername());
-            context.setVariable("successRate", summary.getSuccessRate());
-            context.setVariable("leastSmokeDay", summary.getLeastSmokeDay());
-            context.setVariable("mostSmokeDay", summary.getMostSmokeDay());
-            context.setVariable("reportedDays", summary.getReportedDays());
-            context.setVariable("missedDays", summary.getMissedDays());
-            context.setVariable("sendTime", LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
-
-            String htmlContent = templateEngine.process("plan-summary-template", context);
-
-            helper.setTo(account.getEmail());
-            helper.setSubject(" Kết quả kế hoạch bỏ thuốc của bạn");
-            helper.setText(htmlContent, true);
-
-            mailSender.send(mimeMessage);
-            log.info("Plan summary mail sent successfully to {}", summary.getEmail());
-
-        } catch (MessagingException e) {
-            log.error(" Failed to send summary mail: {}", e.getMessage());
-            throw new AppException(ErrorCode.EMAIL_SEND_FAILED);
-        }
+        buildAndSendMail(
+                "Kết quả kế hoạch bỏ thuốc của bạn",
+                account.getEmail(),
+                "plan-summary-template",
+                List.of(
+                        Map.entry("username", account.getUsername()),
+                        Map.entry("successRate", summary.getSuccessRate()),
+                        Map.entry("leastSmokeDay", summary.getLeastSmokeDay()),
+                        Map.entry("mostSmokeDay", summary.getMostSmokeDay()),
+                        Map.entry("reportedDays", summary.getReportedDays()),
+                        Map.entry("missedDays", summary.getMissedDays()),
+                        Map.entry("sendTime", LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
+                )
+        );
+        log.info("📧 Plan summary mail sent successfully to {} <{}>", account.getId(), account.getEmail());
     }
 
 }
