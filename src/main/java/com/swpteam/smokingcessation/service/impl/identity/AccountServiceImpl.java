@@ -2,20 +2,20 @@ package com.swpteam.smokingcessation.service.impl.identity;
 
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import com.swpteam.smokingcessation.common.PageResponse;
+import com.swpteam.smokingcessation.common.PageableRequest;
+import com.swpteam.smokingcessation.constant.ErrorCode;
 import com.swpteam.smokingcessation.domain.dto.account.AccountRequest;
 import com.swpteam.smokingcessation.domain.dto.account.AccountResponse;
 import com.swpteam.smokingcessation.domain.dto.account.AccountUpdateRequest;
 import com.swpteam.smokingcessation.domain.dto.account.ChangePasswordRequest;
+import com.swpteam.smokingcessation.domain.entity.Account;
+import com.swpteam.smokingcessation.domain.entity.Setting;
 import com.swpteam.smokingcessation.domain.enums.AccountStatus;
 import com.swpteam.smokingcessation.domain.enums.AuthProvider;
 import com.swpteam.smokingcessation.domain.enums.Role;
 import com.swpteam.smokingcessation.domain.mapper.AccountMapper;
-import com.swpteam.smokingcessation.repository.AccountRepository;
-import com.swpteam.smokingcessation.domain.entity.Setting;
-import com.swpteam.smokingcessation.common.PageableRequest;
-import com.swpteam.smokingcessation.constant.ErrorCode;
-import com.swpteam.smokingcessation.domain.entity.Account;
 import com.swpteam.smokingcessation.exception.AppException;
+import com.swpteam.smokingcessation.repository.AccountRepository;
 import com.swpteam.smokingcessation.service.interfaces.identity.IAccountService;
 import com.swpteam.smokingcessation.utils.AuthUtilService;
 import com.swpteam.smokingcessation.utils.RandomUtil;
@@ -195,12 +195,12 @@ public class AccountServiceImpl implements IAccountService {
 
     @Override
     public void checkExistByEmailOrThrowError(String email) {
-        if (accountRepository.existsByEmail(email))
+        if (!accountRepository.existsByEmail(email))
             throw new AppException(ErrorCode.EMAIL_EXISTED);
     }
 
     private void checkExistByPhoneNumber(String phoneNumber) {
-        if (accountRepository.existsByPhoneNumber(phoneNumber))
+        if (!accountRepository.existsByPhoneNumber(phoneNumber))
             throw new AppException(ErrorCode.PHONE_NUMBER_EXISTED);
     }
 

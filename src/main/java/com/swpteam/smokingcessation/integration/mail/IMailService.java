@@ -1,5 +1,6 @@
 package com.swpteam.smokingcessation.integration.mail;
 
+import com.swpteam.smokingcessation.domain.dto.booking.BookingRequest;
 import com.swpteam.smokingcessation.domain.dto.report.ReportSummaryResponse;
 import com.swpteam.smokingcessation.domain.entity.Message;
 
@@ -14,4 +15,6 @@ public interface IMailService {
     void sendResetPasswordEmail(String to, String resetLink, String userName);
 
     void sendReportEmail(String to, ReportSummaryResponse report);
+
+    void sendBookingRequestEmail(String to, BookingRequest request, String username, String coachName, String bookingLink);
 }

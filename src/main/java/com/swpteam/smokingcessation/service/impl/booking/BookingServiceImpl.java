@@ -7,20 +7,25 @@ import com.swpteam.smokingcessation.domain.dto.booking.BookingRequest;
 import com.swpteam.smokingcessation.domain.dto.booking.BookingResponse;
 import com.swpteam.smokingcessation.domain.entity.Account;
 import com.swpteam.smokingcessation.domain.entity.Booking;
+import com.swpteam.smokingcessation.domain.enums.AccountStatus;
 import com.swpteam.smokingcessation.domain.enums.BookingStatus;
 import com.swpteam.smokingcessation.domain.mapper.BookingMapper;
 import com.swpteam.smokingcessation.exception.AppException;
 import com.swpteam.smokingcessation.integration.google.GoogleCalendarService;
+import com.swpteam.smokingcessation.integration.mail.IMailService;
 import com.swpteam.smokingcessation.repository.BookingRepository;
 import com.swpteam.smokingcessation.repository.TimeTableRepository;
 import com.swpteam.smokingcessation.service.interfaces.booking.IBookingService;
 import com.swpteam.smokingcessation.service.interfaces.identity.IAccountService;
+import com.swpteam.smokingcessation.service.interfaces.notification.INotificationService;
 import com.swpteam.smokingcessation.utils.AuthUtilService;
 import com.swpteam.smokingcessation.utils.ValidationUtil;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import lombok.experimental.NonFinal;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
@@ -37,11 +42,17 @@ import org.springframework.transaction.annotation.Transactional;
 public class BookingServiceImpl implements IBookingService {
 
     BookingRepository bookingRepository;
+    TimeTableRepository timeTableRepository;
     BookingMapper bookingMapper;
     GoogleCalendarService googleCalendarService;
-    TimeTableRepository timeTableRepository;
     IAccountService accountService;
+    INotificationService notificationService;
     AuthUtilService authUtilService;
+    IMailService mailService;
+
+    @NonFinal
+    @Value("${app.frontend-domain}")
+    String FRONTEND_DOMAIN;
 
     @Override
     @PreAuthorize("hasRole('ADMIN')")
@@ -122,7 +133,15 @@ public class BookingServiceImpl implements IBookingService {
         booking.setCoach(coach);
         booking.setStatus(BookingStatus.PENDING);
 
-        return bookingMapper.toResponse(bookingRepository.save(booking));
+        BookingResponse response = bookingMapper.toResponse(bookingRepository.save(booking));
+
+        if (coach.getStatus() == AccountStatus.ONLINE) {
+            notificationService.sendBookingNotification(member.getUsername(), coach.getId());
+        } else {
+            String bookingLink = FRONTEND_DOMAIN + "/bookings?id=" + booking.getId();
+            mailService.sendBookingRequestEmail(coach.getEmail(), request, member.getUsername(), coach.getUsername(), bookingLink);
+        }
+        return response;
     }
 
     @Override

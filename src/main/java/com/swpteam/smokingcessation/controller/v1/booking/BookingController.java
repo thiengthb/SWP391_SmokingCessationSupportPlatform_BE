@@ -37,6 +37,16 @@ public class BookingController {
         );
     }
 
+    @GetMapping("/coach-booking")
+    ResponseEntity<ApiResponse<PageResponse<BookingResponse>>> getBookingPageAsCoach(
+            @Valid PageableRequest request
+    ) {
+        return ResponseUtil.buildSuccessResponse(
+                SuccessCode.BOOKING_GET_ALL,
+                bookingService.getMyBookingPageAsCoach(request)
+        );
+    }
+
     @GetMapping("/{id}")
     ResponseEntity<?> getBookingById(
             @PathVariable String id
