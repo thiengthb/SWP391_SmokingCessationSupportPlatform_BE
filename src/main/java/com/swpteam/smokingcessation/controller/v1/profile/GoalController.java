@@ -4,7 +4,9 @@ import com.swpteam.smokingcessation.common.ApiResponse;
 import com.swpteam.smokingcessation.common.PageResponse;
 import com.swpteam.smokingcessation.common.PageableRequest;
 import com.swpteam.smokingcessation.constant.SuccessCode;
-import com.swpteam.smokingcessation.domain.dto.goal.*;
+import com.swpteam.smokingcessation.domain.dto.goal.GoalCreateRequest;
+import com.swpteam.smokingcessation.domain.dto.goal.GoalResponse;
+import com.swpteam.smokingcessation.domain.dto.goal.GoalUpdateRequest;
 import com.swpteam.smokingcessation.service.interfaces.profile.IGoalService;
 import com.swpteam.smokingcessation.utils.ResponseUtil;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -33,6 +35,16 @@ public class GoalController {
         return ResponseUtil.buildResponse(
                 SuccessCode.GOAL_GET_ALL,
                 goalService.getPublicGoalPage(request)
+        );
+    }
+
+    @GetMapping("/my-goals")
+    public ResponseEntity<ApiResponse<Page<GoalResponse>>> getMyGoalPage(
+            @Valid PageableRequest request
+    ) {
+        return ResponseUtil.buildResponse(
+                SuccessCode.GOAL_GET_ALL,
+                goalService.getMyGoalPage(request)
         );
     }
 
@@ -77,5 +89,5 @@ public class GoalController {
                 null
         );
     }
-    
+
 }

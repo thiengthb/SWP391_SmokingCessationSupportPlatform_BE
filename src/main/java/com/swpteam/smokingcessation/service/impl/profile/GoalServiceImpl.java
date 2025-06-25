@@ -3,14 +3,16 @@ package com.swpteam.smokingcessation.service.impl.profile;
 import com.swpteam.smokingcessation.common.PageResponse;
 import com.swpteam.smokingcessation.common.PageableRequest;
 import com.swpteam.smokingcessation.constant.ErrorCode;
-import com.swpteam.smokingcessation.domain.dto.goal.*;
+import com.swpteam.smokingcessation.domain.dto.goal.GoalCreateRequest;
+import com.swpteam.smokingcessation.domain.dto.goal.GoalResponse;
+import com.swpteam.smokingcessation.domain.dto.goal.GoalUpdateRequest;
 import com.swpteam.smokingcessation.domain.entity.Account;
 import com.swpteam.smokingcessation.domain.entity.Goal;
-import com.swpteam.smokingcessation.domain.entity.GoalProgress;
 import com.swpteam.smokingcessation.domain.enums.Role;
 import com.swpteam.smokingcessation.domain.mapper.GoalMapper;
 import com.swpteam.smokingcessation.exception.AppException;
 import com.swpteam.smokingcessation.repository.GoalRepository;
+import com.swpteam.smokingcessation.service.interfaces.profile.IGoalProgressService;
 import com.swpteam.smokingcessation.service.interfaces.profile.IGoalService;
 import com.swpteam.smokingcessation.utils.AuthUtilService;
 import com.swpteam.smokingcessation.utils.ValidationUtil;
@@ -36,6 +38,7 @@ public class GoalServiceImpl implements IGoalService {
     GoalRepository goalRepository;
     GoalMapper goalMapper;
     AuthUtilService authUtilService;
+    IGoalProgressService goalProgressService;
 
     @Override
     @Cacheable(value = "GOAL_PAGE_CACHE",
@@ -44,9 +47,15 @@ public class GoalServiceImpl implements IGoalService {
         ValidationUtil.checkFieldExist(Goal.class, request.sortBy());
 
         Pageable pageable = PageableRequest.getPageable(request);
-        Page<Goal> achievements = goalRepository.findAllByAccountIsNullAndIsDeletedFalse(pageable);
+        Page<Goal> goals = goalRepository.findAllByAccountIsNullAndIsDeletedFalse(pageable);
 
-        return new PageResponse<>(achievements.map(goalMapper::toResponse));
+        Account currentAccount = authUtilService.getCurrentAccountOrThrowError();
+
+        if (currentAccount.getRole() == Role.ADMIN) {
+            return new PageResponse<>(goals.map(goalMapper::toAdminResponse));
+        }
+
+        return new PageResponse<>(goals.map(goal -> goalMapper.toResponse(goal, currentAccount.getId())));
     }
 
     @Override
@@ -58,9 +67,9 @@ public class GoalServiceImpl implements IGoalService {
         Account currentAccount = authUtilService.getCurrentAccountOrThrowError();
 
         Pageable pageable = PageableRequest.getPageable(request);
-        Page<Goal> achievements = goalRepository.findAllByAccountIdAndIsDeletedFalse(currentAccount.getId(), pageable);
+        Page<Goal> goals = goalRepository.findAllByAccountIdAndIsDeletedFalse(currentAccount.getId(), pageable);
 
-        return new PageResponse<>(achievements.map(goalMapper::toResponse));
+        return new PageResponse<>(goals.map(goal -> goalMapper.toResponse(goal, currentAccount.getId())));
     }
 
     @Override
@@ -86,7 +95,12 @@ public class GoalServiceImpl implements IGoalService {
         if (currentAccount.getRole() != Role.ADMIN) {
             goal.setAccount(currentAccount);
         }
-        return goalMapper.toResponse(goalRepository.save(goal));
+
+        Goal savedGoal = goalRepository.save(goal);
+
+        goalProgressService.createGoalProgress(goal, currentAccount);
+
+        return goalMapper.toResponse(savedGoal);
     }
 
     @Override

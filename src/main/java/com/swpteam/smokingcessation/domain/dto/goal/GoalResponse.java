@@ -1,12 +1,10 @@
 package com.swpteam.smokingcessation.domain.dto.goal;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
-import com.swpteam.smokingcessation.domain.entity.GoalProgress;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Data
 @Builder
@@ -25,5 +23,5 @@ public class GoalResponse {
     LocalDateTime createdAt;
     LocalDateTime updatedAt;
 
-    List<GoalProgressResponse> goalProgresses;
+    GoalProgressResponse goalProgress;
 }
