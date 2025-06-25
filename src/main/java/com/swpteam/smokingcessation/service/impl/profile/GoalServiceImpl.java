@@ -6,6 +6,7 @@ import com.swpteam.smokingcessation.constant.ErrorCode;
 import com.swpteam.smokingcessation.domain.dto.goal.*;
 import com.swpteam.smokingcessation.domain.entity.Account;
 import com.swpteam.smokingcessation.domain.entity.Goal;
+import com.swpteam.smokingcessation.domain.entity.GoalProgress;
 import com.swpteam.smokingcessation.domain.enums.Role;
 import com.swpteam.smokingcessation.domain.mapper.GoalMapper;
 import com.swpteam.smokingcessation.exception.AppException;
@@ -85,7 +86,6 @@ public class GoalServiceImpl implements IGoalService {
         if (currentAccount.getRole() != Role.ADMIN) {
             goal.setAccount(currentAccount);
         }
-
         return goalMapper.toResponse(goalRepository.save(goal));
     }
 

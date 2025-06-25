@@ -1,9 +1,12 @@
 package com.swpteam.smokingcessation.domain.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.DecimalMax;
+import jakarta.validation.constraints.DecimalMin;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
@@ -13,7 +16,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class Achievement {
+public class GoalProgress {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -28,4 +31,9 @@ public class Achievement {
     Goal goal;
 
     LocalDateTime earnedAt;
+
+    @DecimalMin("0.0")
+    @DecimalMax("1.0")
+    @Column(precision = 3, scale = 1)
+    BigDecimal progress;
 }

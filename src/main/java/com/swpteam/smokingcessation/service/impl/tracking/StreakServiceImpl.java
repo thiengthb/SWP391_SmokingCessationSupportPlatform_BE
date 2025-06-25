@@ -86,6 +86,8 @@ public class StreakServiceImpl implements IStreakService {
             throw new AppException(ErrorCode.STREAK_DOWN_GRADE);
         }
 
+        streak.setNumber(number);
+
         return streakRepository.save(streak);
     }
 
@@ -110,7 +112,7 @@ public class StreakServiceImpl implements IStreakService {
     @Override
     @Transactional
     public Streak findStreakByAccountIdOrThrowError(String id) {
-        Streak streak = streakRepository.findById(id)
+        Streak streak = streakRepository.findByAccountIdAndIsDeletedFalse(id)
                 .orElseThrow(() -> new AppException(ErrorCode.STREAK_NOT_FOUND));
 
         if (streak.getAccount().isDeleted()) {

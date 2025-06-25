@@ -104,6 +104,10 @@ public class PlanServiceImpl implements IPlanService {
 
         Plan plan = planMapper.toEntity(request);
 
+        if (plan.getPhases() != null) {
+            plan.getPhases().forEach(phase -> phase.setPlan(plan));
+        }
+
         plan.setAccount(currentAccount);
 
         return planMapper.toResponse(planRepository.save(plan));
