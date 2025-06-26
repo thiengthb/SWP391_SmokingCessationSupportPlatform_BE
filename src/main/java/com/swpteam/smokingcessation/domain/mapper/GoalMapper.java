@@ -1,42 +1,45 @@
 package com.swpteam.smokingcessation.domain.mapper;
 
 import com.swpteam.smokingcessation.domain.dto.goal.GoalCreateRequest;
-import com.swpteam.smokingcessation.domain.dto.goal.GoalProgressResponse;
-import com.swpteam.smokingcessation.domain.dto.goal.GoalResponse;
+import com.swpteam.smokingcessation.domain.dto.goal.GoalDetailsResponse;
+import com.swpteam.smokingcessation.domain.dto.goal.GoalListItemResponse;
 import com.swpteam.smokingcessation.domain.dto.goal.GoalUpdateRequest;
 import com.swpteam.smokingcessation.domain.entity.Goal;
-import com.swpteam.smokingcessation.domain.entity.GoalProgress;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 
-import java.util.List;
+import java.math.BigDecimal;
+import java.sql.Timestamp;
 
 @Mapper(componentModel = "spring")
 public interface GoalMapper {
 
     Goal toEntity(GoalCreateRequest request);
 
-    GoalResponse toResponse(Goal entity);
+    GoalDetailsResponse toResponse(Goal entity);
 
-    @Mapping(target = "goalProgress", expression = "java(filterProgress(entity.getGoalProgresses(), accountId))")
-    GoalResponse toResponse(Goal entity, String accountId);
-
-    default GoalProgressResponse filterProgress(List<GoalProgress> progresses, String accountId) {
-        if (progresses == null) return null;
-
-        return progresses.stream()
-                .filter(p -> p.getAccount().getId().equals(accountId))
-                .findFirst()
-                .map(p -> GoalProgressResponse.builder()
-                        .id(p.getId())
-                        .progress(p.getProgress().setScale(4))
-                        .build()) // or use your mapper
-                .orElse(null);
-    }
+    GoalListItemResponse toResponse(GoalDetailsResponse entity, String accountId);
 
     @Mapping(target = "goalProgress", ignore = true)
-    GoalResponse toAdminResponse(Goal entity);
+    GoalListItemResponse toAdminResponse(Goal entity);
+
+    default GoalDetailsResponse mapRowToGoalDetails(Object[] row) {
+        Timestamp createdAtTs = (Timestamp) row[6];
+        Timestamp updatedAtTs = (Timestamp) row[7];
+
+        return GoalDetailsResponse.builder()
+                .id((String) row[0])
+                .name((String) row[1])
+                .iconUrl((String) row[2])
+                .description((String) row[3])
+                .criteriaType((String) row[4])
+                .criteriaValue((Integer) row[5])
+                .createdAt(createdAtTs != null ? createdAtTs.toLocalDateTime() : null)
+                .updatedAt(updatedAtTs != null ? updatedAtTs.toLocalDateTime() : null)
+                .goalProgress((BigDecimal) row[8])
+                .build();
+    }
 
     void update(@MappingTarget Goal entity, GoalUpdateRequest request);
 }

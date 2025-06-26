@@ -159,11 +159,13 @@ public enum SuccessCode {
     SUMMARY_GET(3101, "Successfully get summary"),
 
     // Goal
-    GOAL_GET_ALL(6000, "Successfully retrieved all achievements"),
-    GOAL_GET_BY_NAME(6001, "Successfully retrieved achievement by name"),
+    GOAL_GET_PUBLIC_GOALS(6000, "Successfully retrieved all public goals"),
+    GOAL_GET_BY_NAME(6001, "Successfully retrieved goal by name"),
     GOAL_CREATED(6002, "Goal created successfully"),
     GOAL_UPDATED(6003, "Goal updated successfully"),
     GOAL_DELETED(6004, "Goal deleted successfully"),
+    GOAL_GET_PERSONAL_GOALS(6005, "Successfully retrieved all personal goals"),
+    GOAL_GET_DETAILS(6005, "Successfully retrieved goal details"),
 
     // Feedback
     FEEDBACK_GET_ALL(7000, "Successfully retrieved all feedback"),
@@ -183,16 +185,16 @@ public enum SuccessCode {
     REVIEW_DELETED(8006, "Review deleted successfully"),
 
     // TimeTable
-    TIMETABLE_GET_BY_ID(2313,"Successfully get timetable"),
-    TIMETABLE_CREATED(1232,"Successfully created timetable"),
-    TIMETABLE_GET_ALL(2343,"Successfully return list timetable"),
+    TIMETABLE_GET_BY_ID(2313, "Successfully get timetable"),
+    TIMETABLE_CREATED(1232, "Successfully created timetable"),
+    TIMETABLE_GET_ALL(2343, "Successfully return list timetable"),
 
     // Setting
-    SETTING_UPDATED(1232,"Successfully updated setting"),
-    SETTING_GOTTEN(2343,"Successfully gotten setting"),
+    SETTING_UPDATED(1232, "Successfully updated setting"),
+    SETTING_GOTTEN(2343, "Successfully gotten setting"),
 
     // Stripe
-    CHECKOUT_SUCCESS(1232,"Successfully checkout"),
+    CHECKOUT_SUCCESS(1232, "Successfully checkout"),
 
 
     ;
