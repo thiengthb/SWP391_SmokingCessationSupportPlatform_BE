@@ -3,6 +3,8 @@ package com.swpteam.smokingcessation.schedule;
 import com.swpteam.smokingcessation.domain.entity.*;
 import com.swpteam.smokingcessation.domain.enums.PhaseStatus;
 import com.swpteam.smokingcessation.domain.enums.PlanStatus;
+import com.swpteam.smokingcessation.domain.enums.ScoreRule;
+import com.swpteam.smokingcessation.service.interfaces.profile.IScoreService;
 import com.swpteam.smokingcessation.service.interfaces.profile.ISettingService;
 import com.swpteam.smokingcessation.service.interfaces.tracking.IPhaseService;
 import com.swpteam.smokingcessation.service.interfaces.tracking.IPlanService;
@@ -28,6 +30,7 @@ public class PhaseAndPlanUpdater {
     IPlanService planService;
     IPhaseService phaseService;
     IRecordHabitService recordHabitService;
+    IScoreService scoreService;
 
     @Scheduled(cron = "0 * * * * *") // Chạy mỗi phút
     public void updatePhasesAndPlans() {
@@ -70,18 +73,24 @@ public class PhaseAndPlanUpdater {
                     if (phase.getPhaseStatus().equals(PhaseStatus.SUCCESS)) {
                         successCount++;
                     }
-                    }
-                    double successRatio = (double) successCount / totalPhases;
-                    PlanStatus planStatus = (successCount > totalPhases / 2) ? PlanStatus.COMPLETE : PlanStatus.FAILED;
-                    plan.setPlanStatus(planStatus);
-                    planService.updateCompletedPlan(plan, successRatio * 100.0, plan.getPlanStatus());
                 }
+
+                double successRatio = (double) successCount / totalPhases;
+                PlanStatus planStatus = (successCount > totalPhases / 2) ? PlanStatus.COMPLETE : PlanStatus.FAILED;
+                plan.setPlanStatus(planStatus);
+
+                if (planStatus == PlanStatus.COMPLETE) {
+                    scoreService.updateScore(account.getId(), ScoreRule.PLAN_SUCCESS);
+                }
+
+                planService.updateCompletedPlan(plan, successRatio * 100.0, plan.getPlanStatus());
             }
         }
-
-        @Scheduled(cron = "0 0 0 * * *")
-        public void checkPendingPlans () {
-            planService.dailyCheckingPlanStatus();
-        }
-
     }
+
+    @Scheduled(cron = "0 0 0 * * *")
+    public void checkPendingPlans() {
+        planService.dailyCheckingPlanStatus();
+    }
+
+}

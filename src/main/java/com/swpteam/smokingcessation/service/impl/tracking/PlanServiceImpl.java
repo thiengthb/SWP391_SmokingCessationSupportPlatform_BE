@@ -296,4 +296,9 @@ public class PlanServiceImpl implements IPlanService {
         plan.setPlanStatus(planStatus);
         planRepository.save(plan);
     }
+
+    @Override
+    public List<Plan> getAllActivePlans() {
+        return planRepository.findAllByPlanStatusAndIsDeletedFalse(PlanStatus.ACTIVE);
+    }
 }

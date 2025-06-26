@@ -1,5 +1,7 @@
 package com.swpteam.smokingcessation.domain.entity;
 
+import com.swpteam.smokingcessation.common.AuditableEntity;
+import com.swpteam.smokingcessation.domain.enums.ScoreRule;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -11,7 +13,7 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class Score {
+public class Score extends AuditableEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -23,4 +25,6 @@ public class Score {
     Account account;
 
     int number;
+
 }
+//enum

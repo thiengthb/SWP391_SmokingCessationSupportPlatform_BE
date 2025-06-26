@@ -9,6 +9,7 @@ import com.swpteam.smokingcessation.domain.entity.Plan;
 import com.swpteam.smokingcessation.domain.enums.PlanStatus;
 import org.springframework.data.domain.Page;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface IPlanService {
@@ -34,4 +35,6 @@ public interface IPlanService {
     void dailyCheckingPlanStatus();
 
     void updateCompletedPlan(Plan plan, double successRate, PlanStatus planStatus);
+
+    List<Plan> getAllActivePlans();
 }

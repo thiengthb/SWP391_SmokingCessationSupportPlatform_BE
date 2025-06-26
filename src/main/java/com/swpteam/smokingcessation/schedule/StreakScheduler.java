@@ -3,10 +3,12 @@ package com.swpteam.smokingcessation.schedule;
 import com.swpteam.smokingcessation.constant.ErrorCode;
 import com.swpteam.smokingcessation.domain.entity.Setting;
 import com.swpteam.smokingcessation.domain.entity.Streak;
+import com.swpteam.smokingcessation.domain.enums.ScoreRule;
 import com.swpteam.smokingcessation.exception.AppException;
 import com.swpteam.smokingcessation.repository.RecordHabitRepository;
 import com.swpteam.smokingcessation.repository.SettingRepository;
 import com.swpteam.smokingcessation.repository.StreakRepository;
+import com.swpteam.smokingcessation.service.interfaces.profile.IScoreService;
 import com.swpteam.smokingcessation.service.interfaces.tracking.IStreakService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +31,7 @@ public class StreakScheduler {
     RecordHabitRepository recordHabitRepository;
     StreakRepository streakRepository;
     IStreakService streakService;
+    IScoreService scoreService;
 
     @Scheduled(cron = "0 * * * * *")
     public void checkAndResetStreak() {
@@ -58,6 +61,7 @@ public class StreakScheduler {
                 }
 
                 streakService.resetStreak(accountId);
+                scoreService.updateScore(accountId, ScoreRule.REPORT_DAY_MISS);
             } catch (Exception e) {
                 log.error("Failed to reset streak for setting accountId: {}", setting.getAccount().getId(), e);
                 throw new AppException(ErrorCode.STREAK_RESET_FAILED);

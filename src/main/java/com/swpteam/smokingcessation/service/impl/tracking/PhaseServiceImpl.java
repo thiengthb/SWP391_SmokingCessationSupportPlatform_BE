@@ -2,12 +2,16 @@ package com.swpteam.smokingcessation.service.impl.tracking;
 
 import com.swpteam.smokingcessation.domain.entity.RecordHabit;
 import com.swpteam.smokingcessation.domain.enums.PhaseStatus;
+import com.swpteam.smokingcessation.domain.enums.ScoreRule;
 import com.swpteam.smokingcessation.domain.mapper.PhaseMapper;
 import com.swpteam.smokingcessation.domain.dto.phase.PhaseResponse;
 import com.swpteam.smokingcessation.constant.ErrorCode;
 import com.swpteam.smokingcessation.domain.entity.Phase;
 import com.swpteam.smokingcessation.exception.AppException;
+import com.swpteam.smokingcessation.integration.mail.IMailService;
 import com.swpteam.smokingcessation.repository.PhaseRepository;
+import com.swpteam.smokingcessation.service.impl.notification.PhaseSummaryService;
+import com.swpteam.smokingcessation.service.interfaces.profile.IScoreService;
 import com.swpteam.smokingcessation.service.interfaces.tracking.IPhaseService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -33,6 +37,9 @@ public class PhaseServiceImpl implements IPhaseService {
 
     PhaseMapper phaseMapper;
     PhaseRepository phaseRepository;
+    PhaseSummaryService phaseSummaryService;
+    IMailService mailService;
+    IScoreService scoreService;
 
     @Override
     @PreAuthorize("hasRole('MEMBER')")
@@ -118,15 +125,21 @@ public class PhaseServiceImpl implements IPhaseService {
         if (failedDueToCigaretteOveruse || failedDueToMissingRecords) {
             phase.setSuccessRate(0.0);
             phase.setPhaseStatus(PhaseStatus.FAILED);
+            scoreService.updateScore(phase.getPlan().getAccount().getId(), ScoreRule.PHASE_FAIL);
         } else {
             phase.setSuccessRate(successRate);
             phase.setPhaseStatus(PhaseStatus.SUCCESS);
+            scoreService.updateScore(phase.getPlan().getAccount().getId(), ScoreRule.PHASE_SUCCESS);
         }
 
         log.info("Calculated successRate={} for Phase ID={}, successDays={}, totalDays={}, missingDays={}",
                 successRate, phase.getId(), successDays, totalDays, missingDays);
 
         phaseRepository.save(phase);
+        PhaseResponse phaseResponse = phaseMapper.toResponse(phase);
+        String userMail = phase.getPlan().getAccount().getEmail();
+        mailService.sendPhaseSummary(userMail, phaseResponse);
+
     }
 
     @Override

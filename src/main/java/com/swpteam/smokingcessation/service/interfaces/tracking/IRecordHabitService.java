@@ -10,6 +10,7 @@ import org.springframework.data.domain.Page;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 public interface IRecordHabitService {
 
@@ -29,4 +30,7 @@ public interface IRecordHabitService {
 
     List<RecordHabit> findAllByAccountIdAndDateBetweenAndIsDeletedFalse(String accountId, LocalDate start, LocalDate end);
 
+    Optional<RecordHabit> getRecordByDate(String accountId, LocalDate date);
+
+    Optional<RecordHabit> getLatestRecordBeforeDate(String accountId, LocalDate date);
 }

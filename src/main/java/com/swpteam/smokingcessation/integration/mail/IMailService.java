@@ -1,5 +1,7 @@
 package com.swpteam.smokingcessation.integration.mail;
 
+import com.swpteam.smokingcessation.domain.dto.phase.PhaseResponse;
+import com.swpteam.smokingcessation.domain.dto.plan.PlanResponse;
 import com.swpteam.smokingcessation.domain.dto.report.PlanSummaryResponse;
 import com.swpteam.smokingcessation.domain.dto.report.ReportSummaryResponse;
 import com.swpteam.smokingcessation.domain.entity.Account;
@@ -17,5 +19,7 @@ public interface IMailService {
 
     void sendReportEmail(String to, ReportSummaryResponse report);
 
-    void sendPlanSummaryEmail(Account account, PlanSummaryResponse summary);
+    void sendPhaseSummary(String to, PhaseResponse phaseResponse);
+
+    void sendPlanSummary(String to, PlanResponse planResponse);
 }

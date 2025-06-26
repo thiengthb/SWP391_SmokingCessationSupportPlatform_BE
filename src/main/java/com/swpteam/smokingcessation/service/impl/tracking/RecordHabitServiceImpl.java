@@ -10,11 +10,13 @@ import com.swpteam.smokingcessation.domain.entity.Account;
 import com.swpteam.smokingcessation.domain.entity.Plan;
 import com.swpteam.smokingcessation.domain.entity.RecordHabit;
 import com.swpteam.smokingcessation.domain.entity.Streak;
+import com.swpteam.smokingcessation.domain.enums.ScoreRule;
 import com.swpteam.smokingcessation.domain.mapper.RecordHabitMapper;
 import com.swpteam.smokingcessation.exception.AppException;
 import com.swpteam.smokingcessation.repository.RecordHabitRepository;
 import com.swpteam.smokingcessation.repository.StreakRepository;
 import com.swpteam.smokingcessation.service.interfaces.identity.IAccountService;
+import com.swpteam.smokingcessation.service.interfaces.profile.IScoreService;
 import com.swpteam.smokingcessation.service.interfaces.tracking.IPlanService;
 import com.swpteam.smokingcessation.service.interfaces.tracking.IRecordHabitService;
 import com.swpteam.smokingcessation.service.interfaces.tracking.IStreakService;
@@ -32,6 +34,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -45,7 +48,7 @@ public class RecordHabitServiceImpl implements IRecordHabitService {
     IStreakService streakService;
     IAccountService accountService;
     AuthUtilService authUtilService;
-
+    IScoreService scoreService;
 
     @Override
     public PageResponse<RecordHabitResponse> getMyRecordPage(PageableRequest request) {
@@ -93,7 +96,7 @@ public class RecordHabitServiceImpl implements IRecordHabitService {
                 .orElseGet(() -> streakService.createStreak(curentAccount.getId(), 0));
 
         streakService.updateStreak(curentAccount.getId(), streak.getNumber() + 1);
-
+        scoreService.updateScore(curentAccount.getId(), ScoreRule.REPORT_DAY_HAS);
         return recordHabitMapper.toResponse(recordHabitRepository.save(recordHabit));
     }
 
@@ -142,8 +145,19 @@ public class RecordHabitServiceImpl implements IRecordHabitService {
 
     @Override
     public List<RecordHabit> findAllByAccountIdAndDateBetweenAndIsDeletedFalse(String accountId, LocalDate start, LocalDate end) {
-        return recordHabitRepository.findAllByAccountIdAndDateBetweenAndIsDeletedFalse(accountId,start,end)
-                .orElseThrow(()-> new AppException(ErrorCode.RECORD_NOT_FOUND));
+        return recordHabitRepository.findAllByAccountIdAndDateBetweenAndIsDeletedFalse(accountId, start, end)
+                .orElseThrow(() -> new AppException(ErrorCode.RECORD_NOT_FOUND));
+    }
+
+    @Override
+    public Optional<RecordHabit> getRecordByDate(String accountId, LocalDate date) {
+        return recordHabitRepository.findByAccountIdAndDate(accountId, date);
+
+    }
+
+    @Override
+    public Optional<RecordHabit> getLatestRecordBeforeDate(String accountId, LocalDate date) {
+        return recordHabitRepository.findTopByAccountIdAndDateLessThanOrderByDateDesc(accountId, date);
     }
 
 }

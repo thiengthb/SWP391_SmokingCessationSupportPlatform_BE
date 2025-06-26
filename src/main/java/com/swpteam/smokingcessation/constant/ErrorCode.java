@@ -100,7 +100,7 @@ public enum ErrorCode {
     MOTIVATION_MIN(7004, "Motivation per day must be at least 1", HttpStatus.BAD_REQUEST),
     MOTIVATION_MAX(7005, "Motivation per day must be at most 100", HttpStatus.BAD_REQUEST),
     DEADLINE_REQUIRED(7006, "Report deadline is required", HttpStatus.BAD_REQUEST),
-    SETTING_NOT_FOUND(1312,"Setting not found",HttpStatus.BAD_REQUEST),
+    SETTING_NOT_FOUND(1312, "Setting not found", HttpStatus.BAD_REQUEST),
 
     //Member
     MEMBER_EXISTED(8000, "Member fields already exist", HttpStatus.BAD_REQUEST),
@@ -161,7 +161,7 @@ public enum ErrorCode {
     INVALID_PHASE_DATE(2343, "End date must be after start date", HttpStatus.BAD_REQUEST),
     NEW_PHASE_CONFLICT(2346, "New phase conflict with old phase", HttpStatus.BAD_REQUEST),
     INVALID_PLAN_DURATION(23123, "Plan need to be at least 2 weeks", HttpStatus.BAD_REQUEST),
-    PLAN_ALREADY_EXISTS(3213,"Member is currently on plan, please quit old plan before start new plan",HttpStatus.BAD_REQUEST),
+    PLAN_ALREADY_EXISTS(3213, "Member is currently on plan, please quit old plan before start new plan", HttpStatus.BAD_REQUEST),
 
     // Phase
     PHASE_START_DATE_REQUIRED(1023, "start date required", HttpStatus.BAD_REQUEST),
@@ -289,7 +289,8 @@ public enum ErrorCode {
     TIMETABLE_NAME_REQUIRED(1232, "TimeTable name required", HttpStatus.BAD_REQUEST),
     TIMETABLE_DESCRIPTION_REQUIRED(1232, "TimeTable desctiption required", HttpStatus.BAD_REQUEST),
 
-
+    //Score
+    SCORE_NOT_FOUND(3242, "Account not found", HttpStatus.BAD_REQUEST),
     ;
     int code;
     String message;

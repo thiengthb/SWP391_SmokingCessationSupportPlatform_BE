@@ -1,6 +1,8 @@
 package com.swpteam.smokingcessation.integration.mail;
 
 import com.swpteam.smokingcessation.constant.ErrorCode;
+import com.swpteam.smokingcessation.domain.dto.phase.PhaseResponse;
+import com.swpteam.smokingcessation.domain.dto.plan.PlanResponse;
 import com.swpteam.smokingcessation.domain.dto.report.PlanSummaryResponse;
 import com.swpteam.smokingcessation.domain.dto.report.ReportSummaryResponse;
 import com.swpteam.smokingcessation.domain.entity.Account;
@@ -139,23 +141,35 @@ public class MailServiceImpl implements IMailService {
     }
 
     @Override
-    public void sendPlanSummaryEmail(Account account, PlanSummaryResponse summary) {
+    public void sendPhaseSummary(String to, PhaseResponse phaseResponse) {
         buildAndSendMail(
-                "Kết quả kế hoạch bỏ thuốc của bạn",
-                account.getEmail(),
-                "plan-summary-template",
+                "Phase Summary Report",
+                to,
+                "phase-summary-template", // Tên file template thymeleaf bạn sẽ tạo sau
                 List.of(
-                        Map.entry("username", account.getUsername()),
-                        Map.entry("successRate", summary.getSuccessRate()),
-                        Map.entry("leastSmokeDay", summary.getLeastSmokeDay()),
-                        Map.entry("mostSmokeDay", summary.getMostSmokeDay()),
-                        Map.entry("reportedDays", summary.getReportedDays()),
-                        Map.entry("missedDays", summary.getMissedDays()),
-                        Map.entry("sendTime", LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")))
+                        Map.entry("phase", phaseResponse.getPhase()),
+                        Map.entry("phaseName", phaseResponse.getPhaseName()),
+                        Map.entry("startDate", phaseResponse.getStartDate()),
+                        Map.entry("endDate", phaseResponse.getEndDate()),
+                        Map.entry("successRate", String.format("%.2f%%", phaseResponse.getSuccessRate())),
+                        Map.entry("phaseResult", phaseResponse.getPhaseStatus())
                 )
         );
-        log.info("📧 Plan summary mail sent successfully to {} <{}>", account.getId(), account.getEmail());
+        log.info("Phase summary mail sent to {}", to);
     }
+
+    @Override
+    public void sendPlanSummary(String to, PlanResponse planResponse) {
+        buildAndSendMail(
+                "Plan Summary Report",
+                to,
+                "plan-summary-template",
+                List.of(
+
+                )
+        );
+    }
+
 
     private void buildAndSendMail(
             String title,
