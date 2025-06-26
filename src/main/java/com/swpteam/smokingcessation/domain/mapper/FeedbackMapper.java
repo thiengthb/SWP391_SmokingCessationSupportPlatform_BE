@@ -11,7 +11,7 @@ import org.mapstruct.MappingTarget;
 public interface FeedbackMapper {
     Feedback toEntity(FeedbackRequest request);
 
-    @Mapping(source = "account.id", target = "accountId")
+    @Mapping(source = "account.username", target = "userName")
     FeedbackResponse toResponse(Feedback feedback);
 
     void update(@MappingTarget Feedback feedback, FeedbackRequest request);

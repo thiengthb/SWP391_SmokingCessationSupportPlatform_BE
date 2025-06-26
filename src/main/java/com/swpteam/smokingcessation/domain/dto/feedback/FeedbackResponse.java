@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 public class FeedbackResponse {
 
     String id;
-    String accountId;
+    String userName;
     String comment;
     int rating;
     LocalDateTime createdAt;

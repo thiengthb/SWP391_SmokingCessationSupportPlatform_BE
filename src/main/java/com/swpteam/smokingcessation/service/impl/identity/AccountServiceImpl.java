@@ -73,7 +73,7 @@ public class AccountServiceImpl implements IAccountService {
         account.setPassword(passwordEncoder.encode(request.password()));
         account.setProvider(AuthProvider.LOCAL);
         account.setSetting(Setting.getDefaultSetting(account));
-
+        account.setStatus(AccountStatus.OFFLINE);
         return accountMapper.toResponse(accountRepository.save(account));
     }
 

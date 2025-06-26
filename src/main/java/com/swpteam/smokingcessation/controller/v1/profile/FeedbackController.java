@@ -30,7 +30,7 @@ public class FeedbackController {
 
     @GetMapping
     ResponseEntity<ApiResponse<PageResponse<FeedbackResponse>>> getFeedbackPage(
-            @RequestBody @Valid PageableRequest request
+             @Valid PageableRequest request
     ) {
         return ResponseUtil.buildResponse(
                 SuccessCode.FEEDBACK_GET_ALL,
