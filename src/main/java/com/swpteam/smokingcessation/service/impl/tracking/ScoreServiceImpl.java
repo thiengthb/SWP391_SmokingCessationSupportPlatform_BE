@@ -18,10 +18,10 @@ public class ScoreServiceImpl implements IScoreService {
         Score score = scoreRepository.findByAccountIdAndIsDeletedFalse(accountId)
                 .orElseThrow(() -> new AppException(ErrorCode.SCORE_NOT_FOUND));
 
-        int current = score.getNumber();
+        int current = score.getScore();
         int updated = Math.max(0, current + point.getPoint());
 
-        score.setNumber(updated);
+        score.setScore(updated);
         return scoreRepository.save(score);
     }
 
