@@ -21,7 +21,6 @@ public class Score extends AuditableEntity {
 
     int score;
 
-
     public static Score getDefaultScore(Account account) {
         return Score.builder()
                 .account(account)

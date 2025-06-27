@@ -33,4 +33,6 @@ public interface IRecordHabitService {
     Optional<RecordHabit> getRecordByDate(String accountId, LocalDate date);
 
     Optional<RecordHabit> getLatestRecordBeforeDate(String accountId, LocalDate date);
+
+    List<RecordHabit> getAllRecord(String accountId);
 }

@@ -1,11 +1,11 @@
 package com.swpteam.smokingcessation.schedule;
 
-import com.swpteam.smokingcessation.domain.entity.Account;
-import com.swpteam.smokingcessation.domain.entity.Plan;
+
+import com.swpteam.smokingcessation.domain.entity.Member;
 import com.swpteam.smokingcessation.domain.entity.RecordHabit;
 import com.swpteam.smokingcessation.domain.enums.ScoreRule;
+import com.swpteam.smokingcessation.service.interfaces.profile.IMemberService;
 import com.swpteam.smokingcessation.service.interfaces.profile.IScoreService;
-import com.swpteam.smokingcessation.service.interfaces.tracking.IPlanService;
 import com.swpteam.smokingcessation.service.interfaces.tracking.IRecordHabitService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -24,31 +24,53 @@ import java.util.Optional;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class ScoreScheduler {
 
-    IPlanService planService;
     IRecordHabitService recordHabitService;
     IScoreService scoreService;
+    IMemberService memberService;
 
-    @Scheduled(cron = "0 0 0 * * *")
+    @Scheduled(cron = "0 17 16 * * *")
     //day 26
     public void scoringCalculate() {
         LocalDate yesterday = LocalDate.now().minusDays(1); // day 25 -ngày cần chấm điểm
 
-        List<Plan> activePlans = planService.getAllActivePlans();
+        List<Member> members = memberService.findAllMember();
 
-        for (Plan plan : activePlans) {
-            Account account = plan.getAccount();
-            String accountId = account.getId();
+        for (Member member : members) {
+            String accountId = member.getAccount().getId();
+
+            List<RecordHabit> records = recordHabitService.getAllRecord(accountId);
+
+            long noSmokeDays = records.stream()
+                    .filter(r->r.getCigarettesSmoked()==0)
+                    .count();
+//repo
+            switch((int) noSmokeDays){
+                case 10:
+                    scoreService.updateScore(accountId,ScoreRule.NO_SMOKING_FOR_10DAYS);
+                    break;
+                case 30:
+                    scoreService.updateScore(accountId,ScoreRule.NO_SMOKING_FOR_30DAYS);
+                    break;
+                case 180:
+                    scoreService.updateScore(accountId,ScoreRule.NO_SMOKING_FOR_180DAYS);
+                    break;
+                case 365:
+                    scoreService.updateScore(accountId,ScoreRule.NO_SMOKING_FOR_365DAYS);
+                    break;
+            }
 
             Optional<RecordHabit> recordY = recordHabitService.getRecordByDate(accountId, yesterday);
             if (recordY.isEmpty()) continue;
 
             int cigY = recordY.get().getCigarettesSmoked();
+            log.info("Yesterday cigarettes smoked [{}]", cigY);
 
             // day24/23,...
             Optional<RecordHabit> recordBeforeY = recordHabitService.getLatestRecordBeforeDate(accountId, yesterday);
             if (recordBeforeY.isEmpty()) continue;
             ;
             int cigBefore = recordBeforeY.get().getCigarettesSmoked();
+            log.info("Previous cigarettes smoked [{}]", cigBefore);
 
             if (cigY == 0) {
                 scoreService.updateScore(accountId, ScoreRule.NO_SMOKE);

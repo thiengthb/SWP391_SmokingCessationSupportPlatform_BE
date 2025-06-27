@@ -160,4 +160,12 @@ public class RecordHabitServiceImpl implements IRecordHabitService {
         return recordHabitRepository.findTopByAccountIdAndDateLessThanOrderByDateDesc(accountId, date);
     }
 
+    @Override
+    public List<RecordHabit> getAllRecord(String accountId) {
+        List<RecordHabit> recordHabits = recordHabitRepository.findAllByAccountIdAndIsDeletedFalse(accountId)
+                .orElseThrow(() -> new AppException(ErrorCode.RECORD_NOT_FOUND));
+        log.info("list record {}",recordHabits.size());
+        return recordHabits;
+    }
+
 }

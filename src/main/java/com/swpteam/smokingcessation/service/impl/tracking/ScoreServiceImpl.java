@@ -7,9 +7,16 @@ import com.swpteam.smokingcessation.domain.enums.ScoreRule;
 import com.swpteam.smokingcessation.exception.AppException;
 import com.swpteam.smokingcessation.repository.ScoreRepository;
 import com.swpteam.smokingcessation.service.interfaces.profile.IScoreService;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
+@RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class ScoreServiceImpl implements IScoreService {
     ScoreRepository scoreRepository;
 
@@ -22,6 +29,7 @@ public class ScoreServiceImpl implements IScoreService {
         int updated = Math.max(0, current + point.getPoint());
 
         score.setScore(updated);
+        log.info("Updated score: [{}]", updated);
         return scoreRepository.save(score);
     }
 

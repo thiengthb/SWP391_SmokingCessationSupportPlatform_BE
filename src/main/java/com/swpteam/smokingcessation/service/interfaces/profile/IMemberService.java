@@ -7,6 +7,8 @@ import com.swpteam.smokingcessation.domain.dto.member.MemberResponse;
 import com.swpteam.smokingcessation.domain.entity.Member;
 import org.springframework.data.domain.Page;
 
+import java.util.List;
+
 public interface IMemberService {
 
     MemberResponse createMember(MemberRequest request);
@@ -20,4 +22,6 @@ public interface IMemberService {
     MemberResponse updateMyMemberProfile(MemberRequest request);
 
     Member findMemberByIdOrThrowError(String id);
+
+    List<Member> findAllMember();
 }

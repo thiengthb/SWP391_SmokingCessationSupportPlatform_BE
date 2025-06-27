@@ -29,4 +29,6 @@ public interface RecordHabitRepository extends JpaRepository<RecordHabit, String
 
     Optional<RecordHabit> findTopByAccountIdAndDateLessThanOrderByDateDesc(String accountId, LocalDate date);
 
+    Optional<List<RecordHabit>> findAllByAccountIdAndIsDeletedFalse(String accountId);
+
 }
