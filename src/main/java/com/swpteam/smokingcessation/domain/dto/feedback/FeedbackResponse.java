@@ -1,5 +1,6 @@
 package com.swpteam.smokingcessation.domain.dto.feedback;
 
+import com.swpteam.smokingcessation.domain.enums.FeedbackType;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -18,4 +19,5 @@ public class FeedbackResponse {
     int rating;
     LocalDateTime createdAt;
     LocalDateTime updatedAt;
+    FeedbackType feedbackType;
 }
