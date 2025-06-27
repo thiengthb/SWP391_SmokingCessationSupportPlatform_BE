@@ -9,9 +9,10 @@ import com.nimbusds.jose.crypto.MACVerifier;
 import com.nimbusds.jwt.SignedJWT;
 import com.swpteam.smokingcessation.constant.ErrorCode;
 import com.swpteam.smokingcessation.domain.entity.Account;
-import com.swpteam.smokingcessation.domain.entity.RefreshToken;
+import com.swpteam.smokingcessation.domain.entity.Token;
+import com.swpteam.smokingcessation.domain.enums.TokenType;
 import com.swpteam.smokingcessation.exception.AppException;
-import com.swpteam.smokingcessation.repository.RefreshTokenRepository;
+import com.swpteam.smokingcessation.repository.TokenRepository;
 import com.swpteam.smokingcessation.service.interfaces.identity.ITokenService;
 import com.swpteam.smokingcessation.utils.JwtUtil;
 import jakarta.annotation.PostConstruct;
@@ -29,7 +30,7 @@ import org.springframework.stereotype.Service;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class TokenServiceImplement implements ITokenService {
 
-    final RefreshTokenRepository refreshTokenRepository;
+    final TokenRepository tokenRepository;
 
     @Value("${jwt.access-token.duration}")
     long ACCESS_TOKEN_DURATION;
@@ -38,7 +39,10 @@ public class TokenServiceImplement implements ITokenService {
     long REFRESH_TOKEN_DURATION;
 
     @Value("${jwt.password-reset-token.duration}")
-    long RESET_EMAIL_DURATION;
+    long PASSWORD_RESET_TOKEN_DURATION;
+
+    @Value("${jwt.email-verification-token.duration}")
+    long EMAIL_VERIFY_TOKEN_DURATION;
 
     @Value("${jwt.access-token.signer-key}")
     String ACCESS_TOKEN_SIGNER_KEY;
@@ -49,13 +53,18 @@ public class TokenServiceImplement implements ITokenService {
     @Value("${jwt.password-reset-token.signer-key}")
     String PASSWORD_RESET_TOKEN_SIGNER_KEY;
 
+    @Value("${jwt.email-verification-token.signer-key}")
+    String EMAIL_VERIFY_TOKEN_SIGNER_KEY;
+
     JWSSigner accessTokenSigner;
     JWSSigner refreshTokenSigner;
     JWSSigner passwordResetTokenSigner;
+    JWSSigner verificationEmailTokenSigner;
 
     JWSVerifier accessTokenVerifier;
     JWSVerifier refreshTokenVerifier;
     JWSVerifier passwordResetTokenVerifier;
+    JWSVerifier verificationEmailTokenVerifier;
 
     @PostConstruct
     public void init() {
@@ -63,10 +72,13 @@ public class TokenServiceImplement implements ITokenService {
             accessTokenSigner = new MACSigner(ACCESS_TOKEN_SIGNER_KEY);
             refreshTokenSigner = new MACSigner(REFRESH_TOKEN_SIGNER_KEY);
             passwordResetTokenSigner = new MACSigner(PASSWORD_RESET_TOKEN_SIGNER_KEY);
+            verificationEmailTokenSigner = new MACSigner(EMAIL_VERIFY_TOKEN_SIGNER_KEY);
 
             accessTokenVerifier = new MACVerifier(ACCESS_TOKEN_SIGNER_KEY);
             refreshTokenVerifier = new MACVerifier(REFRESH_TOKEN_SIGNER_KEY);
             passwordResetTokenVerifier = new MACVerifier(PASSWORD_RESET_TOKEN_SIGNER_KEY);
+            verificationEmailTokenVerifier = new MACVerifier(EMAIL_VERIFY_TOKEN_SIGNER_KEY);
+
         } catch (KeyLengthException e) {
             throw new IllegalArgumentException("Invalid secret key length", e);
         } catch (JOSEException e) {
@@ -74,46 +86,76 @@ public class TokenServiceImplement implements ITokenService {
         }
     }
 
+
+    // Generators
+
     @Override
     public String generateAccessToken(Account account) {
         return JwtUtil.generateToken(
                 account,
                 accessTokenSigner,
                 ACCESS_TOKEN_DURATION,
-                JwtUtil.TokenType.ACCESS
+                TokenType.ACCESS
         ).serialize();
     }
 
     @Override
-    @Transactional
     public String generateRefreshToken(Account account) {
-        refreshTokenRepository.deleteByAccountId(account.getId());
+        return generateAndSaveToken(account, TokenType.REFRESH);
+    }
 
-        SignedJWT refreshToken = JwtUtil.generateToken(
+    @Override
+    public String generateResetPasswordToken(Account account) {
+        return generateAndSaveToken(account, TokenType.PASSWORD);
+    }
+
+    @Override
+    public String generateVerificationEmailToken(Account account) {
+        return generateAndSaveToken(account, TokenType.VERIFY);
+    }
+
+    @Transactional
+    private String generateAndSaveToken(Account account, TokenType tokenType) {
+        tokenRepository.deleteByAccountIdAndTokenType(account.getId(), tokenType);
+
+        TokenSignerInfo tokenSignerInfo = getTokenSignerInfo(tokenType);
+
+        SignedJWT token = JwtUtil.generateToken(
                 account,
-                refreshTokenSigner,
-                REFRESH_TOKEN_DURATION,
-                JwtUtil.TokenType.REFRESH
+                tokenSignerInfo.signer(),
+                tokenSignerInfo.expiration(),
+                tokenType
         );
 
-        refreshTokenRepository.save(RefreshToken.builder()
-                .id(JwtUtil.getJti(refreshToken))
+        tokenRepository.save(Token.builder()
+                .id(JwtUtil.getJti(token))
                 .account(account)
-                .expiryTime(JwtUtil.getExpiration(refreshToken))
+                .tokenType(tokenType)
+                .expiryTime(JwtUtil.getExpiration(token))
                 .build());
 
-        return refreshToken.serialize();
+        return token.serialize();
     }
 
-    @Override
-    public String generateResetEmailToken(Account account) {
-        return JwtUtil.generateToken(
-                account,
-                passwordResetTokenSigner,
-                RESET_EMAIL_DURATION,
-                JwtUtil.TokenType.PASSWORD
-        ).serialize();
+    private record TokenSignerInfo(JWSSigner signer, long expiration) {}
+
+    private TokenSignerInfo getTokenSignerInfo(TokenType tokenType) {
+        return switch(tokenType) {
+            case TokenType.REFRESH
+                    -> new TokenSignerInfo(refreshTokenSigner, REFRESH_TOKEN_DURATION);
+
+            case TokenType.PASSWORD
+                    -> new TokenSignerInfo(passwordResetTokenSigner, PASSWORD_RESET_TOKEN_DURATION);
+
+            case TokenType.VERIFY
+                    -> new TokenSignerInfo(verificationEmailTokenSigner, EMAIL_VERIFY_TOKEN_DURATION);
+
+            default -> throw new AppException(ErrorCode.TOKEN_NOT_SAVABLE);
+        };
     }
+
+
+    // Verifiers
 
     @Override
     public SignedJWT verifyAccessToken(String token) {
@@ -131,44 +173,53 @@ public class TokenServiceImplement implements ITokenService {
     }
 
     @Override
-    public RefreshToken findRefreshTokenByJtiOrThrowError(String jti) {
-        RefreshToken refreshToken = refreshTokenRepository.findById(jti)
+    public SignedJWT verifyVerificationEmailToken(String token) {
+        return JwtUtil.verifyToken(token, verificationEmailTokenVerifier);
+    }
+
+
+    // Finder
+
+    @Override
+    public Token findTokenByJtiOrThrowError(String jti) {
+        Token token = tokenRepository.findById(jti)
                 .orElseThrow(() -> new AppException(ErrorCode.TOKEN_NOT_FOUND));
 
-        if (refreshToken.getAccount().isDeleted()) {
+        if (token.getAccount().isDeleted()) {
+            tokenRepository.deleteById(jti);
             throw new AppException(ErrorCode.ACCOUNT_DELETED);
         }
 
-        return refreshToken;
-    }
-
-    @Override
-    public RefreshToken findRefreshTokenByAccountIdOrThrowError(String accountId) {
-        RefreshToken refreshToken = refreshTokenRepository.findByAccountId(accountId)
-                .orElseThrow(() -> new AppException(ErrorCode.TOKEN_NOT_FOUND));
-
-        if (refreshToken.getAccount().isDeleted()) {
-            throw new AppException(ErrorCode.ACCOUNT_DELETED);
-        }
-
-        return refreshToken;
-    }
-
-    @Override
-    public void revokeRefreshTokenByJti(String jti) {
-        findRefreshTokenByJtiOrThrowError(jti);
-        refreshTokenRepository.deleteById(jti);
-    }
-
-    @Override
-    public void revokeRefreshTokenByToken(String token) {
-        String jti = JwtUtil.extractJtiWithVerification(token, refreshTokenVerifier);
-        revokeRefreshTokenByJti(jti);
+        return token;
     }
 
     @Override
     public String getAccountIdByRefreshToken(String token) {
         return JwtUtil.extractAccountIdWithVerification(token, refreshTokenVerifier);
+    }
+
+    @Override
+    public String getAccountIdByResetPasswordToken(String token) {
+        return JwtUtil.extractAccountIdWithVerification(token, passwordResetTokenVerifier);
+    }
+
+    @Override
+    public String getAccountIdByEmailVerificationToken(String token) {
+        return JwtUtil.extractAccountIdWithVerification(token, verificationEmailTokenVerifier);
+    }
+
+    // Revokes
+
+    @Override
+    public void revokeTokenByJti(String jti) {
+        findTokenByJtiOrThrowError(jti);
+        tokenRepository.deleteById(jti);
+    }
+
+    @Override
+    public void revokeRefreshTokenByToken(String token) {
+        String jti = JwtUtil.extractJtiWithVerification(token, refreshTokenVerifier);
+        revokeTokenByJti(jti);
     }
 
 }

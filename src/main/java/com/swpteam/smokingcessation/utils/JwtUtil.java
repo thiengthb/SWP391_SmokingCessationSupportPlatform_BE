@@ -5,30 +5,27 @@ import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
 import com.swpteam.smokingcessation.constant.ErrorCode;
 import com.swpteam.smokingcessation.domain.entity.Account;
+import com.swpteam.smokingcessation.domain.enums.TokenType;
 import com.swpteam.smokingcessation.exception.AppException;
 import lombok.experimental.UtilityClass;
+
 import java.text.ParseException;
+import java.time.*;
 import java.util.Date;
 import java.util.UUID;
 
 @UtilityClass
 public class JwtUtil {
 
-    public enum TokenType {
-        ACCESS,
-        REFRESH,
-        PASSWORD,
-    }
-
     public SignedJWT generateToken(Account account, JWSSigner signer, long expirySeconds, TokenType tokenType) {
-        Date now = new Date();
-        Date expiryDate = new Date(now.getTime() + expirySeconds * 1000);
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime expiry = now.plusSeconds(expirySeconds);
 
         JWTClaimsSet claimsSet = new JWTClaimsSet.Builder()
                 .subject(account.getId())
                 .issuer("swp-team")
-                .issueTime(now)
-                .expirationTime(expiryDate)
+                .issueTime(toDate(now))
+                .expirationTime(toDate(expiry))
                 .claim("token_type", tokenType.name().toUpperCase())
                 .claim("role", account.getRole().name())
                 .jwtID(UUID.randomUUID().toString())
@@ -53,16 +50,19 @@ public class JwtUtil {
             }
 
             try {
-                TokenType tokenType = TokenType.valueOf(tokenTypeStr.toUpperCase());
+                TokenType.valueOf(tokenTypeStr.toUpperCase());
             } catch (IllegalArgumentException e) {
                 throw new AppException(ErrorCode.INVALID_TOKEN);
             }
 
-            if (!jwt.verify(verifier))
+            if (!jwt.verify(verifier)) {
                 throw new AppException(ErrorCode.INVALID_TOKEN);
+            }
 
-            if (jwt.getJWTClaimsSet().getExpirationTime().before(new Date()))
+            LocalDateTime expiration = getExpiration(jwt);
+            if (expiration.isBefore(LocalDateTime.now())) {
                 throw new AppException(ErrorCode.TOKEN_EXPIRED);
+            }
 
             return jwt;
         } catch (ParseException | JOSEException e) {
@@ -73,8 +73,9 @@ public class JwtUtil {
     public String extractJtiWithVerification(String token, JWSVerifier verifier) {
         try {
             SignedJWT jwt = SignedJWT.parse(token);
-            if (!jwt.verify(verifier))
+            if (!jwt.verify(verifier)) {
                 throw new AppException(ErrorCode.INVALID_TOKEN);
+            }
             return jwt.getJWTClaimsSet().getJWTID();
         } catch (ParseException | JOSEException e) {
             throw new AppException(ErrorCode.INVALID_TOKEN);
@@ -84,8 +85,9 @@ public class JwtUtil {
     public String extractAccountIdWithVerification(String token, JWSVerifier verifier) {
         try {
             SignedJWT jwt = SignedJWT.parse(token);
-            if (!jwt.verify(verifier))
+            if (!jwt.verify(verifier)) {
                 throw new AppException(ErrorCode.INVALID_TOKEN);
+            }
             return jwt.getJWTClaimsSet().getSubject();
         } catch (ParseException | JOSEException e) {
             throw new AppException(ErrorCode.INVALID_TOKEN);
@@ -108,9 +110,10 @@ public class JwtUtil {
         }
     }
 
-    public Date getExpiration(SignedJWT jwt) {
+    public LocalDateTime getExpiration(SignedJWT jwt) {
         try {
-            return jwt.getJWTClaimsSet().getExpirationTime();
+            Date expiration = jwt.getJWTClaimsSet().getExpirationTime();
+            return toLocalDateTime(expiration);
         } catch (ParseException e) {
             throw new AppException(ErrorCode.INVALID_TOKEN);
         }
@@ -122,5 +125,14 @@ public class JwtUtil {
         } catch (ParseException e) {
             throw new AppException(ErrorCode.INVALID_TOKEN);
         }
+    }
+
+    // ✅ Helper methods
+    private Date toDate(LocalDateTime ldt) {
+        return Date.from(ldt.atZone(ZoneId.systemDefault()).toInstant());
+    }
+
+    private LocalDateTime toLocalDateTime(Date date) {
+        return LocalDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault());
     }
 }

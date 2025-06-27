@@ -49,8 +49,7 @@ public class ChatRestController {
     ) {
         chatService.softDeleteChat(id);
         return ResponseUtil.buildSuccessResponse(
-                SuccessCode.CHAT_DELETED,
-                null
+                SuccessCode.CHAT_DELETED
         );
     }
 }

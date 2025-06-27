@@ -80,12 +80,11 @@ public class ReviewController {
     }
 
     @DeleteMapping("/{id}")
-    ResponseEntity<ApiResponse<String>> softDeleteReview(
+    ResponseEntity<ApiResponse<Void>> softDeleteReview(
             @PathVariable String id
     ) {
         return ResponseUtil.buildSuccessResponse(
-                SuccessCode.REVIEW_DELETED,
-                null
+                SuccessCode.REVIEW_DELETED
         );
     }
     

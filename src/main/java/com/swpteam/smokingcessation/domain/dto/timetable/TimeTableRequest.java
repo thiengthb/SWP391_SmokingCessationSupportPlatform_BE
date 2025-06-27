@@ -17,7 +17,7 @@ public record TimeTableRequest (
     @NotNull(message = "ENDED_AT_REQUIRED")
     @Future(message = "ENDED_AT_MUST_BE_IN_FUTURE")
     LocalDateTime endedAt
-    ) {}
+) {}
 
 
 

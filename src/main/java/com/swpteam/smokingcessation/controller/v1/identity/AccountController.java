@@ -79,11 +79,10 @@ public class AccountController {
     }
 
     @DeleteMapping("/{id}")
-    ResponseEntity<ApiResponse<String>> deleteAccount(@PathVariable String id) {
+    ResponseEntity<ApiResponse<Void>> deleteAccount(@PathVariable String id) {
         accountService.deleteAccount(id);
         return ResponseUtil.buildSuccessResponse(
-                SuccessCode.ACCOUNT_DELETED,
-                null
+                SuccessCode.ACCOUNT_DELETED
         );
     }
 
@@ -111,8 +110,7 @@ public class AccountController {
     ) {
         accountService.banAccount(id);
         return ResponseUtil.buildSuccessResponse(
-                SuccessCode.ACCOUNT_BANNED,
-                null
+                SuccessCode.ACCOUNT_BANNED
         );
     }
 

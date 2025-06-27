@@ -22,6 +22,16 @@ public class ResponseUtil {
                 );
     }
 
+    public ResponseEntity<ApiResponse<Void>> buildSuccessResponse(SuccessCode code) {
+        return ResponseEntity
+                .ok(
+                        ApiResponse.<Void>builder()
+                                .code(code.getCode())
+                                .message(code.getMessage())
+                                .build()
+                );
+    }
+
 
     public ResponseEntity<ApiResponse<Void>> buildErrorResponse(ErrorCode errorCode, Exception exception) {
 

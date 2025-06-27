@@ -92,13 +92,12 @@ public class CommentController {
     }
 
     @DeleteMapping("/{id}")
-    ResponseEntity<ApiResponse<String>> deleteCommentById(
+    ResponseEntity<ApiResponse<Void>> deleteCommentById(
             @PathVariable String id
     ) {
         commentService.deleteCommentById(id);
         return ResponseUtil.buildSuccessResponse(
-                SuccessCode.COMMENT_DELETED,
-                null
+                SuccessCode.COMMENT_DELETED
         );
     }
     

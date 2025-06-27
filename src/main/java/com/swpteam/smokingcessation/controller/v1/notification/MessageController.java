@@ -74,8 +74,7 @@ public class MessageController {
     ) {
         messageService.softDeleteMessageById(id);
         return ResponseUtil.buildSuccessResponse(
-                SuccessCode.MESSAGE_DELETED,
-                null
+                SuccessCode.MESSAGE_DELETED
         );
     }
     

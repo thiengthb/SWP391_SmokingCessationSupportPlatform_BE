@@ -70,8 +70,7 @@ public class PlanController {
     ) {
         planService.softDeletePlanById(id);
         return ResponseUtil.buildSuccessResponse(
-                SuccessCode.PLAN_DELETED,
-                null
+                SuccessCode.PLAN_DELETED
         );
     }
 

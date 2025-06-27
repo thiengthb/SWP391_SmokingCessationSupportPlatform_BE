@@ -12,12 +12,9 @@ import java.time.LocalDateTime;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class TimeTableResponse {
 
-
         String id;
         String coachId;
         String description;
         LocalDateTime startedAt;
         LocalDateTime endedAt;
-
-
 }

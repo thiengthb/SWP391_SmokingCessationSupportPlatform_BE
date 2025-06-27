@@ -80,11 +80,10 @@ public class FeedbackController {
     }
 
     @DeleteMapping("/{id}")
-    ResponseEntity<ApiResponse<String>> deleteFeedbackById(@PathVariable String id) {
+    ResponseEntity<ApiResponse<Void>> deleteFeedbackById(@PathVariable String id) {
         feedbackService.softDeleteFeedbackById(id);
         return ResponseUtil.buildSuccessResponse(
-                SuccessCode.FEEDBACK_DELETED,
-                null
+                SuccessCode.FEEDBACK_DELETED
         );
     }
 

@@ -49,11 +49,12 @@ public class MailServiceImpl implements IMailService {
     @Value("${spring.mail.username}")
     String hostEmail;
 
+    @Override
     public void sendVerificationEmail(String to, String username, String verificationLink) {
         buildAndSendMail(
                 "Verify Email",
                 to,
-                "motivation-template",
+                "verification-email",
                 List.of(
                         Map.entry("username", username),
                         Map.entry("verificationLink", verificationLink)
@@ -192,7 +193,6 @@ public class MailServiceImpl implements IMailService {
             String templateName,
             List<Map.Entry<String, Object>> contextVariables
     ) {
-
         Context context = new Context();
         for (Map.Entry<String, Object> entry : contextVariables) {
             context.setVariable(entry.getKey(), entry.getValue());

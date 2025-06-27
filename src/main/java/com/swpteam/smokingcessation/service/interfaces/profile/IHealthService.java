@@ -16,6 +16,8 @@ public interface IHealthService {
 
     HealthResponse getHealthById(String id);
 
+    boolean hasCompleteFTNDAssessment();
+
     PageResponse<HealthResponse> getHealthPageByAccountId(String accountId, PageableRequest request);
 
     HealthResponse createHealth(HealthCreateRequest request);

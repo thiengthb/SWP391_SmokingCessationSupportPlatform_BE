@@ -14,7 +14,10 @@ import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import lombok.experimental.NonFinal;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -76,18 +79,14 @@ public class AuthenticationController {
     }
 
     @PostMapping("/register")
-    ResponseEntity<ApiResponse<AuthenticationResponse>> register(
+    ResponseEntity<ApiResponse<Void>> register(
             @RequestBody @Valid RegisterRequest request,
             HttpServletResponse response
     ) {
-        AuthenticationResponse authenticationResponse = authenticationService.register(request);
-
-        cookieUtil.setRefreshTokenCookie(response, authenticationResponse.getRefreshToken());
-        authenticationResponse.setRefreshToken(null);
+        authenticationService.register(request);
 
         return ResponseUtil.buildSuccessResponse(
-                SuccessCode.REGISTER_SUCCESS,
-                authenticationResponse
+                SuccessCode.REGISTER_SUCCESS
         );
     }
 
@@ -98,8 +97,7 @@ public class AuthenticationController {
         authenticationService.sendResetPasswordEmail(request.email());
 
         return ResponseUtil.buildSuccessResponse(
-                SuccessCode.SEND_MAIL_SUCCESS,
-                null
+                SuccessCode.SEND_MAIL_SUCCESS
         );
     }
 
@@ -110,8 +108,7 @@ public class AuthenticationController {
         authenticationService.resetPassword(request);
 
         return ResponseUtil.buildSuccessResponse(
-                SuccessCode.PASSWORD_RESET_SUCCESS,
-                null
+                SuccessCode.PASSWORD_RESET_SUCCESS
         );
     }
 
@@ -129,8 +126,7 @@ public class AuthenticationController {
         }
 
         return ResponseUtil.buildSuccessResponse(
-                SuccessCode.LOGOUT_SUCCESS,
-                null
+                SuccessCode.LOGOUT_SUCCESS
         );
     }
 

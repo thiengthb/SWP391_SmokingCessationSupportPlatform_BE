@@ -17,7 +17,7 @@ import java.time.LocalTime;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class SettingResponse {
-    String accountId;
+    String id;
     Theme theme;
     Language language;
     TrackingMode trackingMode;
