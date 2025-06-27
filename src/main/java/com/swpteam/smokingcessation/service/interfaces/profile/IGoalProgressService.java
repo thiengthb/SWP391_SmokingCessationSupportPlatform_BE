@@ -13,4 +13,6 @@ public interface IGoalProgressService {
     void updateProgress(Goal goal, Account account);
 
     void ensureGlobalGoalProgressForAllAccounts();
+
+    void ensureGlobalProgressForNewAccount(Account account);
 }
