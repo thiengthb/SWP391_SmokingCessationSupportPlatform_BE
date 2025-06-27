@@ -17,6 +17,7 @@ import com.swpteam.smokingcessation.constant.ErrorCode;
 import com.swpteam.smokingcessation.domain.entity.Account;
 import com.swpteam.smokingcessation.exception.AppException;
 import com.swpteam.smokingcessation.service.interfaces.identity.IAccountService;
+import com.swpteam.smokingcessation.service.interfaces.profile.IGoalProgressService;
 import com.swpteam.smokingcessation.utils.AuthUtilService;
 import com.swpteam.smokingcessation.utils.RandomUtil;
 import com.swpteam.smokingcessation.utils.ValidationUtil;
@@ -42,6 +43,8 @@ public class AccountServiceImpl implements IAccountService {
 
     AuthUtilService authUtilService;
     PasswordEncoder passwordEncoder;
+
+    IGoalProgressService goalProgressService;
 
     @Override
     @Transactional
@@ -73,6 +76,7 @@ public class AccountServiceImpl implements IAccountService {
         account.setPassword(passwordEncoder.encode(request.password()));
         account.setProvider(AuthProvider.LOCAL);
         account.setSetting(Setting.getDefaultSetting(account));
+        goalProgressService.ensureGlobalProgressForNewAccount(account);
 
         return accountMapper.toResponse(accountRepository.save(account));
     }

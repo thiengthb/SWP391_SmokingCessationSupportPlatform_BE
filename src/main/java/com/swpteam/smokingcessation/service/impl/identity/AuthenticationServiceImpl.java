@@ -23,6 +23,7 @@ import com.swpteam.smokingcessation.security.UserPrincipal;
 import com.swpteam.smokingcessation.service.interfaces.identity.IAccountService;
 import com.swpteam.smokingcessation.service.interfaces.identity.IAuthenticationService;
 import com.swpteam.smokingcessation.service.interfaces.identity.ITokenService;
+import com.swpteam.smokingcessation.service.interfaces.profile.IGoalProgressService;
 import com.swpteam.smokingcessation.utils.JwtUtil;
 import com.swpteam.smokingcessation.utils.RandomUtil;
 import jakarta.mail.MessagingException;
@@ -57,6 +58,7 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
     IMailService mailService;
     ITokenService tokenService;
     GoogleTokenVerifier googleTokenVerifier;
+    IGoalProgressService goalProgressService;
 
     @NonFinal
     @Value("${app.frontend-domain}")
@@ -152,6 +154,7 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
 
         account = accountRepository.save(account);
 
+        goalProgressService.ensureGlobalProgressForNewAccount(account);
         return AuthenticationResponse.builder()
                 .accountResponse(accountMapper.toResponse(account))
                 .accessToken(tokenService.generateAccessToken(account))
