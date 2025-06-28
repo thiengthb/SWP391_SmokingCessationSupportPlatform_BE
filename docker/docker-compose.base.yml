@@ -4,6 +4,7 @@ services:
   mysql:
     image: mysql
     container_name: mysql-db-ctn
+    restart: unless-stopped
     environment:
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
       MYSQL_DATABASE: ${MYSQL_DATABASE}
@@ -11,6 +12,7 @@ services:
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     volumes:
       - mysql_data:/var/lib/mysql
+      - ./docker/my.cnf:/etc/mysql/my.cnf:ro
     ports:
       - "3306:3306"
     networks:
