@@ -19,5 +19,5 @@ public interface MemberRepository extends JpaRepository<Member, String> {
 
     Page<Member> findAllByIsDeletedFalse(Pageable pageable);
 
-    Optional<List<Member>> findAllByIsDeletedFalse();
+    List<Member> findAllByIsDeletedFalse();
 }

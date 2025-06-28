@@ -7,7 +7,6 @@ import com.swpteam.smokingcessation.domain.dto.record.RecordHabitCreateRequest;
 import com.swpteam.smokingcessation.domain.dto.record.RecordHabitResponse;
 import com.swpteam.smokingcessation.domain.dto.record.RecordHabitUpdateRequest;
 import com.swpteam.smokingcessation.domain.entity.Account;
-import com.swpteam.smokingcessation.domain.entity.Plan;
 import com.swpteam.smokingcessation.domain.entity.RecordHabit;
 import com.swpteam.smokingcessation.domain.entity.Streak;
 import com.swpteam.smokingcessation.domain.enums.ScoreRule;
@@ -17,7 +16,6 @@ import com.swpteam.smokingcessation.repository.RecordHabitRepository;
 import com.swpteam.smokingcessation.repository.StreakRepository;
 import com.swpteam.smokingcessation.service.interfaces.identity.IAccountService;
 import com.swpteam.smokingcessation.service.interfaces.profile.IScoreService;
-import com.swpteam.smokingcessation.service.interfaces.tracking.IPlanService;
 import com.swpteam.smokingcessation.service.interfaces.tracking.IRecordHabitService;
 import com.swpteam.smokingcessation.service.interfaces.tracking.IStreakService;
 import com.swpteam.smokingcessation.utils.AuthUtilService;
@@ -32,7 +30,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -161,10 +158,9 @@ public class RecordHabitServiceImpl implements IRecordHabitService {
     }
 
     @Override
-    public List<RecordHabit> getAllRecord(String accountId) {
-        List<RecordHabit> recordHabits = recordHabitRepository.findAllByAccountIdAndIsDeletedFalse(accountId)
-                .orElseThrow(() -> new AppException(ErrorCode.RECORD_NOT_FOUND));
-        log.info("list record {}",recordHabits.size());
+    public List<RecordHabit> getAllRecordNoSmoke(String accountId) {
+        List<RecordHabit> recordHabits = recordHabitRepository.findAllByAccountIdWithNoCigarettesSmoked(accountId);
+        log.info("list record with record 0 smoke {}", recordHabits.size());
         return recordHabits;
     }
 

@@ -104,9 +104,12 @@ public class MemberServiceImpl implements IMemberService {
 
     @Override
     public List<Member> findAllMember() {
-        List<Member> members = memberRepository.findAllByIsDeletedFalse()
-                .orElseThrow(() -> new AppException(ErrorCode.MEMBER_NOT_FOUND));
-        log.info("found {} member",members.size());
+        List<Member> members = memberRepository.findAllByIsDeletedFalse();
+        if (members.isEmpty()) {
+            log.warn("no member found");
+            throw new AppException(ErrorCode.MEMBER_NOT_FOUND);
+        }
+        log.info("found {} member", members.size());
         return members;
 
 

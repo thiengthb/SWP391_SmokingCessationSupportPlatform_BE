@@ -25,6 +25,6 @@ public class RecordHabit extends AuditableEntity {
 
     int cigarettesSmoked;
 
-    @Column(unique = true, nullable = false)
+    @Column(nullable = false)
     LocalDate date;
 }
