@@ -47,7 +47,7 @@ public class PhaseAndPlanUpdater {
             //take accountId with its deadline
             try {
                 plan = planService.findByAccountIdAndPlanStatusAndIsDeletedFalse(account.getId(), PlanStatus.ACTIVE);
-                log.info("found active plan with accId:{}",plan.getAccount().getId());
+                log.info("found active plan with accId:{}", plan.getAccount().getId());
             } catch (Exception e) {
                 log.warn("No ACTIVE plan found for account: {}", account.getId());
                 continue;
@@ -99,10 +99,12 @@ public class PhaseAndPlanUpdater {
         }
     }
 
+    @Transactional
     @Scheduled(cron = "0 0 0 * * *")
     public void checkPendingPlans() {
         planService.dailyCheckingPlanStatus();
     }
+
 
     private boolean allPhasesHaveCompleted(Plan plan) {
         for (Phase phase : plan.getPhases()) {
@@ -119,7 +121,7 @@ public class PhaseAndPlanUpdater {
             List<RecordHabit> records = recordHabitService.findAllByAccountIdAndDateBetweenAndIsDeletedFalse(
                     accountId, phase.getStartDate(), phase.getEndDate()
             );
-            long totalDays = ChronoUnit.DAYS.between(phase.getStartDate(),phase.getEndDate())+1;
+            long totalDays = ChronoUnit.DAYS.between(phase.getStartDate(), phase.getEndDate()) + 1;
             if (!phaseService.isPhaseFullyReported(totalDays, records)) {
                 return false;
             }

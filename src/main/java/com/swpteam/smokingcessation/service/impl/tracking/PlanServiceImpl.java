@@ -36,6 +36,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 @Slf4j
@@ -82,7 +83,7 @@ public class PlanServiceImpl implements IPlanService {
 
         Plan plan = planRepository.findByAccountIdAndPlanStatusAndIsDeletedFalse(currentAccount.getId(), PlanStatus.ACTIVE)
                 .orElseThrow(() -> new AppException(ErrorCode.PLAN_NOT_FOUND));
-
+        plan.setProgress(getPlanProgress(plan));
         PlanResponse planResponse = planMapper.toResponse(plan);
         planResponse.setPhases(phaseService.getPhaseListByPlanIdAndStartDate(plan.getId()));
 
@@ -109,12 +110,12 @@ public class PlanServiceImpl implements IPlanService {
 
         if (plan.getPhases() != null) {
             plan.getPhases().forEach(phase ->
-                    {
-                        phase.setPlan(plan);
-                        if(phase.getTips()!=null){
-                            phase.getTips().forEach(tip -> tip.setPhase(phase));
-                        }
-                    });
+            {
+                phase.setPlan(plan);
+                if (phase.getTips() != null) {
+                    phase.getTips().forEach(tip -> tip.setPhase(phase));
+                }
+            });
         }
         plan.getPhases().sort(Comparator.comparing(Phase::getStartDate));
 
@@ -160,9 +161,13 @@ public class PlanServiceImpl implements IPlanService {
             throw new AppException(ErrorCode.FTND_SCORE_INVALID);
         }
 
+        // Map FTND to planName key
         String planName = mapFtndScoreToPlanName(ftndScore);
+
+        // Load all templates
         List<PlanTemplateResponse> templates = FileLoaderUtil.loadPlanTemplate("quitplan/template-plan.json");
 
+        // Find the selected plan by name
         PlanTemplateResponse selectedPlan = templates.stream()
                 .filter(t -> t.getPlanName().equalsIgnoreCase(planName))
                 .findFirst()
@@ -174,20 +179,25 @@ public class PlanServiceImpl implements IPlanService {
 
         for (PhaseTemplateResponse phase : selectedPlan.getPlan()) {
             LocalDate phaseEndDate = currentPhaseStartDate.plusDays(phase.getDuration() - 1);
+
+            // Localize each tip
             List<TipResponse> tipResponses = phase.getTips().stream()
-                    .map(tipContent -> TipResponse.builder().content(tipContent).build())
+                    .map(tipContent -> TipResponse.builder()
+                            .content(messageSourceService.getLocalizeMessage(tipContent))
+                            .build())
                     .toList();
+
             PhaseResponse response = PhaseResponse.builder()
                     .phase(phase.getPhase())
-                    .phaseName(phase.getPhaseName())
+                    .phaseName(messageSourceService.getLocalizeMessage(phase.getPhaseName()))
                     .cigaretteBound(phase.getCigaretteBound())
                     .startDate(currentPhaseStartDate)
                     .endDate(phaseEndDate)
-                    .description(phase.getDescription())
+                    .description(messageSourceService.getLocalizeMessage(phase.getDescription()))
                     .tips(tipResponses)
                     .build();
-            phases.add(response);
 
+            phases.add(response);
             currentPhaseStartDate = phaseEndDate.plusDays(1);
         }
 
@@ -195,7 +205,7 @@ public class PlanServiceImpl implements IPlanService {
 
         return PlanResponse.builder()
                 .planName(messageSourceService.getLocalizeMessage(selectedPlan.getPlanName()))
-                .description(selectedPlan.getDescription())
+                .description(messageSourceService.getLocalizeMessage(selectedPlan.getDescription()))
                 .startDate(planStartDate)
                 .endDate(planEndDate)
                 .phases(phases)
@@ -233,11 +243,12 @@ public class PlanServiceImpl implements IPlanService {
 
     private String mapFtndScoreToPlanName(int ftndScore) {
         if (ftndScore <= 2) return "plan.superfast.name";
-        if (ftndScore <= 4) return "Bỏ Thuốc Nhanh";
-        if (ftndScore <= 6) return "Giảm Dần Tiêu Chuẩn";
-        if (ftndScore <= 8) return "Giảm Dần Tích Cực";
-        return "Kế Hoạch Dài Hạn";
+        if (ftndScore <= 4) return "plan.fast.name";
+        if (ftndScore <= 6) return "plan.standard.name";
+        if (ftndScore <= 8) return "plan.positive.name";
+        return "plan.longterm.name";
     }
+
     private void validatePhaseDates(List<PhaseRequest> phases) {
         if (phases == null || phases.isEmpty()) {
             throw new AppException(ErrorCode.PHASE_REQUIRED);
@@ -311,5 +322,21 @@ public class PlanServiceImpl implements IPlanService {
     @Override
     public List<Plan> getAllActivePlans() {
         return planRepository.findAllByPlanStatusAndIsDeletedFalse(PlanStatus.ACTIVE);
+    }
+
+    private double getPlanProgress(Plan plan) {
+        LocalDate now = LocalDate.now();
+        LocalDate start = plan.getStartDate();
+        LocalDate end = plan.getEndDate();
+        double total = ChronoUnit.DAYS.between(start, end) + 1;
+
+        if (now.isBefore(start)) {
+            return 0.0;
+        }
+        if (now.isAfter(end)) {
+            return 1.0;
+        }
+        double passed = ChronoUnit.DAYS.between(start, now) + 1;
+        return passed / total;
     }
 }
