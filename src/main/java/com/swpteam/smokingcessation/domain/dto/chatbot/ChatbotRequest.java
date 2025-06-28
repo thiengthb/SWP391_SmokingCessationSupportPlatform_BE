@@ -5,7 +5,7 @@ import jakarta.validation.constraints.Size;
 
 public record ChatbotRequest (
 
-    @NotBlank(message = "PROMPT_NOT_BLANK")
-    @Size(max = 200, message = "PROMPT_MAX_SIZE")
+    @NotBlank(message = "PROMPT_REQUIRED")
+    @Size(max = 200, message = "PROMPT_TOO_LONG")
     String prompt
 ) {}

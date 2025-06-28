@@ -69,8 +69,8 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
     String backendUrl;
 
     @Override
-    public AuthenticationResponse googleLogin(GoogleLoginRequest request) {
-        GoogleIdToken.Payload payload = googleTokenVerifier.verify(request.idToken());
+    public AuthenticationResponse googleLogin(TokenRequest request) {
+        GoogleIdToken.Payload payload = googleTokenVerifier.verify(request.token());
 
         Account account = accountService.createAccountByGoogle(payload);
         String accessToken = tokenService.generateAccessToken(account);
@@ -197,7 +197,7 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
         Account account = accountService.findAccountByEmailOrThrowError(email);
 
         if (account.getStatus() != AccountStatus.INACTIVE) {
-            throw new AppException(ErrorCode.ACCOUNT_ACTIVATED);
+            throw new AppException(ErrorCode.ACCOUNT_ALREADY_ACTIVATED);
         }
 
         String code = tokenService.generateVerificationEmailToken(account);

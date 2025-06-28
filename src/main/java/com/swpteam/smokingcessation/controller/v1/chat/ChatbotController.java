@@ -5,7 +5,7 @@ import com.swpteam.smokingcessation.constant.SuccessCode;
 import com.swpteam.smokingcessation.domain.dto.chatbot.ChatbotRequest;
 import com.swpteam.smokingcessation.domain.dto.chatbot.ChatbotResponse;
 import com.swpteam.smokingcessation.service.interfaces.chat.IChatbotService;
-import com.swpteam.smokingcessation.utils.ResponseUtil;
+import com.swpteam.smokingcessation.utils.ResponseUtilService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
@@ -25,13 +25,14 @@ import org.springframework.web.bind.annotation.RestController;
 public class ChatbotController {
 
     IChatbotService chatbotService;
+    ResponseUtilService responseUtilService;
 
     @PostMapping
     ResponseEntity<ApiResponse<ChatbotResponse>> createAccount(
             @RequestBody @Valid ChatbotRequest request
     ) {
-        return ResponseUtil.buildSuccessResponse(
-                SuccessCode.RETURN_MESSAGE,
+        return responseUtilService.buildSuccessResponse(
+                SuccessCode.CHATBOT_RESPONSE_RETURNED,
                 chatbotService.chat(request)
         );
     }

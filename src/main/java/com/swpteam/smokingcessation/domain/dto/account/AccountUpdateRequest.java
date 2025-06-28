@@ -6,9 +6,9 @@ import jakarta.validation.constraints.Size;
 
 public record AccountUpdateRequest (
 
-    @Email(message = "EMAIL_INVALID") String email,
+    @Email(message = "INVALID_EMAIL_FORMAT") String email,
 
-    @Size(min = 8, message = "PASSWORD_INVALID") String password,
+    @Size(min = 8, message = "INVALID_PASSWORD") String password,
 
-    @Pattern(regexp = "\\d{10}", message = "PHONE_NUMBER_INVALID") String phoneNumber
+    @Pattern(regexp = "\\d{10}", message = "INVALID_PHONE_NUMBER") String phoneNumber
 ) {}

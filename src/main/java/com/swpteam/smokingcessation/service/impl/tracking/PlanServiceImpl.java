@@ -152,7 +152,7 @@ public class PlanServiceImpl implements IPlanService {
     @CachePut(value = "PLAN_CACHE", key = "#result.getId()")
     public PlanResponse generatePlanByFtndScore(int ftndScore) {
         if (ftndScore < 0 || ftndScore > 10) {
-            throw new AppException(ErrorCode.INVALID_FTND_SCORE);
+            throw new AppException(ErrorCode.FTND_SCORE_INVALID);
         }
 
         int level = mapFtndScoreToLevel(ftndScore);

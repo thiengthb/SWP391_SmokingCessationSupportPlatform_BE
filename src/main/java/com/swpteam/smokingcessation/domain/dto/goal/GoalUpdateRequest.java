@@ -12,6 +12,6 @@ public record GoalUpdateRequest(
 
     String criteriaType,
 
-    @Min(value = 0, message = "CRITERIA_VALUE_INVALID")
+    @Min(value = 0, message = "GOAL_CRITERIA_VALUE_INVALID")
     int criteriaValue
 ) {}

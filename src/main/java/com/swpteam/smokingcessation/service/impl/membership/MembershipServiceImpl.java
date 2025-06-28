@@ -78,7 +78,7 @@ public class MembershipServiceImpl implements IMembershipService {
     @CacheEvict(value = "MEMBERSHIP_PAGE_CACHE", allEntries = true)
     public MembershipResponse createMembership(MembershipCreateRequest request) {
         if (membershipRepository.existsByNameAndIsDeletedFalse(request.name()))
-            throw new AppException(ErrorCode.MEMBERSHIP_NAME_UNIQUE);
+            throw new AppException(ErrorCode.MEMBERSHIP_NAME_DUPLICATE);
 
         Membership membership = membershipMapper.toEntity(request);
 

@@ -6,7 +6,7 @@ import com.swpteam.smokingcessation.common.PageableRequest;
 import com.swpteam.smokingcessation.constant.SuccessCode;
 import com.swpteam.smokingcessation.domain.dto.notification.NotificationResponse;
 import com.swpteam.smokingcessation.service.interfaces.notification.INotificationService;
-import com.swpteam.smokingcessation.utils.ResponseUtil;
+import com.swpteam.smokingcessation.utils.ResponseUtilService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
@@ -23,14 +23,16 @@ import org.springframework.web.bind.annotation.*;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @Tag(name = "Notification (Rest Controller)", description = "Manage notification-related(rest controller) operations")
 public class NotificationRestController {
+
     INotificationService notificationService;
+    ResponseUtilService responseUtilService;
 
     @GetMapping
     ResponseEntity<ApiResponse<PageResponse<NotificationResponse>>> getChats(
             @Valid PageableRequest request
     ) {
-        return ResponseUtil.buildSuccessResponse(
-                SuccessCode.NOTIFICATION_GET_ALL,
+        return responseUtilService.buildSuccessResponse(
+                SuccessCode.NOTIFICATION_PAGE_FETCHED,
                 notificationService.getMyNotificationsPage(request)
         );
 
@@ -40,8 +42,8 @@ public class NotificationRestController {
     ResponseEntity<ApiResponse<NotificationResponse>> getChatsById(
             @PathVariable String id
     ) {
-        return ResponseUtil.buildSuccessResponse(
-                SuccessCode.NOTIFICATION_GET_BY_ID,
+        return responseUtilService.buildSuccessResponse(
+                SuccessCode.NOTIFICATION_FETCHED_BY_ID,
                 notificationService.getNotificationsById(id)
         );
     }
@@ -51,7 +53,7 @@ public class NotificationRestController {
             @PathVariable String id
     ) {
         notificationService.deleteNotification(id);
-        return ResponseUtil.buildSuccessResponse(
+        return responseUtilService.buildSuccessResponse(
                 SuccessCode.NOTIFICATION_DELETED
         );
     }
@@ -59,8 +61,8 @@ public class NotificationRestController {
     @DeleteMapping("/all/{accountId}")
     public ResponseEntity<ApiResponse<Void>> deleteAllNotifications() {
         notificationService.deleteAllMyNotification();
-        return ResponseUtil.buildSuccessResponse(
-                SuccessCode.ALL_NOTIFICATION_DELETED
+        return responseUtilService.buildSuccessResponse(
+                SuccessCode.NOTIFICATION_ALL_DELETED
         );
     }
 

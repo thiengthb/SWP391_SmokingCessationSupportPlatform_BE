@@ -36,7 +36,7 @@ public class JwtUtil {
             signedJWT.sign(signer);
             return signedJWT;
         } catch (JOSEException e) {
-            throw new AppException(ErrorCode.TOKEN_CREATE_FAILED);
+            throw new AppException(ErrorCode.TOKEN_CREATION_FAILED);
         }
     }
 

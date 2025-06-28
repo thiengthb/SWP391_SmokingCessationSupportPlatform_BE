@@ -12,5 +12,5 @@ public record ChangePasswordRequest (
     @NotBlank(message = "PASSWORD_REQUIRED") String oldPassword,
 
     @NotBlank(message = "PASSWORD_REQUIRED")
-    @Size(min = 8, message = "PASSWORD_INVALID") String newPassword
+    @Size(min = 8, message = "INVALID_PASSWORD") String newPassword
 ) {}

@@ -5,7 +5,7 @@ import com.swpteam.smokingcessation.domain.dto.payment.StripeResponse;
 import com.swpteam.smokingcessation.domain.dto.payment.StripeSubscriptionRequest;
 import com.swpteam.smokingcessation.integration.payment.StripeService;
 import com.swpteam.smokingcessation.common.ApiResponse;
-import com.swpteam.smokingcessation.utils.ResponseUtil;
+import com.swpteam.smokingcessation.utils.ResponseUtilService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -26,12 +26,13 @@ import org.springframework.web.bind.annotation.RestController;
 public class StripePaymentController {
 
     StripeService stripeService;
+    ResponseUtilService responseUtilService;
 
     @PostMapping("/checkout")
     public ResponseEntity<ApiResponse<StripeResponse>> checkoutSubscription(
             @RequestBody StripeSubscriptionRequest request
     ) {
-        return ResponseUtil.buildSuccessResponse(
+        return responseUtilService.buildSuccessResponse(
                 SuccessCode.CHECKOUT_SUCCESS,
                 stripeService.checkoutSubscription(request)
         );

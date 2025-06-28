@@ -130,11 +130,6 @@ public class BlogServiceImpl implements IBlogService {
     public BlogResponse updateBlog(String id, BlogUpdateRequest request) {
         Blog blog = findBlogByIdOrThrowError(id);
 
-        boolean haveAccess = authUtilService.isAdminOrOwner(blog.getAccount().getId());
-        if (!haveAccess) {
-            throw new AppException(ErrorCode.OTHERS_COMMENT_UNCHANGEABLE);
-        }
-
         blogMapper.update(blog, request);
 
         blog.setContent(htmlSanitizerService.sanitize(request.content()));
@@ -166,7 +161,7 @@ public class BlogServiceImpl implements IBlogService {
         if (blog.getAccount().isDeleted()) {
             blog.setDeleted(true);
             blogRepository.save(blog);
-            throw new AppException(ErrorCode.ACCOUNT_DELETED);
+            throw new AppException(ErrorCode.ACCOUNT_NOT_FOUND);
         }
 
         return blog;
@@ -181,7 +176,7 @@ public class BlogServiceImpl implements IBlogService {
         if (blog.getAccount().isDeleted()) {
             blog.setDeleted(true);
             blogRepository.save(blog);
-            throw new AppException(ErrorCode.ACCOUNT_DELETED);
+            throw new AppException(ErrorCode.ACCOUNT_NOT_FOUND);
         }
 
         return blog;

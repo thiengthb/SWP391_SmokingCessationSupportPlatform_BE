@@ -43,7 +43,7 @@ public class ChatbotServiceImpl implements IChatbotService {
         int estimatedTokens = estimateAITokenUsage(request.prompt());
 
         if (usage.getTokensUsed() + estimatedTokens > limit) {
-            throw new AppException(ErrorCode.OUT_OF_LIMIT);
+            throw new AppException(ErrorCode.REQUEST_LIMIT_EXCEEDED);
         }
 
         String response = aiService.chatWithPlatformContext(request.prompt());

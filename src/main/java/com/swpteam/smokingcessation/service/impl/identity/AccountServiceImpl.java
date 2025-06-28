@@ -189,7 +189,7 @@ public class AccountServiceImpl implements IAccountService {
 
         Account currentAccount = authUtilService.getCurrentAccountOrThrowError();
         if (account == currentAccount)
-            throw new AppException(ErrorCode.SELF_BAN);
+            throw new AppException(ErrorCode.SELF_BAN_DISALLOWED);
 
         account.setStatus(AccountStatus.BANNED);
         accountRepository.save(account);
@@ -210,12 +210,12 @@ public class AccountServiceImpl implements IAccountService {
     @Override
     public void checkExistByEmailOrThrowError(String email) {
         if (accountRepository.existsByEmail(email))
-            throw new AppException(ErrorCode.EMAIL_EXISTED);
+            throw new AppException(ErrorCode.EMAIL_ALREADY_EXISTS);
     }
 
     private void checkExistByPhoneNumber(String phoneNumber) {
         if (accountRepository.existsByPhoneNumber(phoneNumber))
-            throw new AppException(ErrorCode.PHONE_NUMBER_EXISTED);
+            throw new AppException(ErrorCode.PHONE_NUMBER_ALREADY_EXISTS);
     }
 
 }

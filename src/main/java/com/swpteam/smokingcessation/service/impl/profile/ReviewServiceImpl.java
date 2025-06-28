@@ -102,7 +102,7 @@ public class ReviewServiceImpl implements IReviewService {
 
         Review review = findReviewById(id);
         if (!review.getMember().getId().equals(currentAccount.getId())) {
-            throw new AppException(ErrorCode.ACCESS_DENIED);
+            throw new AppException(ErrorCode.UNAUTHORIZED);
         }
 
         reviewMapper.update(review, request);
@@ -115,15 +115,16 @@ public class ReviewServiceImpl implements IReviewService {
     @CacheEvict(value = {"REVIEW_CACHE", "REVIEW_PAGE_CACHE"}, key = "#id", allEntries = true)
     public void softDeleteReview(String id) {
         Review review = findReviewById(id);
-        Account currentAccount = authUtilService.getCurrentAccountOrThrowError();
 
-        if (authUtilService.isAdminOrOwner(currentAccount.getId()) || currentAccount == review.getCoach()) {
-            review.setDeleted(true);
-            reviewRepository.save(review);
 
-        } else {
-            throw new AppException(ErrorCode.ACCESS_DENIED);
+        boolean haveAccess = authUtilService.isAdminOrOwner(review.getCoach().getId());
+        if (!haveAccess) {
+            throw new AppException(ErrorCode.UNAUTHORIZED);
         }
+
+        review.setDeleted(true);
+
+        reviewRepository.save(review);
     }
 
     @Override
@@ -132,7 +133,9 @@ public class ReviewServiceImpl implements IReviewService {
                 .orElseThrow(() -> new AppException(ErrorCode.REVIEW_NOT_FOUND));
 
         if (review.getMember().isDeleted() || review.getCoach().isDeleted()) {
-            throw new AppException(ErrorCode.ACCOUNT_DELETED);
+            review.setDeleted(true);
+            reviewRepository.save(review);
+            throw new AppException(ErrorCode.ACCOUNT_NOT_FOUND);
         }
 
         return review;

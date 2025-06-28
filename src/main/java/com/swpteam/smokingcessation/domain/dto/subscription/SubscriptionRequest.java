@@ -14,11 +14,11 @@ public record SubscriptionRequest (
     @Size(min = 1, message = "MEMBERSHIP_MIN_SIZE")
     String membershipName,
 
-    @NotNull(message = "START_DATE_REQUIRED")
-    @FutureOrPresent(message = "START_DATE_MUST_BE_TODAY_OR_FUTURE")
+    @NotNull(message = "SUBSCRIPTION_START_DATE_REQUIRED")
+    @FutureOrPresent(message = "SUBSCRIPTION_START_DATE_INVALID")
     LocalDate startDate,
 
-    @NotNull(message = "END_DATE_REQUIRED")
-    @Future(message = "END_DATE_MUST_BE_IN_FUTURE")
+    @NotNull(message = "SUBSCRIPTION_END_DATE_REQUIRED")
+    @Future(message = "SUBSCRIPTION_END_DATE_INVALID")
     LocalDate endDate
 ) {}

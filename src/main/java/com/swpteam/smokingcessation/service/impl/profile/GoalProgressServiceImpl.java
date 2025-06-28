@@ -28,7 +28,6 @@ public class GoalProgressServiceImpl implements IGoalProgressService {
     GoalRepository goalRepository;
     AccountRepository accountRepository;
 
-
     @Override
     public void createGoalProgress(Goal goal, Account account) {
         goalProgressRepository.save(GoalProgress.builder()
@@ -37,7 +36,6 @@ public class GoalProgressServiceImpl implements IGoalProgressService {
                 .account(account)
                 .build());
     }
-
 
     @Override
     public boolean checkGoalForAccount(Goal goal, Account account) {
@@ -54,15 +52,18 @@ public class GoalProgressServiceImpl implements IGoalProgressService {
         };
     }
 
-    @Transactional
     @Override
+    @Transactional
     public void markAsCompleted(Goal goal, Account account) {
         GoalProgress goalProgress = goalProgressRepository.findByGoalIdAndAccountId(goal.getId(), account.getId());
+
         goalProgress.setEarnedAt(LocalDateTime.now());
+
+        goalProgressRepository.save(goalProgress);
     }
 
-    @Transactional
     @Override
+    @Transactional
     public void updateProgress(Goal goal, Account account) {
         GoalProgress goalProgress = goalProgressRepository.findByGoalIdAndAccountId(goal.getId(), account.getId());
         String accountId = account.getId();
@@ -83,10 +84,12 @@ public class GoalProgressServiceImpl implements IGoalProgressService {
         } else {
             goalProgress.setProgress(BigDecimal.ZERO);
         }
+
+        goalProgressRepository.save(goalProgress);
     }
 
-    @Transactional
     @Override
+    @Transactional
     public void ensureGlobalGoalProgressForAllAccounts() {
         List<Account> accounts = accountRepository.findAllByIsDeletedFalse();
         List<Goal> globalGoals = goalRepository.findAllByAccountIsNullAndIsDeletedFalse();
@@ -123,4 +126,5 @@ public class GoalProgressServiceImpl implements IGoalProgressService {
             }
         }
     }
+
 }

@@ -15,16 +15,16 @@ public class ValidationUtil {
             return;
         }
 
-        if (!isFieldExist(Account.class, fieldName))
-            throw new AppException(ErrorCode.INVALID_SORT_FIELD);
+        if (!isFieldExist(fieldName))
+            throw new AppException(ErrorCode.INVALID_FIELD);
     }
 
-    private boolean isFieldExist(Class<?> clazz, String fieldName) {
+    private boolean isFieldExist(String fieldName) {
         try {
-            Field field = clazz.getDeclaredField(fieldName);
+            Field field = Account.class.getDeclaredField(fieldName);
             return true;
         } catch (NoSuchFieldException e) {
-            Class<?> superClass = clazz.getSuperclass();
+            Class<?> superClass = ((Class<?>) Account.class).getSuperclass();
             if (superClass != null) {
                 try {
                     Field superField = superClass.getDeclaredField(fieldName);

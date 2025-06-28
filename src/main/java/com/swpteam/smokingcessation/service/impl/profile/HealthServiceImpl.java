@@ -3,9 +3,8 @@ package com.swpteam.smokingcessation.service.impl.profile;
 import com.swpteam.smokingcessation.common.PageResponse;
 import com.swpteam.smokingcessation.domain.entity.Account;
 import com.swpteam.smokingcessation.domain.mapper.HealthMapper;
-import com.swpteam.smokingcessation.domain.dto.health.HealthCreateRequest;
+import com.swpteam.smokingcessation.domain.dto.health.HealthRequest;
 import com.swpteam.smokingcessation.domain.dto.health.HealthResponse;
-import com.swpteam.smokingcessation.domain.dto.health.HealthUpdateRequest;
 import com.swpteam.smokingcessation.common.PageableRequest;
 import com.swpteam.smokingcessation.constant.ErrorCode;
 import com.swpteam.smokingcessation.domain.entity.Health;
@@ -19,9 +18,6 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.cache.annotation.CacheEvict;
-import org.springframework.cache.annotation.CachePut;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -86,7 +82,7 @@ public class HealthServiceImpl implements IHealthService {
 
     @Override
     @Transactional
-    public HealthResponse createHealth(HealthCreateRequest request) {
+    public HealthResponse createHealth(HealthRequest request) {
         Account account = authUtilService.getCurrentAccountOrThrowError();
 
         Health health = healthMapper.toEntity(request);
@@ -97,7 +93,7 @@ public class HealthServiceImpl implements IHealthService {
 
     @Override
     @Transactional
-    public HealthResponse updateHealth(String id, HealthUpdateRequest request) {
+    public HealthResponse updateHealth(String id, HealthRequest request) {
         Health health = findHealthByIdOrThrowError(id);
 
         healthMapper.update(health, request);

@@ -78,7 +78,7 @@ public class SettingServiceImpl implements ISettingService {
 
         if (setting.getAccount().isDeleted()) {
             setting.setDeleted(true);
-            throw new AppException(ErrorCode.ACCOUNT_DELETED);
+            throw new AppException(ErrorCode.ACCOUNT_NOT_FOUND);
         }
 
         return setting;

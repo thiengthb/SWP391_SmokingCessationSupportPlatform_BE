@@ -141,6 +141,8 @@ public class SubscriptionServiceImpl implements ISubscriptionService {
                 .orElseThrow(() -> new AppException(ErrorCode.SUBSCRIPTION_NOT_FOUND));
 
         if (subscription.getAccount().isDeleted() || subscription.getMembership().isDeleted()) {
+            subscription.setDeleted(true);
+            subscriptionRepository.save(subscription);
             throw new AppException(ErrorCode.SUBSCRIPTION_NOT_FOUND);
         }
 

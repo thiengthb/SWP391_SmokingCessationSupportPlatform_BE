@@ -5,7 +5,7 @@ import com.swpteam.smokingcessation.domain.dto.setting.SettingRequest;
 import com.swpteam.smokingcessation.domain.dto.setting.SettingResponse;
 import com.swpteam.smokingcessation.common.ApiResponse;
 import com.swpteam.smokingcessation.service.interfaces.profile.ISettingService;
-import com.swpteam.smokingcessation.utils.ResponseUtil;
+import com.swpteam.smokingcessation.utils.ResponseUtilService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
@@ -24,13 +24,14 @@ import org.springframework.web.bind.annotation.*;
 public class SettingController {
 
     ISettingService settingService;
+    ResponseUtilService responseUtilService;
 
     @PutMapping("/{accountId}")
     ResponseEntity<ApiResponse<SettingResponse>> updateSetting(
             @PathVariable String accountId,
             @RequestBody @Valid SettingRequest request
     ) {
-        return ResponseUtil.buildSuccessResponse(
+        return responseUtilService.buildSuccessResponse(
                 SuccessCode.SETTING_UPDATED,
                 settingService.updateSetting(accountId, request)
         );
@@ -40,8 +41,8 @@ public class SettingController {
     ResponseEntity<ApiResponse<SettingResponse>> getSettingById(
             @PathVariable String accountId
     ) {
-        return ResponseUtil.buildSuccessResponse(
-                SuccessCode.SETTING_GOTTEN,
+        return responseUtilService.buildSuccessResponse(
+                SuccessCode.SETTING_FETCHED,
                 settingService.getSettingByAccountId(accountId)
         );
     }

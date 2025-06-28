@@ -13,8 +13,6 @@ public interface IMemberService {
 
     MemberResponse createMember(MemberRequest request);
 
-    PageResponse<MemberResponse> getMembersPage(PageableRequest request);
-
     MemberResponse getMemberById(String accountId);
 
     MemberResponse updateMemberById(String accountId, MemberRequest request);

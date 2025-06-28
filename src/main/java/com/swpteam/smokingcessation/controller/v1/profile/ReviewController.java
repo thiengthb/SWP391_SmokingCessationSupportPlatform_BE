@@ -8,7 +8,7 @@ import com.swpteam.smokingcessation.domain.dto.review.ReviewCreateRequest;
 import com.swpteam.smokingcessation.domain.dto.review.ReviewResponse;
 import com.swpteam.smokingcessation.domain.dto.review.ReviewUpdateRequest;
 import com.swpteam.smokingcessation.service.interfaces.profile.IReviewService;
-import com.swpteam.smokingcessation.utils.ResponseUtil;
+import com.swpteam.smokingcessation.utils.ResponseUtilService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
@@ -27,13 +27,14 @@ import org.springframework.web.bind.annotation.*;
 public class ReviewController {
 
     IReviewService reviewService;
+    ResponseUtilService  responseUtilService;
 
     @GetMapping("/coach/my-review")
     ResponseEntity<ApiResponse<PageResponse<ReviewResponse>>> getMyReviewPageAsCoach(
             @Valid PageableRequest request
     ) {
-        return ResponseUtil.buildSuccessResponse(
-                SuccessCode.REVIEW_GET_ALL,
+        return responseUtilService.buildSuccessResponse(
+                SuccessCode.REVIEW_PAGE_FETCHED,
                 reviewService.getMyReviewPageAsCoach(request)
         );
     }
@@ -42,8 +43,8 @@ public class ReviewController {
     ResponseEntity<ApiResponse<PageResponse<ReviewResponse>>> getMyReviewPageAsMember(
             @Valid PageableRequest request
     ) {
-        return ResponseUtil.buildSuccessResponse(
-                SuccessCode.REVIEW_GET_ALL,
+        return responseUtilService.buildSuccessResponse(
+                SuccessCode.REVIEW_PAGE_FETCHED,
                 reviewService.getMyReviewPageAsMember(request)
         );
     }
@@ -52,8 +53,8 @@ public class ReviewController {
     ResponseEntity<ApiResponse<ReviewResponse>> getReviewById(
             @PathVariable String id
     ) {
-        return ResponseUtil.buildSuccessResponse(
-                SuccessCode.REVIEW_GET_BY_ID,
+        return responseUtilService.buildSuccessResponse(
+                SuccessCode.REVIEW_FETCHED_BY_ID,
                 reviewService.getReviewById(id)
         );
     }
@@ -62,7 +63,7 @@ public class ReviewController {
     ResponseEntity<ApiResponse<ReviewResponse>> createReview(
             @RequestBody @Valid ReviewCreateRequest request
     ) {
-        return ResponseUtil.buildSuccessResponse(
+        return responseUtilService.buildSuccessResponse(
                 SuccessCode.REVIEW_CREATED,
                 reviewService.createReview(request)
         );
@@ -73,7 +74,7 @@ public class ReviewController {
             @PathVariable String id,
             @RequestBody @Valid ReviewUpdateRequest request
     ) {
-        return ResponseUtil.buildSuccessResponse(
+        return responseUtilService.buildSuccessResponse(
                 SuccessCode.REVIEW_UPDATED,
                 reviewService.updateReview(id, request)
         );
@@ -83,7 +84,7 @@ public class ReviewController {
     ResponseEntity<ApiResponse<Void>> softDeleteReview(
             @PathVariable String id
     ) {
-        return ResponseUtil.buildSuccessResponse(
+        return responseUtilService.buildSuccessResponse(
                 SuccessCode.REVIEW_DELETED
         );
     }

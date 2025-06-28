@@ -11,12 +11,12 @@ public record RegisterRequest(
         @Email(message = "INVALID_EMAIL_FORMAT")
         String email,
 
-        @NotBlank(message = "BLANK_INVALID")
-        @Size(min = 8, message = "PASSWORD_INVALID")
+        @NotBlank(message = "PASSWORD_REQUIRED")
+        @Size(min = 8, message = "INVALID_PASSWORD")
         String password,
 
-        @NotBlank(message = "BLANK_INVALID")
-        @Size(min = 8, message = "PASSWORD_INVALID")
+        @NotBlank(message = "PASSWORD_REQUIRED")
+        @Size(min = 8, message = "INVALID_PASSWORD")
         String confirmPassword
 ) {
 }

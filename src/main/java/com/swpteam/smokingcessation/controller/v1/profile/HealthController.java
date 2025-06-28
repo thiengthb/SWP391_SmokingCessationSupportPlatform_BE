@@ -1,14 +1,13 @@
 package com.swpteam.smokingcessation.controller.v1.profile;
 
 import com.swpteam.smokingcessation.common.PageResponse;
-import com.swpteam.smokingcessation.domain.dto.health.HealthCreateRequest;
+import com.swpteam.smokingcessation.domain.dto.health.HealthRequest;
 import com.swpteam.smokingcessation.domain.dto.health.HealthResponse;
-import com.swpteam.smokingcessation.domain.dto.health.HealthUpdateRequest;
 import com.swpteam.smokingcessation.common.ApiResponse;
 import com.swpteam.smokingcessation.common.PageableRequest;
 import com.swpteam.smokingcessation.constant.SuccessCode;
 import com.swpteam.smokingcessation.service.interfaces.profile.IHealthService;
-import com.swpteam.smokingcessation.utils.ResponseUtil;
+import com.swpteam.smokingcessation.utils.ResponseUtilService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
@@ -27,13 +26,14 @@ import org.springframework.web.bind.annotation.*;
 public class HealthController {
 
     IHealthService healthService;
+    ResponseUtilService responseUtilService;
 
     @GetMapping
     ResponseEntity<ApiResponse<PageResponse<HealthResponse>>> getHealthPage(
             @Valid PageableRequest request
     ) {
-        return ResponseUtil.buildSuccessResponse(
-                SuccessCode.HEALTH_GET_ALL,
+        return responseUtilService.buildSuccessResponse(
+                SuccessCode.HEALTH_PAGE_FETCHED,
                 healthService.getHealthPage(request)
         );
     }
@@ -42,16 +42,16 @@ public class HealthController {
     ResponseEntity<ApiResponse<HealthResponse>> getHealthById(
             @PathVariable String id
     ) {
-        return ResponseUtil.buildSuccessResponse(
-                SuccessCode.HEALTH_GET_BY_ID,
+        return responseUtilService.buildSuccessResponse(
+                SuccessCode.HEALTH_FETCHED_BY_ID,
                 healthService.getHealthById(id)
         );
     }
 
     @GetMapping("/ftnd-status")
     ResponseEntity<ApiResponse<Boolean>> getMyFTNDStatus() {
-        return ResponseUtil.buildSuccessResponse(
-                SuccessCode.HEALTH_GET_BY_ID,
+        return responseUtilService.buildSuccessResponse(
+                SuccessCode.HEALTH_FETCHED_BY_ACCOUNT,
                 healthService.hasCompleteFTNDAssessment()
         );
     }
@@ -61,17 +61,17 @@ public class HealthController {
             @PathVariable String id,
             @Valid PageableRequest request
     ) {
-        return ResponseUtil.buildSuccessResponse(
-                SuccessCode.HEALTH_GET_BY_ACCOUNT,
+        return responseUtilService.buildSuccessResponse(
+                SuccessCode.HEALTH_FETCHED_BY_ACCOUNT,
                 healthService.getHealthPageByAccountId(id, request)
         );
     }
 
     @PostMapping
     ResponseEntity<ApiResponse<HealthResponse>> createHealth(
-            @RequestBody @Valid HealthCreateRequest request
+            @RequestBody @Valid HealthRequest request
     ) {
-        return ResponseUtil.buildSuccessResponse(
+        return responseUtilService.buildSuccessResponse(
                 SuccessCode.HEALTH_CREATED,
                 healthService.createHealth(request)
         );
@@ -80,9 +80,9 @@ public class HealthController {
     @PutMapping("/{id}")
     ResponseEntity<ApiResponse<HealthResponse>> updateHealth(
             @PathVariable String id,
-            @RequestBody @Valid HealthUpdateRequest request
+            @RequestBody @Valid HealthRequest request
     ) {
-        return ResponseUtil.buildSuccessResponse(
+        return responseUtilService.buildSuccessResponse(
                 SuccessCode.HEALTH_UPDATED,
                 healthService.updateHealth(id, request)
         );
@@ -93,7 +93,7 @@ public class HealthController {
             @PathVariable String id
     ) {
         healthService.softDeleteHealthById(id);
-        return ResponseUtil.buildSuccessResponse(
+        return responseUtilService.buildSuccessResponse(
                 SuccessCode.HEALTH_DELETED
         );
     }

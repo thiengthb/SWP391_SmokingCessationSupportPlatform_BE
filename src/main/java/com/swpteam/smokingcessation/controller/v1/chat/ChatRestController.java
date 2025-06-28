@@ -6,7 +6,7 @@ import com.swpteam.smokingcessation.common.PageableRequest;
 import com.swpteam.smokingcessation.constant.SuccessCode;
 import com.swpteam.smokingcessation.domain.dto.chat.ChatRestResponse;
 import com.swpteam.smokingcessation.service.interfaces.chat.IChatService;
-import com.swpteam.smokingcessation.utils.ResponseUtil;
+import com.swpteam.smokingcessation.utils.ResponseUtilService;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -21,13 +21,14 @@ import org.springframework.web.bind.annotation.*;
 public class ChatRestController {
     
     IChatService chatService;
+    ResponseUtilService responseUtilService;
 
     @GetMapping
     ResponseEntity<ApiResponse<PageResponse<ChatRestResponse>>> getChats(
             @Valid PageableRequest request
     ) {
-        return ResponseUtil.buildSuccessResponse(
-                SuccessCode.CHAT_GET_ALL,
+        return responseUtilService.buildSuccessResponse(
+                SuccessCode.CHAT_PAGE_FETCHED,
                 chatService.getChats(request)
         );
     }
@@ -37,8 +38,8 @@ public class ChatRestController {
             @PathVariable String accountId,
             @Valid PageableRequest request
     ) {
-        return ResponseUtil.buildSuccessResponse(
-                SuccessCode.CHAT_GET_BY_ID,
+        return responseUtilService.buildSuccessResponse(
+                SuccessCode.CHAT_FETCHED_BY_ID,
                 chatService.getChatsById(accountId, request)
         );
     }
@@ -48,7 +49,7 @@ public class ChatRestController {
             @PathVariable String id
     ) {
         chatService.softDeleteChat(id);
-        return ResponseUtil.buildSuccessResponse(
+        return responseUtilService.buildSuccessResponse(
                 SuccessCode.CHAT_DELETED
         );
     }

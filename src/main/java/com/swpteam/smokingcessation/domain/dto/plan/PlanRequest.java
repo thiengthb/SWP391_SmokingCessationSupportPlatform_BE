@@ -1,10 +1,8 @@
 package com.swpteam.smokingcessation.domain.dto.plan;
 
 import com.swpteam.smokingcessation.domain.dto.phase.PhaseRequest;
-import com.swpteam.smokingcessation.domain.enums.PlanStatus;
 import jakarta.validation.constraints.*;
 
-import java.time.LocalDate;
 import java.util.List;
 
 public record PlanRequest(
