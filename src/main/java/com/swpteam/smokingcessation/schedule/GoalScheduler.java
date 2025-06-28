@@ -28,7 +28,6 @@ public class GoalScheduler {
     @Transactional
     @Scheduled(cron = "0 0 22 * * *")
     public void checkGoalCompletion() {
-        goalProgressService.ensureGlobalGoalProgressForAllAccounts();
         List<Account> accounts = accountRepository.findAllByIsDeletedFalse();
 
         for (Account account : accounts) {

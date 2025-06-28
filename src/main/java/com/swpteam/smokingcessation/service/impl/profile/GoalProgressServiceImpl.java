@@ -105,4 +105,22 @@ public class GoalProgressServiceImpl implements IGoalProgressService {
             }
         }
     }
+
+    @Override
+    @Transactional
+    public void ensureGlobalProgressForNewAccount(Account account) {
+        List<Goal> globalGoals = goalRepository.findAllByAccountIsNullAndIsDeletedFalse();
+
+        for (Goal goal : globalGoals) {
+            GoalProgress existing = goalProgressRepository.findByGoalIdAndAccountId(goal.getId(), account.getId());
+            if (existing == null) {
+                GoalProgress gp = GoalProgress.builder()
+                        .goal(goal)
+                        .account(account)
+                        .progress(BigDecimal.ZERO)
+                        .build();
+                goalProgressRepository.save(gp);
+            }
+        }
+    }
 }
