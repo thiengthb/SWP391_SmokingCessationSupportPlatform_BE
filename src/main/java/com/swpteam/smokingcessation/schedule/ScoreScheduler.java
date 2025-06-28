@@ -28,7 +28,7 @@ public class ScoreScheduler {
     IScoreService scoreService;
     IMemberService memberService;
 
-    @Scheduled(cron = "*/20 * * * * *")
+    @Scheduled(cron = "0 0 0 * * *")
     //day 26
     public void scoringCalculate() {
         LocalDate yesterday = LocalDate.now().minusDays(1); // day 25 -ngày cần chấm điểm

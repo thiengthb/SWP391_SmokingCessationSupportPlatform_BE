@@ -22,7 +22,6 @@ public interface PlanRepository extends JpaRepository<Plan, String> {
 
     List<Plan> findAllByPlanStatusAndIsDeletedFalse(PlanStatus planStatus);
 
-    @EntityGraph(attributePaths = {"account", "phases"})
     Optional<Plan> findByAccountIdAndPlanStatusAndIsDeletedFalse(String accountId, PlanStatus planStatus);
 
 

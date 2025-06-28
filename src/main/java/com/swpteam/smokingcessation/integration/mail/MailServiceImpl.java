@@ -177,7 +177,6 @@ public class MailServiceImpl implements IMailService {
             String templateName,
             List<Map.Entry<String, Object>> contextVariables
     ) {
-        accountService.checkExistByEmailOrThrowError(to);
 
         Context context = new Context();
         for (Map.Entry<String, Object> entry : contextVariables) {

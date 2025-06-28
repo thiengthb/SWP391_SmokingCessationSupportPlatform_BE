@@ -22,4 +22,6 @@ public interface IPhaseService {
     void calculateSuccessRateAndUpdatePhase(Phase phase, List<RecordHabit> allRecords);
 
     List<PhaseResponse> getPhaseListByPlanIdAndStartDate(String planId);
+
+    boolean isPhaseFullyReported(Long totalDays, List<RecordHabit> recordHabits);
 }

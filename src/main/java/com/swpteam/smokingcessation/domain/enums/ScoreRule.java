@@ -27,8 +27,13 @@ public enum ScoreRule {
 
     NO_SMOKING_FOR_180DAYS(1000, "180 days nonsmoked"),
 
-    NO_SMOKING_FOR_365DAYS(3000, "365 days nonsmoked");
+    NO_SMOKING_FOR_365DAYS(3000, "365 days nonsmoked"),
 
+    REPORTED_ALL_PHASE(100, "no missing record in a phase"),
+
+    REPORT_ALL_PLAN(400,"no missing record in all phases"),
+
+    ACHIEVEMENT_EARNED(3000,"Member reach a goal");
     private final int point;
     private final String label;
 

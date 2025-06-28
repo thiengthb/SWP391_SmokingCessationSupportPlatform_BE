@@ -93,6 +93,7 @@ public class PhaseServiceImpl implements IPhaseService {
         long successDays = 0;
         long missingDays = 0;
         int totalCigs = 0;
+        String accountId=phase.getPlan().getAccount().getId();
 
         Map<LocalDate, RecordHabit> recordMap = new HashMap<>();
         for (RecordHabit record : allRecords) {
@@ -112,10 +113,15 @@ public class PhaseServiceImpl implements IPhaseService {
                 }
             }
         }
+        if(isPhaseFullyReported(totalDays,allRecords)){
+            log.info("report all phase award:");
+            scoreService.updateScore(accountId,ScoreRule.REPORTED_ALL_PHASE);
+        }
 
         long allowedTotalCigs = maxCigPerDay * totalDays;
         boolean failedDueToMissingRecords = missingDays > (totalDays / 2);
         boolean failedDueToCigaretteOveruse = totalCigs > allowedTotalCigs;
+
         if (allowedTotalCigs == 0) {
             successRate = (totalCigs == 0) ? 100.0 : 0.0;
         } else {
@@ -125,11 +131,13 @@ public class PhaseServiceImpl implements IPhaseService {
         if (failedDueToCigaretteOveruse || failedDueToMissingRecords) {
             phase.setSuccessRate(0.0);
             phase.setPhaseStatus(PhaseStatus.FAILED);
-            scoreService.updateScore(phase.getPlan().getAccount().getId(), ScoreRule.PHASE_FAIL);
+            log.info("phase fail minus");
+            scoreService.updateScore(accountId, ScoreRule.PHASE_FAIL);
         } else {
             phase.setSuccessRate(successRate);
             phase.setPhaseStatus(PhaseStatus.SUCCESS);
-            scoreService.updateScore(phase.getPlan().getAccount().getId(), ScoreRule.PHASE_SUCCESS);
+            log.info("phase succes award:");
+            scoreService.updateScore(accountId, ScoreRule.PHASE_SUCCESS);
         }
 
         log.info("Calculated successRate={} for Phase ID={}, successDays={}, totalDays={}, missingDays={}",
@@ -138,7 +146,7 @@ public class PhaseServiceImpl implements IPhaseService {
         phaseRepository.save(phase);
         PhaseResponse phaseResponse = phaseMapper.toResponse(phase);
         String userMail = phase.getPlan().getAccount().getEmail();
-        mailService.sendPhaseSummary(userMail, phaseResponse);
+        //mailService.sendPhaseSummary(userMail, phaseResponse);
 
     }
 
@@ -149,6 +157,13 @@ public class PhaseServiceImpl implements IPhaseService {
                 .map(phaseMapper::toResponse)
                 .toList();
     }
+
+    @Override
+    public boolean isPhaseFullyReported(Long totalDays, List<RecordHabit> recordHabits) {
+        return !recordHabits.isEmpty() && recordHabits.size() == totalDays;
+
+    }
 }
+
 
 
