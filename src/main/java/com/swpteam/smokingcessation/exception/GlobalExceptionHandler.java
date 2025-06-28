@@ -104,11 +104,14 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(value = MethodArgumentNotValidException.class)
     ResponseEntity<ApiResponse<Void>> handlingValidation(MethodArgumentNotValidException exception) {
-        log.error("Validation failed: {}", exception.getMessage(), exception);
-
-        String enumKey = Objects.requireNonNull(exception.getFieldError()).getDefaultMessage();
-
+        //log.error("Validation failed: {}", exception.getMessage(), exception);
         ErrorCode errorCode = ErrorCode.INVALID_MESSAGE_KEY;
+
+        String enumKey = exception.getBindingResult().getAllErrors().stream()
+                .map(error -> error.getDefaultMessage())
+                .filter(Objects::nonNull)
+                .findFirst()
+                .orElse("INVALID_MESSAGE_KEY");
         Map<String, Object> attributes = null;
         try {
             errorCode = ErrorCode.valueOf(enumKey);

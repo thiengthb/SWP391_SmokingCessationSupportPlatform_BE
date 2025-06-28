@@ -33,7 +33,7 @@ public class StreakScheduler {
     IStreakService streakService;
     IScoreService scoreService;
 
-    @Scheduled(cron = "0 * * * * *")
+    @Scheduled(cron = "0 */30 * * * *")
     public void checkAndResetStreak() {
         LocalDate today = LocalDate.now();
         LocalDateTime now = LocalDateTime.now();

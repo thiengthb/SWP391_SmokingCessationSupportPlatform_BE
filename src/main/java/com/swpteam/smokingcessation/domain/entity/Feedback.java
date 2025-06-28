@@ -1,9 +1,8 @@
 package com.swpteam.smokingcessation.domain.entity;
 
 import com.swpteam.smokingcessation.common.AuditableEntity;
-import jakarta.persistence.Entity;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import com.swpteam.smokingcessation.domain.enums.FeedbackType;
+import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -21,6 +20,9 @@ public class Feedback extends AuditableEntity {
     Account account;
 
     String comment;
+
+    @Enumerated(EnumType.STRING)
+    FeedbackType feedbackType;
 
     int rating;
 }

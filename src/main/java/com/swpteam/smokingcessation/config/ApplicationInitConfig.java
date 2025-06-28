@@ -82,6 +82,21 @@ public class ApplicationInitConfig {
                 .status(AccountStatus.ONLINE)
                 .build();
 
+        switch (role){
+            case MEMBER -> {
+                Member member = new Member();
+                member.setAccount(account);
+                account.setMember(member);
+            }
+            case COACH -> {
+                Coach coach = new Coach();
+                coach.setAccount(account);
+                account.setCoach(coach);
+            }
+            default -> {
+
+            }
+        }
         account.setSetting(Setting.getDefaultSetting(account));
         if (account.getRole().equals(Role.MEMBER)) {
             account.setScore(Score.getDefaultScore(account));

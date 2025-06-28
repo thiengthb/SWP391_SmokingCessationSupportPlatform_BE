@@ -1,11 +1,10 @@
 package com.swpteam.smokingcessation.controller.v1.profile;
 
 import com.swpteam.smokingcessation.common.ApiResponse;
-import com.swpteam.smokingcessation.common.PageResponse;
-import com.swpteam.smokingcessation.common.PageableRequest;
 import com.swpteam.smokingcessation.constant.SuccessCode;
 import com.swpteam.smokingcessation.domain.dto.goal.GoalCreateRequest;
-import com.swpteam.smokingcessation.domain.dto.goal.GoalResponse;
+import com.swpteam.smokingcessation.domain.dto.goal.GoalDetailsResponse;
+import com.swpteam.smokingcessation.domain.dto.goal.GoalListItemResponse;
 import com.swpteam.smokingcessation.domain.dto.goal.GoalUpdateRequest;
 import com.swpteam.smokingcessation.service.interfaces.profile.IGoalService;
 import com.swpteam.smokingcessation.utils.ResponseUtil;
@@ -18,6 +17,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @Slf4j
 @RestController
 @RequestMapping("/api/v1/goals")
@@ -29,27 +30,32 @@ public class GoalController {
     IGoalService goalService;
 
     @GetMapping
-    public ResponseEntity<ApiResponse<PageResponse<GoalResponse>>> getGoalPage(
-            @Valid PageableRequest request
+    public ResponseEntity<ApiResponse<List<GoalListItemResponse>>> getGoals(
     ) {
-        return ResponseUtil.buildSuccessResponse(
-                SuccessCode.GOAL_GET_ALL,
-                goalService.getPublicGoalPage(request)
+        return ResponseUtil.buildResponse(
+                SuccessCode.GOAL_GET_PUBLIC_GOALS,
+                goalService.getPublicGoals()
         );
     }
 
     @GetMapping("/my-goals")
-    public ResponseEntity<ApiResponse<PageResponse<GoalResponse>>> getMyGoalPage(
-            @Valid PageableRequest request
-    ) {
-        return ResponseUtil.buildSuccessResponse(
-                SuccessCode.GOAL_GET_ALL,
-                goalService.getMyGoalPage(request)
+    public ResponseEntity<ApiResponse<List<GoalListItemResponse>>> getMyGoals() {
+        return ResponseUtil.buildResponse(
+                SuccessCode.GOAL_GET_PERSONAL_GOALS,
+                goalService.getMyGoals()
+        );
+    }
+
+    @GetMapping("/goal-details/{id}")
+    public ResponseEntity<ApiResponse<GoalDetailsResponse>> getGoalDetailsById(@PathVariable String id) {
+        return ResponseUtil.buildResponse(
+                SuccessCode.GOAL_GET_DETAILS,
+                goalService.getMyGoalDetailsById(id)
         );
     }
 
     @GetMapping("/{name}")
-    public ResponseEntity<ApiResponse<GoalResponse>> getGoalByName(
+    public ResponseEntity<ApiResponse<GoalDetailsResponse>> getGoalByName(
             @PathVariable String name
     ) {
         return ResponseUtil.buildSuccessResponse(
@@ -59,7 +65,7 @@ public class GoalController {
     }
 
     @PostMapping
-    public ResponseEntity<ApiResponse<GoalResponse>> createGoal(
+    public ResponseEntity<ApiResponse<GoalDetailsResponse>> createGoal(
             @RequestBody @Valid GoalCreateRequest request
     ) {
         return ResponseUtil.buildSuccessResponse(
@@ -69,7 +75,7 @@ public class GoalController {
     }
 
     @PutMapping("/{name}")
-    public ResponseEntity<ApiResponse<GoalResponse>> updateGoal(
+    public ResponseEntity<ApiResponse<GoalDetailsResponse>> updateGoal(
             @PathVariable String name,
             @RequestBody @Valid GoalUpdateRequest request
     ) {

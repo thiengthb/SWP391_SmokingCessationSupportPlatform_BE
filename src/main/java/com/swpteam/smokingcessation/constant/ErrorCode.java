@@ -192,7 +192,7 @@ public enum ErrorCode {
 
     // Booking
     BOOKING_NOT_FOUND(1000, "Booking not found", HttpStatus.BAD_REQUEST),
-    COACH_ACCOUNT_ID_REQUIRED(1003, "Coach account ID is required", HttpStatus.BAD_REQUEST),
+    COACH_ID_REQUIRED(1003, "Coach account ID is required", HttpStatus.BAD_REQUEST),
     MEET_LINK_REQUIRED(1004, "Meet link is required", HttpStatus.BAD_REQUEST),
     MEET_LINK_TOO_LONG(1005, "Meet link is too long", HttpStatus.BAD_REQUEST),
     STARTED_AT_REQUIRED(1006, "Started at is required", HttpStatus.BAD_REQUEST),
@@ -200,8 +200,12 @@ public enum ErrorCode {
     ENDED_AT_REQUIRED(1008, "Ended at is required", HttpStatus.BAD_REQUEST),
     ENDED_AT_MUST_BE_IN_FUTURE(1009, "Ended at must be in the future", HttpStatus.BAD_REQUEST),
     IS_APPROVED_REQUIRED(1010, "Approval status is required", HttpStatus.BAD_REQUEST),
-    BOOKING_OUT_OF_WORKING_TIME(3213, "Out of coach working time", HttpStatus.BAD_REQUEST),
-    BOOKING_TIME_CONFLICT(4123, "Booking time conflict", HttpStatus.BAD_REQUEST),
+    BOOKING_OUT_OF_WORKING_TIME(3213,"Out of coach working time",HttpStatus.BAD_REQUEST),
+    BOOKING_TIME_CONFLICT(4123,"Booking time conflict",HttpStatus.BAD_REQUEST),
+    DECLINE_REASON_REQUIRED(1011, "The reason for decline is required", HttpStatus.BAD_REQUEST),
+    DECLINE_REASON_NOT_ALLOWED(1012, "The reason for decline have to be empty if accepting", HttpStatus.BAD_REQUEST),
+    BOOKING_ALREADY_PROCESSED(1013, "The booking request has already been processed", HttpStatus.BAD_REQUEST),
+    BOOKING_DECISION_REQUIRED(1014, "The decision for booking request is required", HttpStatus.BAD_REQUEST),
 
     // Category
     CATEGORY_NAME_REQUIRED(4000, "Category name must not be blank", HttpStatus.BAD_REQUEST),

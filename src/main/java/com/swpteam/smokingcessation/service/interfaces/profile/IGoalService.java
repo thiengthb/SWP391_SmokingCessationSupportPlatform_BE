@@ -1,26 +1,30 @@
 package com.swpteam.smokingcessation.service.interfaces.profile;
 
-import com.swpteam.smokingcessation.common.PageResponse;
-import com.swpteam.smokingcessation.common.PageableRequest;
 import com.swpteam.smokingcessation.domain.dto.goal.GoalCreateRequest;
-import com.swpteam.smokingcessation.domain.dto.goal.GoalResponse;
+import com.swpteam.smokingcessation.domain.dto.goal.GoalDetailsResponse;
+import com.swpteam.smokingcessation.domain.dto.goal.GoalListItemResponse;
 import com.swpteam.smokingcessation.domain.dto.goal.GoalUpdateRequest;
 import com.swpteam.smokingcessation.domain.entity.Goal;
-import org.springframework.data.domain.Page;
+
+import java.util.List;
 
 public interface IGoalService {
 
-    PageResponse<GoalResponse> getPublicGoalPage(PageableRequest request);
+    List<GoalListItemResponse> getPublicGoals();
 
-    PageResponse<GoalResponse> getMyGoalPage(PageableRequest request);
+    List<GoalListItemResponse> getMyGoals();
 
-    GoalResponse getGoalByName(String name);
+    GoalDetailsResponse getGoalByName(String name);
 
-    GoalResponse createGoal(GoalCreateRequest request);
+    GoalDetailsResponse createGoal(GoalCreateRequest request);
 
-    GoalResponse updateGoal(String name, GoalUpdateRequest request);
+    GoalDetailsResponse updateGoal(String name, GoalUpdateRequest request);
+
+    GoalDetailsResponse getMyGoalDetailsById(String id);
 
     void softDeleteGoal(String name);
 
     Goal findGoalByName(String name);
+
+    Goal getGoalByIdOrThrow(String id);
 }

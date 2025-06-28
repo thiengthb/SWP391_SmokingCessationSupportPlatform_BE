@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>New Booking Request</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            line-height: 1.6;
+            color: #333333;
+            background-color: #f8f9fa;
+        }
+
+        .email-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .header {
+            background: linear-gradient(135deg, #000000 0%, #333333 100%);
+            color: white;
+            padding: 40px 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .header p {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 40px 30px;
+        }
+
+        .greeting {
+            font-size: 18px;
+            font-weight: 500;
+            margin-bottom: 20px;
+            color: #333333;
+        }
+
+        .message {
+            font-size: 16px;
+            line-height: 1.7;
+            color: #555555;
+            margin-bottom: 30px;
+        }
+
+        .booking-details {
+            background-color: #f8f9fa;
+            border: 1px solid #e9ecef;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+
+        .booking-details h3 {
+            font-size: 14px;
+            text-transform: uppercase;
+            color: #666666;
+            margin-bottom: 10px;
+        }
+
+        .booking-details p {
+            font-size: 14px;
+            color: #333333;
+            margin: 5px 0;
+        }
+
+        .button-section {
+            text-align: center;
+            margin: 40px 0;
+        }
+
+        .button-section a {
+            display: inline-block;
+            background: linear-gradient(135deg, #000000 0%, #333333 100%);
+            color: white;
+            text-decoration: none;
+            padding: 14px 30px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .button-section a:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .footer {
+            background-color: #f8f9fa;
+            padding: 30px;
+            text-align: center;
+            border-top: 1px solid #e9ecef;
+        }
+
+        .footer p {
+            font-size: 14px;
+            color: #666666;
+        }
+
+        .footer .company-info {
+            color: #333333;
+            font-weight: 500;
+        }
+
+        @media (max-width: 600px) {
+            .email-container {
+                box-shadow: none;
+            }
+
+            .header, .content, .footer {
+                padding: 25px 20px;
+            }
+
+            .header h1 {
+                font-size: 24px;
+            }
+
+            .button-section a {
+                padding: 12px 24px;
+                font-size: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="email-container">
+    <!-- Header -->
+    <div class="header">
+        <h1>Smoking Cessation Support Platform</h1>
+        <p>New Booking Request Received</p>
+    </div>
+
+    <!-- Main Content -->
+    <div class="content">
+        <div class="greeting">
+            Hello Coach <span th:text="${coachName}"></span>,
+        </div>
+
+        <div class="message">
+            You’ve just received a new booking request while you were offline. Below are the details of the request:
+        </div>
+
+        <!-- Booking Details -->
+        <div class="booking-details">
+            <h3>Booking Information</h3>
+            <p><strong>Member:</strong> <span th:text="${memberName}"></span></p>
+            <p><strong>Start Time:</strong> <span th:text="${startedAt}"></span></p>
+            <p><strong>End Time:</strong> <span th:text="${endedAt}"></span></p>
+        </div>
+
+        <!-- Call to Action -->
+        <div class="button-section">
+            <a th:href="${bookingLink}" href="#" target="_blank">View Booking</a>
+        </div>
+
+        <div class="message">
+            Please log in to your dashboard to respond to the request. If you have any questions, don’t hesitate to
+            reach out.
+        </div>
+
+        <p style="font-size:12px;color:#888;">
+            Sent at: <span
+                th:text="${#dates.format(#dates.createNow(), 'yyyy-MM-dd HH:mm:ss')}">2025-06-26 10:00:00</span>
+        </p>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        <p class="company-info">Smoking Cessation Support Platform</p>
+        <p>
+            Need help? Contact us at
+            <a th:href="'mailto:'" style="color: #333333;">Swp391team@gmail.com</a>
+        </p>
+        <p>&copy; <span th:text="${#dates.year(#dates.createNow())}">2025</span> All rights reserved.</p>
+    </div>
+</div>
+</body>
+</html>

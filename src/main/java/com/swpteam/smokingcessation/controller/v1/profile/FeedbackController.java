@@ -29,8 +29,7 @@ public class FeedbackController {
     IFeedbackService feedbackService;
 
     @GetMapping
-    ResponseEntity<ApiResponse<PageResponse<FeedbackResponse>>> getFeedbackPage(
-            @RequestBody @Valid PageableRequest request
+    ResponseEntity<ApiResponse<PageResponse<FeedbackResponse>>> getFeedbackPage(@Valid PageableRequest request
     ) {
         return ResponseUtil.buildSuccessResponse(
                 SuccessCode.FEEDBACK_GET_ALL,
@@ -51,7 +50,7 @@ public class FeedbackController {
     @GetMapping("/account/{id}")
     ResponseEntity<ApiResponse<PageResponse<FeedbackResponse>>> getFeedbackPageByAccountId(
             @PathVariable String id,
-            @RequestBody @Valid PageableRequest request
+            @Valid PageableRequest request
     ) {
         return ResponseUtil.buildSuccessResponse(
                 SuccessCode.FEEDBACK_GET_BY_ACCOUNT,

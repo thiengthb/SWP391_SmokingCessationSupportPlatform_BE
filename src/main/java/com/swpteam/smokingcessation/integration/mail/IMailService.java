@@ -3,6 +3,7 @@ package com.swpteam.smokingcessation.integration.mail;
 import com.swpteam.smokingcessation.domain.dto.phase.PhaseResponse;
 import com.swpteam.smokingcessation.domain.dto.plan.PlanResponse;
 import com.swpteam.smokingcessation.domain.dto.report.PlanSummaryResponse;
+import com.swpteam.smokingcessation.domain.dto.booking.BookingRequest;
 import com.swpteam.smokingcessation.domain.dto.report.ReportSummaryResponse;
 import com.swpteam.smokingcessation.domain.entity.Account;
 import com.swpteam.smokingcessation.domain.entity.Message;
@@ -22,4 +23,6 @@ public interface IMailService {
     void sendPhaseSummary(String to, PhaseResponse phaseResponse);
 
     void sendPlanSummary(String to, PlanResponse planResponse);
+  
+    void sendBookingRequestEmail(String to, BookingRequest request, String username, String coachName, String bookingLink);
 }

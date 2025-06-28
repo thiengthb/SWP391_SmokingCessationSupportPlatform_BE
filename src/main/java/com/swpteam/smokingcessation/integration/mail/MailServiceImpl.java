@@ -4,6 +4,7 @@ import com.swpteam.smokingcessation.constant.ErrorCode;
 import com.swpteam.smokingcessation.domain.dto.phase.PhaseResponse;
 import com.swpteam.smokingcessation.domain.dto.plan.PlanResponse;
 import com.swpteam.smokingcessation.domain.dto.report.PlanSummaryResponse;
+import com.swpteam.smokingcessation.domain.dto.booking.BookingRequest;
 import com.swpteam.smokingcessation.domain.dto.report.ReportSummaryResponse;
 import com.swpteam.smokingcessation.domain.entity.Account;
 import com.swpteam.smokingcessation.domain.entity.Message;
@@ -170,6 +171,20 @@ public class MailServiceImpl implements IMailService {
         );
     }
 
+    public void sendBookingRequestEmail(String to, BookingRequest request, String username, String coachName, String bookingLink) {
+        LocalDateTime startedAt = DateTimeUtil.reformat(request.startedAt());
+        LocalDateTime endedAt = DateTimeUtil.reformat(request.endedAt());
+        buildAndSendMail("New Booking Request",
+                to,
+                "coach-booking-request",
+                List.of(
+                        Map.entry("startedAt", startedAt),
+                        Map.entry("endedAt", endedAt),
+                        Map.entry("memberName", username),
+                        Map.entry("bookingLink", bookingLink),
+                        Map.entry("coachName", coachName)
+                ));
+    }
 
     private void buildAndSendMail(
             String title,
