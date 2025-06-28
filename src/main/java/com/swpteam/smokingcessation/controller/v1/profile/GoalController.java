@@ -33,7 +33,7 @@ public class GoalController {
     @GetMapping
     public ResponseEntity<ApiResponse<List<GoalListItemResponse>>> getGoals(
     ) {
-        return ResponseUtil.buildSuccessResponse(
+        return responseUtilService.buildSuccessResponse(
                 SuccessCode.GOAL_PAGE_FETCHED,
                 goalService.getPublicGoals()
         );

@@ -4,7 +4,7 @@ import com.swpteam.smokingcessation.common.ApiResponse;
 import com.swpteam.smokingcessation.constant.SuccessCode;
 import com.swpteam.smokingcessation.domain.dto.counter.CounterResponse;
 import com.swpteam.smokingcessation.service.interfaces.tracking.ICounterService;
-import com.swpteam.smokingcessation.utils.ResponseUtil;
+import com.swpteam.smokingcessation.utils.ResponseUtilService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -23,19 +23,20 @@ import org.springframework.web.bind.annotation.RestController;
 public class CounterController {
 
     ICounterService counterService;
+    ResponseUtilService responseUtilService;
 
     @PutMapping("/start")
     ResponseEntity<ApiResponse<CounterResponse>> startOrResetCounter() {
-        return ResponseUtil.buildSuccessResponse(
-                SuccessCode.COUNTER_START,
+        return responseUtilService.buildSuccessResponse(
+                SuccessCode.COUNTER_STARTED,
                 counterService.startCounter()
         );
     }
 
     @GetMapping
     ResponseEntity<ApiResponse<CounterResponse>> getCounter() {
-        return ResponseUtil.buildSuccessResponse(
-                SuccessCode.COUNTER_GET,
+        return responseUtilService.buildSuccessResponse(
+                SuccessCode.COUNTER_FETCHED,
                 counterService.getCounter()
         );
     }

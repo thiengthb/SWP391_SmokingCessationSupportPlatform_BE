@@ -103,6 +103,7 @@ public enum SuccessCode {
     BOOKING_DELETED(2202, "success.booking.deleted"),
     BOOKING_PAGE_FETCHED(2203, "success.booking.page_fetched"),
     BOOKING_FETCHED_BY_ID(2204, "success.booking.fetched_by_id"),
+    BOOKING_ANSWERED(2205, "success.booking.answered"),
 
     // Chatbot Successes (2300-2399)
     CHATBOT_RESPONSE_RETURNED(2300, "success.chatbot.response_returned"),
@@ -191,9 +192,11 @@ public enum SuccessCode {
     SETTING_FETCHED(3501, "success.setting.fetched"),
 
     // Stripe Successes (3600-3699)
-    CHECKOUT_SUCCESS(3600, "success.stripe.checkout")
+    CHECKOUT_SUCCESS(3600, "success.stripe.checkout"),
 
-
+    // Counter Success (3700-3799)
+    COUNTER_STARTED(3700, "success.counter.started"),
+    COUNTER_FETCHED(3701, "success.counter.fetched")
     ;
     int code;
     String messageLocaleKey;

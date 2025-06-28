@@ -134,6 +134,8 @@ public enum ErrorCode {
     SUCCESS_RATE_INVALID_MAX(2213, "error.plan.success_rate_invalid_max", HttpStatus.BAD_REQUEST),
     PLAN_ID_REQUIRED(2214, "error.plan.id_required", HttpStatus.BAD_REQUEST),
     FTND_SCORE_INVALID(2215, "error.plan.ftnd_score_invalid", HttpStatus.BAD_REQUEST),
+    PLAN_ALREADY_EXISTED(2216, "error.plan.already_existed", HttpStatus.CONFLICT),
+    INVALID_PLAN_DURATION(2217, "error.plan.invalid_duration", HttpStatus.BAD_REQUEST),
 
     // Phase Errors (2300-2399)
     PHASE_NOT_FOUND(2300, "error.phase.not_found", HttpStatus.NOT_FOUND),
@@ -148,6 +150,9 @@ public enum ErrorCode {
     CIGARETTE_BOUND_INVALID(2309, "error.phase.cigarette_bound_invalid", HttpStatus.BAD_REQUEST),
     PHASE_OVERLAP(2310, "error.phase.overlap", HttpStatus.BAD_REQUEST),
     PHASE_REQUIRED(2311, "error.phase.required", HttpStatus.BAD_REQUEST),
+    PHASE_DURATION_TOO_SHORT(2312, "error.phase.duration_too_short", HttpStatus.BAD_REQUEST),
+    INVALID_PHASE_DATE(2313, "error.phase.invalid_date", HttpStatus.BAD_REQUEST),
+    NEW_PHASE_CONFLICT(2314, "error.phase.new_phase_conflict", HttpStatus.CONFLICT),
 
     // Chatbot Errors (2400-2499)
     PROMPT_REQUIRED(2400, "error.chatbot.prompt_required", HttpStatus.BAD_REQUEST),
@@ -176,6 +181,7 @@ public enum ErrorCode {
     BOOKING_APPROVAL_REQUIRED(2608, "error.booking.approval_required", HttpStatus.BAD_REQUEST),
     BOOKING_OUTSIDE_WORKING_HOURS(2609, "error.booking.outside_working_hours", HttpStatus.BAD_REQUEST),
     BOOKING_TIME_CONFLICT(2610, "error.booking.time_conflict", HttpStatus.CONFLICT),
+    BOOKING_ALREADY_IN_PROCESS(2611, "error.booking.already_in_process", HttpStatus.CONFLICT),
 
     // Category Errors (2700-2799)
     CATEGORY_NAME_REQUIRED(2700, "error.category.name_required", HttpStatus.BAD_REQUEST),
@@ -265,7 +271,10 @@ public enum ErrorCode {
     TIMETABLE_STARTED_AT_REQUIRED(3803, "error.timetable.started_at_required", HttpStatus.BAD_REQUEST),
     TIMETABLE_ENDED_AT_REQUIRED(3804, "error.timetable.ended_at_required", HttpStatus.BAD_REQUEST),
     TIMETABLE_STARTED_AT_INVALID(3805, "error.timetable.started_at_invalid", HttpStatus.BAD_REQUEST),
-    TIMETABLE_ENDED_AT_INVALID(3806, "error.timetable.ended_at_invalid", HttpStatus.BAD_REQUEST);
+    TIMETABLE_ENDED_AT_INVALID(3806, "error.timetable.ended_at_invalid", HttpStatus.BAD_REQUEST),
+
+    // Score Errors (3900-3999)
+    SCORE_NOT_FOUND(3806, "error.score.not_found", HttpStatus.NOT_FOUND)
 
     ;
     int code;

@@ -154,7 +154,7 @@ public class BookingServiceImpl implements IBookingService {
         Booking booking = checkAndGetMyBooking(id);
 
         if (!booking.getStatus().equals(BookingStatus.PENDING)) {
-            throw new AppException(ErrorCode.BOOKING_ALREADY_PROCESSED);
+            throw new AppException(ErrorCode.BOOKING_ALREADY_IN_PROCESS);
         }
 
         if (request.accepted()) {

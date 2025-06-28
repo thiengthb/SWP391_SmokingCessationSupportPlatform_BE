@@ -99,7 +99,7 @@ public class PlanServiceImpl implements IPlanService {
                 currentAccount.getId(), PlanStatus.ACTIVE
         );
         if (existingActivePlan.isPresent()) {
-            throw new AppException(ErrorCode.PLAN_ALREADY_EXISTS);
+            throw new AppException(ErrorCode.PLAN_ALREADY_EXISTED);
         }
 
 
@@ -238,7 +238,7 @@ public class PlanServiceImpl implements IPlanService {
             }
             long days = phase.startDate().until(phase.endDate()).getDays() + 1; // tính cả ngày bắt đầu
             if (days < 7) {
-                throw new AppException(ErrorCode.PHASE_TOO_SHORT);
+                throw new AppException(ErrorCode.PHASE_DURATION_TOO_SHORT);
             }
         }
 

@@ -43,8 +43,8 @@ public class BookingController {
     ResponseEntity<ApiResponse<PageResponse<BookingResponse>>> getBookingPageAsCoach(
             @Valid PageableRequest request
     ) {
-        return ResponseUtil.buildSuccessResponse(
-                SuccessCode.BOOKING_GET_ALL,
+        return responseUtilService.buildSuccessResponse(
+                SuccessCode.BOOKING_PAGE_FETCHED,
                 bookingService.getMyBookingPageAsCoach(request)
         );
     }
@@ -85,7 +85,7 @@ public class BookingController {
             @PathVariable String id,
             @Valid @RequestBody BookingAnswerRequest request
     ) {
-        return ResponseUtil.buildSuccessResponse(
+        return responseUtilService.buildSuccessResponse(
                 SuccessCode.BOOKING_ANSWERED,
                 bookingService.updateMyBookingRequestStatus(id, request)
         );
