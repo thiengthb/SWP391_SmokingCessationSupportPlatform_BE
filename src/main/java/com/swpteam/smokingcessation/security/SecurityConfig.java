@@ -40,6 +40,7 @@ public class SecurityConfig {
             "/ws/**",
             "/api/webhook/stripe",
             "/api/v1/auth/**",
+            "/api/v1/auth/verify",
             "/api/test/**",
     };
 
@@ -48,7 +49,11 @@ public class SecurityConfig {
 
     @NonFinal
     @Value("${app.frontend-domain}")
-    String frontEndUrl;
+    String frontendUrl;
+
+    @NonFinal
+    @Value("${app.backend-domain}")
+    String backendUrl;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
@@ -75,7 +80,7 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of(frontEndUrl, "http://localhost:3000", "http://localhost:8080"));
+        config.setAllowedOrigins(List.of(frontendUrl, backendUrl, "http://localhost:3000", "http://localhost:8080"));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
         config.setAllowCredentials(true);

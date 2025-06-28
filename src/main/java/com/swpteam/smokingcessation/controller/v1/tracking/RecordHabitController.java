@@ -4,9 +4,8 @@ import com.swpteam.smokingcessation.common.ApiResponse;
 import com.swpteam.smokingcessation.common.PageResponse;
 import com.swpteam.smokingcessation.common.PageableRequest;
 import com.swpteam.smokingcessation.constant.SuccessCode;
-import com.swpteam.smokingcessation.domain.dto.record.RecordHabitCreateRequest;
+import com.swpteam.smokingcessation.domain.dto.record.RecordHabitRequest;
 import com.swpteam.smokingcessation.domain.dto.record.RecordHabitResponse;
-import com.swpteam.smokingcessation.domain.dto.record.RecordHabitUpdateRequest;
 import com.swpteam.smokingcessation.service.interfaces.tracking.IRecordHabitService;
 import com.swpteam.smokingcessation.utils.ResponseUtil;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -61,7 +60,7 @@ public class RecordHabitController {
 
     @PostMapping
     ResponseEntity<ApiResponse<RecordHabitResponse>> createRecord(
-            @RequestBody @Valid RecordHabitCreateRequest request
+            @RequestBody @Valid RecordHabitRequest request
     ) {
         return ResponseUtil.buildSuccessResponse(
                 SuccessCode.RECORD_CREATED,
@@ -72,7 +71,7 @@ public class RecordHabitController {
     @PutMapping("/{id}")
     ResponseEntity<ApiResponse<RecordHabitResponse>> updateRecord(
             @PathVariable String id,
-            @RequestBody @Valid RecordHabitUpdateRequest request
+            @RequestBody @Valid RecordHabitRequest request
     ) {
         return ResponseUtil.buildSuccessResponse(
                 SuccessCode.RECORD_UPDATED,
@@ -86,8 +85,7 @@ public class RecordHabitController {
     ) {
         recordService.softDeleteRecordById(id);
         return ResponseUtil.buildSuccessResponse(
-                SuccessCode.RECORD_DELETED,
-                null
+                SuccessCode.RECORD_DELETED
         );
     }
 

@@ -48,6 +48,14 @@ public class HealthController {
         );
     }
 
+    @GetMapping("/ftnd-status")
+    ResponseEntity<ApiResponse<Boolean>> getMyFTNDStatus() {
+        return ResponseUtil.buildSuccessResponse(
+                SuccessCode.HEALTH_GET_BY_ID,
+                healthService.hasCompleteFTNDAssessment()
+        );
+    }
+
     @GetMapping("/account/{id}")
     ResponseEntity<ApiResponse<PageResponse<HealthResponse>>> getHealthPageByAccountId(
             @PathVariable String id,
@@ -81,13 +89,12 @@ public class HealthController {
     }
 
     @DeleteMapping("/{id}")
-    ResponseEntity<ApiResponse<String>> deleteHealthById(
+    ResponseEntity<ApiResponse<Void>> deleteHealthById(
             @PathVariable String id
     ) {
         healthService.softDeleteHealthById(id);
         return ResponseUtil.buildSuccessResponse(
-                SuccessCode.HEALTH_DELETED,
-                null
+                SuccessCode.HEALTH_DELETED
         );
     }
 }

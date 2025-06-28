@@ -50,8 +50,7 @@ public class StreakController {
     ) {
         streakService.resetStreak(memberId);
         return ResponseUtil.buildSuccessResponse(
-                SuccessCode.STREAK_RESET,
-                null
+                SuccessCode.STREAK_RESET
         );
     }
 

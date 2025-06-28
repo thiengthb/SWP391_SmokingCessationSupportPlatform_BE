@@ -44,6 +44,7 @@ public enum ErrorCode {
     INVALID_SORT_FIELD(1013, "Invalid sort field", HttpStatus.BAD_REQUEST),
     INVALID_RESET_TOKEN(1012, "Reset token is invalid", HttpStatus.BAD_REQUEST),
     ACCOUNT_ROLE_REQUIRED(1014, "Account role field is required", HttpStatus.BAD_REQUEST),
+    ACCOUNT_ACTIVATED(1000, "Account already activate", HttpStatus.BAD_REQUEST),
 
     // Authentication
     UNAUTHENTICATED(2000, "Unauthenticated", HttpStatus.UNAUTHORIZED),
@@ -60,7 +61,8 @@ public enum ErrorCode {
     TOKEN_EXPIRED(2002, "Token is expired", HttpStatus.BAD_REQUEST),
     TOKEN_REQUIRED(403, "Token is required", HttpStatus.FORBIDDEN),
     TOKEN_CREATE_FAILED(403, "Token is required", HttpStatus.INTERNAL_SERVER_ERROR),
-    TOKEN_NOT_FOUND(2002, "Token is expired", HttpStatus.BAD_REQUEST),
+    TOKEN_NOT_FOUND(2002, "Token not found", HttpStatus.BAD_REQUEST),
+    TOKEN_NOT_SAVABLE(400, "Token type can not be save", HttpStatus.INTERNAL_SERVER_ERROR),
 
     // Account
     ACCOUNT_NOT_FOUND(3000, "Account does not exist", HttpStatus.BAD_REQUEST),
@@ -123,7 +125,6 @@ public enum ErrorCode {
     SMOKE_YEAR_INVALID(4009, "Smoke year must be non-negative", HttpStatus.BAD_REQUEST),
     ACCESS_DENIED(4001, "Access denied", HttpStatus.FORBIDDEN),
     PACK_PRICE_TOO_HIGH(4010, "Pack price must not exceed 500.0", HttpStatus.BAD_REQUEST),
-    HEALTH_RECORD_DOWN_GRADE(4010, "Health record can not be down grade", HttpStatus.BAD_REQUEST),
     HEALTH_RECORD_NOT_UPDATE(4010, "Health record not seem to be updated ", HttpStatus.BAD_REQUEST),
 
     // Record

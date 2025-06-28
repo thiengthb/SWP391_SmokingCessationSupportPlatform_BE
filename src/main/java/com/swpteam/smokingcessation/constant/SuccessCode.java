@@ -70,11 +70,12 @@ public enum SuccessCode {
     PASSWORD_CHANGE_SUCCESS(3004, "Password is changed successfully"),
     ROLE_UPDATED(3005, "Account role is updated successfully"),
     GET_ME(3006, "Fetched the current account successfully"),
+    VERIFY_COMPLETE(3000, "Verify complete"),
 
     //Authentication
     GOOGLE_LOGIN_SUCCESS(4000, "Google log in successfully"),
     LOGIN_SUCCESS(4001, "Logged in successfully"),
-    REGISTER_SUCCESS(4002, "Registered successfully"),
+    REGISTER_SUCCESS(4002, "Your registration has been received. There will verification link send to your email"),
     PASSWORD_RESET_SUCCESS(4003, "Password reset successfully"),
     TOKEN_REFRESH_SUCCESS(4004, "Issued a new access token successfully"),
     LOGOUT_SUCCESS(4005, "Logged out successfully"),

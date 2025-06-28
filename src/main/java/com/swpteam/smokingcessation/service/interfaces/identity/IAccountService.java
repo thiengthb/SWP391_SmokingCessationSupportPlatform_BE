@@ -19,6 +19,8 @@ public interface IAccountService {
 
     AccountResponse getCurrentAccount();
 
+    void verifyAccount(String accountId);
+
     AccountResponse createAccount(AccountRequest request);
 
     Account createAccountByGoogle(GoogleIdToken.Payload payload);

@@ -19,4 +19,6 @@ public interface HealthRepository extends JpaRepository<Health, String> {
 
     Page<Health> findAllByAccountIdAndIsDeletedFalse(String accountId, Pageable pageable);
 
+    boolean existsByAccountId(String accountId);
+
 }

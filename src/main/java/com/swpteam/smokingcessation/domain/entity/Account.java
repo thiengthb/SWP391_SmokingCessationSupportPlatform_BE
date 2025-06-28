@@ -55,7 +55,7 @@ public class Account extends AuditableEntity {
     @JsonIgnore
     @Builder.Default
     @OneToMany(mappedBy = "account", cascade = CascadeType.ALL, orphanRemoval = true)
-    List<AITokenUsage> aiTokenUsages = new ArrayList<>();
+    List<AIUsage> aiUsages = new ArrayList<>();
 
     @JsonIgnore
     @Builder.Default

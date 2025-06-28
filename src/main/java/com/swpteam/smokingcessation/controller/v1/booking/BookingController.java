@@ -91,13 +91,12 @@ public class BookingController {
     }
 
     @DeleteMapping("/{id}")
-    ResponseEntity<?> softDeleteBookingById(
+    ResponseEntity<ApiResponse<Void>> softDeleteBookingById(
             @PathVariable String id
     ) {
         bookingService.deleteBookingById(id);
         return ResponseUtil.buildSuccessResponse(
-                SuccessCode.BOOKING_DELETED,
-                null
+                SuccessCode.BOOKING_DELETED
         );
     }
 

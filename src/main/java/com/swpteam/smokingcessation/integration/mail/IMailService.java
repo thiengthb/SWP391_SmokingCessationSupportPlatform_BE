@@ -10,6 +10,8 @@ import com.swpteam.smokingcessation.domain.entity.Message;
 
 public interface IMailService {
 
+    void sendVerificationEmail(String to, String username, String verificationLink);
+
     void sendPaymentSuccessEmail(String to, String subscriptionId, double amount);
 
     void sendMotivationMail(String to, Message message);

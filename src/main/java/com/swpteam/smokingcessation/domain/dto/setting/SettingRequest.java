@@ -11,9 +11,6 @@ import java.time.LocalTime;
 
 public record SettingRequest(
 
-        @NotBlank(message = "ACCOUNT_NOT_BLANK")
-        String accountId,
-
         @NotNull(message = "THEME_REQUIRED")
         Theme theme,
 
@@ -27,5 +24,5 @@ public record SettingRequest(
         MotivationFrequency motivationFrequency,
 
         @NotNull(message = "Report deadline is required")
-        LocalTime reportDeadlineF
+        LocalTime reportDeadline
 ) {}

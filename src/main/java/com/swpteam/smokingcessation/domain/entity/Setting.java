@@ -42,11 +42,11 @@ public class Setting extends AuditableEntity {
     public static Setting getDefaultSetting(Account account) {
         return Setting.builder()
                 .account(account)
-                .theme(Theme.LIGHT)
+                .theme(Theme.SYSTEM)
                 .language(Language.EN)
                 .motivationFrequency(MotivationFrequency.DAILY)
-                .trackingMode(TrackingMode.AUTO_COUNTER)
-                .reportDeadline(LocalTime.of(22, 0))
+                .trackingMode(TrackingMode.AUTO_COUNT)
+                .reportDeadline(LocalTime.of(19, 0))
                 .build();
     }
 }

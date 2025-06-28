@@ -2,7 +2,7 @@ package com.swpteam.smokingcessation.service.interfaces.identity;
 
 import com.nimbusds.jwt.SignedJWT;
 import com.swpteam.smokingcessation.domain.entity.Account;
-import com.swpteam.smokingcessation.domain.entity.RefreshToken;
+import com.swpteam.smokingcessation.domain.entity.Token;
 
 public interface ITokenService {
 
@@ -10,7 +10,9 @@ public interface ITokenService {
 
     String generateRefreshToken(Account account);
 
-    String generateResetEmailToken(Account account);
+    String generateResetPasswordToken(Account account);
+
+    String generateVerificationEmailToken(Account account);
 
     SignedJWT verifyAccessToken(String token);
 
@@ -18,14 +20,18 @@ public interface ITokenService {
 
     SignedJWT verifyResetPasswordToken(String token);
 
-    RefreshToken findRefreshTokenByJtiOrThrowError(String jti);
+    SignedJWT verifyVerificationEmailToken(String token);
 
-    RefreshToken findRefreshTokenByAccountIdOrThrowError(String accountId);
-
-    void revokeRefreshTokenByJti(String jti);
-
-    void revokeRefreshTokenByToken(String token);
+    Token findTokenByJtiOrThrowError(String jti);
 
     String getAccountIdByRefreshToken(String token);
+
+    String getAccountIdByResetPasswordToken(String token);
+
+    String getAccountIdByEmailVerificationToken(String token);
+
+    void revokeTokenByJti(String jti);
+
+    void revokeRefreshTokenByToken(String token);
 
 }

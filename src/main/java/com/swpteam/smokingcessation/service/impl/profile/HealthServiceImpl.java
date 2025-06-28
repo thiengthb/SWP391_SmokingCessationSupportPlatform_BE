@@ -50,6 +50,12 @@ public class HealthServiceImpl implements IHealthService {
     }
 
     @Override
+    public boolean hasCompleteFTNDAssessment() {
+        Account currentAccount = authUtilService.getCurrentAccountOrThrowError();
+        return healthRepository.existsByAccountId(currentAccount.getId());
+    }
+
+    @Override
     public PageResponse<HealthResponse> getMyHealthPage(PageableRequest request) {
         ValidationUtil.checkFieldExist(Health.class, request.sortBy());
 

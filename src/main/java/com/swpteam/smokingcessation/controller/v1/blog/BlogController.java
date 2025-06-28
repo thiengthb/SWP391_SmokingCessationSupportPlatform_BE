@@ -101,13 +101,12 @@ public class BlogController {
     }
 
     @DeleteMapping("/{id}")
-    ResponseEntity<ApiResponse<String>> deleteBlogById(
+    ResponseEntity<ApiResponse<Void>> deleteBlogById(
             @PathVariable String id
     ) {
         blogService.softDeleteBlogById(id);
         return ResponseUtil.buildSuccessResponse(
-                SuccessCode.BLOG_DELETED,
-                null
+                SuccessCode.BLOG_DELETED
         );
     }
 

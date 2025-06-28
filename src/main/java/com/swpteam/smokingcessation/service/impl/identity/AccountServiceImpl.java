@@ -40,7 +40,6 @@ public class AccountServiceImpl implements IAccountService {
 
     AccountRepository accountRepository;
     AccountMapper accountMapper;
-
     AuthUtilService authUtilService;
     PasswordEncoder passwordEncoder;
 
@@ -79,6 +78,7 @@ public class AccountServiceImpl implements IAccountService {
         account.setUsername(RandomUtil.generateRandomUsername());
         account.setPassword(passwordEncoder.encode(request.password()));
         account.setProvider(AuthProvider.LOCAL);
+        account.setStatus(AccountStatus.INACTIVE);
         account.setSetting(Setting.getDefaultSetting(account));
         goalProgressService.ensureGlobalProgressForNewAccount(account);
 
@@ -96,10 +96,20 @@ public class AccountServiceImpl implements IAccountService {
                             .email(payload.getEmail())
                             .provider(AuthProvider.GOOGLE)
                             .role(Role.MEMBER)
+                            .status(AccountStatus.ONLINE)
                             .avatar((String) payload.get("picture"))
                             .build();
                     return accountRepository.save(newAccount);
                 });
+    }
+
+    @Override
+    public void verifyAccount(String accountId) {
+        Account account = findAccountByIdOrThrowError(accountId);
+
+        account.setStatus(AccountStatus.OFFLINE);
+
+        accountRepository.save(account);
     }
 
     @Override

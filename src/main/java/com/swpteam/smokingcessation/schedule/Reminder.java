@@ -57,12 +57,12 @@ public class Reminder {
 
     @Scheduled(cron = "0 0 8,14,20,0 * * *")
     public void sendEvery6HoursMotivation() {
-        sendMotivation(MotivationFrequency.EVERY6HOURS);
+        sendMotivation(MotivationFrequency.EVERY_6_HOURS);
     }
 
     @Scheduled(cron = "0 0 8,20 * * *")
     public void sendEvery12HoursMotivation() {
-        sendMotivation(MotivationFrequency.EVERY12HOURS);
+        sendMotivation(MotivationFrequency.EVERY_12_HOURS);
     }
 
     @Scheduled(cron = "0 0 8 * * SUN")

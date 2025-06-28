@@ -71,13 +71,12 @@ public class MembershipController {
     }
 
     @DeleteMapping("/{id}")
-    ResponseEntity<ApiResponse<String>> deleteMembership(
+    ResponseEntity<ApiResponse<Void>> deleteMembership(
             @PathVariable String id
     ) {
         membershipService.softDeleteMembershipById(id);
         return ResponseUtil.buildSuccessResponse(
-                SuccessCode.MEMBERSHIP_DELETED,
-                null
+                SuccessCode.MEMBERSHIP_DELETED
         );
     }
 

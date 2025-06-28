@@ -3,9 +3,8 @@ package com.swpteam.smokingcessation.service.impl.tracking;
 import com.swpteam.smokingcessation.common.PageResponse;
 import com.swpteam.smokingcessation.common.PageableRequest;
 import com.swpteam.smokingcessation.constant.ErrorCode;
-import com.swpteam.smokingcessation.domain.dto.record.RecordHabitCreateRequest;
+import com.swpteam.smokingcessation.domain.dto.record.RecordHabitRequest;
 import com.swpteam.smokingcessation.domain.dto.record.RecordHabitResponse;
-import com.swpteam.smokingcessation.domain.dto.record.RecordHabitUpdateRequest;
 import com.swpteam.smokingcessation.domain.entity.Account;
 import com.swpteam.smokingcessation.domain.entity.RecordHabit;
 import com.swpteam.smokingcessation.domain.entity.Streak;
@@ -78,7 +77,7 @@ public class RecordHabitServiceImpl implements IRecordHabitService {
 
     @Override
     @Transactional
-    public RecordHabitResponse createRecord(RecordHabitCreateRequest request) {
+    public RecordHabitResponse createRecord(RecordHabitRequest request) {
         Account curentAccount = authUtilService.getCurrentAccountOrThrowError();
         boolean existed = recordHabitRepository
                 .existsByAccountIdAndDateAndIsDeletedFalse(curentAccount.getId(), request.date());
@@ -99,16 +98,8 @@ public class RecordHabitServiceImpl implements IRecordHabitService {
 
     @Override
     @Transactional
-    public RecordHabitResponse updateRecord(String id, RecordHabitUpdateRequest request) {
+    public RecordHabitResponse updateRecord(String id, RecordHabitRequest request) {
         RecordHabit recordHabit = findRecordByIdOrThrowError(id);
-
-        if (recordHabit.getCigarettesSmoked() > request.cigarettesSmoked()) {
-            throw new AppException(ErrorCode.HEALTH_RECORD_DOWN_GRADE);
-        }
-
-        if (recordHabit.getCigarettesSmoked() == request.cigarettesSmoked()) {
-            throw new AppException(ErrorCode.HEALTH_RECORD_NOT_UPDATE);
-        }
 
         recordHabitMapper.update(recordHabit, request);
 

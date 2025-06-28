@@ -49,8 +49,7 @@ public class PhaseController {
     ResponseEntity<ApiResponse<Void>> deletePhaseById(@PathVariable String id) {
         phaseService.softDeletePhaseById(id);
         return ResponseUtil.buildSuccessResponse(
-                SuccessCode.PHASE_DELETED,
-                null
+                SuccessCode.PHASE_DELETED
         );
     }
 

@@ -52,8 +52,7 @@ public class NotificationRestController {
     ) {
         notificationService.deleteNotification(id);
         return ResponseUtil.buildSuccessResponse(
-                SuccessCode.NOTIFICATION_DELETED,
-                null
+                SuccessCode.NOTIFICATION_DELETED
         );
     }
 
@@ -61,8 +60,7 @@ public class NotificationRestController {
     public ResponseEntity<ApiResponse<Void>> deleteAllNotifications() {
         notificationService.deleteAllMyNotification();
         return ResponseUtil.buildSuccessResponse(
-                SuccessCode.ALL_NOTIFICATION_DELETED,
-                null
+                SuccessCode.ALL_NOTIFICATION_DELETED
         );
     }
 

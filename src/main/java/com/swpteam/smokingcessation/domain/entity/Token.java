@@ -1,10 +1,11 @@
 package com.swpteam.smokingcessation.domain.entity;
 
+import com.swpteam.smokingcessation.domain.enums.TokenType;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -13,7 +14,7 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class RefreshToken {
+public class Token {
 
     @Id
     String id;
@@ -22,5 +23,8 @@ public class RefreshToken {
     @JoinColumn(name = "accountId", updatable = false, nullable = false)
     Account account;
 
-    Date expiryTime;
+    @Enumerated(EnumType.STRING)
+    TokenType tokenType;
+
+    LocalDateTime expiryTime;
 }

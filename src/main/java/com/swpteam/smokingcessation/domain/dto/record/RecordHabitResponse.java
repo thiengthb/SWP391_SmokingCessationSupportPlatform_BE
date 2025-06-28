@@ -1,23 +1,25 @@
 package com.swpteam.smokingcessation.domain.dto.record;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import lombok.*;
+import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-@Getter
-@Setter
+@Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class RecordHabitResponse {
 
-    private String id;
-    private String accountId;
-    private int cigarettesSmoked;
-    private LocalDate date;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
+    String id;
+    String accountId;
+    int cigarettesSmoked;
+    String note;
+    LocalDate date;
+    LocalDateTime createdAt;
+    LocalDateTime updatedAt;
 }

@@ -86,13 +86,12 @@ public class GoalController {
     }
 
     @DeleteMapping("/{name}")
-    public ResponseEntity<ApiResponse<String>> deleteGoal(
+    public ResponseEntity<ApiResponse<Void>> deleteGoal(
             @PathVariable String name
     ) {
         goalService.softDeleteGoal(name);
         return ResponseUtil.buildSuccessResponse(
-                SuccessCode.GOAL_DELETED,
-                null
+                SuccessCode.GOAL_DELETED
         );
     }
 
