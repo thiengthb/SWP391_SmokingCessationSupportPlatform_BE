@@ -14,6 +14,8 @@ import java.util.List;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class PlanTemplateResponse {
-    int level;
+    String planName;
+    String description;
+    int totalDuration;
     List<PhaseTemplateResponse> plan;
 }

@@ -1,7 +1,10 @@
 package com.swpteam.smokingcessation.domain.dto.phase;
 
+import com.swpteam.smokingcessation.domain.dto.tip.TipRequest;
 import jakarta.validation.constraints.*;
+
 import java.time.LocalDate;
+import java.util.List;
 
 public record PhaseRequest(
 
@@ -21,7 +24,9 @@ public record PhaseRequest(
 
         @NotNull(message = "PHASE_END_DATE_REQUIRED")
         @Future(message = "PHASE_END_DATE_INVALID")
-        LocalDate endDate
+        LocalDate endDate,
+
+        List<TipRequest> tips
 
 ) {
 }

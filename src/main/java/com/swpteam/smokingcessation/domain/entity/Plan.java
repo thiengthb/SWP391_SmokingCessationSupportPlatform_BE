@@ -35,6 +35,7 @@ public class Plan extends AuditableEntity {
     LocalDate startDate;
     LocalDate endDate;
     double successRate;
+    double progress;
 
     @Enumerated(EnumType.STRING)
     PlanStatus planStatus;

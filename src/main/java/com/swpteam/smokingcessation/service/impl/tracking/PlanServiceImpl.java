@@ -6,6 +6,7 @@ import com.swpteam.smokingcessation.domain.dto.phase.PhaseRequest;
 import com.swpteam.smokingcessation.domain.dto.phase.PhaseResponse;
 import com.swpteam.smokingcessation.domain.dto.phase.PhaseTemplateResponse;
 import com.swpteam.smokingcessation.domain.dto.plan.PlanTemplateResponse;
+import com.swpteam.smokingcessation.domain.dto.tip.TipResponse;
 import com.swpteam.smokingcessation.domain.entity.*;
 import com.swpteam.smokingcessation.domain.enums.PlanStatus;
 import com.swpteam.smokingcessation.domain.mapper.PlanMapper;
@@ -14,6 +15,7 @@ import com.swpteam.smokingcessation.domain.dto.plan.PlanResponse;
 import com.swpteam.smokingcessation.constant.ErrorCode;
 import com.swpteam.smokingcessation.exception.AppException;
 import com.swpteam.smokingcessation.repository.PlanRepository;
+import com.swpteam.smokingcessation.service.impl.internalization.MessageSourceService;
 import com.swpteam.smokingcessation.service.interfaces.tracking.IPhaseService;
 import com.swpteam.smokingcessation.service.interfaces.tracking.IPlanService;
 import com.swpteam.smokingcessation.utils.AuthUtilService;
@@ -26,6 +28,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -33,10 +36,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
+import java.time.temporal.ChronoUnit;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -48,6 +49,7 @@ public class PlanServiceImpl implements IPlanService {
     PlanRepository planRepository;
     AuthUtilService authUtilService;
     IPhaseService phaseService;
+    MessageSourceService messageSourceService;
 
     @Override
     @PreAuthorize("hasRole('MEMBER')")
@@ -83,6 +85,7 @@ public class PlanServiceImpl implements IPlanService {
                 .orElseThrow(() -> new AppException(ErrorCode.PLAN_NOT_FOUND));
 
         PlanResponse planResponse = planMapper.toResponse(plan);
+        planResponse.setProgress(getPlanProgress(plan));
         planResponse.setPhases(phaseService.getPhaseListByPlanIdAndStartDate(plan.getId()));
 
         return planResponse;
@@ -102,13 +105,18 @@ public class PlanServiceImpl implements IPlanService {
             throw new AppException(ErrorCode.PLAN_ALREADY_EXISTED);
         }
 
-
         validatePhaseDates(request.phases());
 
         Plan plan = planMapper.toEntity(request);
 
         if (plan.getPhases() != null) {
-            plan.getPhases().forEach(phase -> phase.setPlan(plan));
+            plan.getPhases().forEach(phase ->
+            {
+                phase.setPlan(plan);
+                if (phase.getTips() != null) {
+                    phase.getTips().forEach(tip -> tip.setPhase(phase));
+                }
+            });
         }
         plan.getPhases().sort(Comparator.comparing(Phase::getStartDate));
 
@@ -117,7 +125,6 @@ public class PlanServiceImpl implements IPlanService {
         }
 
         plan.setAccount(currentAccount);
-        plan.getPhases().sort(Comparator.comparing(Phase::getStartDate));
         plan.setStartDate(plan.getPhases().getFirst().getStartDate());
         plan.setEndDate(plan.getPhases().getLast().getEndDate());
 
@@ -149,17 +156,21 @@ public class PlanServiceImpl implements IPlanService {
 
     @Override
     @PreAuthorize("hasRole('MEMBER')")
-    @CachePut(value = "PLAN_CACHE", key = "#result.getId()")
+    @CachePut(value = "PLAN_CACHE", key = "#ftndScore")
     public PlanResponse generatePlanByFtndScore(int ftndScore) {
         if (ftndScore < 0 || ftndScore > 10) {
             throw new AppException(ErrorCode.FTND_SCORE_INVALID);
         }
 
-        int level = mapFtndScoreToLevel(ftndScore);
+        // Map FTND to planName key
+        String planName = mapFtndScoreToPlanName(ftndScore);
+
+        // Load all templates
         List<PlanTemplateResponse> templates = FileLoaderUtil.loadPlanTemplate("quitplan/template-plan.json");
 
+        // Find the selected plan by name
         PlanTemplateResponse selectedPlan = templates.stream()
-                .filter(t -> t.getLevel() == level)
+                .filter(t -> t.getPlanName().equalsIgnoreCase(planName))
                 .findFirst()
                 .orElseThrow(() -> new AppException(ErrorCode.PLAN_NOT_FOUND));
 
@@ -168,14 +179,25 @@ public class PlanServiceImpl implements IPlanService {
         List<PhaseResponse> phases = new ArrayList<>();
 
         for (PhaseTemplateResponse phase : selectedPlan.getPlan()) {
-            LocalDate phaseEndDate = currentPhaseStartDate.plusDays(6); // mỗi phase kéo dài 7 ngày
+            LocalDate phaseEndDate = currentPhaseStartDate.plusDays(phase.getDuration() - 1);
+
+            // Localize each tip
+            List<TipResponse> tipResponses = phase.getTips().stream()
+                    .map(tipContent -> TipResponse.builder()
+                            .content(messageSourceService.getLocalizeMessage(tipContent))
+                            .build())
+                    .toList();
 
             PhaseResponse response = PhaseResponse.builder()
                     .phase(phase.getPhase())
-                    .cigaretteBound((phase.getCigaretteBound()))
+                    .phaseName(messageSourceService.getLocalizeMessage(phase.getPhaseName()))
+                    .cigaretteBound(phase.getCigaretteBound())
                     .startDate(currentPhaseStartDate)
                     .endDate(phaseEndDate)
+                    .description(messageSourceService.getLocalizeMessage(phase.getDescription()))
+                    .tips(tipResponses)
                     .build();
+
             phases.add(response);
             currentPhaseStartDate = phaseEndDate.plusDays(1);
         }
@@ -183,13 +205,14 @@ public class PlanServiceImpl implements IPlanService {
         LocalDate planEndDate = phases.getLast().getEndDate();
 
         return PlanResponse.builder()
-                .planName("Default plan for level " + selectedPlan.getLevel())
-                .description("This plan is generated based on your FTND score")
+                .planName(messageSourceService.getLocalizeMessage(selectedPlan.getPlanName()))
+                .description(messageSourceService.getLocalizeMessage(selectedPlan.getDescription()))
                 .startDate(planStartDate)
                 .endDate(planEndDate)
                 .phases(phases)
                 .build();
     }
+
 
     @Override
     @Transactional
@@ -219,12 +242,12 @@ public class PlanServiceImpl implements IPlanService {
         return plan;
     }
 
-    private int mapFtndScoreToLevel(int ftnd) {
-        if (ftnd < 3) return 1;
-        else if (ftnd <= 4) return 2;
-        else if (ftnd == 5) return 3;
-        else if (ftnd <= 7) return 4;
-        else return 5;
+    private String mapFtndScoreToPlanName(int ftndScore) {
+        if (ftndScore <= 2) return "plan.superfast.name";
+        if (ftndScore <= 4) return "plan.fast.name";
+        if (ftndScore <= 6) return "plan.standard.name";
+        if (ftndScore <= 8) return "plan.positive.name";
+        return "plan.longterm.name";
     }
 
     private void validatePhaseDates(List<PhaseRequest> phases) {
@@ -300,5 +323,21 @@ public class PlanServiceImpl implements IPlanService {
     @Override
     public List<Plan> getAllActivePlans() {
         return planRepository.findAllByPlanStatusAndIsDeletedFalse(PlanStatus.ACTIVE);
+    }
+
+    private double getPlanProgress(Plan plan) {
+        LocalDate now = LocalDate.now();
+        LocalDate start = plan.getStartDate();
+        LocalDate end = plan.getEndDate();
+        double total = ChronoUnit.DAYS.between(start, end) + 1;
+
+        if (now.isBefore(start)) {
+            return 0.0;
+        }
+        if (now.isAfter(end)) {
+            return 1.0;
+        }
+        double passed = ChronoUnit.DAYS.between(start, now) + 1;
+        return passed / total;
     }
 }
