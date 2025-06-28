@@ -28,6 +28,7 @@ public class PlanResponse {
     LocalDate createdAt;
     LocalDate updatedAt;
     PlanStatus planStatus;
+    Double progress;
 
     List<PhaseResponse> phases;
 }

@@ -83,8 +83,9 @@ public class PlanServiceImpl implements IPlanService {
 
         Plan plan = planRepository.findByAccountIdAndPlanStatusAndIsDeletedFalse(currentAccount.getId(), PlanStatus.ACTIVE)
                 .orElseThrow(() -> new AppException(ErrorCode.PLAN_NOT_FOUND));
-        plan.setProgress(getPlanProgress(plan));
+
         PlanResponse planResponse = planMapper.toResponse(plan);
+        planResponse.setProgress(getPlanProgress(plan));
         planResponse.setPhases(phaseService.getPhaseListByPlanIdAndStartDate(plan.getId()));
 
         return planResponse;
