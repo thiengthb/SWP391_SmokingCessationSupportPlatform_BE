@@ -26,7 +26,7 @@ public class CounterController {
 
     @PutMapping("/start")
     ResponseEntity<ApiResponse<CounterResponse>> startOrResetCounter() {
-        return ResponseUtil.buildResponse(
+        return ResponseUtil.buildSuccessResponse(
                 SuccessCode.COUNTER_START,
                 counterService.startCounter()
         );
@@ -34,7 +34,7 @@ public class CounterController {
 
     @GetMapping
     ResponseEntity<ApiResponse<CounterResponse>> getCounter() {
-        return ResponseUtil.buildResponse(
+        return ResponseUtil.buildSuccessResponse(
                 SuccessCode.COUNTER_GET,
                 counterService.getCounter()
         );
