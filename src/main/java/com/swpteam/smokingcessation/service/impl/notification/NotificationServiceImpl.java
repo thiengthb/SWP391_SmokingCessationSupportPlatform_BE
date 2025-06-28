@@ -88,14 +88,14 @@ public class NotificationServiceImpl implements INotificationService {
 
         boolean haveAccess = authUtilService.isOwner(notification.getAccount().getId());
         if (!haveAccess) {
-            throw new AppException(ErrorCode.ACCESS_DENIED);
+            throw new AppException(ErrorCode.UNAUTHORIZED);
         }
 
         if (!notification.isRead()) {
             notification.setRead(true);
             notificationRepository.save(notification);
         } else {
-            throw new AppException(ErrorCode.NOTIFICATION_HAS_BEEN_READ);
+            throw new AppException(ErrorCode.NOTIFICATION_ALREADY_READ);
         }
     }
 
@@ -126,7 +126,7 @@ public class NotificationServiceImpl implements INotificationService {
 
         boolean haveAccess = authUtilService.isAdminOrOwner(notification.getAccount().getId());
         if (!haveAccess) {
-            throw new AppException(ErrorCode.OTHERS_NOTIFICATION_CANNOT_BE_DELETED);
+            throw new AppException(ErrorCode.NOTIFICATION_DELETION_NOT_ALLOWED);
         }
 
         notification.setDeleted(true);
@@ -145,7 +145,7 @@ public class NotificationServiceImpl implements INotificationService {
 
         boolean haveAccess = authUtilService.isAdminOrOwner(notifications.getFirst().getAccount().getId());
         if (!haveAccess) {
-            throw new AppException(ErrorCode.OTHERS_NOTIFICATION_CANNOT_BE_DELETED);
+            throw new AppException(ErrorCode.NOTIFICATION_DELETION_NOT_ALLOWED);
         }
 
         notifications.forEach(notification -> notification.setDeleted(true));

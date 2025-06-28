@@ -99,7 +99,7 @@ public class PlanServiceImpl implements IPlanService {
                 currentAccount.getId(), PlanStatus.ACTIVE
         );
         if (existingActivePlan.isPresent()) {
-            throw new AppException(ErrorCode.PLAN_ALREADY_EXISTS);
+            throw new AppException(ErrorCode.PLAN_ALREADY_EXISTED);
         }
 
 
@@ -152,7 +152,7 @@ public class PlanServiceImpl implements IPlanService {
     @CachePut(value = "PLAN_CACHE", key = "#result.getId()")
     public PlanResponse generatePlanByFtndScore(int ftndScore) {
         if (ftndScore < 0 || ftndScore > 10) {
-            throw new AppException(ErrorCode.INVALID_FTND_SCORE);
+            throw new AppException(ErrorCode.FTND_SCORE_INVALID);
         }
 
         int level = mapFtndScoreToLevel(ftndScore);
@@ -238,7 +238,7 @@ public class PlanServiceImpl implements IPlanService {
             }
             long days = phase.startDate().until(phase.endDate()).getDays() + 1; // tính cả ngày bắt đầu
             if (days < 7) {
-                throw new AppException(ErrorCode.PHASE_TOO_SHORT);
+                throw new AppException(ErrorCode.PHASE_DURATION_TOO_SHORT);
             }
         }
 

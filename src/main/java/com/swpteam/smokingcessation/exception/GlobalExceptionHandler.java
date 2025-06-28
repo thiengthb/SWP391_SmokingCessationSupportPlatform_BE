@@ -5,10 +5,14 @@ import com.nimbusds.jose.JOSEException;
 import com.nimbusds.oauth2.sdk.ParseException;
 import com.swpteam.smokingcessation.common.ApiResponse;
 import com.swpteam.smokingcessation.constant.ErrorCode;
-import com.swpteam.smokingcessation.utils.ResponseUtil;
+import com.swpteam.smokingcessation.service.impl.internalization.MessageSourceService;
+import com.swpteam.smokingcessation.utils.ResponseUtilService;
 import jakarta.mail.MessagingException;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.validation.ConstraintViolation;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.http.ResponseEntity;
@@ -24,67 +28,72 @@ import java.util.Objects;
 
 @Slf4j
 @RestControllerAdvice
+@RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class GlobalExceptionHandler {
 
     private static final String MIN_ATTRIBUTE = "min";
 
+    ResponseUtilService responseUtilService;
+    MessageSourceService messageSourceService;
+
     @ExceptionHandler(value = Exception.class)
     ResponseEntity<ApiResponse<Void>> handlingException(Exception exception) {
-        return ResponseUtil
-                .buildErrorResponse(ErrorCode.UNCATEGORIZED_EXCEPTION, exception);
+        return responseUtilService
+                .buildErrorResponse(ErrorCode.UNCATEGORIZED_ERROR, exception);
     }
 
     @ExceptionHandler(value = AppException.class)
     ResponseEntity<ApiResponse<Void>> handlingAppException(AppException exception) {
         ErrorCode errorCode = exception.getErrorCode();
 
-        return ResponseUtil
+        return responseUtilService
                 .buildErrorResponse(errorCode, exception);
     }
 
     @ExceptionHandler(value = MessagingException.class)
     ResponseEntity<ApiResponse<Void>> handlingMessagingException(MessagingException exception) {
-        return ResponseUtil
-                .buildErrorResponse(ErrorCode.MESSAGE_EXCEPTION, exception);
+        return responseUtilService
+                .buildErrorResponse(ErrorCode.UNCATEGORIZED_ERROR, exception);
     }
 
 
     @ExceptionHandler(value = CurrencyRateException.class)
     public ResponseEntity<ApiResponse<Void>> handleCurrencyRateException(CurrencyRateException exception) {
-        return ResponseUtil
-                .buildErrorResponse(ErrorCode.CURRENCY_RATE_ERROR, exception);
+        return responseUtilService
+                .buildErrorResponse(ErrorCode.CURRENCY_RATE_UPDATE_FAILED, exception);
     }
 
     @ExceptionHandler(value = EntityNotFoundException.class)
     ResponseEntity<ApiResponse<Void>> handleEntityNotFoundException(EntityNotFoundException exception) {
-        return ResponseUtil
+        return responseUtilService
                 .buildErrorResponse(ErrorCode.ENTITY_NOT_FOUND, exception);
     }
 
     @ExceptionHandler(value = AccessDeniedException.class)
     ResponseEntity<ApiResponse<Void>> handlingAccessDeniedException(AccessDeniedException exception) {
-        return ResponseUtil
-                .buildErrorResponse(ErrorCode.FORBIDDEN, exception);
+        return responseUtilService
+                .buildErrorResponse(ErrorCode.UNAUTHORIZED, exception);
     }
 
     @ExceptionHandler(value = SecurityException.class)
     ResponseEntity<ApiResponse<Void>> handleSecurityException(SecurityException exception) {
-        return ResponseUtil
-                .buildErrorResponse(ErrorCode.SECURITY_EXCEPTION, exception);
+        return responseUtilService
+                .buildErrorResponse(ErrorCode.UNAUTHORIZED, exception);
     }
 
     @ExceptionHandler(value = {JOSEException.class, ParseException.class})
     public ResponseEntity<ApiResponse<Void>> handleJwtParsingException(Exception exception) {
         log.error("Token parsing / Validation failed: {}", exception.getMessage());
 
-        return ResponseUtil
+        return responseUtilService
                 .buildErrorResponse(ErrorCode.UNAUTHENTICATED, exception);
     }
 
     @ExceptionHandler(value = HttpMessageNotReadableException.class)
     public ResponseEntity<ApiResponse<Void>> handleInvalidBody(HttpMessageNotReadableException exception) {
-        return ResponseUtil
-                .buildErrorResponse(ErrorCode.INVALID_BODY, exception);
+        return responseUtilService
+                .buildErrorResponse(ErrorCode.INVALID_REQUEST_BODY, exception);
     }
 
     @ExceptionHandler(value = HandlerMethodValidationException.class)
@@ -99,12 +108,13 @@ public class GlobalExceptionHandler {
             log.error("Invalid enum key:", e);
         }
 
-        return ResponseUtil.buildErrorResponse(errorCode, exception);
+        return responseUtilService.buildErrorResponse(errorCode, exception);
     }
 
     @ExceptionHandler(value = MethodArgumentNotValidException.class)
     ResponseEntity<ApiResponse<Void>> handlingValidation(MethodArgumentNotValidException exception) {
-        //log.error("Validation failed: {}", exception.getMessage(), exception);
+        log.error("Validation failed: {}", exception.getMessage(), exception);
+
         ErrorCode errorCode = ErrorCode.INVALID_MESSAGE_KEY;
 
         String enumKey = exception.getBindingResult().getAllErrors().stream()
@@ -127,13 +137,15 @@ public class GlobalExceptionHandler {
             log.error("Invalid enum key: {}", enumKey, e);
         }
 
+        String message = messageSourceService.getErrorLocalizeMessage(errorCode);
+
         return ResponseEntity.badRequest()
                 .body(
                         ApiResponse.<Void>builder()
                                 .code(errorCode.getCode())
                                 .message(Objects.nonNull(attributes)
-                                        ? mapAttribute(errorCode.getMessage(), attributes)
-                                        : errorCode.getMessage())
+                                        ? mapAttribute(message, attributes)
+                                        : message)
                                 .build()
                 );
     }

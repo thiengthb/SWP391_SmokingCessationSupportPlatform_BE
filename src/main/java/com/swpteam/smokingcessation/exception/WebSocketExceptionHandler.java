@@ -2,6 +2,7 @@ package com.swpteam.smokingcessation.exception;
 
 
 import com.swpteam.smokingcessation.constant.ErrorCode;
+import com.swpteam.smokingcessation.service.impl.internalization.MessageSourceService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.handler.annotation.MessageExceptionHandler;
 import org.springframework.messaging.handler.annotation.support.MethodArgumentNotValidException;
@@ -13,6 +14,8 @@ import java.util.Objects;
 @Slf4j
 @ControllerAdvice
 public class WebSocketExceptionHandler {
+
+    MessageSourceService messageSourceService;
 
     @MessageExceptionHandler(MethodArgumentNotValidException.class)
     @SendToUser("/queue/errors")
@@ -26,7 +29,7 @@ public class WebSocketExceptionHandler {
         } catch (IllegalArgumentException e) {
             log.warn("Invalid enum key: {}", enumKey, e);
         }
-        return errorCode.getMessage();
+        return messageSourceService.getErrorLocalizeMessage(errorCode);
     }
 
     @MessageExceptionHandler(AppException.class)

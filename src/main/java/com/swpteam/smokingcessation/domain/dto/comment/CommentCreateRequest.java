@@ -7,6 +7,6 @@ public record CommentCreateRequest (
     @NotBlank(message = "COMMENT_CONTENT_REQUIRED")
     String content,
 
-    @NotBlank(message = "COMMENT_BLOG_REQUIRED")
+    @NotBlank(message = "COMMENT_BLOG_ID_REQUIRED")
     String blogId
 ) {}

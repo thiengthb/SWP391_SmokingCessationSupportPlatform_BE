@@ -6,7 +6,7 @@ import org.springframework.security.core.Authentication;
 
 public interface IAuthenticationService {
 
-    AuthenticationResponse googleLogin(GoogleLoginRequest request);
+    AuthenticationResponse googleLogin(TokenRequest request);
 
     AuthenticationResponse login(AuthenticationRequest request);
 

@@ -7,7 +7,7 @@ import com.swpteam.smokingcessation.common.ApiResponse;
 import com.swpteam.smokingcessation.common.PageableRequest;
 import com.swpteam.smokingcessation.constant.SuccessCode;
 import com.swpteam.smokingcessation.service.interfaces.notification.IMessageService;
-import com.swpteam.smokingcessation.utils.ResponseUtil;
+import com.swpteam.smokingcessation.utils.ResponseUtilService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
@@ -26,13 +26,14 @@ import org.springframework.web.bind.annotation.*;
 public class MessageController {
 
     IMessageService messageService;
+    ResponseUtilService responseUtilService;
 
     @GetMapping
     ResponseEntity<ApiResponse<PageResponse<MessageResponse>>> getMessagePage(
             @Valid PageableRequest request
     ) {
-        return ResponseUtil.buildSuccessResponse(
-                SuccessCode.MEMBERSHIP_GET_ALL,
+        return responseUtilService.buildSuccessResponse(
+                SuccessCode.MESSAGE_PAGE_FETCHED,
                 messageService.getMessagePage(request)
         );
     }
@@ -41,8 +42,8 @@ public class MessageController {
     ResponseEntity<ApiResponse<MessageResponse>> getMessageById(
             @PathVariable String id
     ) {
-        return ResponseUtil.buildSuccessResponse(
-                SuccessCode.MESSAGE_GET_BY_ID,
+        return responseUtilService.buildSuccessResponse(
+                SuccessCode.MESSAGE_FETCHED_BY_ID,
                 messageService.getById(id)
         );
     }
@@ -51,7 +52,7 @@ public class MessageController {
     ResponseEntity<ApiResponse<MessageResponse>> createMessage(
             @Valid @RequestBody MessageRequest request
     ) {
-        return ResponseUtil.buildSuccessResponse(
+        return responseUtilService.buildSuccessResponse(
                 SuccessCode.MESSAGE_CREATED,
                 messageService.createMessage(request)
         );
@@ -62,7 +63,7 @@ public class MessageController {
             @PathVariable String id,
             @Valid @RequestBody MessageRequest request
     ) {
-        return ResponseUtil.buildSuccessResponse(
+        return responseUtilService.buildSuccessResponse(
                 SuccessCode.MESSAGE_UPDATED,
                 messageService.updateMessage(id, request)
         );
@@ -73,7 +74,7 @@ public class MessageController {
             @PathVariable String id
     ) {
         messageService.softDeleteMessageById(id);
-        return ResponseUtil.buildSuccessResponse(
+        return responseUtilService.buildSuccessResponse(
                 SuccessCode.MESSAGE_DELETED
         );
     }

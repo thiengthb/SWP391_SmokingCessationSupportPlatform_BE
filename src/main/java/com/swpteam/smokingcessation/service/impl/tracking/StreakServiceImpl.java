@@ -83,7 +83,7 @@ public class StreakServiceImpl implements IStreakService {
         Streak streak = findStreakByAccountIdOrThrowError(accountId);
 
         if (number < streak.getNumber()) {
-            throw new AppException(ErrorCode.STREAK_DOWN_GRADE);
+            throw new AppException(ErrorCode.STREAK_DOWNGRADE_NOT_ALLOWED);
         }
 
         streak.setNumber(number);

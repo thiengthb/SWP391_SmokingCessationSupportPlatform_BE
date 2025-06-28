@@ -10,7 +10,6 @@ import com.swpteam.smokingcessation.domain.entity.Account;
 import com.swpteam.smokingcessation.domain.entity.Chat;
 import com.swpteam.smokingcessation.domain.mapper.ChatMapper;
 import com.swpteam.smokingcessation.exception.AppException;
-import com.swpteam.smokingcessation.repository.AccountRepository;
 import com.swpteam.smokingcessation.repository.ChatRepository;
 import com.swpteam.smokingcessation.service.interfaces.chat.IChatService;
 import com.swpteam.smokingcessation.service.interfaces.identity.IAccountService;
@@ -21,7 +20,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -79,7 +77,7 @@ public class ChatServiceImpl implements IChatService {
 
         boolean haveAccess = authUtilService.isAdminOrOwner(chat.getAccount().getId());
         if (!haveAccess) {
-            throw new AppException(ErrorCode.OTHERS_CHAT_CANNOT_BE_DELETED);
+            throw new AppException(ErrorCode.CHAT_DELETION_NOT_ALLOWED);
         }
 
         chat.setDeleted(true);

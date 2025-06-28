@@ -5,7 +5,7 @@ import com.swpteam.smokingcessation.domain.dto.plan.PlanResponse;
 import com.swpteam.smokingcessation.common.ApiResponse;
 import com.swpteam.smokingcessation.constant.SuccessCode;
 import com.swpteam.smokingcessation.service.interfaces.tracking.IPlanService;
-import com.swpteam.smokingcessation.utils.ResponseUtil;
+import com.swpteam.smokingcessation.utils.ResponseUtilService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
@@ -24,11 +24,12 @@ import org.springframework.web.bind.annotation.*;
 public class PlanController {
 
     IPlanService planService;
+    ResponseUtilService responseUtilService;
 
     @GetMapping("/my-current-plan")
     ResponseEntity<ApiResponse<PlanResponse>> getPlanById() {
-        return ResponseUtil.buildSuccessResponse(
-                SuccessCode.PLAN_GET_BY_ID,
+        return responseUtilService.buildSuccessResponse(
+                SuccessCode.PLAN_FETCHED_BY_ID,
                 planService.getMyCurrentPlan()
         );
     }
@@ -37,8 +38,8 @@ public class PlanController {
     public ResponseEntity<ApiResponse<PlanResponse>> getPlanTemplate(
             @RequestParam int ftndScore
     ) {
-        return ResponseUtil.buildSuccessResponse(
-                SuccessCode.PLAN_TEMPLATE_GET,
+        return responseUtilService.buildSuccessResponse(
+                SuccessCode.PLAN_TEMPLATE_FETCHED,
                 planService.generatePlanByFtndScore(ftndScore)
         );
     }
@@ -47,7 +48,7 @@ public class PlanController {
     ResponseEntity<ApiResponse<PlanResponse>> createPlan(
             @Valid @RequestBody PlanRequest request
     ) {
-        return ResponseUtil.buildSuccessResponse(
+        return responseUtilService.buildSuccessResponse(
                 SuccessCode.PLAN_CREATED,
                 planService.createPlan(request)
         );
@@ -58,7 +59,7 @@ public class PlanController {
             @PathVariable String id,
             @Valid @RequestBody PlanRequest request
     ) {
-        return ResponseUtil.buildSuccessResponse(
+        return responseUtilService.buildSuccessResponse(
                 SuccessCode.PLAN_UPDATED,
                 planService.updatePlanById(id, request)
         );
@@ -69,7 +70,7 @@ public class PlanController {
             @PathVariable String id
     ) {
         planService.softDeletePlanById(id);
-        return ResponseUtil.buildSuccessResponse(
+        return responseUtilService.buildSuccessResponse(
                 SuccessCode.PLAN_DELETED
         );
     }

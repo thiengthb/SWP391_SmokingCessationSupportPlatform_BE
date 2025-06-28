@@ -128,7 +128,7 @@ public class GoalServiceImpl implements IGoalService {
         Goal goal = findGoalByName(name);
 
         if (goal.getAccount() != null && authUtilService.isAdminOrOwner(goal.getAccount().getId())) {
-            throw new AppException(ErrorCode.ACCESS_DENIED);
+            throw new AppException(ErrorCode.UNAUTHORIZED);
         }
 
         goalMapper.update(goal, request);
@@ -144,7 +144,7 @@ public class GoalServiceImpl implements IGoalService {
         Goal goal = findGoalByName(name);
 
         if (goal.getAccount() != null && authUtilService.isAdminOrOwner(goal.getAccount().getId())) {
-            throw new AppException(ErrorCode.ACCESS_DENIED);
+            throw new AppException(ErrorCode.UNAUTHORIZED);
         }
 
         goal.setDeleted(true);

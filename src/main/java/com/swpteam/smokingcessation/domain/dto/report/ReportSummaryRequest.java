@@ -6,10 +6,10 @@ import jakarta.validation.constraints.Past;
 import java.time.LocalDateTime;
 
 public record ReportSummaryRequest (
-    @Past(message = "PAST_FROM_DATE")
-    @NotNull(message = "FROM_DATE_REQUIRED")
+    @Past(message = "REPORT_FROM_DATE_INVALID")
+    @NotNull(message = "REPORT_FROM_DATE_REQUIRED")
     LocalDateTime from,
 
-    @Past(message = "PAST_TO_DATE")
+    @Past(message = "REPORT_TO_DATE_INVALID")
     LocalDateTime to
 ) {}

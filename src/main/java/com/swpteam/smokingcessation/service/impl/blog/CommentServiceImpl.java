@@ -26,7 +26,6 @@ import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -117,7 +116,7 @@ public class CommentServiceImpl implements ICommentService {
 
         boolean haveAccess = authUtilService.isAdminOrOwner(comment.getAccount().getId());
         if (!haveAccess) {
-            throw new AppException(ErrorCode.OTHERS_COMMENT_UNCHANGEABLE);
+            throw new AppException(ErrorCode.COMMENT_EDIT_NOT_ALLOWED);
         }
 
         commentMapper.update(comment, request);
@@ -133,7 +132,7 @@ public class CommentServiceImpl implements ICommentService {
 
         boolean haveAccess = authUtilService.isAdminOrOwner(comment.getAccount().getId());
         if (!haveAccess) {
-            throw new AppException(ErrorCode.OTHERS_COMMENT_UNCHANGEABLE);
+            throw new AppException(ErrorCode.COMMENT_EDIT_NOT_ALLOWED);
         }
 
         comment.setDeleted(true);

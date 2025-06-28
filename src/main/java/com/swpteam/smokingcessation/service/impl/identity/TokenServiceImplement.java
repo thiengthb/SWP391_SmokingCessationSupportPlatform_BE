@@ -187,7 +187,7 @@ public class TokenServiceImplement implements ITokenService {
 
         if (token.getAccount().isDeleted()) {
             tokenRepository.deleteById(jti);
-            throw new AppException(ErrorCode.ACCOUNT_DELETED);
+            throw new AppException(ErrorCode.ACCOUNT_NOT_FOUND);
         }
 
         return token;

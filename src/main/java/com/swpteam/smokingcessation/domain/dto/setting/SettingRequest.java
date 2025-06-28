@@ -14,15 +14,15 @@ public record SettingRequest(
         @NotNull(message = "THEME_REQUIRED")
         Theme theme,
 
-        @NotNull(message = "Language is required")
+        @NotNull(message = "LANGUAGE_REQUIRED")
         Language language,
 
-        @NotNull(message = "Tracking mode is required")
+        @NotNull(message = "TRACKING_MODE_REQUIRED")
         TrackingMode trackingMode,
 
-        @NotNull(message = "Motivation frequency is required")
+        @NotNull(message = "MOTIVATION_REQUIRED")
         MotivationFrequency motivationFrequency,
 
-        @NotNull(message = "Report deadline is required")
+        @NotNull(message = "REPORT_DEADLINE_REQUIRED")
         LocalTime reportDeadline
 ) {}

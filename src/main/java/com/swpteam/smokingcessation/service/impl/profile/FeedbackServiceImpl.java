@@ -87,9 +87,9 @@ public class FeedbackServiceImpl implements IFeedbackService {
     public FeedbackResponse updateFeedback(String id, FeedbackRequest request) {
         Feedback feedback = findFeedbackById(id);
 
-        boolean haveAccess = authUtilService.isAdminOrOwner(feedback.getAccount().getId());
+        boolean haveAccess = authUtilService.isOwner(feedback.getAccount().getId());
         if (!haveAccess) {
-            throw new AppException(ErrorCode.ACCESS_DENIED);
+            throw new AppException(ErrorCode.UNAUTHORIZED);
         }
 
         feedbackMapper.update(feedback, request);
@@ -104,10 +104,11 @@ public class FeedbackServiceImpl implements IFeedbackService {
 
         boolean haveAccess = authUtilService.isAdminOrOwner(feedback.getAccount().getId());
         if (!haveAccess) {
-            throw new AppException(ErrorCode.ACCESS_DENIED);
+            throw new AppException(ErrorCode.UNAUTHORIZED);
         }
 
         feedback.setDeleted(true);
+
         feedbackRepository.save(feedback);
     }
 
@@ -117,7 +118,9 @@ public class FeedbackServiceImpl implements IFeedbackService {
                 .orElseThrow(() -> new AppException(ErrorCode.FEEDBACK_NOT_FOUND));
 
         if (feedback.getAccount().isDeleted()) {
-            throw new AppException(ErrorCode.ACCOUNT_DELETED);
+            feedback.setDeleted(true);
+            feedbackRepository.save(feedback);
+            throw new AppException(ErrorCode.ACCOUNT_NOT_FOUND);
         }
 
         return feedback;

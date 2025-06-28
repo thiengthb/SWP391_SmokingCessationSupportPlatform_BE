@@ -118,7 +118,7 @@ public class BookingServiceImpl implements IBookingService {
                         request.coachId(), request.startedAt(), request.endedAt()
                 ).isPresent();
         if (!inWorkingTime) {
-            throw new AppException(ErrorCode.BOOKING_OUT_OF_WORKING_TIME);
+            throw new AppException(ErrorCode.BOOKING_OUTSIDE_WORKING_HOURS);
         }
 
         boolean isOverlapped = bookingRepository.existsByCoachIdAndIsDeletedFalseAndStartedAtLessThanAndEndedAtGreaterThan(
@@ -154,7 +154,7 @@ public class BookingServiceImpl implements IBookingService {
         Booking booking = checkAndGetMyBooking(id);
 
         if (!booking.getStatus().equals(BookingStatus.PENDING)) {
-            throw new AppException(ErrorCode.BOOKING_ALREADY_PROCESSED);
+            throw new AppException(ErrorCode.BOOKING_ALREADY_IN_PROCESS);
         }
 
         if (request.accepted()) {
@@ -177,7 +177,7 @@ public class BookingServiceImpl implements IBookingService {
 
         boolean haveAccess = authUtilService.isAdminOrOwner(booking.getMember().getId());
         if (!haveAccess) {
-            throw new AppException(ErrorCode.ACCESS_DENIED);
+            throw new AppException(ErrorCode.UNAUTHORIZED);
         }
 
         bookingMapper.update(booking, request);
@@ -247,7 +247,7 @@ public class BookingServiceImpl implements IBookingService {
 
         boolean haveAccess = authUtilService.isOwner(booking.getCoach().getId());
         if (!haveAccess) {
-            throw new AppException(ErrorCode.ACCESS_DENIED);
+            throw new AppException(ErrorCode.UNAUTHORIZED);
         }
 
         return booking;

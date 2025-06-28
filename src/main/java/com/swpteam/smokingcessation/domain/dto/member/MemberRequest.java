@@ -10,7 +10,7 @@ public record MemberRequest (
 
     String fullName,
     
-    @Past(message = "DOB_INVALID")
+    @Past(message = "INVALID_DOB")
     LocalDate dob,
 
     String address,

@@ -112,7 +112,7 @@ public class TimeTableServiceImpl implements ITimeTableService {
 
         boolean haveAccess = authUtilService.isAdminOrOwner(timeTable.getCoach().getId());
         if (!haveAccess) {
-            throw new AppException(ErrorCode.ACCESS_DENIED);
+            throw new AppException(ErrorCode.UNAUTHORIZED);
         }
 
         timeTableMapper.update(timeTable, request);
@@ -131,7 +131,7 @@ public class TimeTableServiceImpl implements ITimeTableService {
 
         boolean haveAccess = authUtilService.isAdminOrOwner(timeTable.getCoach().getId());
         if (!haveAccess) {
-            throw new AppException(ErrorCode.ACCESS_DENIED);
+            throw new AppException(ErrorCode.UNAUTHORIZED);
         }
 
         timeTable.setDeleted(true);

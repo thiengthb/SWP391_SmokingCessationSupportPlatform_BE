@@ -7,7 +7,7 @@ import com.swpteam.smokingcessation.common.ApiResponse;
 import com.swpteam.smokingcessation.common.PageableRequest;
 import com.swpteam.smokingcessation.constant.SuccessCode;
 import com.swpteam.smokingcessation.service.interfaces.membership.ISubscriptionService;
-import com.swpteam.smokingcessation.utils.ResponseUtil;
+import com.swpteam.smokingcessation.utils.ResponseUtilService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
@@ -26,13 +26,14 @@ import org.springframework.web.bind.annotation.*;
 public class SubscriptionController {
 
     ISubscriptionService subscriptionService;
+    ResponseUtilService responseUtilService;
 
     @GetMapping
     ResponseEntity<ApiResponse<PageResponse<SubscriptionResponse>>> getSubscriptionPage(
             @Valid PageableRequest request
     ) {
-        return ResponseUtil.buildSuccessResponse(
-                SuccessCode.SUBSCRIPTION_GET_ALL,
+        return responseUtilService.buildSuccessResponse(
+                SuccessCode.SUBSCRIPTION_PAGE_FETCHED,
                 subscriptionService.getSubscriptionPage(request)
         );
     }
@@ -41,8 +42,8 @@ public class SubscriptionController {
     ResponseEntity<ApiResponse<SubscriptionResponse>> getSubscriptionById(
             @PathVariable String id
     ) {
-        return ResponseUtil.buildSuccessResponse(
-                SuccessCode.SUBSCRIPTION_GET_BY_ID,
+        return responseUtilService.buildSuccessResponse(
+                SuccessCode.SUBSCRIPTION_FETCHED_BY_ID,
                 subscriptionService.getSubscriptionById(id)
         );
     }
@@ -52,8 +53,8 @@ public class SubscriptionController {
             @PathVariable String id,
             @Valid PageableRequest request
     ) {
-        return ResponseUtil.buildSuccessResponse(
-                SuccessCode.SUBSCRIPTION_GET_BY_ACCOUNT,
+        return responseUtilService.buildSuccessResponse(
+                SuccessCode.SUBSCRIPTION_FETCHED_BY_ACCOUNT,
                 subscriptionService.getSubscriptionPageByAccountId(id, request)
         );
     }
@@ -62,7 +63,7 @@ public class SubscriptionController {
     ResponseEntity<ApiResponse<SubscriptionResponse>> createSubscription(
             @RequestBody @Valid SubscriptionRequest request
     ) {
-        return ResponseUtil.buildSuccessResponse(
+        return responseUtilService.buildSuccessResponse(
                 SuccessCode.SUBSCRIPTION_CREATED,
                 subscriptionService.createSubscription(request)
         );
@@ -73,7 +74,7 @@ public class SubscriptionController {
             @PathVariable String id,
             @RequestBody @Valid SubscriptionRequest request
     ) {
-        return ResponseUtil.buildSuccessResponse(
+        return responseUtilService.buildSuccessResponse(
                 SuccessCode.SUBSCRIPTION_UPDATED,
                 subscriptionService.updateSubscription(id, request)
         );
@@ -84,7 +85,7 @@ public class SubscriptionController {
             @PathVariable String id
     ) {
         subscriptionService.softDeleteSubscription(id);
-        return ResponseUtil.buildSuccessResponse(
+        return responseUtilService.buildSuccessResponse(
                 SuccessCode.SUBSCRIPTION_DELETED
         );
     }

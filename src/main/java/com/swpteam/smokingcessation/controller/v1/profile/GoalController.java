@@ -7,7 +7,7 @@ import com.swpteam.smokingcessation.domain.dto.goal.GoalDetailsResponse;
 import com.swpteam.smokingcessation.domain.dto.goal.GoalListItemResponse;
 import com.swpteam.smokingcessation.domain.dto.goal.GoalUpdateRequest;
 import com.swpteam.smokingcessation.service.interfaces.profile.IGoalService;
-import com.swpteam.smokingcessation.utils.ResponseUtil;
+import com.swpteam.smokingcessation.utils.ResponseUtilService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
@@ -28,28 +28,29 @@ import java.util.List;
 public class GoalController {
 
     IGoalService goalService;
+    ResponseUtilService responseUtilService;
 
     @GetMapping
     public ResponseEntity<ApiResponse<List<GoalListItemResponse>>> getGoals(
     ) {
-        return ResponseUtil.buildSuccessResponse(
-                SuccessCode.GOAL_GET_PUBLIC_GOALS,
+        return responseUtilService.buildSuccessResponse(
+                SuccessCode.GOAL_PAGE_FETCHED,
                 goalService.getPublicGoals()
         );
     }
 
     @GetMapping("/my-goals")
     public ResponseEntity<ApiResponse<List<GoalListItemResponse>>> getMyGoals() {
-        return ResponseUtil.buildSuccessResponse(
-                SuccessCode.GOAL_GET_PERSONAL_GOALS,
+        return responseUtilService.buildSuccessResponse(
+                SuccessCode.GOAL_PAGE_FETCHED,
                 goalService.getMyGoals()
         );
     }
 
     @GetMapping("/goal-details/{id}")
     public ResponseEntity<ApiResponse<GoalDetailsResponse>> getGoalDetailsById(@PathVariable String id) {
-        return ResponseUtil.buildSuccessResponse(
-                SuccessCode.GOAL_GET_DETAILS,
+        return responseUtilService.buildSuccessResponse(
+                SuccessCode.GOAL_PAGE_FETCHED,
                 goalService.getMyGoalDetailsById(id)
         );
     }
@@ -58,8 +59,8 @@ public class GoalController {
     public ResponseEntity<ApiResponse<GoalDetailsResponse>> getGoalByName(
             @PathVariable String name
     ) {
-        return ResponseUtil.buildSuccessResponse(
-                SuccessCode.GOAL_GET_BY_NAME,
+        return responseUtilService.buildSuccessResponse(
+                SuccessCode.GOAL_FETCHED_BY_NAME,
                 goalService.getGoalByName(name)
         );
     }
@@ -68,7 +69,7 @@ public class GoalController {
     public ResponseEntity<ApiResponse<GoalDetailsResponse>> createGoal(
             @RequestBody @Valid GoalCreateRequest request
     ) {
-        return ResponseUtil.buildSuccessResponse(
+        return responseUtilService.buildSuccessResponse(
                 SuccessCode.GOAL_CREATED,
                 goalService.createGoal(request)
         );
@@ -79,7 +80,7 @@ public class GoalController {
             @PathVariable String name,
             @RequestBody @Valid GoalUpdateRequest request
     ) {
-        return ResponseUtil.buildSuccessResponse(
+        return responseUtilService.buildSuccessResponse(
                 SuccessCode.GOAL_UPDATED,
                 goalService.updateGoal(name, request)
         );
@@ -90,7 +91,7 @@ public class GoalController {
             @PathVariable String name
     ) {
         goalService.softDeleteGoal(name);
-        return ResponseUtil.buildSuccessResponse(
+        return responseUtilService.buildSuccessResponse(
                 SuccessCode.GOAL_DELETED
         );
     }

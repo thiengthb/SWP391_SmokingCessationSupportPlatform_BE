@@ -7,7 +7,7 @@ import com.swpteam.smokingcessation.constant.SuccessCode;
 import com.swpteam.smokingcessation.domain.dto.category.CategoryRequest;
 import com.swpteam.smokingcessation.domain.dto.category.CategoryResponse;
 import com.swpteam.smokingcessation.service.interfaces.blog.ICategoryService;
-import com.swpteam.smokingcessation.utils.ResponseUtil;
+import com.swpteam.smokingcessation.utils.ResponseUtilService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
@@ -28,13 +28,14 @@ import java.util.List;
 public class CategoryController {
 
     ICategoryService categoryService;
+    ResponseUtilService responseUtilService;
 
     @GetMapping("/list-all")
     ResponseEntity<ApiResponse<List<CategoryResponse>>> getCategoryList(
             @Valid PageableRequest request)
     {
-        return ResponseUtil.buildSuccessResponse(
-                SuccessCode.CATEGORY_LIST_ALL,
+        return responseUtilService.buildSuccessResponse(
+                SuccessCode.CATEGORY_LIST_FETCHED,
                 categoryService.getCategoryList()
         );
     }
@@ -43,8 +44,8 @@ public class CategoryController {
     ResponseEntity<ApiResponse<PageResponse<CategoryResponse>>> getCategoryPage(
             @Valid PageableRequest request
     ) {
-        return ResponseUtil.buildSuccessResponse(
-                SuccessCode.CATEGORY_GET_ALL,
+        return responseUtilService.buildSuccessResponse(
+                SuccessCode.CATEGORY_PAGE_FETCHED,
                 categoryService.getCategoryPage(request)
         );
     }
@@ -53,8 +54,8 @@ public class CategoryController {
     ResponseEntity<ApiResponse<CategoryResponse>> getCategoryById(
             @PathVariable String id
     ) {
-        return ResponseUtil.buildSuccessResponse(
-                SuccessCode.CATEGORY_GET_BY_ID,
+        return responseUtilService.buildSuccessResponse(
+                SuccessCode.CATEGORY_FETCHED_BY_ID,
                 categoryService.getCategoryById(id)
         );
     }
@@ -63,7 +64,7 @@ public class CategoryController {
     ResponseEntity<ApiResponse<CategoryResponse>> createCategory(
             @RequestBody @Valid CategoryRequest request
     ) {
-        return ResponseUtil.buildSuccessResponse(
+        return responseUtilService.buildSuccessResponse(
                 SuccessCode.CATEGORY_CREATED,
                 categoryService.createCategory(request)
         );
@@ -74,7 +75,7 @@ public class CategoryController {
             @PathVariable String id,
             @RequestBody @Valid CategoryRequest request
     ) {
-        return ResponseUtil.buildSuccessResponse(
+        return responseUtilService.buildSuccessResponse(
                 SuccessCode.CATEGORY_UPDATED,
                 categoryService.updateCategory(id, request)
         );
@@ -85,7 +86,7 @@ public class CategoryController {
             @PathVariable String id
     ) {
         categoryService.deleteCategoryById(id);
-        return ResponseUtil.buildSuccessResponse(
+        return responseUtilService.buildSuccessResponse(
                 SuccessCode.CATEGORY_DELETED
         );
     }

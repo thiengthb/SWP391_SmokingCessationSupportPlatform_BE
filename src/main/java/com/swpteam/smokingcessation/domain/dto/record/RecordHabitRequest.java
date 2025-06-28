@@ -8,7 +8,6 @@ import java.time.LocalDate;
 
 public record RecordHabitRequest(
 
-    @NotNull(message = "CIGARETTES_SMOKED_REQUIRED")
     @Min(value = 0, message = "CIGARETTES_SMOKED_INVALID")
     Integer cigarettesSmoked,
 

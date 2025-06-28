@@ -78,7 +78,7 @@ public class SettingServiceImpl implements ISettingService {
 
         if (setting.getAccount().isDeleted()) {
             setting.setDeleted(true);
-            throw new AppException(ErrorCode.ACCOUNT_DELETED);
+            throw new AppException(ErrorCode.ACCOUNT_NOT_FOUND);
         }
 
         return setting;
@@ -99,7 +99,7 @@ public class SettingServiceImpl implements ISettingService {
     public List<Setting> getAllSetting(){
         List<Setting> settings= settingRepository.findAllWhereAccountNotAdminOrCoach();
         if(settings.isEmpty()){
-            throw new AppException(ErrorCode.SETTING_NOT_FOUND);
+            throw new AppException(ErrorCode.ACCOUNT_NOT_FOUND);
         }
         return settings;
     }

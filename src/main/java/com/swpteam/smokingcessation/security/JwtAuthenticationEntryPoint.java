@@ -3,9 +3,12 @@ package com.swpteam.smokingcessation.security;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.swpteam.smokingcessation.common.ApiResponse;
 import com.swpteam.smokingcessation.constant.ErrorCode;
-import com.swpteam.smokingcessation.utils.ResponseUtil;
+import com.swpteam.smokingcessation.utils.ResponseUtilService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+import lombok.experimental.FieldDefaults;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -16,9 +19,11 @@ import org.springframework.stereotype.Component;
 import java.io.IOException;
 
 @Component
+@RequiredArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
-
+    ResponseUtilService responseUtilService;
 
     @Override
     public void commence(
@@ -32,7 +37,7 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
         response.setStatus(errorCode.getHttpCode().value());
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
 
-        ResponseEntity<ApiResponse<Void>> errorResponse = ResponseUtil.buildErrorResponse(errorCode, authException);
+        ResponseEntity<ApiResponse<Void>> errorResponse = responseUtilService.buildErrorResponse(errorCode, authException);
 
         ObjectMapper objectMapper = new ObjectMapper();
 

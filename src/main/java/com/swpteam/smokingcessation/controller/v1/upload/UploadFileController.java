@@ -3,7 +3,7 @@ package com.swpteam.smokingcessation.controller.v1.upload;
 import com.swpteam.smokingcessation.common.ApiResponse;
 import com.swpteam.smokingcessation.constant.SuccessCode;
 import com.swpteam.smokingcessation.integration.imagecloud.CloudinaryService;
-import com.swpteam.smokingcessation.utils.ResponseUtil;
+import com.swpteam.smokingcessation.utils.ResponseUtilService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +27,7 @@ import java.io.IOException;
 public class UploadFileController {
 
     CloudinaryService cloudinaryService;
+    ResponseUtilService responseUtilService;
 
     @PostMapping("/image")
     public ResponseEntity<ApiResponse<String>> uploadImage(
@@ -35,8 +36,8 @@ public class UploadFileController {
 
         String resultUrl = cloudinaryService.uploadImage(file);
 
-        return ResponseUtil.buildSuccessResponse(
-                SuccessCode.UPLOAD_IMAGE,
+        return responseUtilService.buildSuccessResponse(
+                SuccessCode.IMAGE_UPLOADED,
                 resultUrl
         );
     }
