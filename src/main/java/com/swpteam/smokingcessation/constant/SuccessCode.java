@@ -196,7 +196,9 @@ public enum SuccessCode {
     // Stripe
     CHECKOUT_SUCCESS(1232, "Successfully checkout"),
 
-
+    // Counter
+    COUNTER_GET(9000, "Successfully get counter value"),
+    COUNTER_START(9001, "Counter started successfully"),
     ;
     int code;
     String message;
