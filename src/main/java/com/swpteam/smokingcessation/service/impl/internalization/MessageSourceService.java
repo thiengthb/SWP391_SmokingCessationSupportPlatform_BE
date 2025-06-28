@@ -20,19 +20,23 @@ public class MessageSourceService {
 
     MessageSource messageSource;
 
+
+    public String getLocalizeMessage(String key) {
+        Locale locale = LocaleContextHolder.getLocale();
+        return getMessage(key, locale);
+    }
+
     public String getMessage(String key, Locale locale, Object... args) {
         return messageSource.getMessage(key, args, key, locale);
     }
 
     public String getErrorLocalizeMessage(ErrorCode errorCode) {
         Locale locale = LocaleContextHolder.getLocale();
-
         return getMessage(errorCode.getMessageLocaleKey(), locale);
     }
 
     public String getSuccessLocalizeMessage(SuccessCode successCode) {
         Locale locale = LocaleContextHolder.getLocale();
-
         return getMessage(successCode.getMessageLocaleKey(), locale);
     }
 }

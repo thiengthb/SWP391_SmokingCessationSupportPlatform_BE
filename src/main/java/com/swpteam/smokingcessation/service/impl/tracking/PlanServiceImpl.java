@@ -6,6 +6,7 @@ import com.swpteam.smokingcessation.domain.dto.phase.PhaseRequest;
 import com.swpteam.smokingcessation.domain.dto.phase.PhaseResponse;
 import com.swpteam.smokingcessation.domain.dto.phase.PhaseTemplateResponse;
 import com.swpteam.smokingcessation.domain.dto.plan.PlanTemplateResponse;
+import com.swpteam.smokingcessation.domain.dto.tip.TipResponse;
 import com.swpteam.smokingcessation.domain.entity.*;
 import com.swpteam.smokingcessation.domain.enums.PlanStatus;
 import com.swpteam.smokingcessation.domain.mapper.PlanMapper;
@@ -14,6 +15,7 @@ import com.swpteam.smokingcessation.domain.dto.plan.PlanResponse;
 import com.swpteam.smokingcessation.constant.ErrorCode;
 import com.swpteam.smokingcessation.exception.AppException;
 import com.swpteam.smokingcessation.repository.PlanRepository;
+import com.swpteam.smokingcessation.service.impl.internalization.MessageSourceService;
 import com.swpteam.smokingcessation.service.interfaces.tracking.IPhaseService;
 import com.swpteam.smokingcessation.service.interfaces.tracking.IPlanService;
 import com.swpteam.smokingcessation.utils.AuthUtilService;
@@ -26,6 +28,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -33,10 +36,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -48,6 +48,7 @@ public class PlanServiceImpl implements IPlanService {
     PlanRepository planRepository;
     AuthUtilService authUtilService;
     IPhaseService phaseService;
+    MessageSourceService messageSourceService;
 
     @Override
     @PreAuthorize("hasRole('MEMBER')")
@@ -102,13 +103,18 @@ public class PlanServiceImpl implements IPlanService {
             throw new AppException(ErrorCode.PLAN_ALREADY_EXISTED);
         }
 
-
         validatePhaseDates(request.phases());
 
         Plan plan = planMapper.toEntity(request);
 
         if (plan.getPhases() != null) {
-            plan.getPhases().forEach(phase -> phase.setPlan(plan));
+            plan.getPhases().forEach(phase ->
+                    {
+                        phase.setPlan(plan);
+                        if(phase.getTips()!=null){
+                            phase.getTips().forEach(tip -> tip.setPhase(phase));
+                        }
+                    });
         }
         plan.getPhases().sort(Comparator.comparing(Phase::getStartDate));
 
@@ -117,7 +123,6 @@ public class PlanServiceImpl implements IPlanService {
         }
 
         plan.setAccount(currentAccount);
-        plan.getPhases().sort(Comparator.comparing(Phase::getStartDate));
         plan.setStartDate(plan.getPhases().getFirst().getStartDate());
         plan.setEndDate(plan.getPhases().getLast().getEndDate());
 
@@ -149,17 +154,17 @@ public class PlanServiceImpl implements IPlanService {
 
     @Override
     @PreAuthorize("hasRole('MEMBER')")
-    @CachePut(value = "PLAN_CACHE", key = "#result.getId()")
+    @CachePut(value = "PLAN_CACHE", key = "#ftndScore")
     public PlanResponse generatePlanByFtndScore(int ftndScore) {
         if (ftndScore < 0 || ftndScore > 10) {
             throw new AppException(ErrorCode.FTND_SCORE_INVALID);
         }
 
-        int level = mapFtndScoreToLevel(ftndScore);
+        String planName = mapFtndScoreToPlanName(ftndScore);
         List<PlanTemplateResponse> templates = FileLoaderUtil.loadPlanTemplate("quitplan/template-plan.json");
 
         PlanTemplateResponse selectedPlan = templates.stream()
-                .filter(t -> t.getLevel() == level)
+                .filter(t -> t.getPlanName().equalsIgnoreCase(planName))
                 .findFirst()
                 .orElseThrow(() -> new AppException(ErrorCode.PLAN_NOT_FOUND));
 
@@ -168,28 +173,35 @@ public class PlanServiceImpl implements IPlanService {
         List<PhaseResponse> phases = new ArrayList<>();
 
         for (PhaseTemplateResponse phase : selectedPlan.getPlan()) {
-            LocalDate phaseEndDate = currentPhaseStartDate.plusDays(6); // mỗi phase kéo dài 7 ngày
-
+            LocalDate phaseEndDate = currentPhaseStartDate.plusDays(phase.getDuration() - 1);
+            List<TipResponse> tipResponses = phase.getTips().stream()
+                    .map(tipContent -> TipResponse.builder().content(tipContent).build())
+                    .toList();
             PhaseResponse response = PhaseResponse.builder()
                     .phase(phase.getPhase())
-                    .cigaretteBound((phase.getCigaretteBound()))
+                    .phaseName(phase.getPhaseName())
+                    .cigaretteBound(phase.getCigaretteBound())
                     .startDate(currentPhaseStartDate)
                     .endDate(phaseEndDate)
+                    .description(phase.getDescription())
+                    .tips(tipResponses)
                     .build();
             phases.add(response);
+
             currentPhaseStartDate = phaseEndDate.plusDays(1);
         }
 
         LocalDate planEndDate = phases.getLast().getEndDate();
 
         return PlanResponse.builder()
-                .planName("Default plan for level " + selectedPlan.getLevel())
-                .description("This plan is generated based on your FTND score")
+                .planName(messageSourceService.getLocalizeMessage(selectedPlan.getPlanName()))
+                .description(selectedPlan.getDescription())
                 .startDate(planStartDate)
                 .endDate(planEndDate)
                 .phases(phases)
                 .build();
     }
+
 
     @Override
     @Transactional
@@ -219,14 +231,13 @@ public class PlanServiceImpl implements IPlanService {
         return plan;
     }
 
-    private int mapFtndScoreToLevel(int ftnd) {
-        if (ftnd < 3) return 1;
-        else if (ftnd <= 4) return 2;
-        else if (ftnd == 5) return 3;
-        else if (ftnd <= 7) return 4;
-        else return 5;
+    private String mapFtndScoreToPlanName(int ftndScore) {
+        if (ftndScore <= 2) return "plan.superfast.name";
+        if (ftndScore <= 4) return "Bỏ Thuốc Nhanh";
+        if (ftndScore <= 6) return "Giảm Dần Tiêu Chuẩn";
+        if (ftndScore <= 8) return "Giảm Dần Tích Cực";
+        return "Kế Hoạch Dài Hạn";
     }
-
     private void validatePhaseDates(List<PhaseRequest> phases) {
         if (phases == null || phases.isEmpty()) {
             throw new AppException(ErrorCode.PHASE_REQUIRED);

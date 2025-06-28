@@ -1,5 +1,6 @@
 package com.swpteam.smokingcessation.domain.dto.plan;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.swpteam.smokingcessation.domain.dto.phase.PhaseResponse;
 import com.swpteam.smokingcessation.domain.enums.PlanStatus;
@@ -20,6 +21,7 @@ public class PlanResponse {
     String accountId;
     String planName;
     String description;
+    @JsonIgnore
     Double successRate;
     LocalDate startDate;
     LocalDate endDate;

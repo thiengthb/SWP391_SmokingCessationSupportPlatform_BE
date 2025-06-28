@@ -1,48 +1,198 @@
 {
   "levels": [
     {
-      "level": 1,
+      "planName": "plan.superfast.name",
+      "description": "Dành cho người nghiện nhẹ, bỏ ngay",
+      "totalDuration": 14,
       "plan": [
-        { "phase": 1, "cigaretteBound": 2, "duration": 7 },
-        { "phase": 2, "cigaretteBound": 1, "duration": 7 }
+        {
+          "phase": 1,
+          "phaseName": "Chuẩn Bị",
+          "duration": 7,
+          "cigaretteBound": 5,
+          "description": "Chuẩn bị tinh thần trước khi bỏ thuốc hoàn toàn.",
+          "tips": ["Uống nhiều nước", "Tập thể dục nhẹ", "Ngủ đủ giấc"]
+        },
+        {
+          "phase": 2,
+          "phaseName": "Bỏ Thuốc",
+          "duration": 7,
+          "cigaretteBound": 0,
+          "description": "Ngừng hoàn toàn việc hút thuốc.",
+          "tips": ["Tránh tiếp xúc thuốc lá", "Thư giãn tinh thần", "Chia sẻ với gia đình"]
+        }
       ]
     },
     {
-      "level": 2,
+      "planName": "Bỏ Thuốc Nhanh",
+      "description": "Dành cho người nghiện nhẹ-vừa",
+      "totalDuration": 21,
       "plan": [
-        { "phase": 1, "cigaretteBound": 6, "duration": 7 },
-        { "phase": 2, "cigaretteBound": 3, "duration": 7 },
-        { "phase": 3, "cigaretteBound": 1, "duration": 7 }
+        {
+          "phase": 1,
+          "phaseName": "Giảm Nhanh",
+          "duration": 7,
+          "cigaretteBound": 10,
+          "description": "Giảm số điếu thuốc đáng kể.",
+          "tips": ["Giảm số điếu mỗi ngày", "Ăn uống lành mạnh", "Giữ tay bận rộn"]
+        },
+        {
+          "phase": 2,
+          "phaseName": "Giảm Tiếp",
+          "duration": 7,
+          "cigaretteBound": 5,
+          "description": "Tiếp tục giảm thêm trước khi bỏ hẳn.",
+          "tips": ["Hít thở sâu", "Thay thế thói quen xấu", "Tham gia nhóm hỗ trợ"]
+        },
+        {
+          "phase": 3,
+          "phaseName": "Bỏ Thuốc",
+          "duration": 7,
+          "cigaretteBound": 0,
+          "description": "Ngừng hút hoàn toàn.",
+          "tips": ["Đánh giá tiến trình", "Tự thưởng bản thân", "Kiên trì duy trì"]
+        }
       ]
     },
     {
-      "level": 3,
+      "planName": "Giảm Dần Tiêu Chuẩn",
+      "description": "Giảm dần lượng thuốc trước khi bỏ.",
+      "totalDuration": 30,
       "plan": [
-        { "phase": 1, "cigaretteBound": 10, "duration": 7 },
-        { "phase": 2, "cigaretteBound": 6, "duration": 7 },
-        { "phase": 3, "cigaretteBound": 3, "duration": 7 },
-        { "phase": 4, "cigaretteBound": 1, "duration": 7 }
+        {
+          "phase": 1,
+          "phaseName": "Giai đoạn 1",
+          "duration": 7,
+          "cigaretteBound": 15,
+          "description": "Bắt đầu giảm nhẹ số lượng.",
+          "tips": ["Uống nhiều nước", "Đi dạo thường xuyên", "Trò chuyện với bạn bè"]
+        },
+        {
+          "phase": 2,
+          "phaseName": "Giai đoạn 2",
+          "duration": 7,
+          "cigaretteBound": 10,
+          "description": "Giảm thêm lượng hút mỗi ngày.",
+          "tips": ["Tập thở sâu", "Tập yoga", "Ghi nhật ký"]
+        },
+        {
+          "phase": 3,
+          "phaseName": "Giai đoạn 3",
+          "duration": 7,
+          "cigaretteBound": 5,
+          "description": "Chuẩn bị cho việc bỏ hoàn toàn.",
+          "tips": ["Tránh nơi có khói thuốc", "Ngủ đủ giấc", "Ăn kẹo ngậm thay thế"]
+        },
+        {
+          "phase": 4,
+          "phaseName": "Bỏ Thuốc",
+          "duration": 9,
+          "cigaretteBound": 0,
+          "description": "Ngừng hoàn toàn.",
+          "tips": ["Tham khảo chuyên gia", "Giữ tinh thần lạc quan", "Tự thưởng"]
+        }
       ]
     },
     {
-      "level": 4,
+      "planName": "Giảm Dần Tích Cực",
+      "description": "Giảm từ từ với giai đoạn dài hơn.",
+      "totalDuration": 60,
       "plan": [
-        { "phase": 1, "cigaretteBound": 15, "duration": 7 },
-        { "phase": 2, "cigaretteBound": 10, "duration": 7 },
-        { "phase": 3, "cigaretteBound": 6, "duration": 7 },
-        { "phase": 4, "cigaretteBound": 3, "duration": 7 },
-        { "phase": 5, "cigaretteBound": 1, "duration": 7 }
+        {
+          "phase": 1,
+          "phaseName": "Khởi Động",
+          "duration": 10,
+          "cigaretteBound": 20,
+          "description": "Bắt đầu giảm mức độ hút.",
+          "tips": ["Uống trà thảo mộc", "Đi bộ buổi sáng", "Đọc sách"]
+        },
+        {
+          "phase": 2,
+          "phaseName": "Giảm Dần",
+          "duration": 10,
+          "cigaretteBound": 15,
+          "description": "Giảm thêm số điếu thuốc.",
+          "tips": ["Thay đổi thói quen", "Chơi thể thao", "Gặp bạn bè"]
+        },
+        {
+          "phase": 3,
+          "phaseName": "Chuẩn Bị Bỏ Thuốc",
+          "duration": 10,
+          "cigaretteBound": 10,
+          "description": "Chuẩn bị tâm lý cho giai đoạn bỏ hẳn.",
+          "tips": ["Tập yoga", "Thiền", "Viết mục tiêu"]
+        },
+        {
+          "phase": 4,
+          "phaseName": "Giảm Mạnh",
+          "duration": 15,
+          "cigaretteBound": 5,
+          "description": "Giảm mạnh để tiến tới bỏ thuốc.",
+          "tips": ["Đặt nhắc nhở", "Tự thưởng", "Chia sẻ tiến trình"]
+        },
+        {
+          "phase": 5,
+          "phaseName": "Bỏ Thuốc",
+          "duration": 15,
+          "cigaretteBound": 0,
+          "description": "Ngừng hoàn toàn.",
+          "tips": ["Nghỉ ngơi nhiều", "Chăm sóc sức khỏe", "Giữ tinh thần tích cực"]
+        }
       ]
     },
     {
-      "level": 5,
+      "planName": "Kế Hoạch Dài Hạn",
+      "description": "Kế hoạch toàn diện duy trì lâu dài.",
+      "totalDuration": 90,
       "plan": [
-        { "phase": 1, "cigaretteBound": 25, "duration": 7 },
-        { "phase": 2, "cigaretteBound": 18, "duration": 7 },
-        { "phase": 3, "cigaretteBound": 12, "duration": 7 },
-        { "phase": 4, "cigaretteBound": 6, "duration": 7 },
-        { "phase": 5, "cigaretteBound": 3, "duration": 7 },
-        { "phase": 6, "cigaretteBound": 1, "duration": 7 }
+        {
+          "phase": 1,
+          "phaseName": "Khởi Đầu",
+          "duration": 15,
+          "cigaretteBound": 25,
+          "description": "Bắt đầu thay đổi thói quen.",
+          "tips": ["Uống nhiều nước", "Đi bộ mỗi ngày", "Chia sẻ mục tiêu"]
+        },
+        {
+          "phase": 2,
+          "phaseName": "Giảm Tiếp",
+          "duration": 15,
+          "cigaretteBound": 18,
+          "description": "Giảm dần để cơ thể thích nghi.",
+          "tips": ["Tập thể dục", "Đọc sách", "Nghỉ ngơi đủ"]
+        },
+        {
+          "phase": 3,
+          "phaseName": "Giảm Mạnh",
+          "duration": 15,
+          "cigaretteBound": 12,
+          "description": "Giảm đáng kể số lượng thuốc.",
+          "tips": ["Chơi thể thao", "Nghe nhạc thư giãn", "Học kỹ năng mới"]
+        },
+        {
+          "phase": 4,
+          "phaseName": "Chuẩn Bị Bỏ Thuốc",
+          "duration": 15,
+          "cigaretteBound": 6,
+          "description": "Chuẩn bị sẵn sàng bỏ hẳn.",
+          "tips": ["Thiền", "Viết nhật ký", "Tạo động lực cá nhân"]
+        },
+        {
+          "phase": 5,
+          "phaseName": "Bỏ Thuốc",
+          "duration": 15,
+          "cigaretteBound": 3,
+          "description": "Bắt đầu giai đoạn bỏ thuốc.",
+          "tips": ["Tham gia nhóm hỗ trợ", "Tự thưởng", "Giữ liên lạc bạn bè"]
+        },
+        {
+          "phase": 6,
+          "phaseName": "Duy Trì",
+          "duration": 15,
+          "cigaretteBound": 0,
+          "description": "Không hút thuốc và duy trì kết quả.",
+          "tips": ["Duy trì thể dục", "Nghỉ ngơi điều độ", "Chăm sóc bản thân"]
+        }
       ]
     }
   ]
