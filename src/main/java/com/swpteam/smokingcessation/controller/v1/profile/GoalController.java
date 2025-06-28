@@ -32,7 +32,7 @@ public class GoalController {
     @GetMapping
     public ResponseEntity<ApiResponse<List<GoalListItemResponse>>> getGoals(
     ) {
-        return ResponseUtil.buildResponse(
+        return ResponseUtil.buildSuccessResponse(
                 SuccessCode.GOAL_GET_PUBLIC_GOALS,
                 goalService.getPublicGoals()
         );
@@ -40,7 +40,7 @@ public class GoalController {
 
     @GetMapping("/my-goals")
     public ResponseEntity<ApiResponse<List<GoalListItemResponse>>> getMyGoals() {
-        return ResponseUtil.buildResponse(
+        return ResponseUtil.buildSuccessResponse(
                 SuccessCode.GOAL_GET_PERSONAL_GOALS,
                 goalService.getMyGoals()
         );
@@ -48,7 +48,7 @@ public class GoalController {
 
     @GetMapping("/goal-details/{id}")
     public ResponseEntity<ApiResponse<GoalDetailsResponse>> getGoalDetailsById(@PathVariable String id) {
-        return ResponseUtil.buildResponse(
+        return ResponseUtil.buildSuccessResponse(
                 SuccessCode.GOAL_GET_DETAILS,
                 goalService.getMyGoalDetailsById(id)
         );

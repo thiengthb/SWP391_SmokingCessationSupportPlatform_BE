@@ -35,7 +35,7 @@ public class PhaseAndPlanUpdater {
     IScoreService scoreService;
 
     @Transactional
-    @Scheduled(cron = "*/30 * * * * *")
+    @Scheduled(cron = "* */30 * * * *")
     public void updatePhasesAndPlans() {
         List<Setting> settings = settingService.getAllSetting();
         LocalDateTime now = LocalDateTime.now();
