@@ -5,7 +5,7 @@ import jakarta.validation.constraints.NotBlank;
 
 public record NotificationRequest (
         
-    @NotBlank(message = "ACCOUNT_ID_REQUIRED")
+    @NotBlank(message = "ACCOUNT_REQUIRED")
     String accountId,
 
     @NotBlank(message = "NOTIFICATION_CONTENT_REQUIRED")

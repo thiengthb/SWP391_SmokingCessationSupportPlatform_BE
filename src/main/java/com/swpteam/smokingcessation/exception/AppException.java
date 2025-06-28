@@ -15,12 +15,12 @@ public class AppException extends RuntimeException {
     String infoMessage;
 
     public AppException(ErrorCode errorCode) {
-        super(errorCode.getMessage());
+        super(errorCode.getMessageLocaleKey());
         this.errorCode = errorCode;
     }
 
     public AppException(ErrorCode errorCode, String infoMessage) {
-        super(errorCode.getMessage() + " [MORE INFO]: " + infoMessage);
+        super(errorCode.getMessageLocaleKey() + " [MORE INFO]: " + infoMessage);
         this.errorCode = errorCode;
         this.infoMessage = infoMessage;
     }

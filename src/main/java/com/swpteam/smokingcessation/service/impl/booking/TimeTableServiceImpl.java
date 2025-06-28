@@ -56,7 +56,7 @@ public class TimeTableServiceImpl implements ITimeTableService {
     @Override
     @PreAuthorize("hasRole('COACH')")
     @Cacheable(value = "TIMETABLE_PAGE_CACHE",
-            key = "#request.page + '-' + #request.size + '-' + #request.sortBy + '-' + #request.direction + '-' + T(com.swpteam.smokingcessation.utils.AuthUtilService).getCurrentAccountOrThrowError().getId()")
+            key = "#request.page + '-' + #request.size + '-' + #request.sortBy + '-' + #request.direction + '-' + @authUtilService.getCurrentAccountOrThrowError().id")
     public PageResponse<TimeTableResponse> getMyTimeTablePage(PageableRequest request) {
         ValidationUtil.checkFieldExist(Booking.class, request.sortBy());
 
@@ -112,7 +112,7 @@ public class TimeTableServiceImpl implements ITimeTableService {
 
         boolean haveAccess = authUtilService.isAdminOrOwner(timeTable.getCoach().getId());
         if (!haveAccess) {
-            throw new AppException(ErrorCode.ACCESS_DENIED);
+            throw new AppException(ErrorCode.UNAUTHORIZED);
         }
 
         timeTableMapper.update(timeTable, request);
@@ -131,7 +131,7 @@ public class TimeTableServiceImpl implements ITimeTableService {
 
         boolean haveAccess = authUtilService.isAdminOrOwner(timeTable.getCoach().getId());
         if (!haveAccess) {
-            throw new AppException(ErrorCode.ACCESS_DENIED);
+            throw new AppException(ErrorCode.UNAUTHORIZED);
         }
 
         timeTable.setDeleted(true);

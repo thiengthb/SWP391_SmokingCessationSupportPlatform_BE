@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Verification Failed</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        body {
+            font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #fbeaea;
+            text-align: center;
+            padding-top: 80px;
+        }
+
+        .card {
+            display: inline-block;
+            background: white;
+            padding: 30px 50px;
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+        }
+
+        h2 {
+            color: #c62828;
+        }
+
+        p {
+            color: #555;
+        }
+
+        a.button {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 10px 20px;
+            background-color: #c62828;
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+        }
+
+        a.button:hover {
+            background-color: #b71c1c;
+        }
+    </style>
+</head>
+<body>
+<div class="card">
+    <h2>❌ Verification Failed</h2>
+    <p>Your verification link is invalid or has expired.</p>
+    <a th:href="|${frontendDomain}/send-mail-verify|" class="button">Verify again</a>
+</div>
+</body>
+</html>

@@ -1,8 +1,10 @@
 package com.swpteam.smokingcessation.domain.dto.goal;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Data
@@ -10,14 +12,16 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class GoalResponse {
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class GoalDetailsResponse {
 
     String id;
     String name;
-    String description;
     String iconUrl;
+    String description;
     String criteriaType;
     int criteriaValue;
     LocalDateTime createdAt;
     LocalDateTime updatedAt;
+    BigDecimal goalProgress;
 }

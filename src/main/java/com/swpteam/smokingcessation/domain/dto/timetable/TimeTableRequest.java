@@ -10,14 +10,14 @@ public record TimeTableRequest (
     @NotBlank(message = "TIMETABLE_DESCRIPTION_REQUIRED")
     String description,
 
-    @NotNull(message = "STARTED_AT_REQUIRED")
-    @FutureOrPresent(message = "STARTED_AT_MUST_BE_TODAY_OR_FUTURE")
+    @NotNull(message = "TIMETABLE_STARTED_AT_REQUIRED")
+    @FutureOrPresent(message = "TIMETABLE_STARTED_AT_INVALID")
     LocalDateTime startedAt,
 
-    @NotNull(message = "ENDED_AT_REQUIRED")
-    @Future(message = "ENDED_AT_MUST_BE_IN_FUTURE")
+    @NotNull(message = "TIMETABLE_ENDED_AT_REQUIRED")
+    @Future(message = "TIMETABLE_ENDED_AT_INVALID")
     LocalDateTime endedAt
-    ) {}
+) {}
 
 
 

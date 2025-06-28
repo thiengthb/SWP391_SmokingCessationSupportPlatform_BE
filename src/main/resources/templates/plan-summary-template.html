@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Kết quả kế hoạch bỏ thuốc</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            background-color: #f9f9f9;
+            padding: 20px;
+        }
+        .container {
+            background-color: #ffffff;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px #dddddd;
+            max-width: 600px;
+            margin: auto;
+        }
+        h2 {
+            color: #2c3e50;
+        }
+        .summary {
+            margin-top: 20px;
+        }
+        .summary p {
+            margin: 8px 0;
+        }
+        .footer {
+            margin-top: 30px;
+            font-size: 12px;
+            color: #888888;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h2>📋 Kết quả kế hoạch bỏ thuốc của bạn</h2>
+    <p>Xin chào <strong th:text="${username}">Người dùng</strong>,</p>
+    <p>Chúng tôi xin gửi đến bạn bản tổng kết kế hoạch vừa kết thúc.</p>
+
+    <div class="summary">
+        <p><strong>✅ Tỉ lệ thành công:</strong> <span th:text="${successRate}">0%</span></p>
+        <p><strong>📅 Ngày hút ít nhất:</strong> <span th:text="${leastSmokeDay}">yyyy-MM-dd</span></p>
+        <p><strong>🔥 Ngày hút nhiều nhất:</strong> <span th:text="${mostSmokeDay}">yyyy-MM-dd</span></p>
+        <p><strong>📝 Số ngày bạn đã báo cáo:</strong> <span th:text="${reportedDays}">0</span></p>
+        <p><strong>❌ Số ngày bạn bỏ lỡ:</strong> <span th:text="${missedDays}">0</span></p>
+    </div>
+
+    <p>👏 Cảm ơn bạn đã kiên trì! Hãy tiếp tục cố gắng cho các giai đoạn tiếp theo nhé.</p>
+
+    <div class="footer">
+        <p>Email được gửi vào lúc <span th:text="${sendTime}">thời gian gửi</span>.</p>
+        <p>Ứng dụng hỗ trợ cai thuốc - SWP Team</p>
+    </div>
+</div>
+</body>
+</html>

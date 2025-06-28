@@ -4,6 +4,8 @@ import com.swpteam.smokingcessation.domain.dto.setting.SettingResponse;
 import com.swpteam.smokingcessation.domain.dto.setting.SettingRequest;
 import com.swpteam.smokingcessation.domain.entity.Setting;
 
+import java.util.List;
+
 public interface ISettingService {
 
     SettingResponse getMySetting();
@@ -17,4 +19,6 @@ public interface ISettingService {
     Setting findSettingByIdOrThrowError(String accountId);
 
     void softDeleteSettingById(String accountId);
+
+    public List<Setting> getAllSetting();
 }

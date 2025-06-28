@@ -8,16 +8,17 @@ import jakarta.validation.constraints.Size;
 
 public record MembershipCreateRequest (
 
-    @NotBlank(message = "MEMBERSHIP_NAME_REQUIRE")
-    @Size(min = 1, message = "MEMBERSHIP_MIN_SIZE")
+    @NotBlank(message = "MEMBERSHIP_NAME_REQUIRED")
+    @Size(min = 1, message = "MEMBERSHIP_NAME_TOO_SHORT")
+    @Size(max = 30, message = "MEMBERSHIP_NAME_TOO_LONG")
     String name,
 
     @NotNull(message = "DURATION_REQUIRED")
-    @Positive(message = "DURATION_NEGATIVE")
+    @Positive(message = "DURATION_INVALID")
     Integer durationDays,
 
     @NotNull(message = "PRICE_REQUIRED")
-    @Positive(message = "PRICE_NEGATIVE")
+    @Positive(message = "PRICE_INVALID")
     Double price,
 
     @NotNull(message = "CURRENCY_REQUIRED")

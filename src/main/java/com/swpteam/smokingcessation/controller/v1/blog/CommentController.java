@@ -9,7 +9,7 @@ import com.swpteam.smokingcessation.domain.dto.comment.CommentReplyRequest;
 import com.swpteam.smokingcessation.domain.dto.comment.CommentResponse;
 import com.swpteam.smokingcessation.domain.dto.comment.CommentUpdateRequest;
 import com.swpteam.smokingcessation.service.interfaces.blog.ICommentService;
-import com.swpteam.smokingcessation.utils.ResponseUtil;
+import com.swpteam.smokingcessation.utils.ResponseUtilService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
@@ -28,14 +28,15 @@ import org.springframework.web.bind.annotation.*;
 public class CommentController {
 
     ICommentService commentService;
+    ResponseUtilService responseUtilService;
 
     @GetMapping("/blog/{id}")
     ResponseEntity<ApiResponse<PageResponse<CommentResponse>>> getCommentsByBlogId(
             @PathVariable String id,
             @Valid PageableRequest request
     ) {
-        return ResponseUtil.buildResponse(
-                SuccessCode.COMMENT_GET_BY_BLOG,
+        return responseUtilService.buildSuccessResponse(
+                SuccessCode.COMMENT_FETCHED_BY_BLOG,
                 commentService.getCommentsByBlogId(id, request)
         );
     }
@@ -44,8 +45,8 @@ public class CommentController {
     ResponseEntity<ApiResponse<PageResponse<CommentResponse>>> getCommentPage(
             @Valid PageableRequest request
     ) {
-        return ResponseUtil.buildResponse(
-                SuccessCode.COMMENT_LIST_ALL,
+        return responseUtilService.buildSuccessResponse(
+                SuccessCode.COMMENT_PAGE_FETCHED,
                 commentService.getCommentPage(request)
         );
     }
@@ -54,8 +55,8 @@ public class CommentController {
     ResponseEntity<ApiResponse<CommentResponse>> getCommentById(
             @PathVariable String id
     ) {
-        return ResponseUtil.buildResponse(
-                SuccessCode.COMMENT_GET_BY_ID,
+        return responseUtilService.buildSuccessResponse(
+                SuccessCode.COMMENT_FETCHED_BY_ID,
                 commentService.getCommentById(id)
         );
     }
@@ -64,7 +65,7 @@ public class CommentController {
     ResponseEntity<ApiResponse<CommentResponse>> createSubscription(
             @RequestBody @Valid CommentCreateRequest request
     ) {
-        return ResponseUtil.buildResponse(
+        return responseUtilService.buildSuccessResponse(
                 SuccessCode.COMMENT_CREATED,
                 commentService.createComment(request)
         );
@@ -74,7 +75,7 @@ public class CommentController {
     ResponseEntity<ApiResponse<CommentResponse>> createSubscription(
             @RequestBody @Valid CommentReplyRequest request
     ) {
-        return ResponseUtil.buildResponse(
+        return responseUtilService.buildSuccessResponse(
                 SuccessCode.COMMENT_CREATED,
                 commentService.replyComment(request)
         );
@@ -85,20 +86,19 @@ public class CommentController {
             @PathVariable String id,
             @RequestBody @Valid CommentUpdateRequest request
     ) {
-        return ResponseUtil.buildResponse(
+        return responseUtilService.buildSuccessResponse(
                 SuccessCode.COMMENT_UPDATED,
                 commentService.updateComment(id, request)
         );
     }
 
     @DeleteMapping("/{id}")
-    ResponseEntity<ApiResponse<String>> deleteCommentById(
+    ResponseEntity<ApiResponse<Void>> deleteCommentById(
             @PathVariable String id
     ) {
         commentService.deleteCommentById(id);
-        return ResponseUtil.buildResponse(
-                SuccessCode.COMMENT_DELETED,
-                null
+        return responseUtilService.buildSuccessResponse(
+                SuccessCode.COMMENT_DELETED
         );
     }
     

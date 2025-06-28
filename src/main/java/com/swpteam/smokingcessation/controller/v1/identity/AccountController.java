@@ -10,7 +10,7 @@ import com.swpteam.smokingcessation.domain.dto.account.AccountUpdateRequest;
 import com.swpteam.smokingcessation.domain.dto.account.ChangePasswordRequest;
 import com.swpteam.smokingcessation.domain.enums.Role;
 import com.swpteam.smokingcessation.service.interfaces.identity.IAccountService;
-import com.swpteam.smokingcessation.utils.ResponseUtil;
+import com.swpteam.smokingcessation.utils.ResponseUtilService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
@@ -27,12 +27,13 @@ import org.springframework.web.bind.annotation.*;
 public class AccountController {
 
     IAccountService accountService;
+    ResponseUtilService responseUtilService;
 
     @PostMapping
     ResponseEntity<ApiResponse<AccountResponse>> createAccount(
             @RequestBody @Valid AccountRequest request
     ) {
-        return ResponseUtil.buildResponse(
+        return responseUtilService.buildSuccessResponse(
                 SuccessCode.ACCOUNT_CREATED,
                 accountService.createAccount(request)
         );
@@ -40,7 +41,7 @@ public class AccountController {
 
     @GetMapping
     ResponseEntity<ApiResponse<PageResponse<AccountResponse>>> getAccounts(@Valid PageableRequest request) {
-        return ResponseUtil.buildResponse(
+        return responseUtilService.buildSuccessResponse(
                 SuccessCode.ACCOUNT_CREATED,
                 accountService.getAccountsPage(request)
         );
@@ -50,7 +51,7 @@ public class AccountController {
     ResponseEntity<ApiResponse<AccountResponse>> getAccountById(
             @PathVariable String id
     ) {
-        return ResponseUtil.buildResponse(
+        return responseUtilService.buildSuccessResponse(
                 SuccessCode.ACCOUNT_CREATED,
                 accountService.getAccountById(id)
         );
@@ -61,7 +62,7 @@ public class AccountController {
             @PathVariable String id,
             @RequestParam Role role
     ) {
-        return ResponseUtil.buildResponse(
+        return responseUtilService.buildSuccessResponse(
                 SuccessCode.ROLE_UPDATED,
                 accountService.updateAccountRole(id, role)
         );
@@ -72,18 +73,17 @@ public class AccountController {
             @PathVariable String id,
             @RequestBody AccountUpdateRequest request
     ) {
-        return ResponseUtil.buildResponse(
+        return responseUtilService.buildSuccessResponse(
                 SuccessCode.ACCOUNT_UPDATED,
                 accountService.updateAccountWithoutRole(id, request)
         );
     }
 
     @DeleteMapping("/{id}")
-    ResponseEntity<ApiResponse<String>> deleteAccount(@PathVariable String id) {
+    ResponseEntity<ApiResponse<Void>> deleteAccount(@PathVariable String id) {
         accountService.deleteAccount(id);
-        return ResponseUtil.buildResponse(
-                SuccessCode.ACCOUNT_DELETED,
-                null
+        return responseUtilService.buildSuccessResponse(
+                SuccessCode.ACCOUNT_DELETED
         );
     }
 
@@ -91,16 +91,16 @@ public class AccountController {
     ResponseEntity<ApiResponse<AccountResponse>> changePassword(
             @RequestBody @Valid ChangePasswordRequest request
     ) {
-        return ResponseUtil.buildResponse(
-                SuccessCode.PASSWORD_CHANGE_SUCCESS,
+        return responseUtilService.buildSuccessResponse(
+                SuccessCode.PASSWORD_CHANGED,
                 accountService.changePassword(request)
         );
     }
 
     @GetMapping("/me")
     ResponseEntity<ApiResponse<AccountResponse>> getMe() {
-        return ResponseUtil.buildResponse(
-                SuccessCode.GET_ME,
+        return responseUtilService.buildSuccessResponse(
+                SuccessCode.ACCOUNT_FETCHED,
                 accountService.getCurrentAccount()
         );
     }
@@ -110,9 +110,8 @@ public class AccountController {
             @PathVariable String id
     ) {
         accountService.banAccount(id);
-        return ResponseUtil.buildResponse(
-                SuccessCode.ACCOUNT_BANNED,
-                null
+        return responseUtilService.buildSuccessResponse(
+                SuccessCode.ACCOUNT_BANNED
         );
     }
 

@@ -7,7 +7,7 @@ import com.swpteam.smokingcessation.constant.SuccessCode;
 import com.swpteam.smokingcessation.domain.dto.timetable.TimeTableRequest;
 import com.swpteam.smokingcessation.domain.dto.timetable.TimeTableResponse;
 import com.swpteam.smokingcessation.service.interfaces.booking.ITimeTableService;
-import com.swpteam.smokingcessation.utils.ResponseUtil;
+import com.swpteam.smokingcessation.utils.ResponseUtilService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
@@ -26,13 +26,14 @@ import org.springframework.web.bind.annotation.*;
 public class TimeTableController {
 
     ITimeTableService timeTableService;
+    ResponseUtilService responseUtilService;
 
     @GetMapping
     ResponseEntity<ApiResponse<PageResponse<TimeTableResponse>>> getTimeTablePage(
             @Valid PageableRequest request
     ) {
-        return ResponseUtil.buildResponse(
-                SuccessCode.TIMETABLE_GET_ALL,
+        return responseUtilService.buildSuccessResponse(
+                SuccessCode.TIMETABLE_PAGE_FETCHED,
                 timeTableService.getTimeTablePage(request)
         );
     }
@@ -41,8 +42,8 @@ public class TimeTableController {
     ResponseEntity<ApiResponse<TimeTableResponse>> getTimeTableById(
             @PathVariable String id
     ) {
-        return ResponseUtil.buildResponse(
-                SuccessCode.TIMETABLE_GET_BY_ID,
+        return responseUtilService.buildSuccessResponse(
+                SuccessCode.TIMETABLE_FETCHED_BY_ID,
                 timeTableService.getTimeTableById(id)
         );
     }
@@ -51,8 +52,8 @@ public class TimeTableController {
     ResponseEntity<ApiResponse<PageResponse<TimeTableResponse>>> getTimeTablesByCoachId(
             @PathVariable String coachId, @Valid PageableRequest request
     ) {
-        return ResponseUtil.buildResponse(
-                SuccessCode.TIMETABLE_GET_ALL,
+        return responseUtilService.buildSuccessResponse(
+                SuccessCode.TIMETABLE_PAGE_FETCHED,
                 timeTableService.getTimeTablesByCoachId(coachId, request)
         );
     }
@@ -61,7 +62,7 @@ public class TimeTableController {
     ResponseEntity<ApiResponse<TimeTableResponse>> createTimeTable(
             @Valid @RequestBody TimeTableRequest request
     ) {
-        return ResponseUtil.buildResponse(
+        return responseUtilService.buildSuccessResponse(
                 SuccessCode.TIMETABLE_CREATED,
                 timeTableService.createTimeTable(request)
         );

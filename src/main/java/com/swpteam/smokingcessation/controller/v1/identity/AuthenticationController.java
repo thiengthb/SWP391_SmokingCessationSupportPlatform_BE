@@ -6,7 +6,7 @@ import com.swpteam.smokingcessation.domain.dto.auth.request.*;
 import com.swpteam.smokingcessation.domain.dto.auth.response.AuthenticationResponse;
 import com.swpteam.smokingcessation.service.interfaces.identity.IAuthenticationService;
 import com.swpteam.smokingcessation.utils.CookieUtil;
-import com.swpteam.smokingcessation.utils.ResponseUtil;
+import com.swpteam.smokingcessation.utils.ResponseUtilService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -26,10 +26,11 @@ public class AuthenticationController {
 
     IAuthenticationService authenticationService;
     CookieUtil cookieUtil;
+    ResponseUtilService responseUtilService;
 
     @PostMapping("/google/login")
     ResponseEntity<ApiResponse<AuthenticationResponse>> getGoogleToken(
-            @RequestBody GoogleLoginRequest request,
+            @RequestBody TokenRequest request,
             HttpServletResponse response
     ) {
         AuthenticationResponse authenticationResponse = authenticationService.googleLogin(request);
@@ -37,7 +38,7 @@ public class AuthenticationController {
         cookieUtil.setRefreshTokenCookie(response, authenticationResponse.getRefreshToken());
         authenticationResponse.setRefreshToken(null);
 
-        return ResponseUtil.buildResponse(
+        return responseUtilService.buildSuccessResponse(
                 SuccessCode.GOOGLE_LOGIN_SUCCESS,
                 authenticationResponse
         );
@@ -53,7 +54,7 @@ public class AuthenticationController {
         cookieUtil.setRefreshTokenCookie(response, authenticationResponse.getRefreshToken());
         authenticationResponse.setRefreshToken(null);
 
-        return ResponseUtil.buildResponse(
+        return responseUtilService.buildSuccessResponse(
                 SuccessCode.LOGIN_SUCCESS,
                 authenticationResponse
         );
@@ -69,25 +70,21 @@ public class AuthenticationController {
         cookieUtil.setRefreshTokenCookie(response, authenticationResponse.getRefreshToken());
         authenticationResponse.setRefreshToken(null);
 
-        return ResponseUtil.buildResponse(
+        return responseUtilService.buildSuccessResponse(
                 SuccessCode.TOKEN_REFRESH_SUCCESS,
                 authenticationResponse
         );
     }
 
     @PostMapping("/register")
-    ResponseEntity<ApiResponse<AuthenticationResponse>> register(
+    ResponseEntity<ApiResponse<Void>> register(
             @RequestBody @Valid RegisterRequest request,
             HttpServletResponse response
     ) {
-        AuthenticationResponse authenticationResponse = authenticationService.register(request);
+        authenticationService.register(request);
 
-        cookieUtil.setRefreshTokenCookie(response, authenticationResponse.getRefreshToken());
-        authenticationResponse.setRefreshToken(null);
-
-        return ResponseUtil.buildResponse(
-                SuccessCode.REGISTER_SUCCESS,
-                authenticationResponse
+        return responseUtilService.buildSuccessResponse(
+                SuccessCode.REGISTER_SUCCESS
         );
     }
 
@@ -97,9 +94,8 @@ public class AuthenticationController {
     ) {
         authenticationService.sendResetPasswordEmail(request.email());
 
-        return ResponseUtil.buildResponse(
-                SuccessCode.SEND_MAIL_SUCCESS,
-                null
+        return responseUtilService.buildSuccessResponse(
+                SuccessCode.MAIL_SENT
         );
     }
 
@@ -109,9 +105,8 @@ public class AuthenticationController {
     ) {
         authenticationService.resetPassword(request);
 
-        return ResponseUtil.buildResponse(
-                SuccessCode.PASSWORD_RESET_SUCCESS,
-                null
+        return responseUtilService.buildSuccessResponse(
+                SuccessCode.PASSWORD_RESET_SUCCESS
         );
     }
 
@@ -128,9 +123,8 @@ public class AuthenticationController {
             cookieUtil.clearRefreshTokenCookie(response);
         }
 
-        return ResponseUtil.buildResponse(
-                SuccessCode.LOGOUT_SUCCESS,
-                null
+        return responseUtilService.buildSuccessResponse(
+                SuccessCode.LOGOUT_SUCCESS
         );
     }
 

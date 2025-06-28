@@ -62,7 +62,7 @@ public class CoachServiceImpl implements ICoachService {
         Account currentAccount = authUtilService.getCurrentAccountOrThrowError();
 
         if (coachRepository.existsById(currentAccount.getId())) {
-            throw new AppException(ErrorCode.COACH_ALREADY_EXISTED);
+            throw new AppException(ErrorCode.COACH_ALREADY_EXISTS);
         }
 
         Coach coach = coachMapper.toEntity(request);
@@ -103,7 +103,7 @@ public class CoachServiceImpl implements ICoachService {
         if (coach.getAccount().isDeleted()) {
             coach.setDeleted(true);
             coachRepository.save(coach);
-            throw new AppException(ErrorCode.ACCOUNT_DELETED);
+            throw new AppException(ErrorCode.ACCOUNT_NOT_FOUND);
         }
 
         return coach;

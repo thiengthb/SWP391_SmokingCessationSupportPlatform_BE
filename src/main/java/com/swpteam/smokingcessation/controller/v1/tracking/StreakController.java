@@ -6,7 +6,7 @@ import com.swpteam.smokingcessation.common.PageableRequest;
 import com.swpteam.smokingcessation.constant.SuccessCode;
 import com.swpteam.smokingcessation.domain.dto.streak.StreakResponse;
 import com.swpteam.smokingcessation.service.interfaces.tracking.IStreakService;
-import com.swpteam.smokingcessation.utils.ResponseUtil;
+import com.swpteam.smokingcessation.utils.ResponseUtilService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
@@ -23,12 +23,13 @@ import org.springframework.web.bind.annotation.*;
 public class StreakController {
 
     IStreakService streakService;
+    ResponseUtilService responseUtilService;
 
     @GetMapping
     ResponseEntity<ApiResponse<PageResponse<StreakResponse>>> getStreaks(
             @Valid PageableRequest request
     ) {
-        return ResponseUtil.buildResponse(
+        return responseUtilService.buildSuccessResponse(
                 SuccessCode.RECORD_DELETED,
                 streakService.getStreakPage(request)
         );
@@ -38,7 +39,7 @@ public class StreakController {
     ResponseEntity<ApiResponse<StreakResponse>> getStreakById(
             @PathVariable String memberId
     ) {
-        return ResponseUtil.buildResponse(
+        return responseUtilService.buildSuccessResponse(
                 SuccessCode.RECORD_DELETED,
                 streakService.getStreakByAccountId(memberId)
         );
@@ -49,9 +50,8 @@ public class StreakController {
             @PathVariable String memberId
     ) {
         streakService.resetStreak(memberId);
-        return ResponseUtil.buildResponse(
-                SuccessCode.STREAK_RESET,
-                null
+        return responseUtilService.buildSuccessResponse(
+                SuccessCode.STREAK_RESET
         );
     }
 

@@ -8,7 +8,7 @@ public record StripeSubscriptionRequest (
     @NotBlank(message = "ACCOUNT_REQUIRED")
     String accountId,
 
-    @NotBlank(message = "MEMBERSHIP_NAME_REQUIRE")
-    @Size(min = 1, message = "MEMBERSHIP_MIN_SIZE")
+    @NotBlank(message = "MEMBERSHIP_NAME_REQUIRED")
+    @Size(min = 1, message = "MEMBERSHIP_NAME_TOO_SHORT")
     String membershipName
 ) {}

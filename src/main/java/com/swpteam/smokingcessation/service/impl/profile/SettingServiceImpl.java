@@ -21,6 +21,8 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -76,7 +78,7 @@ public class SettingServiceImpl implements ISettingService {
 
         if (setting.getAccount().isDeleted()) {
             setting.setDeleted(true);
-            throw new AppException(ErrorCode.ACCOUNT_DELETED);
+            throw new AppException(ErrorCode.ACCOUNT_NOT_FOUND);
         }
 
         return setting;
@@ -91,5 +93,14 @@ public class SettingServiceImpl implements ISettingService {
         setting.setDeleted(true);
 
         settingRepository.save(setting);
+    }
+
+    @Override
+    public List<Setting> getAllSetting(){
+        List<Setting> settings= settingRepository.findAllWhereAccountNotAdminOrCoach();
+        if(settings.isEmpty()){
+            throw new AppException(ErrorCode.ACCOUNT_NOT_FOUND);
+        }
+        return settings;
     }
 }

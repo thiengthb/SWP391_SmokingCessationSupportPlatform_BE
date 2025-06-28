@@ -5,7 +5,7 @@ import com.swpteam.smokingcessation.constant.SuccessCode;
 import com.swpteam.smokingcessation.domain.dto.report.ReportSummaryRequest;
 import com.swpteam.smokingcessation.domain.dto.report.ReportSummaryResponse;
 import com.swpteam.smokingcessation.service.interfaces.report.IReportService;
-import com.swpteam.smokingcessation.utils.ResponseUtil;
+import com.swpteam.smokingcessation.utils.ResponseUtilService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
@@ -24,13 +24,14 @@ import org.springframework.web.bind.annotation.RestController;
 public class ReportController {
 
     IReportService reportService;
+    ResponseUtilService responseUtilService;
 
     @GetMapping("/summary")
     public ResponseEntity<ApiResponse<ReportSummaryResponse>> getReportSummary(
             @Valid ReportSummaryRequest reportSummaryRequest
     ) {
-        return ResponseUtil.buildResponse(
-                SuccessCode.SUMMARY_GET,
+        return responseUtilService.buildSuccessResponse(
+                SuccessCode.REPORT_SUMMARY_FETCHED,
                 reportService.getSummary(reportSummaryRequest)
         );
     }

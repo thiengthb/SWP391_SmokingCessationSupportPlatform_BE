@@ -4,7 +4,7 @@ import com.swpteam.smokingcessation.domain.dto.phase.PhaseResponse;
 import com.swpteam.smokingcessation.common.ApiResponse;
 import com.swpteam.smokingcessation.constant.SuccessCode;
 import com.swpteam.smokingcessation.service.interfaces.tracking.IPhaseService;
-import com.swpteam.smokingcessation.utils.ResponseUtil;
+import com.swpteam.smokingcessation.utils.ResponseUtilService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -24,13 +24,14 @@ import java.util.List;
 public class PhaseController {
 
     IPhaseService phaseService;
+    ResponseUtilService responseUtilService;
 
     @GetMapping("/plan/{id}")
-    ResponseEntity<ApiResponse<List<PhaseResponse>>> getPhasePage(
+    ResponseEntity<ApiResponse<List<PhaseResponse>>> getPhaseList(
             @PathVariable String planId
     ) {
-        return ResponseUtil.buildResponse(
-                SuccessCode.PHASE_GET_ALL,
+        return responseUtilService.buildSuccessResponse(
+                SuccessCode.PHASE_LIST_FETCHED,
                 phaseService.getPhaseListByPlanId(planId)
         );
     }
@@ -39,8 +40,8 @@ public class PhaseController {
     ResponseEntity<ApiResponse<PhaseResponse>> getPhaseById(
             @PathVariable String id
     ) {
-        return ResponseUtil.buildResponse(
-                SuccessCode.PHASE_GET_BY_ID,
+        return responseUtilService.buildSuccessResponse(
+                SuccessCode.PHASE_FETCHED_BY_ID,
                 phaseService.getPhaseById(id)
         );
     }
@@ -48,9 +49,8 @@ public class PhaseController {
     @DeleteMapping("/{id}")
     ResponseEntity<ApiResponse<Void>> deletePhaseById(@PathVariable String id) {
         phaseService.softDeletePhaseById(id);
-        return ResponseUtil.buildResponse(
-                SuccessCode.PHASE_DELETED,
-                null
+        return responseUtilService.buildSuccessResponse(
+                SuccessCode.PHASE_DELETED
         );
     }
 

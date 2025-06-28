@@ -1,5 +1,6 @@
 package com.swpteam.smokingcessation.domain.entity;
 
+import com.swpteam.smokingcessation.common.AuditableEntity;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -11,16 +12,20 @@ import lombok.experimental.FieldDefaults;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class Score {
+public class Score extends AuditableEntity {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    String id;
-
-    @ManyToOne
     @MapsId
+    @OneToOne
     @JoinColumn(name = "accountId", nullable = false, updatable = false)
     Account account;
 
-    int number;
+    int score;
+
+    public static Score getDefaultScore(Account account) {
+        return Score.builder()
+                .account(account)
+                .score(0)
+                .build();
+    }
 }
+//enum

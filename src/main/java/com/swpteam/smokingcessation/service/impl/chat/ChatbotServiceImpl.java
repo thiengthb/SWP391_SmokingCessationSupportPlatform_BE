@@ -4,12 +4,12 @@ import com.swpteam.smokingcessation.constant.AIToken;
 import com.swpteam.smokingcessation.constant.ErrorCode;
 import com.swpteam.smokingcessation.domain.dto.chatbot.ChatbotRequest;
 import com.swpteam.smokingcessation.domain.dto.chatbot.ChatbotResponse;
-import com.swpteam.smokingcessation.domain.entity.AITokenUsage;
+import com.swpteam.smokingcessation.domain.entity.AIUsage;
 import com.swpteam.smokingcessation.domain.entity.Account;
 import com.swpteam.smokingcessation.domain.enums.Role;
 import com.swpteam.smokingcessation.exception.AppException;
 import com.swpteam.smokingcessation.integration.AI.IAIService;
-import com.swpteam.smokingcessation.repository.AITokenUsageRepository;
+import com.swpteam.smokingcessation.repository.AIUsageRepository;
 import com.swpteam.smokingcessation.service.interfaces.chat.IChatbotService;
 import com.swpteam.smokingcessation.utils.AuthUtilService;
 import lombok.AccessLevel;
@@ -27,7 +27,7 @@ import java.time.LocalDate;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class ChatbotServiceImpl implements IChatbotService {
 
-    AITokenUsageRepository aiTokenUsageRepository;
+    AIUsageRepository aiUsageRepository;
     AuthUtilService authUtilService;
     IAIService aiService;
 
@@ -36,21 +36,21 @@ public class ChatbotServiceImpl implements IChatbotService {
     public ChatbotResponse chat(ChatbotRequest request) {
         Account account = authUtilService.getCurrentAccountOrThrowError();
 
-        AITokenUsage usage = aiTokenUsageRepository.findByAccountIdAndDate(account.getId(), LocalDate.now())
-                .orElse(new AITokenUsage(account, LocalDate.now(), 0));
+        AIUsage usage = aiUsageRepository.findByAccountIdAndDate(account.getId(), LocalDate.now())
+                .orElse(new AIUsage(account, LocalDate.now(), 0));
 
         int limit = getAccountTokenLimit(account);
         int estimatedTokens = estimateAITokenUsage(request.prompt());
 
         if (usage.getTokensUsed() + estimatedTokens > limit) {
-            throw new AppException(ErrorCode.OUT_OF_LIMIT);
+            throw new AppException(ErrorCode.REQUEST_LIMIT_EXCEEDED);
         }
 
         String response = aiService.chatWithPlatformContext(request.prompt());
         int responseTokens = estimateAITokenUsage(response);
 
         usage.setTokensUsed(usage.getTokensUsed() + estimatedTokens + responseTokens);
-        aiTokenUsageRepository.save(usage);
+        aiUsageRepository.save(usage);
 
         return ChatbotResponse.builder()
                 .message(response)

@@ -1,18 +1,19 @@
 package com.swpteam.smokingcessation.service.impl.profile;
 
-import com.swpteam.smokingcessation.common.PageResponse;
-import com.swpteam.smokingcessation.common.PageableRequest;
 import com.swpteam.smokingcessation.constant.ErrorCode;
-import com.swpteam.smokingcessation.domain.dto.goal.*;
+import com.swpteam.smokingcessation.domain.dto.goal.GoalCreateRequest;
+import com.swpteam.smokingcessation.domain.dto.goal.GoalDetailsResponse;
+import com.swpteam.smokingcessation.domain.dto.goal.GoalListItemResponse;
+import com.swpteam.smokingcessation.domain.dto.goal.GoalUpdateRequest;
 import com.swpteam.smokingcessation.domain.entity.Account;
 import com.swpteam.smokingcessation.domain.entity.Goal;
 import com.swpteam.smokingcessation.domain.enums.Role;
 import com.swpteam.smokingcessation.domain.mapper.GoalMapper;
 import com.swpteam.smokingcessation.exception.AppException;
 import com.swpteam.smokingcessation.repository.GoalRepository;
+import com.swpteam.smokingcessation.service.interfaces.profile.IGoalProgressService;
 import com.swpteam.smokingcessation.service.interfaces.profile.IGoalService;
 import com.swpteam.smokingcessation.utils.AuthUtilService;
-import com.swpteam.smokingcessation.utils.ValidationUtil;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -20,11 +21,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -35,36 +37,60 @@ public class GoalServiceImpl implements IGoalService {
     GoalRepository goalRepository;
     GoalMapper goalMapper;
     AuthUtilService authUtilService;
+    IGoalProgressService goalProgressService;
 
     @Override
-    @Cacheable(value = "GOAL_PAGE_CACHE",
-            key = "#request.page + '-' + #request.size + '-' + #request.sortBy + '-' + #request.direction")
-    public PageResponse<GoalResponse> getPublicGoalPage(PageableRequest request) {
-        ValidationUtil.checkFieldExist(Goal.class, request.sortBy());
-
-        Pageable pageable = PageableRequest.getPageable(request);
-        Page<Goal> achievements = goalRepository.findAllByAccountIsNullAndIsDeletedFalse(pageable);
-
-        return new PageResponse<>(achievements.map(goalMapper::toResponse));
-    }
-
-    @Override
-    @Cacheable(value = "GOAL_PAGE_CACHE",
-            key = "#request.page + '-' + #request.size + '-' + #request.sortBy + '-' + #request.direction + '-' + T(com.swpteam.smokingcessation.utils.AuthUtilService).getCurrentAccountOrThrowError().getId()")
-    public PageResponse<GoalResponse> getMyGoalPage(PageableRequest request) {
-        ValidationUtil.checkFieldExist(Goal.class, request.sortBy());
+    @PreAuthorize("hasAnyRole('ADMIN', 'MEMBER')")
+    public List<GoalListItemResponse> getPublicGoals() {
 
         Account currentAccount = authUtilService.getCurrentAccountOrThrowError();
 
-        Pageable pageable = PageableRequest.getPageable(request);
-        Page<Goal> achievements = goalRepository.findAllByAccountIdAndIsDeletedFalse(currentAccount.getId(), pageable);
+        if (currentAccount.getRole() == Role.ADMIN) {
+            List<Goal> goals = goalRepository.findAllByAccountIsNullAndIsDeletedFalse(Sort.by("criteriaType").ascending().and(Sort.by("criteriaValue").ascending()));
+            return goals.stream()
+                    .map(goalMapper::toAdminResponse)
+                    .toList();
+        }
 
-        return new PageResponse<>(achievements.map(goalMapper::toResponse));
+        List<Object[]> results = goalRepository.findSortedPublicGoals(currentAccount.getId());
+
+        List<GoalDetailsResponse> goals = results.stream()
+                .map(goalMapper::mapRowToGoalDetails)
+                .toList();
+
+        return goals.stream()
+                .map(goal -> goalMapper.toResponse(goal, currentAccount.getId()))
+                .toList();
+    }
+
+    @Override
+    @PreAuthorize("hasRole('MEMBER')")
+    public List<GoalListItemResponse> getMyGoals() {
+        Account currentAccount = authUtilService.getCurrentAccountOrThrowError();
+
+        List<Object[]> results = goalRepository.findSortedPersonalGoals(currentAccount.getId());
+
+        List<GoalDetailsResponse> goals = results.stream()
+                .map(goalMapper::mapRowToGoalDetails)
+                .toList();
+
+        return goals.stream()
+                .map(goal -> goalMapper.toResponse(goal, currentAccount.getId()))
+                .toList();
+    }
+
+    @Override
+    @PreAuthorize("hasAnyRole('ADMIN', 'MEMBER')")
+    @Cacheable(value = "GOAL_CACHE", key = "#id")
+    public GoalDetailsResponse getMyGoalDetailsById(String id) {
+        Goal goal = getGoalByIdOrThrow(id);
+
+        return goalMapper.toResponse(goal);
     }
 
     @Override
     @Cacheable(value = "GOAL_CACHE", key = "#name")
-    public GoalResponse getGoalByName(String name) {
+    public GoalDetailsResponse getGoalByName(String name) {
         return goalMapper.toResponse(findGoalByName(name));
     }
 
@@ -74,19 +100,23 @@ public class GoalServiceImpl implements IGoalService {
     @PreAuthorize("hasAnyRole('ADMIN', 'MEMBER')")
     @CachePut(value = "GOAL_CACHE", key = "#result.getId()")
     @CacheEvict(value = "GOAL_PAGE_CACHE", allEntries = true)
-    public GoalResponse createGoal(GoalCreateRequest request) {
-        if (goalRepository.existsByNameAndIsDeletedFalse(request.name())) {
+    public GoalDetailsResponse createGoal(GoalCreateRequest request) {
+        Account currentAccount = authUtilService.getCurrentAccountOrThrowError();
+
+        if (goalRepository.existsByNameAndAccountIdAndIsDeletedFalse(request.name(), currentAccount.getId())) {
             throw new AppException(ErrorCode.GOAL_ALREADY_EXISTS);
         }
-
-        Account currentAccount = authUtilService.getCurrentAccountOrThrowError();
 
         Goal goal = goalMapper.toEntity(request);
         if (currentAccount.getRole() != Role.ADMIN) {
             goal.setAccount(currentAccount);
         }
 
-        return goalMapper.toResponse(goalRepository.save(goal));
+        Goal savedGoal = goalRepository.save(goal);
+
+        goalProgressService.createGoalProgress(goal, currentAccount);
+        goalProgressService.ensureGlobalGoalProgressForAllAccounts();
+        return goalMapper.toResponse(savedGoal);
     }
 
     @Override
@@ -94,11 +124,11 @@ public class GoalServiceImpl implements IGoalService {
     @PreAuthorize("hasAnyRole('ADMIN', 'MEMBER')")
     @CachePut(value = "GOAL_CACHE", key = "#result.getId()")
     @CacheEvict(value = "GOAL_PAGE_CACHE", allEntries = true)
-    public GoalResponse updateGoal(String name, GoalUpdateRequest request) {
+    public GoalDetailsResponse updateGoal(String name, GoalUpdateRequest request) {
         Goal goal = findGoalByName(name);
 
         if (goal.getAccount() != null && authUtilService.isAdminOrOwner(goal.getAccount().getId())) {
-            throw new AppException(ErrorCode.ACCESS_DENIED);
+            throw new AppException(ErrorCode.UNAUTHORIZED);
         }
 
         goalMapper.update(goal, request);
@@ -114,7 +144,7 @@ public class GoalServiceImpl implements IGoalService {
         Goal goal = findGoalByName(name);
 
         if (goal.getAccount() != null && authUtilService.isAdminOrOwner(goal.getAccount().getId())) {
-            throw new AppException(ErrorCode.ACCESS_DENIED);
+            throw new AppException(ErrorCode.UNAUTHORIZED);
         }
 
         goal.setDeleted(true);
@@ -135,4 +165,9 @@ public class GoalServiceImpl implements IGoalService {
         return goal;
     }
 
+    @Override
+    public Goal getGoalByIdOrThrow(String id) {
+        return goalRepository.findById(id)
+                .orElseThrow(() -> new AppException(ErrorCode.GOAL_NOT_FOUND));
+    }
 }

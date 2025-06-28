@@ -7,7 +7,7 @@ import com.swpteam.smokingcessation.constant.SuccessCode;
 import com.swpteam.smokingcessation.domain.dto.coach.CoachRequest;
 import com.swpteam.smokingcessation.domain.dto.coach.CoachResponse;
 import com.swpteam.smokingcessation.service.interfaces.profile.ICoachService;
-import com.swpteam.smokingcessation.utils.ResponseUtil;
+import com.swpteam.smokingcessation.utils.ResponseUtilService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
@@ -24,14 +24,16 @@ import org.springframework.web.bind.annotation.*;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 @Tag(name = "Coach", description = "Manage coach-related operations")
 public class CoachController {
+
     ICoachService coachService;
+    ResponseUtilService responseUtilService;
 
     @GetMapping
     ResponseEntity<ApiResponse<PageResponse<CoachResponse>>> getCoachPage(
             @Valid PageableRequest request
     ) {
-        return ResponseUtil.buildResponse(
-                SuccessCode.COACH_GET_ALL,
+        return responseUtilService.buildSuccessResponse(
+                SuccessCode.COACH_PAGE_FETCHED,
                 coachService.getCoachPage(request)
         );
     }
@@ -40,8 +42,8 @@ public class CoachController {
     ResponseEntity<ApiResponse<CoachResponse>> getCoachById(
             @PathVariable String id
     ) {
-        return ResponseUtil.buildResponse(
-                SuccessCode.COACH_GET_BY_ID,
+        return responseUtilService.buildSuccessResponse(
+                SuccessCode.COACH_FETCHED_BY_ID,
                 coachService.getCoachById(id)
         );
     }
@@ -50,7 +52,7 @@ public class CoachController {
     ResponseEntity<ApiResponse<CoachResponse>> createCoach(
             @Valid @RequestBody CoachRequest request
     ) {
-        return ResponseUtil.buildResponse(
+        return responseUtilService.buildSuccessResponse(
                 SuccessCode.COACH_CREATED,
                 coachService.registerCoachProfile(request)
         );
@@ -61,7 +63,7 @@ public class CoachController {
             @PathVariable String id,
             @Valid @RequestBody CoachRequest request
     ) {
-        return ResponseUtil.buildResponse(
+        return responseUtilService.buildSuccessResponse(
                 SuccessCode.COACH_UPDATED,
                 coachService.updateCoachById(id, request)
         );

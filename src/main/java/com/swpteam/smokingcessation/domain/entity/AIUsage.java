@@ -17,7 +17,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class AITokenUsage extends AuditableEntity {
+public class AIUsage extends AuditableEntity {
 
     @ManyToOne
     @JoinColumn(name = "accountId", nullable = false, updatable = false)

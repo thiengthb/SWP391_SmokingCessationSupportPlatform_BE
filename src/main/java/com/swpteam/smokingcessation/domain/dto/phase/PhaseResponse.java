@@ -12,15 +12,14 @@ import java.time.LocalDate;
 @AllArgsConstructor@JsonInclude(JsonInclude.Include.NON_NULL)
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class PhaseResponse {
+    String id;
+    String planId;
     int phase;
     LocalDate startDate;
     LocalDate endDate;
-    String id;
-    String planId;
     String phaseName;
     String description;
     Integer cigaretteBound;
     PhaseStatus phaseStatus;
-    LocalDate createdAt;
-    LocalDate updatedAt;
+    double successRate;
 }

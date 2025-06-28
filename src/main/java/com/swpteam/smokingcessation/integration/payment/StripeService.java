@@ -94,7 +94,7 @@ public class StripeService implements IStripeService {
         } catch (StripeException e) {
             log.error(e.getMessage());
             e.printStackTrace();
-            throw new AppException(ErrorCode.UNCATEGORIZED_EXCEPTION);
+            throw new AppException(ErrorCode.UNCATEGORIZED_ERROR);
         }
 
         assert session != null;

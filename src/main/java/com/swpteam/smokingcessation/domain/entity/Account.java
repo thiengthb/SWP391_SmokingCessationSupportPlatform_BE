@@ -2,10 +2,10 @@ package com.swpteam.smokingcessation.domain.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.swpteam.smokingcessation.common.AuditableEntity;
 import com.swpteam.smokingcessation.domain.enums.AccountStatus;
 import com.swpteam.smokingcessation.domain.enums.AuthProvider;
 import com.swpteam.smokingcessation.domain.enums.Role;
-import com.swpteam.smokingcessation.common.AuditableEntity;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
@@ -55,7 +55,7 @@ public class Account extends AuditableEntity {
     @JsonIgnore
     @Builder.Default
     @OneToMany(mappedBy = "account", cascade = CascadeType.ALL, orphanRemoval = true)
-    List<AITokenUsage> aiTokenUsages = new ArrayList<>();
+    List<AIUsage> aiUsages = new ArrayList<>();
 
     @JsonIgnore
     @Builder.Default
@@ -98,6 +98,10 @@ public class Account extends AuditableEntity {
     @JsonIgnore
     @OneToOne(mappedBy = "account", cascade = CascadeType.ALL)
     Setting setting;
+
+    @JsonIgnore
+    @OneToOne(mappedBy = "account", cascade = CascadeType.ALL)
+    Score score;
 
     @JsonIgnore
     @Builder.Default

@@ -5,5 +5,8 @@
 ### RUN DOCKER-COMPOSE.BASE.YML
 docker compose -f docker/docker-compose.base.yml --env-file docker/.env.mysql up --build
 
+### RUN DOCKER-COMPOSE.DEV.YML
+docker compose -d -f docker/docker-compose.dev.yml --env-file docker/.env.mysql -p smoking_support up --build
+
 ### RUN DOCKER-COMPOSE.NGINX.YML
 docker compose -f docker/docker-compose.nginx.yml --env-file docker/.env.mysql up --build

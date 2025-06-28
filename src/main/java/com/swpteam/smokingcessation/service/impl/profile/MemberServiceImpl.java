@@ -17,11 +17,15 @@ import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
+@Slf4j
 @RequiredArgsConstructor
 @Service
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
@@ -30,16 +34,6 @@ public class MemberServiceImpl implements IMemberService {
     MemberMapper memberMapper;
     MemberRepository memberRepository;
     AuthUtilService authUtilService;
-
-    @Override
-    public PageResponse<MemberResponse> getMembersPage(PageableRequest request) {
-        ValidationUtil.checkFieldExist(Member.class, request.sortBy());
-
-        Pageable pageable = PageableRequest.getPageable(request);
-        Page<Member> members = memberRepository.findAllByIsDeletedFalse(pageable);
-
-        return new PageResponse<>(members.map(memberMapper::toResponse));
-    }
 
     @Override
     public MemberResponse getMemberById(String accountId) {
@@ -53,7 +47,7 @@ public class MemberServiceImpl implements IMemberService {
         Account currentAccount = authUtilService.getCurrentAccountOrThrowError();
 
         if (memberRepository.existsById(currentAccount.getId())) {
-            throw new AppException(ErrorCode.MEMBER_EXISTED);
+            throw new AppException(ErrorCode.MEMBER_ALREADY_EXISTS);
         }
 
         Member member = memberMapper.toEntity(request);
@@ -92,10 +86,23 @@ public class MemberServiceImpl implements IMemberService {
                 .orElseThrow(() -> new AppException(ErrorCode.MEMBER_NOT_FOUND));
 
         if (member.getAccount().isDeleted()) {
-            throw new AppException(ErrorCode.ACCOUNT_DELETED);
+            throw new AppException(ErrorCode.ACCOUNT_NOT_FOUND);
         }
 
         return member;
+    }
+
+    @Override
+    public List<Member> findAllMember() {
+        List<Member> members = memberRepository.findAllByIsDeletedFalse();
+        if (members.isEmpty()) {
+            log.warn("no member found");
+            throw new AppException(ErrorCode.MEMBER_NOT_FOUND);
+        }
+        log.info("found {} member", members.size());
+        return members;
+
+
     }
 
 }

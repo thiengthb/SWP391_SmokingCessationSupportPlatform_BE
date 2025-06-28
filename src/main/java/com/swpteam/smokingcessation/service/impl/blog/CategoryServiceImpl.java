@@ -71,7 +71,7 @@ public class CategoryServiceImpl implements ICategoryService {
     @CacheEvict(value = {"CATEGORY_PAGE_CACHE", "CATEGORY_LIST_CACHE"}, allEntries = true)
     public CategoryResponse createCategory(CategoryRequest request) {
         if (categoryRepository.existsByName(request.name())) {
-            throw new AppException(ErrorCode.CATEGORY_EXISTED);
+            throw new AppException(ErrorCode.CATEGORY_ALREADY_EXISTS);
         }
 
         Category category = categoryMapper.toEntity(request);
@@ -99,7 +99,7 @@ public class CategoryServiceImpl implements ICategoryService {
         Category category = findCategoryByIdOrThrowError(id);
 
         if (category.getName().equalsIgnoreCase(App.DEFAULT_CATEGORY)) {
-            throw new AppException(ErrorCode.CATEGORY_CANNOT_BE_DELETED);
+            throw new AppException(ErrorCode.CATEGORY_DELETION_NOT_ALLOWED);
         }
 
         Category uncategorized = findCategoryByNameOrThrowError(App.DEFAULT_CATEGORY);

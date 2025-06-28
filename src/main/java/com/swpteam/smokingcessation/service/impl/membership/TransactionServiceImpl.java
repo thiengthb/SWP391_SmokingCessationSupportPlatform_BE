@@ -41,15 +41,19 @@ public class TransactionServiceImpl implements ITransactionService {
         Transaction transaction = findTransactionById(transactionId);
 
         transaction.setStatus(TransactionStatus.COMPLETED);
+
         transactionRepository.save(transaction);
     }
 
+    @Transactional
     private Transaction findTransactionById(String id) {
         Transaction transaction = transactionRepository.findByIdAndIsDeletedFalse(id)
                 .orElseThrow(() -> new AppException(ErrorCode.TRANSACTION_NOT_FOUND));
 
         if (transaction.getAccount().isDeleted()) {
-            throw new AppException(ErrorCode.ACCOUNT_DELETED);
+            transaction.setDeleted(true);
+            transactionRepository.save(transaction);
+            throw new AppException(ErrorCode.ACCOUNT_NOT_FOUND);
         }
 
         return transaction;

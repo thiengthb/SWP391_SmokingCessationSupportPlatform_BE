@@ -4,19 +4,19 @@ import jakarta.validation.constraints.*;
 
 public record GoalCreateRequest(
 
-    @NotBlank(message = "NAME_REQUIRED")
+    @NotBlank(message = "GOAL_NAME_REQUIRED")
     String name,
 
-    @NotBlank(message = "DESCRIPTION_REQUIRED")
+    @NotBlank(message = "GOAL_DESCRIPTION_REQUIRED")
     String description,
 
-    @NotBlank(message = "ICON_URL_REQUIRED")
+    @NotBlank(message = "GOAL_ICON_URL_REQUIRED")
     String iconUrl,
 
-    @NotBlank(message = "CRITERIA_TYPE_REQUIRED")
+    @NotBlank(message = "GOAL_CRITERIA_TYPE_REQUIRED")
     String criteriaType,
 
-    @NotNull(message = "CRITERIA_VALUE_REQUIRED")
-    @Min(value = 0, message = "CRITERIA_VALUE_INVALID")
+    @NotNull(message = "GOAL_CRITERIA_VALUE_REQUIRED")
+    @Min(value = 0, message = "GOAL_CRITERIA_VALUE_INVALID")
     Integer criteriaValue
 ){}

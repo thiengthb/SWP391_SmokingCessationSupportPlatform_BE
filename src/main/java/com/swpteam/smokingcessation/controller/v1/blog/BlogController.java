@@ -8,7 +8,7 @@ import com.swpteam.smokingcessation.domain.dto.blog.BlogCreateRequest;
 import com.swpteam.smokingcessation.domain.dto.blog.BlogResponse;
 import com.swpteam.smokingcessation.domain.dto.blog.BlogUpdateRequest;
 import com.swpteam.smokingcessation.service.interfaces.blog.IBlogService;
-import com.swpteam.smokingcessation.utils.ResponseUtil;
+import com.swpteam.smokingcessation.utils.ResponseUtilService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
@@ -27,13 +27,14 @@ import org.springframework.web.bind.annotation.*;
 public class BlogController {
 
     IBlogService blogService;
+    ResponseUtilService responseUtilService;
 
     @GetMapping
     ResponseEntity<ApiResponse<PageResponse<BlogResponse>>> getAllBlogsPage(
             @Valid PageableRequest request
     ) {
-        return ResponseUtil.buildResponse(
-                SuccessCode.BLOG_GET_ALL,
+        return responseUtilService.buildSuccessResponse(
+                SuccessCode.BLOG_PAGE_FETCHED,
                 blogService.getAllBlogsPage(request)
         );
     }
@@ -42,8 +43,8 @@ public class BlogController {
     ResponseEntity<ApiResponse<PageResponse<BlogResponse>>> getMyBlogsPage(
             @Valid PageableRequest request
     ) {
-        return ResponseUtil.buildResponse(
-                SuccessCode.MY_BLOG,
+        return responseUtilService.buildSuccessResponse(
+                SuccessCode.MY_BLOG_FETCHED,
                 blogService.getMyBlogsPage(request)
         );
     }
@@ -53,8 +54,8 @@ public class BlogController {
             @PathVariable String name,
             @Valid PageableRequest request
     ) {
-        return ResponseUtil.buildResponse(
-                SuccessCode.BLOG_GET_BY_CATEGORY,
+        return responseUtilService.buildSuccessResponse(
+                SuccessCode.BLOG_FETCHED_BY_CATEGORY,
                 blogService.getBlogsPageByCategory(name, request)
         );
     }
@@ -63,8 +64,8 @@ public class BlogController {
     ResponseEntity<ApiResponse<BlogResponse>> getBlogBySlug(
             @PathVariable String slugName
     ) {
-        return ResponseUtil.buildResponse(
-                SuccessCode.BLOG_GET_BY_SLUG,
+        return responseUtilService.buildSuccessResponse(
+                SuccessCode.BLOG_FETCHED_BY_SLUG,
                 blogService.getBlogBySlug(slugName)
         );
     }
@@ -73,8 +74,8 @@ public class BlogController {
     ResponseEntity<ApiResponse<BlogResponse>> getBlogById(
             @PathVariable String id
     ) {
-        return ResponseUtil.buildResponse(
-                SuccessCode.BLOG_GET_BY_ID,
+        return responseUtilService.buildSuccessResponse(
+                SuccessCode.BLOG_FETCHED_BY_ID,
                 blogService.getBlogById(id)
         );
     }
@@ -83,7 +84,7 @@ public class BlogController {
     ResponseEntity<ApiResponse<BlogResponse>> createBlog(
             @RequestBody @Valid BlogCreateRequest request
     ) {
-        return ResponseUtil.buildResponse(
+        return responseUtilService.buildSuccessResponse(
                 SuccessCode.BLOG_CREATED,
                 blogService.createBlog(request)
         );
@@ -94,20 +95,19 @@ public class BlogController {
             @PathVariable String id,
             @RequestBody @Valid BlogUpdateRequest request
     ) {
-        return ResponseUtil.buildResponse(
+        return responseUtilService.buildSuccessResponse(
                 SuccessCode.BLOG_UPDATED,
                 blogService.updateBlog(id, request)
         );
     }
 
     @DeleteMapping("/{id}")
-    ResponseEntity<ApiResponse<String>> deleteBlogById(
+    ResponseEntity<ApiResponse<Void>> deleteBlogById(
             @PathVariable String id
     ) {
         blogService.softDeleteBlogById(id);
-        return ResponseUtil.buildResponse(
-                SuccessCode.BLOG_DELETED,
-                null
+        return responseUtilService.buildSuccessResponse(
+                SuccessCode.BLOG_DELETED
         );
     }
 

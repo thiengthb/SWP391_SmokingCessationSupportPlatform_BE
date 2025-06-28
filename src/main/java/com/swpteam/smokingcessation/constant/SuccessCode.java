@@ -10,192 +10,194 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public enum SuccessCode {
 
-    // Membership
-    MEMBERSHIP_CREATED(1000, "Membership has been created"),
-    MEMBERSHIP_UPDATED(1001, "Membership has been updated"),
-    MEMBERSHIP_DELETED(1002, "Membership has been deleted"),
-    MEMBERSHIP_GET_ALL(1003, "Success returning a page of membership"),
-    MEMBERSHIP_GET_BY_ID(1004, "Success returning a membership with given id"),
+    // General Successes (1000-1099)
+    IMAGE_UPLOADED(1000, "success.general.image_uploaded"),
+    MAIL_SENT(1001, "success.general.mail_sent"),
 
-    // Subscription
-    SUBSCRIPTION_CREATED(1000, "Subscription has been created"),
-    SUBSCRIPTION_UPDATED(1001, "Subscription has been updated"),
-    SUBSCRIPTION_DELETED(1002, "Subscription has been deleted"),
-    SUBSCRIPTION_GET_ALL(1003, "Success returning a page of subscription"),
-    SUBSCRIPTION_GET_BY_ID(1004, "Success returning a subscription with given id"),
-    SUBSCRIPTION_GET_BY_ACCOUNT(1004, "Success returning a subscription with given account id"),
+    // Account Successes (1100-1199)
+    ACCOUNT_CREATED(1100, "success.account.created"),
+    ACCOUNT_UPDATED(1101, "success.account.updated"),
+    ACCOUNT_DELETED(1102, "success.account.deleted"),
+    ACCOUNT_BANNED(1103, "success.account.banned"),
+    PASSWORD_CHANGED(1104, "success.account.password_changed"),
+    ROLE_UPDATED(1105, "success.account.role_updated"),
+    ACCOUNT_FETCHED(1106, "success.account.fetched"),
+    ACCOUNT_VERIFIED(1107, "success.account.verified"),
 
-    // Health
-    HEALTH_CREATED(2000, "Health record has been created"),
-    HEALTH_UPDATED(2001, "Health record has been updated"),
-    HEALTH_DELETED(2002, "Health record has been deleted"),
-    HEALTH_GET_ALL(1003, "Success returning a page of health"),
-    HEALTH_GET_BY_ID(1004, "Success returning a health with given id"),
-    HEALTH_GET_BY_ACCOUNT(1004, "Success returning a health with given account id"),
+    // Authentication Successes (1200-1299)
+    GOOGLE_LOGIN_SUCCESS(1200, "success.auth.google_login"),
+    LOGIN_SUCCESS(1201, "success.auth.login"),
+    REGISTER_SUCCESS(1202, "success.auth.register"),
+    PASSWORD_RESET_SUCCESS(1203, "success.auth.password_reset"),
+    TOKEN_REFRESH_SUCCESS(1204, "success.auth.token_refresh"),
+    LOGOUT_SUCCESS(1205, "success.auth.logout"),
 
-    // Record
-    RECORD_CREATED(3000, "Record has been created"),
-    RECORD_UPDATED(3001, "Record has been updated"),
-    RECORD_DELETED(3002, "Record has been deleted"),
-    RECORD_GET_ALL(1003, "Success returning a page of record"),
-    RECORD_GET_BY_ID(1004, "Success returning a record with given id"),
-    RECORD_GET_BY_ACCOUNT(1004, "Success returning a record with given account id"),
+    // Membership Successes (1300-1399)
+    MEMBERSHIP_CREATED(1300, "success.membership.created"),
+    MEMBERSHIP_UPDATED(1301, "success.membership.updated"),
+    MEMBERSHIP_DELETED(1302, "success.membership.deleted"),
+    MEMBERSHIP_PAGE_FETCHED(1303, "success.membership.page_fetched"),
+    MEMBERSHIP_FETCHED_BY_ID(1304, "success.membership.fetched_by_id"),
 
-    // Message
-    MESSAGE_CREATED(2000, "Message has been created"),
-    MESSAGE_UPDATED(2001, "Message has been updated"),
-    MESSAGE_DELETED(2002, "Message has been deleted"),
-    MESSAGE_GET_BY_ID(2003, "Success returning a membership with given id"),
+    // Subscription Successes (1400-1499)
+    SUBSCRIPTION_CREATED(1400, "success.subscription.created"),
+    SUBSCRIPTION_UPDATED(1401, "success.subscription.updated"),
+    SUBSCRIPTION_DELETED(1402, "success.subscription.deleted"),
+    SUBSCRIPTION_PAGE_FETCHED(1403, "success.subscription.page_fetched"),
+    SUBSCRIPTION_FETCHED_BY_ID(1404, "success.subscription.fetched_by_id"),
+    SUBSCRIPTION_FETCHED_BY_ACCOUNT(1405, "success.subscription.fetched_by_account"),
 
-    // Plan
-    PLAN_CREATED(5000, "Plan has been created"),
-    PLAN_UPDATED(5001, "Plan has been updated"),
-    PLAN_DELETED(5002, "Plan has been deleted"),
-    PLAN_GET_BY_ID(5003, "Success returning a plan with given id"),
-    PLAN_GET_ALL(5004, "Success return a page with plan"),
-    PLAN_TEMPLATE_GET(4324, "Success return plan template"),
+    // Health Record Successes (1500-1599)
+    HEALTH_CREATED(1500, "success.health_record.created"),
+    HEALTH_UPDATED(1501, "success.health_record.updated"),
+    HEALTH_DELETED(1502, "success.health_record.deleted"),
+    HEALTH_PAGE_FETCHED(1503, "success.health_record.page_fetched"),
+    HEALTH_FETCHED_BY_ID(1504, "success.health_record.fetched_by_id"),
+    HEALTH_FETCHED_BY_ACCOUNT(1505, "success.health_record.fetched_by_account"),
 
-    // Phase
-    PHASE_CREATED(5000, "Phase has been created"),
-    PHASE_UPDATED(5001, "Phase has been updated"),
-    PHASE_DELETED(5002, "Phase has been deleted"),
-    PHASE_GET_BY_ID(5003, "Success returning a phase with given id"),
-    PHASE_GET_ALL(5004, "Success return a page with phase"),
+    // Record Successes (1600-1699)
+    RECORD_CREATED(1600, "success.record.created"),
+    RECORD_UPDATED(1601, "success.record.updated"),
+    RECORD_DELETED(1602, "success.record.deleted"),
+    RECORD_PAGE_FETCHED(1603, "success.record.page_fetched"),
+    RECORD_FETCHED_BY_ID(1604, "success.record.fetched_by_id"),
+    RECORD_FETCHED_BY_ACCOUNT(1605, "success.record.fetched_by_account"),
 
-    // Account
-    ACCOUNT_CREATED(3000, "Account has been created"),
-    ACCOUNT_UPDATED(3001, "Account has been updated"),
-    ACCOUNT_DELETED(3002, "Account has been deleted"),
-    ACCOUNT_BANNED(3003, "Account has been banned"),
-    PASSWORD_CHANGE_SUCCESS(3004, "Password is changed successfully"),
-    ROLE_UPDATED(3005, "Account role is updated successfully"),
-    GET_ME(3006, "Fetched the current account successfully"),
+    // Message Successes (1700-1799)
+    MESSAGE_CREATED(1700, "success.message.created"),
+    MESSAGE_UPDATED(1701, "success.message.updated"),
+    MESSAGE_DELETED(1702, "success.message.deleted"),
+    MESSAGE_FETCHED_BY_ID(1703, "success.message.fetched_by_id"),
+    MESSAGE_PAGE_FETCHED(1703, "success.message.page_fetched"),
 
-    //Authentication
-    GOOGLE_LOGIN_SUCCESS(4000, "Google log in successfully"),
-    LOGIN_SUCCESS(4001, "Logged in successfully"),
-    REGISTER_SUCCESS(4002, "Registered successfully"),
-    PASSWORD_RESET_SUCCESS(4003, "Password reset successfully"),
-    TOKEN_REFRESH_SUCCESS(4004, "Issued a new access token successfully"),
-    LOGOUT_SUCCESS(4005, "Logged out successfully"),
+    // Plan Successes (1800-1899)
+    PLAN_CREATED(1800, "success.plan.created"),
+    PLAN_UPDATED(1801, "success.plan.updated"),
+    PLAN_DELETED(1802, "success.plan.deleted"),
+    PLAN_FETCHED_BY_ID(1803, "success.plan.fetched_by_id"),
+    PLAN_PAGE_FETCHED(1804, "success.plan.page_fetched"),
+    PLAN_TEMPLATE_FETCHED(1805, "success.plan.template_fetched"),
 
-    // Coach
-    COACH_CREATED(5000, "Coach has been created"),
-    COACH_UPDATED(5001, "Coach has been updated"),
-    COACH_DELETED(5002, "Coach has been deleted"),
-    COACH_GET_BY_ID(5003, "Success returning a coach with given id"),
-    COACH_GET_ALL(5004, "Success return a page with coach"),
+    // Phase Successes (1900-1999)
+    PHASE_CREATED(1900, "success.phase.created"),
+    PHASE_UPDATED(1901, "success.phase.updated"),
+    PHASE_DELETED(1902, "success.phase.deleted"),
+    PHASE_FETCHED_BY_ID(1903, "success.phase.fetched_by_id"),
+    PHASE_LIST_FETCHED(1904, "success.phase.list_fetched"),
 
-    // Member
-    MEMBER_CREATED(3000, "Member has been created"),
-    MEMBER_UPDATED(3001, "Member has been updated"),
+    // Coach Successes (2000-2099)
+    COACH_CREATED(2000, "success.coach.created"),
+    COACH_UPDATED(2001, "success.coach.updated"),
+    COACH_DELETED(2002, "success.coach.deleted"),
+    COACH_FETCHED_BY_ID(2003, "success.coach.fetched_by_id"),
+    COACH_PAGE_FETCHED(2004, "success.coach.page_fetched"),
 
-    // Mail
-    SEND_MAIL_SUCCESS(1004, "Success sending mail, Reset password link sent to your email if it exists in our system."),
+    // Member Successes (2100-2199)
+    MEMBER_CREATED(2100, "success.member.created"),
+    MEMBER_UPDATED(2101, "success.member.updated"),
+    MEMBER_FETCHED_BY_ID(2103, "success.member.fetched_by_id"),
 
-    // Booking
-    BOOKING_GET_ALL(2010, "Successfully retrieved all categories"),
-    BOOKING_GET_BY_ID(2011, "Successfully retrieved booking by ID"),
-    BOOKING_CREATED(2012, "Booking created successfully"),
-    BOOKING_UPDATED(2013, "Booking updated successfully"),
-    BOOKING_DELETED(2014, "Booking deleted successfully"),
+    // Booking Successes (2200-2299)
+    BOOKING_CREATED(2200, "success.booking.created"),
+    BOOKING_UPDATED(2201, "success.booking.updated"),
+    BOOKING_DELETED(2202, "success.booking.deleted"),
+    BOOKING_PAGE_FETCHED(2203, "success.booking.page_fetched"),
+    BOOKING_FETCHED_BY_ID(2204, "success.booking.fetched_by_id"),
+    BOOKING_ANSWERED(2205, "success.booking.answered"),
 
-    // Chatbot
-    RETURN_MESSAGE(1000, "Success returning response"),
+    // Chatbot Successes (2300-2399)
+    CHATBOT_RESPONSE_RETURNED(2300, "success.chatbot.response_returned"),
 
-    // Cloudinary Image Upload
-    UPLOAD_IMAGE(1000, "Success uploading image"),
+    // Blog Successes (2400-2499)
+    BLOG_CREATED(2400, "success.blog.created"),
+    BLOG_UPDATED(2401, "success.blog.updated"),
+    BLOG_DELETED(2402, "success.blog.deleted"),
+    BLOG_PAGE_FETCHED(2403, "success.blog.page_fetched"),
+    BLOG_FETCHED_BY_ID(2404, "success.blog.fetched_by_id"),
+    BLOG_FETCHED_BY_SLUG(2405, "success.blog.fetched_by_slug"),
+    BLOG_FETCHED_BY_CATEGORY(2406, "success.blog.fetched_by_category"),
+    MY_BLOG_FETCHED(2407, "success.blog.my_blog_fetched"),
 
-    // Blog
-    BLOG_GET_ALL(2010, "Successfully retrieved blog page"),
-    BLOG_GET_BY_ID(2011, "Successfully retrieved blog by ID"),
-    BLOG_GET_BY_SLUG(2011, "Successfully retrieved blog by slug"),
-    BLOG_GET_BY_CATEGORY(2011, "Successfully retrieved blog by category"),
-    MY_BLOG(2011, "Successfully my blog"),
-    BLOG_CREATED(2012, "Blog created successfully"),
-    BLOG_UPDATED(2013, "Blog updated successfully"),
-    BLOG_DELETED(2014, "Blog deleted successfully"),
+    // Category Successes (2500-2599)
+    CATEGORY_CREATED(2500, "success.category.created"),
+    CATEGORY_UPDATED(2501, "success.category.updated"),
+    CATEGORY_DELETED(2502, "success.category.deleted"),
+    CATEGORY_LIST_FETCHED(2503, "success.category.list_fetched"),
+    CATEGORY_PAGE_FETCHED(2503, "success.category.page_fetched"),
+    CATEGORY_FETCHED_BY_ID(2504, "success.category.fetched_by_id"),
 
-    // Category
-    CATEGORY_LIST_ALL(2010, "Successfully listed all categories"),
-    CATEGORY_GET_ALL(2010, "Successfully retrieved all categories"),
-    CATEGORY_GET_BY_ID(2011, "Successfully retrieved category by ID"),
-    CATEGORY_CREATED(2012, "Category created successfully"),
-    CATEGORY_UPDATED(2013, "Category updated successfully"),
-    CATEGORY_DELETED(2014, "Category deleted successfully"),
+    // Comment Successes (2600-2699)
+    COMMENT_CREATED(2600, "success.comment.created"),
+    COMMENT_UPDATED(2601, "success.comment.updated"),
+    COMMENT_DELETED(2602, "success.comment.deleted"),
+    COMMENT_PAGE_FETCHED(2603, "success.comment.page_fetched"),
+    COMMENT_FETCHED_BY_ID(2604, "success.comment.fetched_by_id"),
+    COMMENT_FETCHED_BY_BLOG(2605, "success.comment.fetched_by_blog"),
 
-    // Comment
-    COMMENT_LIST_ALL(2010, "Successfully listed all comments"),
-    COMMENT_GET_BY_BLOG(2010, "Successfully retrieved all comments by blog"),
-    COMMENT_GET_BY_ID(2011, "Successfully retrieved comment by ID"),
-    COMMENT_CREATED(2012, "Comment created successfully"),
-    COMMENT_UPDATED(2013, "Comment updated successfully"),
-    COMMENT_DELETED(2014, "Comment deleted successfully"),
+    // Notification Successes (2700-2799)
+    NOTIFICATION_SENT(2700, "success.notification.sent"),
+    NOTIFICATION_MARKED_READ(2701, "success.notification.marked_read"),
+    NOTIFICATION_PAGE_FETCHED(2702, "success.notification.page_fetched"),
+    NOTIFICATION_FETCHED_BY_ID(2703, "success.notification.fetched_by_id"),
+    NOTIFICATION_DELETED(2704, "success.notification.deleted"),
+    NOTIFICATION_ALL_DELETED(2705, "success.notification.all_deleted"),
 
-    // Notification
-    NOTIFICATION_SENT(2010, "Successfully sent notification"),
-    MARKED_READ(2010, "Successfully marked notification as read"),
+    // Chat Successes (2800-2899)
+    CHAT_PAGE_FETCHED(2800, "success.chat.page_fetched"),
+    CHAT_FETCHED_BY_ID(2801, "success.chat.fetched_by_id"),
+    CHAT_DELETED(2802, "success.chat.deleted"),
 
-    // Chat
-    CHAT_GET_ALL(1101, "Successfully retrieved all chats"),
-    CHAT_GET_BY_ID(1102, "Successfully retrieved all chats by ID"),
-    CHAT_DELETED(1103, "Successfully deleted chat"),
+    // Streak Successes (2900-2999)
+    STREAK_CREATED(2900, "success.streak.created"),
+    STREAK_UPDATED(2901, "success.streak.updated"),
+    STREAK_DELETED(2902, "success.streak.deleted"),
+    STREAK_PAGE_FETCHED(2903, "success.streak.page_fetched"),
+    STREAK_FETCHED_BY_ID(2904, "success.streak.fetched_by_id"),
+    STREAK_RESET(2905, "success.streak.reset"),
 
-    // Notification
-    NOTIFICATION_GET_ALL(1101, "Successfully retrieved all notifications"),
-    NOTIFICATION_GET_BY_ID(1102, "Successfully retrieved all notifications by ID"),
-    NOTIFICATION_DELETED(1103, "Successfully deleted notification"),
-    ALL_NOTIFICATION_DELETED(1103, "Successfully deleted all notifications associated with the account ID"),
+    // Report Successes (3000-3099)
+    REPORT_SUMMARY_FETCHED(3000, "success.report.summary_fetched"),
 
-    // Streak
-    STREAK_LIST_ALL(2010, "Successfully listed all streaks"),
-    STREAK_GET_BY_ID(2011, "Successfully retrieved streak by ID"),
-    STREAK_CREATED(2012, "Streak created successfully"),
-    STREAK_UPDATED(2013, "Streak updated successfully"),
-    STREAK_DELETED(2014, "Streak deleted successfully"),
-    STREAK_RESET(2015, "Streak reset successfully"),
+    // Goal Successes (3100-3199)
+    GOAL_CREATED(3100, "success.goal.created"),
+    GOAL_UPDATED(3101, "success.goal.updated"),
+    GOAL_DELETED(3102, "success.goal.deleted"),
+    GOAL_PAGE_FETCHED(3103, "success.goal.page_fetched"),
+    GOAL_FETCHED_BY_NAME(3104, "success.goal.fetched_by_name"),
 
-    // Report
-    SUMMARY_GET(3101, "Successfully get summary"),
+    // Feedback Successes (3200-3299)
+    FEEDBACK_CREATED(3200, "success.feedback.created"),
+    FEEDBACK_UPDATED(3201, "success.feedback.updated"),
+    FEEDBACK_DELETED(3202, "success.feedback.deleted"),
+    FEEDBACK_PAGE_FETCHED(3203, "success.feedback.page_fetched"),
+    FEEDBACK_FETCHED_BY_ID(3204, "success.feedback.fetched_by_id"),
+    FEEDBACK_FETCHED_BY_ACCOUNT(3205, "success.feedback.fetched_by_account"),
 
-    // Goal
-    GOAL_GET_ALL(6000, "Successfully retrieved all achievements"),
-    GOAL_GET_BY_NAME(6001, "Successfully retrieved achievement by name"),
-    GOAL_CREATED(6002, "Goal created successfully"),
-    GOAL_UPDATED(6003, "Goal updated successfully"),
-    GOAL_DELETED(6004, "Goal deleted successfully"),
+    // Review Successes (3300-3399)
+    REVIEW_CREATED(3300, "success.review.created"),
+    REVIEW_UPDATED(3301, "success.review.updated"),
+    REVIEW_DELETED(3302, "success.review.deleted"),
+    REVIEW_PAGE_FETCHED(3303, "success.review.page_fetched"),
+    REVIEW_FETCHED_BY_ID(3304, "success.review.fetched_by_id"),
+    REVIEW_FETCHED_BY_ACCOUNT(3305, "success.review.fetched_by_account"),
+    REVIEW_FETCHED_BY_COACH(3306, "success.review.fetched_by_coach"),
 
-    // Feedback
-    FEEDBACK_GET_ALL(7000, "Successfully retrieved all feedback"),
-    FEEDBACK_GET_BY_ID(7001, "Successfully retrieved feedback by ID"),
-    FEEDBACK_GET_BY_ACCOUNT(7002, "Successfully retrieved feedback by account"),
-    FEEDBACK_CREATED(7003, "Feedback created successfully"),
-    FEEDBACK_UPDATED(7004, "Feedback updated successfully"),
-    FEEDBACK_DELETED(7005, "Feedback deleted successfully"),
+    // Timetable Successes (3400-3499)
+    TIMETABLE_CREATED(3400, "success.timetable.created"),
+    TIMETABLE_PAGE_FETCHED(3401, "success.timetable.page_fetched"),
+    TIMETABLE_FETCHED_BY_ID(3402, "success.timetable.fetched_by_id"),
 
-    // Review
-    REVIEW_GET_ALL(8000, "Successfully retrieved all reviews"),
-    REVIEW_GET_BY_ID(8001, "Successfully retrieved review by ID"),
-    REVIEW_GET_BY_ACCOUNT(8002, "Successfully retrieved reviews by account"),
-    REVIEW_GET_BY_COACH(8003, "Successfully retrieved reviews by coach"),
-    REVIEW_CREATED(8004, "Review created successfully"),
-    REVIEW_UPDATED(8005, "Review updated successfully"),
-    REVIEW_DELETED(8006, "Review deleted successfully"),
+    // Setting Successes (3500-3599)
+    SETTING_UPDATED(3500, "success.setting.updated"),
+    SETTING_FETCHED(3501, "success.setting.fetched"),
 
-    // TimeTable
-    TIMETABLE_GET_BY_ID(2313,"Successfully get timetable"),
-    TIMETABLE_CREATED(1232,"Successfully created timetable"),
-    TIMETABLE_GET_ALL(2343,"Successfully return list timetable"),
+    // Stripe Successes (3600-3699)
+    CHECKOUT_SUCCESS(3600, "success.stripe.checkout"),
 
-    // Setting
-    SETTING_UPDATED(1232,"Successfully updated setting"),
-    SETTING_GOTTEN(2343,"Successfully gotten setting"),
-
-    // Stripe
-    CHECKOUT_SUCCESS(1232,"Successfully checkout"),
-
-
+    // Counter Success (3700-3799)
+    COUNTER_STARTED(3700, "success.counter.started"),
+    COUNTER_FETCHED(3701, "success.counter.fetched")
     ;
     int code;
-    String message;
+    String messageLocaleKey;
 }

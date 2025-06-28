@@ -4,11 +4,10 @@ import com.swpteam.smokingcessation.common.ApiResponse;
 import com.swpteam.smokingcessation.common.PageResponse;
 import com.swpteam.smokingcessation.common.PageableRequest;
 import com.swpteam.smokingcessation.constant.SuccessCode;
-import com.swpteam.smokingcessation.domain.dto.record.RecordHabitCreateRequest;
+import com.swpteam.smokingcessation.domain.dto.record.RecordHabitRequest;
 import com.swpteam.smokingcessation.domain.dto.record.RecordHabitResponse;
-import com.swpteam.smokingcessation.domain.dto.record.RecordHabitUpdateRequest;
 import com.swpteam.smokingcessation.service.interfaces.tracking.IRecordHabitService;
-import com.swpteam.smokingcessation.utils.ResponseUtil;
+import com.swpteam.smokingcessation.utils.ResponseUtilService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
@@ -27,13 +26,14 @@ import org.springframework.web.bind.annotation.*;
 public class RecordHabitController {
 
     IRecordHabitService recordService;
+    ResponseUtilService responseUtilService;
 
     @GetMapping
     ResponseEntity<ApiResponse<PageResponse<RecordHabitResponse>>> getMyRecordPage(
             @Valid PageableRequest request
     ) {
-        return ResponseUtil.buildResponse(
-                SuccessCode.RECORD_GET_ALL,
+        return responseUtilService.buildSuccessResponse(
+                SuccessCode.REVIEW_PAGE_FETCHED,
                 recordService.getMyRecordPage(request)
         );
     }
@@ -42,8 +42,8 @@ public class RecordHabitController {
     ResponseEntity<ApiResponse<RecordHabitResponse>> getRecordById(
             @PathVariable String id
     ) {
-        return ResponseUtil.buildResponse(
-                SuccessCode.RECORD_GET_BY_ID,
+        return responseUtilService.buildSuccessResponse(
+                SuccessCode.RECORD_FETCHED_BY_ID,
                 recordService.getRecordById(id)
         );
     }
@@ -53,17 +53,17 @@ public class RecordHabitController {
             @PathVariable String id,
             @Valid PageableRequest request
     ) {
-        return ResponseUtil.buildResponse(
-                SuccessCode.RECORD_GET_BY_ACCOUNT,
+        return responseUtilService.buildSuccessResponse(
+                SuccessCode.RECORD_FETCHED_BY_ACCOUNT,
                 recordService.getRecordPageByAccountId(id, request)
         );
     }
 
     @PostMapping
     ResponseEntity<ApiResponse<RecordHabitResponse>> createRecord(
-            @RequestBody @Valid RecordHabitCreateRequest request
+            @RequestBody @Valid RecordHabitRequest request
     ) {
-        return ResponseUtil.buildResponse(
+        return responseUtilService.buildSuccessResponse(
                 SuccessCode.RECORD_CREATED,
                 recordService.createRecord(request)
         );
@@ -72,22 +72,21 @@ public class RecordHabitController {
     @PutMapping("/{id}")
     ResponseEntity<ApiResponse<RecordHabitResponse>> updateRecord(
             @PathVariable String id,
-            @RequestBody @Valid RecordHabitUpdateRequest request
+            @RequestBody @Valid RecordHabitRequest request
     ) {
-        return ResponseUtil.buildResponse(
+        return responseUtilService.buildSuccessResponse(
                 SuccessCode.RECORD_UPDATED,
                 recordService.updateRecord(id, request)
         );
     }
 
     @DeleteMapping("/{id}")
-    ResponseEntity<ApiResponse<String>> delete(
+    ResponseEntity<ApiResponse<Void>> delete(
             @PathVariable String id
     ) {
         recordService.softDeleteRecordById(id);
-        return ResponseUtil.buildResponse(
-                SuccessCode.RECORD_DELETED,
-                null
+        return responseUtilService.buildSuccessResponse(
+                SuccessCode.RECORD_DELETED
         );
     }
 

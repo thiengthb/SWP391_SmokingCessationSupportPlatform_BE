@@ -1,14 +1,13 @@
 package com.swpteam.smokingcessation.config;
 
 import com.swpteam.smokingcessation.constant.App;
-import com.swpteam.smokingcessation.domain.entity.Account;
-import com.swpteam.smokingcessation.domain.entity.Category;
+import com.swpteam.smokingcessation.domain.entity.*;
 import com.swpteam.smokingcessation.domain.enums.AccountStatus;
 import com.swpteam.smokingcessation.domain.enums.AuthProvider;
 import com.swpteam.smokingcessation.repository.AccountRepository;
 import com.swpteam.smokingcessation.domain.enums.Role;
-import com.swpteam.smokingcessation.domain.entity.Setting;
 import com.swpteam.smokingcessation.repository.CategoryRepository;
+import com.swpteam.smokingcessation.service.interfaces.tracking.IStreakService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -39,6 +38,8 @@ public class ApplicationInitConfig {
 
     AccountRepository accountRepository;
     CategoryRepository categoryRepository;
+
+    IStreakService streakService;
 
     @Bean
     @ConditionalOnProperty(
@@ -81,8 +82,27 @@ public class ApplicationInitConfig {
                 .status(AccountStatus.ONLINE)
                 .build();
 
+        switch (role){
+            case MEMBER -> {
+                Member member = new Member();
+                member.setAccount(account);
+                account.setMember(member);
+            }
+            case COACH -> {
+                Coach coach = new Coach();
+                coach.setAccount(account);
+                account.setCoach(coach);
+            }
+            default -> {
+
+            }
+        }
         account.setSetting(Setting.getDefaultSetting(account));
+        if (account.getRole().equals(Role.MEMBER)) {
+            account.setScore(Score.getDefaultScore(account));
+        }
         accountRepository.save(account);
+        streakService.createStreak(account.getId(), 0);
 
         log.info("An {} account has been created with email: {}, default password: {}. Please change the password immediately.", role.name().toLowerCase(), email, password);
     }
