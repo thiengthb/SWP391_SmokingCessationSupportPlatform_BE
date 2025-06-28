@@ -3,8 +3,7 @@ package com.swpteam.smokingcessation.service.impl.identity;
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import com.nimbusds.jwt.SignedJWT;
 import com.swpteam.smokingcessation.domain.dto.auth.request.*;
-import com.swpteam.smokingcessation.domain.entity.Account;
-import com.swpteam.smokingcessation.domain.entity.Member;
+import com.swpteam.smokingcessation.domain.entity.*;
 import com.swpteam.smokingcessation.domain.enums.AuthProvider;
 import com.swpteam.smokingcessation.domain.mapper.AccountMapper;
 import com.swpteam.smokingcessation.integration.google.GoogleTokenVerifier;
@@ -15,9 +14,7 @@ import com.swpteam.smokingcessation.domain.enums.AccountStatus;
 import com.swpteam.smokingcessation.domain.enums.Role;
 import com.swpteam.smokingcessation.domain.dto.auth.response.AuthenticationResponse;
 import com.swpteam.smokingcessation.repository.MemberRepository;
-import com.swpteam.smokingcessation.domain.entity.Setting;
 import com.swpteam.smokingcessation.constant.ErrorCode;
-import com.swpteam.smokingcessation.domain.entity.RefreshToken;
 import com.swpteam.smokingcessation.exception.AppException;
 import com.swpteam.smokingcessation.security.UserPrincipal;
 import com.swpteam.smokingcessation.service.interfaces.identity.IAccountService;
@@ -143,6 +140,7 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
         account.setRole(Role.MEMBER);
         account.setStatus(AccountStatus.ONLINE);
         account.setSetting(Setting.getDefaultSetting(account));
+        account.setScore(Score.getDefaultScore(account));
 
         Member member = new Member();
         member.setAccount(account);

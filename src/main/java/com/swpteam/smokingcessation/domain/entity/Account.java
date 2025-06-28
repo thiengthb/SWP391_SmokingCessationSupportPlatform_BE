@@ -100,6 +100,10 @@ public class Account extends AuditableEntity {
     Setting setting;
 
     @JsonIgnore
+    @OneToOne(mappedBy = "account", cascade = CascadeType.ALL)
+    Score score;
+
+    @JsonIgnore
     @Builder.Default
     @OneToMany(mappedBy = "account", cascade = CascadeType.ALL, orphanRemoval = true)
     List<Subscription> subscriptions = new ArrayList<>();

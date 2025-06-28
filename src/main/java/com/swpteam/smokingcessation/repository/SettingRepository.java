@@ -26,6 +26,12 @@ public interface SettingRepository extends JpaRepository<Setting, String> {
 
     List<Setting> findAllByIsDeletedFalse();
 
+    @Query("""
+                SELECT s FROM Setting s
+                WHERE s.account.role NOT IN ('ADMIN', 'COACH')
+            """)
+    List<Setting> findAllWhereAccountNotAdminOrCoach();
+
     Optional<Setting> findByIdAndIsDeletedFalse(String id);
 
     Optional<Setting> findByAccountIdAndIsDeletedFalse(String accountId);

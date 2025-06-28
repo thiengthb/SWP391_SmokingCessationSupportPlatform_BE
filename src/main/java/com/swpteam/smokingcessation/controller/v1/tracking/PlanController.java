@@ -26,9 +26,7 @@ public class PlanController {
     IPlanService planService;
 
     @GetMapping("/my-current-plan")
-    ResponseEntity<ApiResponse<PlanResponse>> getPlanById(
-            @PathVariable String id
-    ) {
+    ResponseEntity<ApiResponse<PlanResponse>> getPlanById() {
         return ResponseUtil.buildSuccessResponse(
                 SuccessCode.PLAN_GET_BY_ID,
                 planService.getMyCurrentPlan()

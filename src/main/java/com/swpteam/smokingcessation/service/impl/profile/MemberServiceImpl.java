@@ -17,11 +17,15 @@ import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
+@Slf4j
 @RequiredArgsConstructor
 @Service
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
@@ -96,6 +100,19 @@ public class MemberServiceImpl implements IMemberService {
         }
 
         return member;
+    }
+
+    @Override
+    public List<Member> findAllMember() {
+        List<Member> members = memberRepository.findAllByIsDeletedFalse();
+        if (members.isEmpty()) {
+            log.warn("no member found");
+            throw new AppException(ErrorCode.MEMBER_NOT_FOUND);
+        }
+        log.info("found {} member", members.size());
+        return members;
+
+
     }
 
 }

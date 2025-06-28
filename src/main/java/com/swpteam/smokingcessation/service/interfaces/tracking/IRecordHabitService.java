@@ -6,7 +6,9 @@ import com.swpteam.smokingcessation.domain.dto.record.RecordHabitCreateRequest;
 import com.swpteam.smokingcessation.domain.dto.record.RecordHabitResponse;
 import com.swpteam.smokingcessation.domain.dto.record.RecordHabitUpdateRequest;
 import com.swpteam.smokingcessation.domain.entity.RecordHabit;
-import org.springframework.data.domain.Page;
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Optional;
 
 public interface IRecordHabitService {
 
@@ -24,4 +26,11 @@ public interface IRecordHabitService {
 
     RecordHabit findRecordByIdOrThrowError(String id);
 
+    List<RecordHabit> findAllByAccountIdAndDateBetweenAndIsDeletedFalse(String accountId, LocalDate start, LocalDate end);
+
+    Optional<RecordHabit> getRecordByDate(String accountId, LocalDate date);
+
+    Optional<RecordHabit> getLatestRecordBeforeDate(String accountId, LocalDate date);
+
+    List<RecordHabit> getAllRecordNoSmoke(String accountId);
 }

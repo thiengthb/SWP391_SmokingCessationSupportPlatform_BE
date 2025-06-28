@@ -9,11 +9,13 @@ import com.swpteam.smokingcessation.domain.dto.record.RecordHabitUpdateRequest;
 import com.swpteam.smokingcessation.domain.entity.Account;
 import com.swpteam.smokingcessation.domain.entity.RecordHabit;
 import com.swpteam.smokingcessation.domain.entity.Streak;
+import com.swpteam.smokingcessation.domain.enums.ScoreRule;
 import com.swpteam.smokingcessation.domain.mapper.RecordHabitMapper;
 import com.swpteam.smokingcessation.exception.AppException;
 import com.swpteam.smokingcessation.repository.RecordHabitRepository;
 import com.swpteam.smokingcessation.repository.StreakRepository;
 import com.swpteam.smokingcessation.service.interfaces.identity.IAccountService;
+import com.swpteam.smokingcessation.service.interfaces.profile.IScoreService;
 import com.swpteam.smokingcessation.service.interfaces.tracking.IRecordHabitService;
 import com.swpteam.smokingcessation.service.interfaces.tracking.IStreakService;
 import com.swpteam.smokingcessation.utils.AuthUtilService;
@@ -27,6 +29,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Optional;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -39,6 +45,7 @@ public class RecordHabitServiceImpl implements IRecordHabitService {
     IStreakService streakService;
     IAccountService accountService;
     AuthUtilService authUtilService;
+    IScoreService scoreService;
 
     @Override
     public PageResponse<RecordHabitResponse> getMyRecordPage(PageableRequest request) {
@@ -73,7 +80,6 @@ public class RecordHabitServiceImpl implements IRecordHabitService {
     @Transactional
     public RecordHabitResponse createRecord(RecordHabitCreateRequest request) {
         Account curentAccount = authUtilService.getCurrentAccountOrThrowError();
-
         boolean existed = recordHabitRepository
                 .existsByAccountIdAndDateAndIsDeletedFalse(curentAccount.getId(), request.date());
         if (existed) {
@@ -87,7 +93,7 @@ public class RecordHabitServiceImpl implements IRecordHabitService {
                 .orElseGet(() -> streakService.createStreak(curentAccount.getId(), 0));
 
         streakService.updateStreak(curentAccount.getId(), streak.getNumber() + 1);
-
+        scoreService.updateScore(curentAccount.getId(), ScoreRule.REPORT_DAY_HAS);
         return recordHabitMapper.toResponse(recordHabitRepository.save(recordHabit));
     }
 
@@ -132,6 +138,30 @@ public class RecordHabitServiceImpl implements IRecordHabitService {
         }
 
         return recordHabit;
+    }
+
+    @Override
+    public List<RecordHabit> findAllByAccountIdAndDateBetweenAndIsDeletedFalse(String accountId, LocalDate start, LocalDate end) {
+        return recordHabitRepository.findAllByAccountIdAndDateBetweenAndIsDeletedFalse(accountId, start, end)
+                .orElseThrow(() -> new AppException(ErrorCode.RECORD_NOT_FOUND));
+    }
+
+    @Override
+    public Optional<RecordHabit> getRecordByDate(String accountId, LocalDate date) {
+        return recordHabitRepository.findByAccountIdAndDate(accountId, date);
+
+    }
+
+    @Override
+    public Optional<RecordHabit> getLatestRecordBeforeDate(String accountId, LocalDate date) {
+        return recordHabitRepository.findTopByAccountIdAndDateLessThanOrderByDateDesc(accountId, date);
+    }
+
+    @Override
+    public List<RecordHabit> getAllRecordNoSmoke(String accountId) {
+        List<RecordHabit> recordHabits = recordHabitRepository.findAllByAccountIdWithNoCigarettesSmoked(accountId);
+        log.info("list record with record 0 smoke {}", recordHabits.size());
+        return recordHabits;
     }
 
 }

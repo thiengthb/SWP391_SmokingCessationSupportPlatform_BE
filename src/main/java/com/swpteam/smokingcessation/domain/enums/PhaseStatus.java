@@ -4,5 +4,7 @@ public enum PhaseStatus {
     ACTIVE,
     INACTIVE,
     CANCELLED,
+    FAILED,
+    SUCCESS,
     COMPLETED
 }

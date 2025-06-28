@@ -98,6 +98,9 @@ public class ApplicationInitConfig {
             }
         }
         account.setSetting(Setting.getDefaultSetting(account));
+        if (account.getRole().equals(Role.MEMBER)) {
+            account.setScore(Score.getDefaultScore(account));
+        }
         accountRepository.save(account);
         streakService.createStreak(account.getId(), 0);
 

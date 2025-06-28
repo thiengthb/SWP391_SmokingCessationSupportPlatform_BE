@@ -1,6 +1,9 @@
 package com.swpteam.smokingcessation.integration.mail;
 
 import com.swpteam.smokingcessation.constant.ErrorCode;
+import com.swpteam.smokingcessation.domain.dto.phase.PhaseResponse;
+import com.swpteam.smokingcessation.domain.dto.plan.PlanResponse;
+import com.swpteam.smokingcessation.domain.dto.report.PlanSummaryResponse;
 import com.swpteam.smokingcessation.domain.dto.booking.BookingRequest;
 import com.swpteam.smokingcessation.domain.dto.report.ReportSummaryResponse;
 import com.swpteam.smokingcessation.domain.entity.Account;
@@ -26,6 +29,7 @@ import org.thymeleaf.spring6.SpringTemplateEngine;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 
@@ -138,6 +142,35 @@ public class MailServiceImpl implements IMailService {
     }
 
     @Override
+    public void sendPhaseSummary(String to, PhaseResponse phaseResponse) {
+        buildAndSendMail(
+                "Phase Summary Report",
+                to,
+                "phase-summary-template", // Tên file template thymeleaf bạn sẽ tạo sau
+                List.of(
+                        Map.entry("phase", phaseResponse.getPhase()),
+                        Map.entry("phaseName", phaseResponse.getPhaseName()),
+                        Map.entry("startDate", phaseResponse.getStartDate()),
+                        Map.entry("endDate", phaseResponse.getEndDate()),
+                        Map.entry("successRate", String.format("%.2f%%", phaseResponse.getSuccessRate())),
+                        Map.entry("phaseResult", phaseResponse.getPhaseStatus())
+                )
+        );
+        log.info("Phase summary mail sent to {}", to);
+    }
+
+    @Override
+    public void sendPlanSummary(String to, PlanResponse planResponse) {
+        buildAndSendMail(
+                "Plan Summary Report",
+                to,
+                "plan-summary-template",
+                List.of(
+
+                )
+        );
+    }
+
     public void sendBookingRequestEmail(String to, BookingRequest request, String username, String coachName, String bookingLink) {
         LocalDateTime startedAt = DateTimeUtil.reformat(request.startedAt());
         LocalDateTime endedAt = DateTimeUtil.reformat(request.endedAt());

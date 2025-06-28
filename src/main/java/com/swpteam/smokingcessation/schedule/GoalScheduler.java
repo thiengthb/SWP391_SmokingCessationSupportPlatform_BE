@@ -2,9 +2,11 @@ package com.swpteam.smokingcessation.schedule;
 
 import com.swpteam.smokingcessation.domain.entity.Account;
 import com.swpteam.smokingcessation.domain.entity.Goal;
+import com.swpteam.smokingcessation.domain.enums.ScoreRule;
 import com.swpteam.smokingcessation.repository.AccountRepository;
 import com.swpteam.smokingcessation.repository.GoalRepository;
 import com.swpteam.smokingcessation.service.impl.profile.GoalProgressServiceImpl;
+import com.swpteam.smokingcessation.service.impl.tracking.ScoreServiceImpl;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -24,6 +26,7 @@ public class GoalScheduler {
     GoalRepository goalRepository;
     AccountRepository accountRepository;
     GoalProgressServiceImpl goalProgressService;
+    ScoreServiceImpl scoreService;
 
     @Transactional
     @Scheduled(cron = "0 0 22 * * *")
@@ -38,6 +41,8 @@ public class GoalScheduler {
                 boolean completed = goalProgressService.checkGoalForAccount(goal, account);
                 if (completed) {
                     goalProgressService.markAsCompleted(goal, account);
+                    log.info("achievement score earn:");
+                    scoreService.updateScore(account.getId(), ScoreRule.ACHIEVEMENT_EARNED);
                 }
             }
         }
