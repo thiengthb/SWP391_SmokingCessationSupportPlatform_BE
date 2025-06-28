@@ -34,7 +34,7 @@ public class CommentController {
             @PathVariable String id,
             @Valid PageableRequest request
     ) {
-        return ResponseUtil.buildResponse(
+        return ResponseUtil.buildSuccessResponse(
                 SuccessCode.COMMENT_GET_BY_BLOG,
                 commentService.getCommentsByBlogId(id, request)
         );
@@ -44,7 +44,7 @@ public class CommentController {
     ResponseEntity<ApiResponse<PageResponse<CommentResponse>>> getCommentPage(
             @Valid PageableRequest request
     ) {
-        return ResponseUtil.buildResponse(
+        return ResponseUtil.buildSuccessResponse(
                 SuccessCode.COMMENT_LIST_ALL,
                 commentService.getCommentPage(request)
         );
@@ -54,7 +54,7 @@ public class CommentController {
     ResponseEntity<ApiResponse<CommentResponse>> getCommentById(
             @PathVariable String id
     ) {
-        return ResponseUtil.buildResponse(
+        return ResponseUtil.buildSuccessResponse(
                 SuccessCode.COMMENT_GET_BY_ID,
                 commentService.getCommentById(id)
         );
@@ -64,7 +64,7 @@ public class CommentController {
     ResponseEntity<ApiResponse<CommentResponse>> createSubscription(
             @RequestBody @Valid CommentCreateRequest request
     ) {
-        return ResponseUtil.buildResponse(
+        return ResponseUtil.buildSuccessResponse(
                 SuccessCode.COMMENT_CREATED,
                 commentService.createComment(request)
         );
@@ -74,7 +74,7 @@ public class CommentController {
     ResponseEntity<ApiResponse<CommentResponse>> createSubscription(
             @RequestBody @Valid CommentReplyRequest request
     ) {
-        return ResponseUtil.buildResponse(
+        return ResponseUtil.buildSuccessResponse(
                 SuccessCode.COMMENT_CREATED,
                 commentService.replyComment(request)
         );
@@ -85,7 +85,7 @@ public class CommentController {
             @PathVariable String id,
             @RequestBody @Valid CommentUpdateRequest request
     ) {
-        return ResponseUtil.buildResponse(
+        return ResponseUtil.buildSuccessResponse(
                 SuccessCode.COMMENT_UPDATED,
                 commentService.updateComment(id, request)
         );
@@ -96,7 +96,7 @@ public class CommentController {
             @PathVariable String id
     ) {
         commentService.deleteCommentById(id);
-        return ResponseUtil.buildResponse(
+        return ResponseUtil.buildSuccessResponse(
                 SuccessCode.COMMENT_DELETED,
                 null
         );

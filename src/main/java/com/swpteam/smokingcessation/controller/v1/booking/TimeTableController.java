@@ -31,7 +31,7 @@ public class TimeTableController {
     ResponseEntity<ApiResponse<PageResponse<TimeTableResponse>>> getTimeTablePage(
             @Valid PageableRequest request
     ) {
-        return ResponseUtil.buildResponse(
+        return ResponseUtil.buildSuccessResponse(
                 SuccessCode.TIMETABLE_GET_ALL,
                 timeTableService.getTimeTablePage(request)
         );
@@ -41,7 +41,7 @@ public class TimeTableController {
     ResponseEntity<ApiResponse<TimeTableResponse>> getTimeTableById(
             @PathVariable String id
     ) {
-        return ResponseUtil.buildResponse(
+        return ResponseUtil.buildSuccessResponse(
                 SuccessCode.TIMETABLE_GET_BY_ID,
                 timeTableService.getTimeTableById(id)
         );
@@ -51,7 +51,7 @@ public class TimeTableController {
     ResponseEntity<ApiResponse<PageResponse<TimeTableResponse>>> getTimeTablesByCoachId(
             @PathVariable String coachId, @Valid PageableRequest request
     ) {
-        return ResponseUtil.buildResponse(
+        return ResponseUtil.buildSuccessResponse(
                 SuccessCode.TIMETABLE_GET_ALL,
                 timeTableService.getTimeTablesByCoachId(coachId, request)
         );
@@ -61,7 +61,7 @@ public class TimeTableController {
     ResponseEntity<ApiResponse<TimeTableResponse>> createTimeTable(
             @Valid @RequestBody TimeTableRequest request
     ) {
-        return ResponseUtil.buildResponse(
+        return ResponseUtil.buildSuccessResponse(
                 SuccessCode.TIMETABLE_CREATED,
                 timeTableService.createTimeTable(request)
         );

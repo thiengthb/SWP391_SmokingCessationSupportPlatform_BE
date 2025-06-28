@@ -1,13 +1,15 @@
 package com.swpteam.smokingcessation.integration.mail;
 
 import com.swpteam.smokingcessation.constant.ErrorCode;
+import com.swpteam.smokingcessation.domain.dto.booking.BookingRequest;
 import com.swpteam.smokingcessation.domain.dto.report.ReportSummaryResponse;
 import com.swpteam.smokingcessation.domain.entity.Account;
 import com.swpteam.smokingcessation.domain.entity.Message;
 import com.swpteam.smokingcessation.domain.entity.Subscription;
 import com.swpteam.smokingcessation.exception.AppException;
-import com.swpteam.smokingcessation.repository.AccountRepository;
-import com.swpteam.smokingcessation.repository.SubscriptionRepository;
+import com.swpteam.smokingcessation.service.interfaces.identity.IAccountService;
+import com.swpteam.smokingcessation.service.interfaces.membership.ISubscriptionService;
+import com.swpteam.smokingcessation.utils.DateTimeUtil;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.AccessLevel;
@@ -22,8 +24,10 @@ import org.springframework.stereotype.Service;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring6.SpringTemplateEngine;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @Service
@@ -34,135 +38,150 @@ public class MailServiceImpl implements IMailService {
     JavaMailSender mailSender;
     SpringTemplateEngine templateEngine;
 
-    AccountRepository accountRepository;
-    SubscriptionRepository subscriptionRepository;
+    IAccountService accountService;
+    ISubscriptionService subscriptionService;
 
     @NonFinal
     @Value("${spring.mail.username}")
     String hostEmail;
 
+    public void sendVerificationEmail(String to, String username, String verificationLink) {
+        buildAndSendMail(
+                "Verify Email",
+                to,
+                "motivation-template",
+                List.of(
+                        Map.entry("username", username),
+                        Map.entry("verificationLink", verificationLink)
+                )
+        );
+        log.info("Verification email sent to {}", to);
+    }
+
     @Override
-    public void sendPaymentSuccessEmail(String accountId, String subscriptionId, double amount) {
-        Account account = accountRepository.findById(accountId)
-                .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FOUND));
+    public void sendPaymentSuccessEmail(String to, String subscriptionId, double amount) {
 
-        Subscription subscription = subscriptionRepository.findByIdAndIsDeletedFalse(subscriptionId)
-                .orElseThrow(() -> new AppException(ErrorCode.SUBSCRIPTION_NOT_FOUND));
+        Account account = accountService.findAccountByEmailOrThrowError(to);
+        Subscription subscription = subscriptionService.findSubscriptionByIdOrThrowError(subscriptionId);
 
-        try {
-            MimeMessage message = mailSender.createMimeMessage();
-            MimeMessageHelper helper = new MimeMessageHelper(message, MimeMessageHelper.MULTIPART_MODE_MIXED_RELATED, "UTF-8");
+        LocalDate startDate = DateTimeUtil.reformat(subscription.getStartDate());
+        LocalDate endDate = DateTimeUtil.reformat(subscription.getEndDate());
 
-            Context context = new Context();
-            context.setVariable("username", account.getUsername() != null ? account.getUsername() : "User");
-            context.setVariable("amount", String.format("%.2f", amount / 100.0));
-            context.setVariable("startDate", subscription.getStartDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
-            context.setVariable("endDate", subscription.getEndDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd")));
-
-            String html = templateEngine.process("payment-success", context);
-
-            helper.setTo(account.getEmail());
-            helper.setSubject("Payment Successful - Subscription ID " + subscription.getId());
-            helper.setText(html, true);
-            helper.setFrom(hostEmail);
-
-            mailSender.send(message);
-
-        } catch (MessagingException e) {
-            log.error(e.getMessage());
-            e.printStackTrace();
-            throw new AppException(ErrorCode.UNCATEGORIZED_EXCEPTION);
-        }
+        buildAndSendMail(
+                "Payment Successful for Subscription ID " + subscription.getId(),
+                account.getEmail(),
+                "motivation-template",
+                List.of(
+                        Map.entry("username", account.getUsername()),
+                        Map.entry("amount", String.format("%.2f", amount / 100.0)),
+                        Map.entry("startDate", startDate),
+                        Map.entry("endDate", endDate)
+                )
+        );
+        log.info("Payment success mail sent to {}", to);
     }
 
     @Override
     public void sendMotivationMail(String to, Message message) {
-        try {
-            MimeMessage mimeMessage = mailSender.createMimeMessage();
-            MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
-
-            Context context = new Context();
-            String content = message.getContent();
-            context.setVariable("quote", content);
-            context.setVariable("sendTime", LocalDateTime.now());
-
-            String htmlContent = templateEngine.process("motivation-template", context);
-            helper.setText(htmlContent, true); // true chỉ định nội dung là HTML
-            helper.setSubject("💪 Daily Motivation");
-            helper.setTo(to);
-
-            mailSender.send(mimeMessage);
-        } catch (MessagingException e) {
-            log.error(e.getMessage());
-            e.printStackTrace();
-            throw new AppException(ErrorCode.UNCATEGORIZED_EXCEPTION);
-        }
+        buildAndSendMail(
+                "💪 Daily Motivation",
+                to,
+                "motivation-template",
+                List.of(
+                        Map.entry("quote", message.getContent()),
+                        Map.entry("sendTime", LocalDateTime.now())
+                )
+        );
+        log.info("Motivation mail sent to {}", to);
     }
 
     @Override
     public void sendReminderMail(String to) {
-        try {
-            MimeMessage mimeMessage = mailSender.createMimeMessage();
-            MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
-
-            Context context = new Context();
-            context.setVariable("deadline", LocalDateTime.now().plusMinutes(30));
-            context.setVariable("sendTime", LocalDateTime.now());
-            String htmlContent = templateEngine.process("reminder-template", context);
-
-            helper.setText(htmlContent, true);
-            helper.setSubject("⏰ Friendly Reminder");
-            helper.setTo(to);
-
-            mailSender.send(mimeMessage);
-        } catch (MessagingException e) {
-            log.error(e.getMessage());
-            e.printStackTrace();
-            throw new AppException(ErrorCode.UNCATEGORIZED_EXCEPTION);
-        }
+        buildAndSendMail(
+                "⏰ Friendly Reminder",
+                to,
+                "reminder-template",
+                List.of(
+                        Map.entry("deadline", LocalDateTime.now().plusMinutes(30)),
+                        Map.entry("resetLink", LocalDateTime.now())
+                )
+        );
+        log.info("Reminder mail sent to {}", to);
     }
 
     @Override
-    public void sendResetPasswordEmail(String to, String resetLink, String userName) throws MessagingException {
-        // Prepare the Thymeleaf context
-        Context context = new Context();
-        context.setVariable("userName", userName);
-        context.setVariable("resetLink", resetLink);
-        context.setVariable("expirationTime", "15 minutes");
-
-        // Generate the email content using Thymeleaf
-        String htmlContent = templateEngine.process("reset-mail-template", context);
-
-        // Create and send the email
-        MimeMessage mimeMessage = mailSender.createMimeMessage();
-        MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
-        helper.setTo(to);
-        helper.setSubject("Password Reset Request");
-        helper.setText(htmlContent, true); // true indicates HTML content
-
-        mailSender.send(mimeMessage);
+    public void sendResetPasswordEmail(String to, String resetLink, String username) {
+        buildAndSendMail(
+                "Reset password",
+                to,
+                "reset-mail-template",
+                List.of(
+                        Map.entry("userName", username),
+                        Map.entry("resetLink", resetLink),
+                        Map.entry("expirationTime", "15 minutes")
+                )
+        );
+        log.info("Reset password mail sent to {}", to);
     }
 
     @Override
     public void sendReportEmail(String to, ReportSummaryResponse report) {
-        Context context = new Context();
-        context.setVariable("report", report);
+        buildAndSendMail(
+                "Monthly performance report",
+                to,
+                "monthly-report-email",
+                List.of(
+                        Map.entry("report", report)
+                )
+        );
+        log.info("Report mail sent to {}", to);
+    }
 
-        String htmlContent = templateEngine.process("monthly-report-email", context);
+    @Override
+    public void sendBookingRequestEmail(String to, BookingRequest request, String username, String coachName, String bookingLink) {
+        LocalDateTime startedAt = DateTimeUtil.reformat(request.startedAt());
+        LocalDateTime endedAt = DateTimeUtil.reformat(request.endedAt());
+        buildAndSendMail("New Booking Request",
+                to,
+                "coach-booking-request",
+                List.of(
+                        Map.entry("startedAt", startedAt),
+                        Map.entry("endedAt", endedAt),
+                        Map.entry("memberName", username),
+                        Map.entry("bookingLink", bookingLink),
+                        Map.entry("coachName", coachName)
+                ));
+    }
+
+    private void buildAndSendMail(
+            String title,
+            String to,
+            String templateName,
+            List<Map.Entry<String, Object>> contextVariables
+    ) {
+
+        Context context = new Context();
+        for (Map.Entry<String, Object> entry : contextVariables) {
+            context.setVariable(entry.getKey(), entry.getValue());
+        }
+        String htmlContent = templateEngine.process(templateName, context);
 
         try {
             MimeMessage mimeMessage = mailSender.createMimeMessage();
             MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
+
             helper.setTo(to);
-            helper.setSubject("Monthly performance report");
+            helper.setSubject(title);
             helper.setText(htmlContent, true);
+            helper.setFrom(hostEmail);
 
             mailSender.send(mimeMessage);
-        } catch (MessagingException e) {
-            e.printStackTrace();
+        } catch (MessagingException exception) {
+            log.error(exception.getMessage());
             throw new AppException(ErrorCode.EMAIL_SEND_FAILED);
         }
     }
+
 }
 
 

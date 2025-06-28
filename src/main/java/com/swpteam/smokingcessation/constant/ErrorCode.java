@@ -14,6 +14,10 @@ public enum ErrorCode {
 
     UNCATEGORIZED_EXCEPTION(9999, "Uncategorized error", HttpStatus.INTERNAL_SERVER_ERROR),
     INVALID_MESSAGE_KEY(9999, "Invalid message key", HttpStatus.BAD_REQUEST),
+    ENTITY_NOT_FOUND(400, "Entity Not Found", HttpStatus.NOT_FOUND),
+    SECURITY_EXCEPTION(401, "Security Exception", HttpStatus.UNAUTHORIZED),
+    INVALID_BODY(400, "Malformed or missing request body", HttpStatus.BAD_REQUEST),
+    MESSAGE_EXCEPTION(400, "Message exception", HttpStatus.INTERNAL_SERVER_ERROR),
 
     // Common
     ACCOUNT_REQUIRED(1000, "Account is required", HttpStatus.BAD_REQUEST),
@@ -127,7 +131,7 @@ public enum ErrorCode {
     RECORD_ALREADY_EXISTS(5005, "Record for this date already exists", HttpStatus.BAD_REQUEST),
 
     // Currency
-    CURRENCY_RATE_ERROR(8000, "Error while updating currency rates", HttpStatus.BAD_REQUEST),
+    CURRENCY_RATE_ERROR(8000, "Error while updating currency rates", HttpStatus.INTERNAL_SERVER_ERROR),
     INVALID_CURRENCY(8000, "Invalid currency", HttpStatus.BAD_REQUEST),
 
     // Transaction
@@ -182,7 +186,7 @@ public enum ErrorCode {
     
     // Booking
     BOOKING_NOT_FOUND(1000, "Booking not found", HttpStatus.BAD_REQUEST),
-    COACH_ACCOUNT_ID_REQUIRED(1003, "Coach account ID is required", HttpStatus.BAD_REQUEST),
+    COACH_ID_REQUIRED(1003, "Coach account ID is required", HttpStatus.BAD_REQUEST),
     MEET_LINK_REQUIRED(1004, "Meet link is required", HttpStatus.BAD_REQUEST),
     MEET_LINK_TOO_LONG(1005, "Meet link is too long", HttpStatus.BAD_REQUEST),
     STARTED_AT_REQUIRED(1006, "Started at is required", HttpStatus.BAD_REQUEST),
@@ -192,6 +196,10 @@ public enum ErrorCode {
     IS_APPROVED_REQUIRED(1010, "Approval status is required", HttpStatus.BAD_REQUEST),
     BOOKING_OUT_OF_WORKING_TIME(3213,"Out of coach working time",HttpStatus.BAD_REQUEST),
     BOOKING_TIME_CONFLICT(4123,"Booking time conflict",HttpStatus.BAD_REQUEST),
+    DECLINE_REASON_REQUIRED(1011, "The reason for decline is required", HttpStatus.BAD_REQUEST),
+    DECLINE_REASON_NOT_ALLOWED(1012, "The reason for decline have to be empty if accepting", HttpStatus.BAD_REQUEST),
+    BOOKING_ALREADY_PROCESSED(1013, "The booking request has already been processed", HttpStatus.BAD_REQUEST),
+    BOOKING_DECISION_REQUIRED(1014, "The decision for booking request is required", HttpStatus.BAD_REQUEST),
 
     // Category
     CATEGORY_NAME_REQUIRED(4000, "Category name must not be blank", HttpStatus.BAD_REQUEST),

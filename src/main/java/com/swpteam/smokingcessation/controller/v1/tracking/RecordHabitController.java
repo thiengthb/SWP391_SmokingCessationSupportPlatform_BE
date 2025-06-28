@@ -32,7 +32,7 @@ public class RecordHabitController {
     ResponseEntity<ApiResponse<PageResponse<RecordHabitResponse>>> getMyRecordPage(
             @Valid PageableRequest request
     ) {
-        return ResponseUtil.buildResponse(
+        return ResponseUtil.buildSuccessResponse(
                 SuccessCode.RECORD_GET_ALL,
                 recordService.getMyRecordPage(request)
         );
@@ -42,7 +42,7 @@ public class RecordHabitController {
     ResponseEntity<ApiResponse<RecordHabitResponse>> getRecordById(
             @PathVariable String id
     ) {
-        return ResponseUtil.buildResponse(
+        return ResponseUtil.buildSuccessResponse(
                 SuccessCode.RECORD_GET_BY_ID,
                 recordService.getRecordById(id)
         );
@@ -53,7 +53,7 @@ public class RecordHabitController {
             @PathVariable String id,
             @Valid PageableRequest request
     ) {
-        return ResponseUtil.buildResponse(
+        return ResponseUtil.buildSuccessResponse(
                 SuccessCode.RECORD_GET_BY_ACCOUNT,
                 recordService.getRecordPageByAccountId(id, request)
         );
@@ -63,7 +63,7 @@ public class RecordHabitController {
     ResponseEntity<ApiResponse<RecordHabitResponse>> createRecord(
             @RequestBody @Valid RecordHabitCreateRequest request
     ) {
-        return ResponseUtil.buildResponse(
+        return ResponseUtil.buildSuccessResponse(
                 SuccessCode.RECORD_CREATED,
                 recordService.createRecord(request)
         );
@@ -74,7 +74,7 @@ public class RecordHabitController {
             @PathVariable String id,
             @RequestBody @Valid RecordHabitUpdateRequest request
     ) {
-        return ResponseUtil.buildResponse(
+        return ResponseUtil.buildSuccessResponse(
                 SuccessCode.RECORD_UPDATED,
                 recordService.updateRecord(id, request)
         );
@@ -85,7 +85,7 @@ public class RecordHabitController {
             @PathVariable String id
     ) {
         recordService.softDeleteRecordById(id);
-        return ResponseUtil.buildResponse(
+        return ResponseUtil.buildSuccessResponse(
                 SuccessCode.RECORD_DELETED,
                 null
         );

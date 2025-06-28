@@ -2,20 +2,20 @@ package com.swpteam.smokingcessation.service.impl.identity;
 
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import com.swpteam.smokingcessation.common.PageResponse;
+import com.swpteam.smokingcessation.common.PageableRequest;
+import com.swpteam.smokingcessation.constant.ErrorCode;
 import com.swpteam.smokingcessation.domain.dto.account.AccountRequest;
 import com.swpteam.smokingcessation.domain.dto.account.AccountResponse;
 import com.swpteam.smokingcessation.domain.dto.account.AccountUpdateRequest;
 import com.swpteam.smokingcessation.domain.dto.account.ChangePasswordRequest;
+import com.swpteam.smokingcessation.domain.entity.Account;
+import com.swpteam.smokingcessation.domain.entity.Setting;
 import com.swpteam.smokingcessation.domain.enums.AccountStatus;
 import com.swpteam.smokingcessation.domain.enums.AuthProvider;
 import com.swpteam.smokingcessation.domain.enums.Role;
 import com.swpteam.smokingcessation.domain.mapper.AccountMapper;
-import com.swpteam.smokingcessation.repository.AccountRepository;
-import com.swpteam.smokingcessation.domain.entity.Setting;
-import com.swpteam.smokingcessation.common.PageableRequest;
-import com.swpteam.smokingcessation.constant.ErrorCode;
-import com.swpteam.smokingcessation.domain.entity.Account;
 import com.swpteam.smokingcessation.exception.AppException;
+import com.swpteam.smokingcessation.repository.AccountRepository;
 import com.swpteam.smokingcessation.service.interfaces.identity.IAccountService;
 import com.swpteam.smokingcessation.service.interfaces.profile.IGoalProgressService;
 import com.swpteam.smokingcessation.utils.AuthUtilService;
@@ -47,28 +47,32 @@ public class AccountServiceImpl implements IAccountService {
     IGoalProgressService goalProgressService;
 
     @Override
-    @Transactional
-    public void updateStatus(String accountId, AccountStatus status) {
-        Account account = findAccountByIdOrThrowError(accountId);
+    @PreAuthorize("hasRole('ADMIN')")
+    public PageResponse<AccountResponse> getAccountsPage(PageableRequest request) {
+        ValidationUtil.checkFieldExist(Account.class, request.sortBy());
 
-        account.setStatus(AccountStatus.ONLINE);
-        accountRepository.save(account);
+        Pageable pageable = PageableRequest.getPageable(request);
+        Page<Account> accounts = accountRepository.findAllByIsDeletedFalse(pageable);
+
+        return new PageResponse<>(accounts.map(accountMapper::toResponse));
     }
 
     @Override
-    @Transactional
-    public void changePassword(String accountId, String newPassword) {
-        Account account = findAccountByIdOrThrowError(accountId);
+    @PreAuthorize("hasRole('ADMIN')")
+    public AccountResponse getAccountById(String id) {
+        return accountMapper.toResponse(findAccountByIdOrThrowError(id));
+    }
 
-        account.setPassword(passwordEncoder.encode(newPassword));
-        accountRepository.save(account);
+    @Override
+    public AccountResponse getCurrentAccount() {
+        return accountMapper.toResponse(authUtilService.getCurrentAccountOrThrowError());
     }
 
     @Override
     @Transactional
     @PreAuthorize("hasRole('ADMIN')")
     public AccountResponse createAccount(AccountRequest request) {
-        checkExistByEmail(request.email());
+        checkExistByEmailOrThrowError(request.email());
         checkExistByPhoneNumber(request.phoneNumber());
 
         Account account = accountMapper.toEntity(request);
@@ -98,29 +102,6 @@ public class AccountServiceImpl implements IAccountService {
                 });
     }
 
-
-    @Override
-    @PreAuthorize("hasRole('ADMIN')")
-    public PageResponse<AccountResponse> getAccountsPage(PageableRequest request) {
-        ValidationUtil.checkFieldExist(Account.class, request.sortBy());
-
-        Pageable pageable = PageableRequest.getPageable(request);
-        Page<Account> accounts = accountRepository.findAllByIsDeletedFalse(pageable);
-
-        return new PageResponse<>(accounts.map(accountMapper::toResponse));
-    }
-
-    @Override
-    @PreAuthorize("hasRole('ADMIN')")
-    public AccountResponse getAccountById(String id) {
-        return accountMapper.toResponse(findAccountByIdOrThrowError(id));
-    }
-
-    @Override
-    public AccountResponse getCurrentAccount() {
-        return accountMapper.toResponse(authUtilService.getCurrentAccountOrThrowError());
-    }
-
     @Override
     @Transactional
     @PreAuthorize("hasRole('ADMIN')")
@@ -147,12 +128,10 @@ public class AccountServiceImpl implements IAccountService {
 
     @Override
     @Transactional
-    @PreAuthorize("hasRole('ADMIN')")
-    public void deleteAccount(String id) {
-        Account account = findAccountByIdOrThrowError(id);
+    public void updateStatus(String accountId, AccountStatus status) {
+        Account account = findAccountByIdOrThrowError(accountId);
 
-        account.setDeleted(true);
-
+        account.setStatus(AccountStatus.ONLINE);
         accountRepository.save(account);
     }
 
@@ -169,6 +148,27 @@ public class AccountServiceImpl implements IAccountService {
         accountRepository.save(currentAccount);
 
         return accountMapper.toResponse(currentAccount);
+    }
+
+    @Override
+    @Transactional
+    public void changePassword(String accountId, String newPassword) {
+        Account account = findAccountByIdOrThrowError(accountId);
+
+        account.setPassword(passwordEncoder.encode(newPassword));
+
+        accountRepository.save(account);
+    }
+
+    @Override
+    @Transactional
+    @PreAuthorize("hasRole('ADMIN')")
+    public void deleteAccount(String id) {
+        Account account = findAccountByIdOrThrowError(id);
+
+        account.setDeleted(true);
+
+        accountRepository.save(account);
     }
 
     @Override
@@ -198,13 +198,7 @@ public class AccountServiceImpl implements IAccountService {
     }
 
     @Override
-    public Account findAccountByUsernameOrThrowError(String username) {
-        return accountRepository.findByUsernameAndIsDeletedFalse(username)
-                .orElseThrow(() -> new AppException(ErrorCode.ACCOUNT_NOT_FOUND));
-    }
-
-    @Override
-    public void checkExistByEmail(String email) {
+    public void checkExistByEmailOrThrowError(String email) {
         if (accountRepository.existsByEmail(email))
             throw new AppException(ErrorCode.EMAIL_EXISTED);
     }

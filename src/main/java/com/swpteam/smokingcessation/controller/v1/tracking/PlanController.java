@@ -29,7 +29,7 @@ public class PlanController {
     ResponseEntity<ApiResponse<PlanResponse>> getPlanById(
             @PathVariable String id
     ) {
-        return ResponseUtil.buildResponse(
+        return ResponseUtil.buildSuccessResponse(
                 SuccessCode.PLAN_GET_BY_ID,
                 planService.getMyCurrentPlan()
         );
@@ -39,7 +39,7 @@ public class PlanController {
     public ResponseEntity<ApiResponse<PlanResponse>> getPlanTemplate(
             @RequestParam int ftndScore
     ) {
-        return ResponseUtil.buildResponse(
+        return ResponseUtil.buildSuccessResponse(
                 SuccessCode.PLAN_TEMPLATE_GET,
                 planService.generatePlanByFtndScore(ftndScore)
         );
@@ -49,7 +49,7 @@ public class PlanController {
     ResponseEntity<ApiResponse<PlanResponse>> createPlan(
             @Valid @RequestBody PlanRequest request
     ) {
-        return ResponseUtil.buildResponse(
+        return ResponseUtil.buildSuccessResponse(
                 SuccessCode.PLAN_CREATED,
                 planService.createPlan(request)
         );
@@ -60,7 +60,7 @@ public class PlanController {
             @PathVariable String id,
             @Valid @RequestBody PlanRequest request
     ) {
-        return ResponseUtil.buildResponse(
+        return ResponseUtil.buildSuccessResponse(
                 SuccessCode.PLAN_UPDATED,
                 planService.updatePlanById(id, request)
         );
@@ -71,7 +71,7 @@ public class PlanController {
             @PathVariable String id
     ) {
         planService.softDeletePlanById(id);
-        return ResponseUtil.buildResponse(
+        return ResponseUtil.buildSuccessResponse(
                 SuccessCode.PLAN_DELETED,
                 null
         );

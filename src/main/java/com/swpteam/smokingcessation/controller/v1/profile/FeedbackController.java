@@ -31,7 +31,7 @@ public class FeedbackController {
     @GetMapping
     ResponseEntity<ApiResponse<PageResponse<FeedbackResponse>>> getFeedbackPage(@Valid PageableRequest request
     ) {
-        return ResponseUtil.buildResponse(
+        return ResponseUtil.buildSuccessResponse(
                 SuccessCode.FEEDBACK_GET_ALL,
                 feedbackService.getFeedbackPage(request)
         );
@@ -41,7 +41,7 @@ public class FeedbackController {
     ResponseEntity<ApiResponse<FeedbackResponse>> getFeedbackById(
             @PathVariable String id
     ) {
-        return ResponseUtil.buildResponse(
+        return ResponseUtil.buildSuccessResponse(
                 SuccessCode.FEEDBACK_GET_BY_ID,
                 feedbackService.getFeedbackById(id)
         );
@@ -52,7 +52,7 @@ public class FeedbackController {
             @PathVariable String id,
             @Valid PageableRequest request
     ) {
-        return ResponseUtil.buildResponse(
+        return ResponseUtil.buildSuccessResponse(
                 SuccessCode.FEEDBACK_GET_BY_ACCOUNT,
                 feedbackService.getFeedbackPageByAccountId(id, request)
         );
@@ -62,7 +62,7 @@ public class FeedbackController {
     ResponseEntity<ApiResponse<FeedbackResponse>> createFeedback(
             @RequestBody @Valid FeedbackRequest request
     ) {
-        return ResponseUtil.buildResponse(
+        return ResponseUtil.buildSuccessResponse(
                 SuccessCode.FEEDBACK_CREATED,
                 feedbackService.createFeedback(request)
         );
@@ -73,7 +73,7 @@ public class FeedbackController {
             @PathVariable String id,
             @RequestBody @Valid FeedbackRequest request
     ) {
-        return ResponseUtil.buildResponse(
+        return ResponseUtil.buildSuccessResponse(
                 SuccessCode.FEEDBACK_UPDATED,
                 feedbackService.updateFeedback(id, request)
         );
@@ -82,7 +82,7 @@ public class FeedbackController {
     @DeleteMapping("/{id}")
     ResponseEntity<ApiResponse<String>> deleteFeedbackById(@PathVariable String id) {
         feedbackService.softDeleteFeedbackById(id);
-        return ResponseUtil.buildResponse(
+        return ResponseUtil.buildSuccessResponse(
                 SuccessCode.FEEDBACK_DELETED,
                 null
         );

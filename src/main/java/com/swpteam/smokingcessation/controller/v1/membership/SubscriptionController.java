@@ -31,7 +31,7 @@ public class SubscriptionController {
     ResponseEntity<ApiResponse<PageResponse<SubscriptionResponse>>> getSubscriptionPage(
             @Valid PageableRequest request
     ) {
-        return ResponseUtil.buildResponse(
+        return ResponseUtil.buildSuccessResponse(
                 SuccessCode.SUBSCRIPTION_GET_ALL,
                 subscriptionService.getSubscriptionPage(request)
         );
@@ -41,7 +41,7 @@ public class SubscriptionController {
     ResponseEntity<ApiResponse<SubscriptionResponse>> getSubscriptionById(
             @PathVariable String id
     ) {
-        return ResponseUtil.buildResponse(
+        return ResponseUtil.buildSuccessResponse(
                 SuccessCode.SUBSCRIPTION_GET_BY_ID,
                 subscriptionService.getSubscriptionById(id)
         );
@@ -52,7 +52,7 @@ public class SubscriptionController {
             @PathVariable String id,
             @Valid PageableRequest request
     ) {
-        return ResponseUtil.buildResponse(
+        return ResponseUtil.buildSuccessResponse(
                 SuccessCode.SUBSCRIPTION_GET_BY_ACCOUNT,
                 subscriptionService.getSubscriptionPageByAccountId(id, request)
         );
@@ -62,7 +62,7 @@ public class SubscriptionController {
     ResponseEntity<ApiResponse<SubscriptionResponse>> createSubscription(
             @RequestBody @Valid SubscriptionRequest request
     ) {
-        return ResponseUtil.buildResponse(
+        return ResponseUtil.buildSuccessResponse(
                 SuccessCode.SUBSCRIPTION_CREATED,
                 subscriptionService.createSubscription(request)
         );
@@ -73,7 +73,7 @@ public class SubscriptionController {
             @PathVariable String id,
             @RequestBody @Valid SubscriptionRequest request
     ) {
-        return ResponseUtil.buildResponse(
+        return ResponseUtil.buildSuccessResponse(
                 SuccessCode.SUBSCRIPTION_UPDATED,
                 subscriptionService.updateSubscription(id, request)
         );
@@ -84,7 +84,7 @@ public class SubscriptionController {
             @PathVariable String id
     ) {
         subscriptionService.softDeleteSubscription(id);
-        return ResponseUtil.buildResponse(
+        return ResponseUtil.buildSuccessResponse(
                 SuccessCode.SUBSCRIPTION_DELETED,
                 null
         );

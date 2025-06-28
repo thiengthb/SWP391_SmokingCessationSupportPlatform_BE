@@ -5,6 +5,7 @@ import com.swpteam.smokingcessation.domain.enums.BookingStatus;
 import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
+
 import java.time.LocalDateTime;
 
 @EqualsAndHashCode(callSuper = true)
@@ -30,4 +31,6 @@ public class Booking extends AuditableEntity {
 
     @Enumerated(EnumType.STRING)
     BookingStatus status;
+
+    String declineReason;
 }

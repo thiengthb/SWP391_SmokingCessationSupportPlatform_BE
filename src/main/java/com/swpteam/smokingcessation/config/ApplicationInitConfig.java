@@ -1,14 +1,11 @@
 package com.swpteam.smokingcessation.config;
 
 import com.swpteam.smokingcessation.constant.App;
-import com.swpteam.smokingcessation.domain.entity.Account;
-import com.swpteam.smokingcessation.domain.entity.Category;
-import com.swpteam.smokingcessation.domain.entity.Streak;
+import com.swpteam.smokingcessation.domain.entity.*;
 import com.swpteam.smokingcessation.domain.enums.AccountStatus;
 import com.swpteam.smokingcessation.domain.enums.AuthProvider;
 import com.swpteam.smokingcessation.repository.AccountRepository;
 import com.swpteam.smokingcessation.domain.enums.Role;
-import com.swpteam.smokingcessation.domain.entity.Setting;
 import com.swpteam.smokingcessation.repository.CategoryRepository;
 import com.swpteam.smokingcessation.service.interfaces.tracking.IStreakService;
 import lombok.AccessLevel;
@@ -85,6 +82,21 @@ public class ApplicationInitConfig {
                 .status(AccountStatus.ONLINE)
                 .build();
 
+        switch (role){
+            case MEMBER -> {
+                Member member = new Member();
+                member.setAccount(account);
+                account.setMember(member);
+            }
+            case COACH -> {
+                Coach coach = new Coach();
+                coach.setAccount(account);
+                account.setCoach(coach);
+            }
+            default -> {
+
+            }
+        }
         account.setSetting(Setting.getDefaultSetting(account));
         accountRepository.save(account);
         streakService.createStreak(account.getId(), 0);

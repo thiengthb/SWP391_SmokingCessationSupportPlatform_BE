@@ -26,7 +26,7 @@ public class ChatRestController {
     ResponseEntity<ApiResponse<PageResponse<ChatRestResponse>>> getChats(
             @Valid PageableRequest request
     ) {
-        return ResponseUtil.buildResponse(
+        return ResponseUtil.buildSuccessResponse(
                 SuccessCode.CHAT_GET_ALL,
                 chatService.getChats(request)
         );
@@ -37,7 +37,7 @@ public class ChatRestController {
             @PathVariable String accountId,
             @Valid PageableRequest request
     ) {
-        return ResponseUtil.buildResponse(
+        return ResponseUtil.buildSuccessResponse(
                 SuccessCode.CHAT_GET_BY_ID,
                 chatService.getChatsById(accountId, request)
         );
@@ -48,7 +48,7 @@ public class ChatRestController {
             @PathVariable String id
     ) {
         chatService.softDeleteChat(id);
-        return ResponseUtil.buildResponse(
+        return ResponseUtil.buildSuccessResponse(
                 SuccessCode.CHAT_DELETED,
                 null
         );

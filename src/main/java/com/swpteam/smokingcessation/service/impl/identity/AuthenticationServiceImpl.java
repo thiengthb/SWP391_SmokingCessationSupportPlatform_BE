@@ -26,7 +26,6 @@ import com.swpteam.smokingcessation.service.interfaces.identity.ITokenService;
 import com.swpteam.smokingcessation.service.interfaces.profile.IGoalProgressService;
 import com.swpteam.smokingcessation.utils.JwtUtil;
 import com.swpteam.smokingcessation.utils.RandomUtil;
-import jakarta.mail.MessagingException;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -39,7 +38,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.reactive.function.client.WebClient;
 
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
@@ -132,7 +130,7 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
     @Override
     @Transactional
     public AuthenticationResponse register(@NotNull RegisterRequest request) {
-        accountService.checkExistByEmail(request.email());
+        accountService.checkExistByEmailOrThrowError(request.email());
 
         if (!request.password().equals(request.confirmPassword())) {
             throw new AppException(ErrorCode.PASSWORD_MISMATCH);
@@ -182,12 +180,7 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
         String token = tokenService.generateResetEmailToken(account);
         String link = FRONTEND_DOMAIN + "/reset-password?token=" + token;
 
-        try {
-            mailService.sendResetPasswordEmail(email, link, account.getEmail());
-        } catch (MessagingException e) {
-            log.error("Send email failed", e);
-            throw new AppException(ErrorCode.EMAIL_SEND_FAILED);
-        }
+        mailService.sendResetPasswordEmail(email, link, account.getEmail());
     }
 
     @Override

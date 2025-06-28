@@ -99,6 +99,7 @@ public enum SuccessCode {
     BOOKING_CREATED(2012, "Booking created successfully"),
     BOOKING_UPDATED(2013, "Booking updated successfully"),
     BOOKING_DELETED(2014, "Booking deleted successfully"),
+    BOOKING_ANSWERED(2015, "Booking answered successfully"),
 
     // Chatbot
     RETURN_MESSAGE(1000, "Success returning response"),

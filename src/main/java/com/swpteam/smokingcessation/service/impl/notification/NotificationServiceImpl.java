@@ -7,6 +7,7 @@ import com.swpteam.smokingcessation.domain.dto.notification.NotificationRequest;
 import com.swpteam.smokingcessation.domain.dto.notification.NotificationResponse;
 import com.swpteam.smokingcessation.domain.entity.Account;
 import com.swpteam.smokingcessation.domain.entity.Notification;
+import com.swpteam.smokingcessation.domain.enums.NotificationType;
 import com.swpteam.smokingcessation.domain.mapper.NotificationMapper;
 import com.swpteam.smokingcessation.exception.AppException;
 import com.swpteam.smokingcessation.repository.NotificationRepository;
@@ -17,6 +18,7 @@ import com.swpteam.smokingcessation.utils.ValidationUtil;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
@@ -29,6 +31,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 
+@Slf4j
 @RequiredArgsConstructor
 @Service
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
@@ -62,8 +65,18 @@ public class NotificationServiceImpl implements INotificationService {
         if (request.accountId() == null) {
             simpMessagingTemplate.convertAndSend("/topic/notifications/", response);
         } else {
+            log.info("Notification sent to topic: /topic/notifications/{}", request.accountId());
             simpMessagingTemplate.convertAndSend("/topic/notifications/" + request.accountId(), response);
         }
+    }
+
+    @Override
+    public void sendBookingNotification(String username, String coachId) {
+        NotificationRequest request = new NotificationRequest(
+                coachId,
+                "You have a new booking from " + username,
+                NotificationType.LIVE);
+        sendNotification(request);
     }
 
     @Override

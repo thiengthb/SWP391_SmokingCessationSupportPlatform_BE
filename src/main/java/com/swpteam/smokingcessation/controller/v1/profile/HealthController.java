@@ -32,7 +32,7 @@ public class HealthController {
     ResponseEntity<ApiResponse<PageResponse<HealthResponse>>> getHealthPage(
             @Valid PageableRequest request
     ) {
-        return ResponseUtil.buildResponse(
+        return ResponseUtil.buildSuccessResponse(
                 SuccessCode.HEALTH_GET_ALL,
                 healthService.getHealthPage(request)
         );
@@ -42,7 +42,7 @@ public class HealthController {
     ResponseEntity<ApiResponse<HealthResponse>> getHealthById(
             @PathVariable String id
     ) {
-        return ResponseUtil.buildResponse(
+        return ResponseUtil.buildSuccessResponse(
                 SuccessCode.HEALTH_GET_BY_ID,
                 healthService.getHealthById(id)
         );
@@ -53,7 +53,7 @@ public class HealthController {
             @PathVariable String id,
             @Valid PageableRequest request
     ) {
-        return ResponseUtil.buildResponse(
+        return ResponseUtil.buildSuccessResponse(
                 SuccessCode.HEALTH_GET_BY_ACCOUNT,
                 healthService.getHealthPageByAccountId(id, request)
         );
@@ -63,7 +63,7 @@ public class HealthController {
     ResponseEntity<ApiResponse<HealthResponse>> createHealth(
             @RequestBody @Valid HealthCreateRequest request
     ) {
-        return ResponseUtil.buildResponse(
+        return ResponseUtil.buildSuccessResponse(
                 SuccessCode.HEALTH_CREATED,
                 healthService.createHealth(request)
         );
@@ -74,7 +74,7 @@ public class HealthController {
             @PathVariable String id,
             @RequestBody @Valid HealthUpdateRequest request
     ) {
-        return ResponseUtil.buildResponse(
+        return ResponseUtil.buildSuccessResponse(
                 SuccessCode.HEALTH_UPDATED,
                 healthService.updateHealth(id, request)
         );
@@ -85,7 +85,7 @@ public class HealthController {
             @PathVariable String id
     ) {
         healthService.softDeleteHealthById(id);
-        return ResponseUtil.buildResponse(
+        return ResponseUtil.buildSuccessResponse(
                 SuccessCode.HEALTH_DELETED,
                 null
         );
