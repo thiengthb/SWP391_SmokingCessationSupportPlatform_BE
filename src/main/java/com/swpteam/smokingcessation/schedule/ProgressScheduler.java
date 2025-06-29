@@ -1,7 +1,9 @@
 package com.swpteam.smokingcessation.schedule;
 
-import com.swpteam.smokingcessation.domain.entity.*;
-import com.swpteam.smokingcessation.domain.enums.TrackingMode;
+import com.swpteam.smokingcessation.domain.entity.Health;
+import com.swpteam.smokingcessation.domain.entity.Member;
+import com.swpteam.smokingcessation.domain.entity.RecordHabit;
+import com.swpteam.smokingcessation.domain.entity.Setting;
 import com.swpteam.smokingcessation.repository.SettingRepository;
 import com.swpteam.smokingcessation.service.interfaces.profile.IHealthService;
 import com.swpteam.smokingcessation.service.interfaces.tracking.IRecordHabitService;
@@ -29,44 +31,52 @@ public class ProgressScheduler {
     IRecordHabitService recordHabitService;
 
     @Transactional
-    @Scheduled(cron = "0 * * * * *")
-    public void calculateProgress(){
+    @Scheduled(cron = "* */30 * * * *")
+    public void calculateProgress() {
         List<Setting> settings = settingRepository.findAllByIsDeletedFalse();
+
+        for (Setting setting : settings) {
+
+            Member member = setting.getAccount().getMember();
+
+            Health health = healthService.findLatestHealthByAccountIdOrNull(setting.getAccount().getId());
+            if (health == null) {
+                continue;
+            }
+
+            switch (setting.getTrackingMode()) {
+                case DAILY_RECORD -> progressDailyRecord(setting, member, health);
+                case AUTO_COUNT -> progressAutoCount(member, health);
+            }
+        }
+    }
+
+    private void progressDailyRecord(Setting setting, Member member, Health health) {
         LocalDate today = LocalDate.now();
         LocalDateTime now = LocalDateTime.now();
 
-        for(Setting setting : settings){
-            Health health = healthService.findLatestHealthByAccountIdOrNull(setting.getAccount().getId());
-            if(health == null){
-                continue;
-            }
-            Member member = setting.getAccount().getMember();
+        LocalTime deadline = setting.getReportDeadline();
+        LocalDateTime deadlineDateTime = LocalDateTime.of(today, deadline);
 
-            LocalTime deadline = setting.getReportDeadline();
-            LocalDateTime deadlineDateTime = LocalDateTime.of(today, deadline);
+        if (now.isBefore(deadlineDateTime)) return;
 
-            if(setting.getTrackingMode().equals(TrackingMode.DAILY_RECORD)){
-                if(!recordHabitService.checkHabitRecordExistence(member.getId(), today)){
-                    continue;
-                }
-                if(now.isAfter(deadlineDateTime)){
-                    RecordHabit recordHabit = recordHabitService.findRecordByDateOrNull(member.getId(), today);
-                    if(recordHabit == null){
-                        continue;
-                    }
-                    int avoidedCigarettes = health.getCigarettesPerDay() - recordHabit.getCigarettesSmoked();
-                    double moneySaved = avoidedCigarettes * (health.getPackPrice() / health.getCigarettesPerPack());
-
-                    member.setCigarettesAvoided(member.getCigarettesAvoided() + avoidedCigarettes);
-                    member.setMoneySaved(member.getMoneySaved() + moneySaved);
-                    continue;
-                }
-            }
-            double avoidedCigarettes = (double) health.getCigarettesPerDay() / 24;
-            double moneySaved = avoidedCigarettes * (health.getPackPrice() / health.getCigarettesPerPack());
-
-            member.setCigarettesAvoided(member.getCigarettesAvoided() + avoidedCigarettes);
-            member.setMoneySaved(member.getMoneySaved() + moneySaved);
+        if (!recordHabitService.checkHabitRecordExistence(member.getId(), today)) {
+            return;
         }
+        RecordHabit recordHabit = recordHabitService.findRecordByDateOrNull(member.getId(), today);
+
+        int avoidedCigarettes = health.getCigarettesPerDay() - recordHabit.getCigarettesSmoked();
+        double moneySaved = avoidedCigarettes * (health.getPackPrice() / health.getCigarettesPerPack());
+
+        member.setCigarettesAvoided(member.getCigarettesAvoided() + avoidedCigarettes);
+        member.setMoneySaved(member.getMoneySaved() + moneySaved);
+    }
+
+    private void progressAutoCount(Member member, Health health) {
+        double avoidedCigarettes = (double) health.getCigarettesPerDay() / 24;
+        double moneySaved = avoidedCigarettes * (health.getPackPrice() / health.getCigarettesPerPack());
+
+        member.setCigarettesAvoided(member.getCigarettesAvoided() + avoidedCigarettes);
+        member.setMoneySaved(member.getMoneySaved() + moneySaved);
     }
 }
