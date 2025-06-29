@@ -156,61 +156,55 @@ public class PlanServiceImpl implements IPlanService {
 
     @Override
     @PreAuthorize("hasRole('MEMBER')")
-    @CachePut(value = "PLAN_CACHE", key = "#ftndScore")
-    public PlanResponse generatePlanByFtndScore(int ftndScore) {
-        if (ftndScore < 0 || ftndScore > 10) {
-            throw new AppException(ErrorCode.FTND_SCORE_INVALID);
-        }
-
-        // Map FTND to planName key
-        String planName = mapFtndScoreToPlanName(ftndScore);
-
+    @CachePut(value = "PLAN_CACHE", key = "'ALL'")
+    public List<PlanResponse> generateAllPlans() {
         // Load all templates
         List<PlanTemplateResponse> templates = FileLoaderUtil.loadPlanTemplate("quitplan/template-plan.json");
 
-        // Find the selected plan by name
-        PlanTemplateResponse selectedPlan = templates.stream()
-                .filter(t -> t.getPlanName().equalsIgnoreCase(planName))
-                .findFirst()
-                .orElseThrow(() -> new AppException(ErrorCode.PLAN_NOT_FOUND));
+        List<PlanResponse> planResponses = new ArrayList<>();
 
-        LocalDate planStartDate = LocalDate.now();
-        LocalDate currentPhaseStartDate = planStartDate;
-        List<PhaseResponse> phases = new ArrayList<>();
+        for (PlanTemplateResponse template : templates) {
+            LocalDate planStartDate = LocalDate.now();
+            LocalDate currentPhaseStartDate = planStartDate;
+            List<PhaseResponse> phases = new ArrayList<>();
 
-        for (PhaseTemplateResponse phase : selectedPlan.getPlan()) {
-            LocalDate phaseEndDate = currentPhaseStartDate.plusDays(phase.getDuration() - 1);
+            for (PhaseTemplateResponse phase : template.getPlan()) {
+                LocalDate phaseEndDate = currentPhaseStartDate.plusDays(phase.getDuration() - 1);
 
-            // Localize each tip
-            List<TipResponse> tipResponses = phase.getTips().stream()
-                    .map(tipContent -> TipResponse.builder()
-                            .content(messageSourceService.getLocalizeMessage(tipContent))
-                            .build())
-                    .toList();
+                List<TipResponse> tipResponses = phase.getTips().stream()
+                        .map(tipContent -> TipResponse.builder()
+                                .content(messageSourceService.getLocalizeMessage(tipContent))
+                                .build())
+                        .toList();
 
-            PhaseResponse response = PhaseResponse.builder()
-                    .phase(phase.getPhase())
-                    .phaseName(messageSourceService.getLocalizeMessage(phase.getPhaseName()))
-                    .cigaretteBound(phase.getCigaretteBound())
-                    .startDate(currentPhaseStartDate)
-                    .endDate(phaseEndDate)
-                    .description(messageSourceService.getLocalizeMessage(phase.getDescription()))
-                    .tips(tipResponses)
+                PhaseResponse response = PhaseResponse.builder()
+                        .phase(phase.getPhase())
+                        .phaseName(messageSourceService.getLocalizeMessage(phase.getPhaseName()))
+                        .cigaretteBound(phase.getCigaretteBound())
+                        .startDate(currentPhaseStartDate)
+                        .endDate(phaseEndDate)
+                        .description(messageSourceService.getLocalizeMessage(phase.getDescription()))
+                        .tips(tipResponses)
+                        .build();
+
+                phases.add(response);
+                currentPhaseStartDate = phaseEndDate.plusDays(1);
+            }
+
+            LocalDate planEndDate = phases.getLast().getEndDate();
+
+            PlanResponse planResponse = PlanResponse.builder()
+                    .planName(messageSourceService.getLocalizeMessage(template.getPlanName()))
+                    .description(messageSourceService.getLocalizeMessage(template.getDescription()))
+                    .startDate(planStartDate)
+                    .endDate(planEndDate)
+                    .phases(phases)
                     .build();
 
-            phases.add(response);
-            currentPhaseStartDate = phaseEndDate.plusDays(1);
+            planResponses.add(planResponse);
         }
 
-        LocalDate planEndDate = phases.getLast().getEndDate();
-
-        return PlanResponse.builder()
-                .planName(messageSourceService.getLocalizeMessage(selectedPlan.getPlanName()))
-                .description(messageSourceService.getLocalizeMessage(selectedPlan.getDescription()))
-                .startDate(planStartDate)
-                .endDate(planEndDate)
-                .phases(phases)
-                .build();
+        return planResponses;
     }
 
 
@@ -240,14 +234,6 @@ public class PlanServiceImpl implements IPlanService {
         }
 
         return plan;
-    }
-
-    private String mapFtndScoreToPlanName(int ftndScore) {
-        if (ftndScore <= 2) return "plan.superfast.name";
-        if (ftndScore <= 4) return "plan.fast.name";
-        if (ftndScore <= 6) return "plan.standard.name";
-        if (ftndScore <= 8) return "plan.positive.name";
-        return "plan.longterm.name";
     }
 
     private void validatePhaseDates(List<PhaseRequest> phases) {
