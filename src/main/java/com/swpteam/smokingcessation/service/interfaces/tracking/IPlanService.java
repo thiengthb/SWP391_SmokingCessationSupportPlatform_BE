@@ -24,7 +24,7 @@ public interface IPlanService {
 
     PlanResponse updatePlanById(String id, PlanRequest request);
 
-    PlanResponse generatePlanByFtndScore(int ftndScore);
+    List<PlanResponse> generateAllPlans();
 
     Plan findPlanByIdOrThrowError(String id);
 

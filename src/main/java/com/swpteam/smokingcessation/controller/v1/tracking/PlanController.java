@@ -15,6 +15,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @Slf4j
 @RestController
 @RequestMapping("/api/v1/plans")
@@ -33,16 +35,15 @@ public class PlanController {
                 planService.getMyCurrentPlan()
         );
     }
-    
+
     @GetMapping("/template")
-    public ResponseEntity<ApiResponse<PlanResponse>> getPlanTemplate(
-            @RequestParam int ftndScore
-    ) {
+    public ResponseEntity<ApiResponse<List<PlanResponse>>> getPlanTemplate() {
         return responseUtilService.buildSuccessResponse(
                 SuccessCode.PLAN_TEMPLATE_FETCHED,
-                planService.generatePlanByFtndScore(ftndScore)
+                planService.generateAllPlans()
         );
     }
+
 
     @PostMapping
     ResponseEntity<ApiResponse<PlanResponse>> createPlan(

@@ -1,5 +1,6 @@
 package com.swpteam.smokingcessation.integration.mail;
 
+import com.swpteam.smokingcessation.domain.dto.contact.ContactRequest;
 import com.swpteam.smokingcessation.domain.dto.phase.PhaseResponse;
 import com.swpteam.smokingcessation.domain.dto.plan.PlanResponse;
 import com.swpteam.smokingcessation.domain.dto.report.PlanSummaryResponse;
@@ -25,6 +26,8 @@ public interface IMailService {
     void sendPhaseSummary(String to, PhaseResponse phaseResponse);
 
     void sendPlanSummary(String to, PlanResponse planResponse);
-  
+
     void sendBookingRequestEmail(String to, BookingRequest request, String username, String coachName, String bookingLink);
+
+    void sendContactMail(ContactRequest request);
 }
