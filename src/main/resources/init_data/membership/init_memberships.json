@@ -1,0 +1,34 @@
+[
+  {
+    "name": "membership.free.name",
+    "price": 0,
+    "currency": "membership.currency",
+    "durationDays": -1,
+    "isHighlighted": false,
+    "description": "membership.free.description"
+  },
+  {
+    "name": "membership.monthly.name",
+    "price": "membership.monthly.price",
+    "currency": "membership.currency",
+    "durationDays": 30,
+    "isHighlighted": false,
+    "description": "membership.monthly.description"
+  },
+  {
+    "name": "membership.quarterly.name",
+    "price": "membership.quarterly.price",
+    "currency": "membership.currency",
+    "durationDays": 90,
+    "isHighlighted": true,
+    "description": "membership.quarterly.description"
+  },
+  {
+    "name": "membership.yearly.name",
+    "price": "membership.yearly.price",
+    "currency": "membership.currency",
+    "durationDays": 365,
+    "isHighlighted": false,
+    "description": "membership.yearly.description"
+  }
+]

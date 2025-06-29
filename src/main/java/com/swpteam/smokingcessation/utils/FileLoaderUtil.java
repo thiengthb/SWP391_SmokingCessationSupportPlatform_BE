@@ -2,6 +2,7 @@ package com.swpteam.smokingcessation.utils;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.swpteam.smokingcessation.domain.dto.membership.MembershipInitDTO;
 import com.swpteam.smokingcessation.domain.dto.plan.PlanTemplateResponse;
 import com.swpteam.smokingcessation.domain.dto.plan.PlanTemplateWrapper;
 import lombok.experimental.UtilityClass;
@@ -53,6 +54,14 @@ public class FileLoaderUtil {
         catch (IOException e) {
             log.error("Failed to load plan template from: {}", path, e);
             throw new RuntimeException("Unable to load plan template", e);
+        }
+    }
+
+    public List<MembershipInitDTO> loadMemberships(String path) {
+        try (InputStream inputStream = new ClassPathResource(path).getInputStream()) {
+            return objectMapper.readValue(inputStream, new TypeReference<>() {});
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to load memberships", e);
         }
     }
 
