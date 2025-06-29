@@ -245,7 +245,7 @@ public class PlanServiceImpl implements IPlanService {
             if (!phase.endDate().isAfter(phase.startDate())) {
                 throw new AppException(ErrorCode.INVALID_PHASE_DATE);
             }
-            long days = phase.startDate().until(phase.endDate()).getDays() + 1; // tính cả ngày bắt đầu
+            long days = ChronoUnit.DAYS.between(phase.startDate(), phase.endDate()) + 1;
             if (days < 7) {
                 throw new AppException(ErrorCode.PHASE_DURATION_TOO_SHORT);
             }
@@ -259,9 +259,8 @@ public class PlanServiceImpl implements IPlanService {
                 throw new AppException(ErrorCode.NEW_PHASE_CONFLICT);
             }
         }
-        LocalDate planStart = phases.getFirst().startDate();
-        LocalDate planEnd = phases.getLast().endDate();
-        long totalDays = planStart.until(planEnd).getDays() + 1;
+
+        long totalDays = ChronoUnit.DAYS.between(phases.getFirst().startDate(), phases.getLast().endDate()) + 1;
 
         if (totalDays < 14) {
             throw new AppException(ErrorCode.INVALID_PLAN_DURATION);
