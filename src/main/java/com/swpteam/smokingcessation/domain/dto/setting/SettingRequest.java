@@ -4,7 +4,6 @@ import com.swpteam.smokingcessation.domain.enums.Language;
 import com.swpteam.smokingcessation.domain.enums.MotivationFrequency;
 import com.swpteam.smokingcessation.domain.enums.Theme;
 import com.swpteam.smokingcessation.domain.enums.TrackingMode;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 
 import java.time.LocalTime;
