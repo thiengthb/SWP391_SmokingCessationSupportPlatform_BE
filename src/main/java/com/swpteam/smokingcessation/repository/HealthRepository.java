@@ -13,6 +13,8 @@ public interface HealthRepository extends JpaRepository<Health, String> {
 
     Optional<Health> findByIdAndIsDeletedFalse(String id);
 
+    Optional<Health> findFirstByAccountIdAndIsDeletedFalseOrderByCreatedAtDesc(String accountId);
+
     Page<Health> findByAccountIdAndIsDeletedFalse(String accountId, Pageable pageable);
 
     Page<Health> findAllByIsDeletedFalse(Pageable pageable);
