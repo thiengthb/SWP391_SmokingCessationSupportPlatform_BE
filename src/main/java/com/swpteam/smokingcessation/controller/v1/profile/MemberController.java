@@ -6,6 +6,7 @@ import com.swpteam.smokingcessation.domain.dto.member.MemberResponse;
 import com.swpteam.smokingcessation.common.ApiResponse;
 import com.swpteam.smokingcessation.common.PageableRequest;
 import com.swpteam.smokingcessation.constant.SuccessCode;
+import com.swpteam.smokingcessation.domain.dto.member.ProgressResponse;
 import com.swpteam.smokingcessation.service.interfaces.profile.IMemberService;
 import com.swpteam.smokingcessation.utils.ResponseUtilService;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -33,6 +34,14 @@ public class MemberController {
         return responseUtilService.buildSuccessResponse(
                 SuccessCode.MEMBER_FETCHED_BY_ID,
                 memberService.getMemberById(accountId)
+        );
+    }
+
+    @GetMapping("/progress")
+    ResponseEntity<ApiResponse<ProgressResponse>> getProgress(){
+        return responseUtilService.buildSuccessResponse(
+                SuccessCode.MEMBER_FETCHED_BY_ID,
+                memberService.getProgress()
         );
     }
 

@@ -31,7 +31,7 @@ public class ProgressScheduler {
     IRecordHabitService recordHabitService;
 
     @Transactional
-    @Scheduled(cron = "* */30 * * * *")
+    @Scheduled(cron = "0 * * * * *")
     public void calculateProgress() {
         List<Setting> settings = settingRepository.findAllByIsDeletedFalse();
 
