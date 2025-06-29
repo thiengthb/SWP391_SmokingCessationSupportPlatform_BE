@@ -4,6 +4,7 @@ import com.swpteam.smokingcessation.domain.entity.*;
 import com.swpteam.smokingcessation.domain.enums.PhaseStatus;
 import com.swpteam.smokingcessation.domain.enums.PlanStatus;
 import com.swpteam.smokingcessation.domain.enums.ScoreRule;
+import com.swpteam.smokingcessation.service.interfaces.notification.INotificationService;
 import com.swpteam.smokingcessation.service.interfaces.profile.IScoreService;
 import com.swpteam.smokingcessation.service.interfaces.profile.ISettingService;
 import com.swpteam.smokingcessation.service.interfaces.tracking.IPhaseService;
@@ -33,9 +34,10 @@ public class PhaseAndPlanUpdater {
     IPhaseService phaseService;
     IRecordHabitService recordHabitService;
     IScoreService scoreService;
+    INotificationService notificationService;
 
     @Transactional
-    @Scheduled(cron = "* */30 * * * *")
+    @Scheduled(cron = "*/30 * * * * *")
     public void updatePhasesAndPlans() {
         List<Setting> settings = settingService.getAllSetting();
         LocalDateTime now = LocalDateTime.now();
@@ -90,6 +92,7 @@ public class PhaseAndPlanUpdater {
                 }
 
                 planService.updateCompletedPlan(plan, successRatio * 100.0, plan.getPlanStatus());
+                notificationService.sendPlanDoneNotification(plan.getPlanName(), account.getId());
             }
             if (allPhasesFullyReported(plan, account.getId())) {
                 log.info("check lazy 3 passed");

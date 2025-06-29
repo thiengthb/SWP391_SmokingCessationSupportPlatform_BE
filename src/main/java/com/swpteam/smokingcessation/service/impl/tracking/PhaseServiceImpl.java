@@ -11,6 +11,7 @@ import com.swpteam.smokingcessation.exception.AppException;
 import com.swpteam.smokingcessation.integration.mail.IMailService;
 import com.swpteam.smokingcessation.repository.PhaseRepository;
 import com.swpteam.smokingcessation.service.impl.notification.PhaseSummaryService;
+import com.swpteam.smokingcessation.service.interfaces.notification.INotificationService;
 import com.swpteam.smokingcessation.service.interfaces.profile.IScoreService;
 import com.swpteam.smokingcessation.service.interfaces.tracking.IPhaseService;
 import lombok.AccessLevel;
@@ -40,6 +41,7 @@ public class PhaseServiceImpl implements IPhaseService {
     PhaseSummaryService phaseSummaryService;
     IMailService mailService;
     IScoreService scoreService;
+    INotificationService notificationService;
 
     @Override
     @PreAuthorize("hasRole('MEMBER')")
@@ -144,6 +146,7 @@ public class PhaseServiceImpl implements IPhaseService {
                 successRate, phase.getId(), successDays, totalDays, missingDays);
 
         phaseRepository.save(phase);
+        notificationService.sendPhaseDoneNotification(phase.getPhase(),accountId);
         PhaseResponse phaseResponse = phaseMapper.toResponse(phase);
         String userMail = phase.getPlan().getAccount().getEmail();
         //mailService.sendPhaseSummary(userMail, phaseResponse);

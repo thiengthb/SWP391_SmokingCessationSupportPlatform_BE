@@ -35,7 +35,7 @@ public class SettingServiceImpl implements ISettingService {
     AuthUtilService authUtilService;
 
     @Override
-    @Cacheable(value = "SETTING_CACHE", key = "#result.getId()")
+    @Cacheable(value = "SETTING_CACHE", key = "#accountId")
     public SettingResponse getMySetting() {
         Account currentAccount = authUtilService.getCurrentAccountOrThrowError();
         return settingMapper.toResponse(findSettingByIdOrThrowError(currentAccount.getId()));
@@ -49,7 +49,7 @@ public class SettingServiceImpl implements ISettingService {
     
     @Override
     @Transactional
-    @CachePut(value = "SETTING_CACHE", key = "#result.getId()")
+    @CachePut(value = "SETTING_CACHE", key = "@authUtilService.getCurrentAccountOrThrowError().id")
     public SettingResponse updateSetting(String accountId, SettingRequest request) {
         Setting setting = findSettingByIdOrThrowError(accountId);
 
@@ -60,7 +60,7 @@ public class SettingServiceImpl implements ISettingService {
 
     @Override
     @Transactional
-    @CachePut(value = "SETTING_CACHE", key = "#result.getId()")
+    @CachePut(value = "SETTING_CACHE", key = "@authUtilService.getCurrentAccountOrThrowError().id")
     public SettingResponse resetMySetting() {
         Account account = authUtilService.getCurrentAccountOrThrowError();
 
