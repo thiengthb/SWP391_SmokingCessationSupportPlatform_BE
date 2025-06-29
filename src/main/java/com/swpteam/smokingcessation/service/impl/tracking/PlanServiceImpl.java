@@ -30,7 +30,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -374,7 +373,7 @@ public class PlanServiceImpl implements IPlanService {
     @CachePut(value = "PLAN_CACHE", key = "'ALL'")
     public List<PlanResponse> generateAllPlans() {
         // Load all templates
-        List<PlanTemplateResponse> templates = FileLoaderUtil.loadPlanTemplate("quitplan/template-plan.json");
+        List<PlanTemplateResponse> templates = FileLoaderUtil.loadPlanTemplate("init_data/quit_plan/quit_plan_templates.json");
 
         List<PlanResponse> planResponses = new ArrayList<>();
 
