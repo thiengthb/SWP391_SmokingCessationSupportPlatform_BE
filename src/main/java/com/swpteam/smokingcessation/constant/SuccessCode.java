@@ -196,7 +196,10 @@ public enum SuccessCode {
 
     // Counter Success (3700-3799)
     COUNTER_STARTED(3700, "success.counter.started"),
-    COUNTER_FETCHED(3701, "success.counter.fetched")
+    COUNTER_FETCHED(3701, "success.counter.fetched"),
+
+    // Contact Success (3800-3899)
+    CONTACT_SUCCESS(3801,"success.contact.success")
     ;
     int code;
     String messageLocaleKey;

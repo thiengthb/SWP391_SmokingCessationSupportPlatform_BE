@@ -274,7 +274,16 @@ public enum ErrorCode {
     TIMETABLE_ENDED_AT_INVALID(3806, "error.timetable.ended_at_invalid", HttpStatus.BAD_REQUEST),
 
     // Score Errors (3900-3999)
-    SCORE_NOT_FOUND(3806, "error.score.not_found", HttpStatus.NOT_FOUND)
+    SCORE_NOT_FOUND(3806, "error.score.not_found", HttpStatus.NOT_FOUND),
+
+    // Contact (4000-4099)
+    NAME_REQUIRED(4001, "error.contact.name_required", HttpStatus.BAD_REQUEST),
+    EMAIL_NOT_VALID(4003, "error.contact.email_not_valid", HttpStatus.BAD_REQUEST),
+    MAIL_REQUIRED(4002, "error.contact.email_required", HttpStatus.BAD_REQUEST),
+    MAIL_SUBJECT_REQUIRED(4004, "error.contact.subject_required", HttpStatus.BAD_REQUEST),
+    CONTENT_RESTRICTED(4005, "error.contact.content_required", HttpStatus.BAD_REQUEST),
+    CONTENT_TOO_SHORT(4006, "error.contact.content_too_short", HttpStatus.BAD_REQUEST),
+    CONTENT_TOO_LONG(4007, "error.contact.content_too_long", HttpStatus.BAD_REQUEST),
 
     ;
     int code;

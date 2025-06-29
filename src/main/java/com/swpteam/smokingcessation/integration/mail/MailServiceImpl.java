@@ -1,9 +1,9 @@
 package com.swpteam.smokingcessation.integration.mail;
 
 import com.swpteam.smokingcessation.constant.ErrorCode;
+import com.swpteam.smokingcessation.domain.dto.contact.ContactRequest;
 import com.swpteam.smokingcessation.domain.dto.phase.PhaseResponse;
 import com.swpteam.smokingcessation.domain.dto.plan.PlanResponse;
-import com.swpteam.smokingcessation.domain.dto.report.PlanSummaryResponse;
 import com.swpteam.smokingcessation.domain.dto.booking.BookingRequest;
 import com.swpteam.smokingcessation.domain.dto.report.ReportSummaryResponse;
 import com.swpteam.smokingcessation.domain.entity.Account;
@@ -29,7 +29,6 @@ import org.thymeleaf.spring6.SpringTemplateEngine;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 
@@ -53,6 +52,7 @@ public class MailServiceImpl implements IMailService {
     public void sendVerificationEmail(String to, String username, String verificationLink) {
         buildAndSendMail(
                 "Verify Email",
+                hostEmail,
                 to,
                 "verification-email",
                 List.of(
@@ -74,6 +74,7 @@ public class MailServiceImpl implements IMailService {
 
         buildAndSendMail(
                 "Payment Successful for Subscription ID " + subscription.getId(),
+                hostEmail,
                 account.getEmail(),
                 "motivation-template",
                 List.of(
@@ -90,6 +91,7 @@ public class MailServiceImpl implements IMailService {
     public void sendMotivationMail(String to, Message message) {
         buildAndSendMail(
                 "💪 Daily Motivation",
+                hostEmail,
                 to,
                 "motivation-template",
                 List.of(
@@ -104,6 +106,7 @@ public class MailServiceImpl implements IMailService {
     public void sendReminderMail(String to) {
         buildAndSendMail(
                 "⏰ Friendly Reminder",
+                hostEmail,
                 to,
                 "reminder-template",
                 List.of(
@@ -118,6 +121,7 @@ public class MailServiceImpl implements IMailService {
     public void sendResetPasswordEmail(String to, String resetLink, String username) {
         buildAndSendMail(
                 "Reset password",
+                hostEmail,
                 to,
                 "reset-mail-template",
                 List.of(
@@ -133,6 +137,7 @@ public class MailServiceImpl implements IMailService {
     public void sendReportEmail(String to, ReportSummaryResponse report) {
         buildAndSendMail(
                 "Monthly performance report",
+                hostEmail,
                 to,
                 "monthly-report-email",
                 List.of(
@@ -146,6 +151,7 @@ public class MailServiceImpl implements IMailService {
     public void sendPhaseSummary(String to, PhaseResponse phaseResponse) {
         buildAndSendMail(
                 "Phase Summary Report",
+                hostEmail,
                 to,
                 "phase-summary-template", // Tên file template thymeleaf bạn sẽ tạo sau
                 List.of(
@@ -164,6 +170,7 @@ public class MailServiceImpl implements IMailService {
     public void sendPlanSummary(String to, PlanResponse planResponse) {
         buildAndSendMail(
                 "Plan Summary Report",
+                hostEmail,
                 to,
                 "plan-summary-template",
                 List.of(
@@ -176,6 +183,7 @@ public class MailServiceImpl implements IMailService {
         LocalDateTime startedAt = DateTimeUtil.reformat(request.startedAt());
         LocalDateTime endedAt = DateTimeUtil.reformat(request.endedAt());
         buildAndSendMail("New Booking Request",
+                hostEmail,
                 to,
                 "coach-booking-request",
                 List.of(
@@ -187,8 +195,40 @@ public class MailServiceImpl implements IMailService {
                 ));
     }
 
+    @Override
+    public void sendContactMail(ContactRequest request) {
+        try {
+            MimeMessage mimeMessage = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(mimeMessage, false, "UTF-8");
+
+            helper.setTo(hostEmail);
+            helper.setFrom(hostEmail);
+            helper.setReplyTo(request.email());
+            helper.setSubject("New Message From User: " + request.subject());
+
+            StringBuilder textContent = new StringBuilder();
+            textContent
+                    .append("Name: ").append(request.name()).append("\n")
+                    .append("Email: ").append(request.email()).append("\n")
+                    .append("Subject: ").append(request.subject()).append("\n\n")
+                    .append("Content:\n")
+                    .append(request.content());
+
+            helper.setText(textContent.toString(), false);
+
+            mailSender.send(mimeMessage);
+
+            log.info("Contact mail sent from {} to system email", request.email());
+        } catch (MessagingException e) {
+            log.error("Failed to send contact mail: {}", e.getMessage());
+            throw new AppException(ErrorCode.EMAIL_SEND_FAILED);
+        }
+    }
+
+
     private void buildAndSendMail(
             String title,
+            String from,
             String to,
             String templateName,
             List<Map.Entry<String, Object>> contextVariables
@@ -206,7 +246,7 @@ public class MailServiceImpl implements IMailService {
             helper.setTo(to);
             helper.setSubject(title);
             helper.setText(htmlContent, true);
-            helper.setFrom(hostEmail);
+            helper.setFrom(from);
 
             mailSender.send(mimeMessage);
         } catch (MessagingException exception) {
