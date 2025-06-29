@@ -21,6 +21,7 @@ public enum ErrorCode {
     INVALID_MESSAGE_KEY(1005, "error.general.invalid_message_key", HttpStatus.BAD_REQUEST),
     MESSAGE_ERROR(1006, "error.general.message", HttpStatus.BAD_REQUEST),
     INVALID_FIELD(1006, "error.general.invalid_field", HttpStatus.BAD_REQUEST),
+    ROLE_NOT_SUPPORTED(1007, "error.general.role_not_supported", HttpStatus.FORBIDDEN),
 
     // Account Errors (1100-1199)
     ACCOUNT_REQUIRED(1100, "error.account.required", HttpStatus.BAD_REQUEST),
@@ -38,6 +39,7 @@ public enum ErrorCode {
     ROLE_REQUIRED(1112, "error.account.role_required", HttpStatus.BAD_REQUEST),
     SELF_BAN_DISALLOWED(1113, "error.account.self_ban_disallowed", HttpStatus.BAD_REQUEST),
     WRONG_PASSWORD(1114, "error.account.wrong_password", HttpStatus.BAD_REQUEST),
+    ACCOUNT_NEED_ACTIVATE(1115, "error.account.need_activate", HttpStatus.FORBIDDEN),
 
     // Authentication & Token Errors (1200-1299)
     TOKEN_REQUIRED(1200, "error.token.required", HttpStatus.UNAUTHORIZED),

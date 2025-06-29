@@ -20,7 +20,7 @@ import java.util.List;
 public class Coach extends AuditableEntity {
 
     @MapsId
-    @OneToOne
+    @OneToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "accountId", nullable = false, updatable = false)
     Account account;
 
@@ -30,4 +30,17 @@ public class Coach extends AuditableEntity {
     String socialLinks;
     String specializations;
     String certificates;
+
+    public static Coach getDefaultCoach(Account account) {
+        return Coach.builder()
+                .account(account)
+                .fullName(null)
+                .bio(null)
+                .certificates(null)
+                .experienceYears(0)
+                .specializations(null)
+                .socialLinks(null)
+                .build();
+    }
+
 }

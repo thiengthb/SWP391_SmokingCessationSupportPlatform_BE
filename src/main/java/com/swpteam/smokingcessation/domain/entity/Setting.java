@@ -21,7 +21,7 @@ import java.time.LocalTime;
 public class Setting extends AuditableEntity {
 
     @MapsId
-    @OneToOne
+    @OneToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "accountId", nullable = false, updatable = false)
     Account account;
 

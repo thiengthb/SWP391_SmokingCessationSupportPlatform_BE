@@ -10,7 +10,6 @@ import com.swpteam.smokingcessation.domain.entity.Phase;
 import com.swpteam.smokingcessation.exception.AppException;
 import com.swpteam.smokingcessation.integration.mail.IMailService;
 import com.swpteam.smokingcessation.repository.PhaseRepository;
-import com.swpteam.smokingcessation.service.impl.notification.PhaseSummaryService;
 import com.swpteam.smokingcessation.service.interfaces.notification.INotificationService;
 import com.swpteam.smokingcessation.service.interfaces.profile.IScoreService;
 import com.swpteam.smokingcessation.service.interfaces.tracking.IPhaseService;
@@ -38,10 +37,9 @@ public class PhaseServiceImpl implements IPhaseService {
 
     PhaseMapper phaseMapper;
     PhaseRepository phaseRepository;
-    PhaseSummaryService phaseSummaryService;
-    IMailService mailService;
     IScoreService scoreService;
     INotificationService notificationService;
+    IMailService mailService;
 
     @Override
     @PreAuthorize("hasRole('MEMBER')")

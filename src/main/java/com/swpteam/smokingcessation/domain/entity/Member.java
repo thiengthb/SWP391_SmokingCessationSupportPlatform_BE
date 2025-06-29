@@ -19,7 +19,7 @@ import java.time.LocalDateTime;
 public class Member extends AuditableEntity {
 
     @MapsId
-    @OneToOne
+    @OneToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "accountId", nullable = false, updatable = false)
     Account account;
 
@@ -32,4 +32,18 @@ public class Member extends AuditableEntity {
 
     @Enumerated(EnumType.STRING)
     MemberGender gender;
+
+    public static Member getDefaultMember(Account account) {
+        return Member.builder()
+                .account(account)
+                .fullName(null)
+                .dob(LocalDate.of(2000, 1, 1))
+                .address(null)
+                .score(0)
+                .lastCounterReset(null)
+                .highestStreak(0)
+                .gender(MemberGender.MALE)
+                .build();
+    }
+
 }

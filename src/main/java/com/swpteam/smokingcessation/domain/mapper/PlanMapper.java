@@ -8,8 +8,8 @@ import org.mapstruct.*;
 
 @Mapper(componentModel = "spring", uses = PhaseMapper.class)
 public interface PlanMapper {
-    @Mapping(target = "successRate", expression = "java(roundToTwoDecimal(plan.getSuccessRate()))")
     @Mapping(source = "account.id", target = "accountId")
+    @Mapping(target = "successRate", qualifiedByName = "planRound")
     PlanResponse toResponse(Plan plan);
 
     @Mapping(target = "phases", source = "phases")
@@ -18,15 +18,7 @@ public interface PlanMapper {
     @Mapping(target = "phases", source = "phases")
     void update(@MappingTarget Plan plan, PlanRequest request);
 
-        /*
-        @AfterMapping
-        default void linkPhases(@MappingTarget Plan plan) {
-            if (plan.getPhases() != null) {
-                plan.getPhases().forEach(phase -> phase.setPlan(plan));
-            }
-        }
-         */
-
+    @Named("planRound")
     default double roundToTwoDecimal(Double value) {
         return value == null ? 0.0 : Math.round(value * 100.0) / 100.0;
     }
