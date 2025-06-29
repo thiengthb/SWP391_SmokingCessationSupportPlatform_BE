@@ -155,6 +155,7 @@ public enum ErrorCode {
     PHASE_DURATION_TOO_SHORT(2312, "error.phase.duration_too_short", HttpStatus.BAD_REQUEST),
     INVALID_PHASE_DATE(2313, "error.phase.invalid_date", HttpStatus.BAD_REQUEST),
     NEW_PHASE_CONFLICT(2314, "error.phase.new_phase_conflict", HttpStatus.CONFLICT),
+    NO_COMPLETED_PHASE_FOUND(2315,"error.phase.no_completed_phase_found",HttpStatus.BAD_REQUEST),
 
     // Chatbot Errors (2400-2499)
     PROMPT_REQUIRED(2400, "error.chatbot.prompt_required", HttpStatus.BAD_REQUEST),

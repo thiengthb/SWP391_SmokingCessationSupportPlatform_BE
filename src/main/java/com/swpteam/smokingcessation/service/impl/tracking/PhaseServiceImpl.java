@@ -1,5 +1,6 @@
 package com.swpteam.smokingcessation.service.impl.tracking;
 
+import com.swpteam.smokingcessation.domain.dto.phase.PhaseSummaryResponse;
 import com.swpteam.smokingcessation.domain.entity.RecordHabit;
 import com.swpteam.smokingcessation.domain.enums.PhaseStatus;
 import com.swpteam.smokingcessation.domain.enums.ScoreRule;
@@ -100,6 +101,9 @@ public class PhaseServiceImpl implements IPhaseService {
             recordMap.put(record.getDate(), record);
         }
 
+        int maxSmoked = 0; // ADDED
+        int minSmoked = Integer.MAX_VALUE;
+
         for (int i = 0; i < totalDays; i++) {
             LocalDate currentDate = start.plusDays(i);
             RecordHabit record = recordMap.get(currentDate);
@@ -107,7 +111,17 @@ public class PhaseServiceImpl implements IPhaseService {
             if (record == null) {
                 missingDays++;
             } else {
+                int cigs = record.getCigarettesSmoked();
                 totalCigs += record.getCigarettesSmoked();
+
+                if(cigs > maxSmoked){
+                    maxSmoked = cigs;
+                }
+
+                if (cigs < minSmoked) {
+                    minSmoked = cigs;
+                }
+
                 if (record.getCigarettesSmoked() <= maxCigPerDay) {
                     successDays++;
                 }
@@ -143,6 +157,17 @@ public class PhaseServiceImpl implements IPhaseService {
         log.info("Calculated successRate={} for Phase ID={}, successDays={}, totalDays={}, missingDays={}",
                 successRate, phase.getId(), successDays, totalDays, missingDays);
 
+
+        phase.setTotalDaysNotReported(missingDays);
+        phase.setTotalDaysReported(totalDays-missingDays);
+        if (missingDays == totalDays) {
+            phase.setMostSmokeCig(0);
+            phase.setLeastSmokeCig(0);
+        } else {
+            phase.setMostSmokeCig(maxSmoked);
+            phase.setLeastSmokeCig(minSmoked);
+        }
+
         phaseRepository.save(phase);
         notificationService.sendPhaseDoneNotification(phase.getPhase(),accountId);
         PhaseResponse phaseResponse = phaseMapper.toResponse(phase);
@@ -156,6 +181,24 @@ public class PhaseServiceImpl implements IPhaseService {
         List<Phase> phases = phaseRepository.findAllByPlanIdAndIsDeletedFalseOrderByStartDateAsc(planId);
         return phases.stream()
                 .map(phaseMapper::toResponse)
+                .toList();
+    }
+
+    @Override
+    public List<PhaseSummaryResponse> getCompletedPhaseSummaries(String planId) {
+        List<Phase> phases = phaseRepository.findByPlanIdAndIsDeletedFalse(planId);
+
+        // Filter phase có status khác null
+        List<Phase> completedPhases = phases.stream()
+                .filter(p -> p.getPhaseStatus() != null)
+                .toList();
+
+        if (completedPhases.isEmpty()) {
+            throw new AppException(ErrorCode.NO_COMPLETED_PHASE_FOUND);
+        }
+
+        return completedPhases.stream()
+                .map(phaseMapper::toSummaryResponse)
                 .toList();
     }
 

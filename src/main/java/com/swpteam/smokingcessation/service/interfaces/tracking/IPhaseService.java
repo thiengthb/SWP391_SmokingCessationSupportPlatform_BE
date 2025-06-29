@@ -2,6 +2,7 @@ package com.swpteam.smokingcessation.service.interfaces.tracking;
 
 import com.swpteam.smokingcessation.domain.dto.phase.PhaseRequest;
 import com.swpteam.smokingcessation.domain.dto.phase.PhaseResponse;
+import com.swpteam.smokingcessation.domain.dto.phase.PhaseSummaryResponse;
 import com.swpteam.smokingcessation.domain.entity.Phase;
 import com.swpteam.smokingcessation.domain.entity.Plan;
 import com.swpteam.smokingcessation.domain.entity.RecordHabit;
@@ -22,6 +23,8 @@ public interface IPhaseService {
     void calculateSuccessRateAndUpdatePhase(Phase phase, List<RecordHabit> allRecords);
 
     List<PhaseResponse> getPhaseListByPlanIdAndStartDate(String planId);
+
+    List<PhaseSummaryResponse> getCompletedPhaseSummaries(String planId);
 
     boolean isPhaseFullyReported(Long totalDays, List<RecordHabit> recordHabits);
 }

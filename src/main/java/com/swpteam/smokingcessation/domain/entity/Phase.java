@@ -30,6 +30,12 @@ public class Phase extends AuditableEntity {
     int cigaretteBound;
     LocalDate startDate;
     LocalDate endDate;
+
+    long totalDaysReported;
+    long totalDaysNotReported;
+    int mostSmokeCig;
+    int leastSmokeCig;
+
     Double successRate;
 
     @Enumerated(EnumType.STRING)

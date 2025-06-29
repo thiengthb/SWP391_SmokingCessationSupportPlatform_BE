@@ -21,8 +21,10 @@ public class PlanResponse {
     String accountId;
     String planName;
     String description;
-    @JsonIgnore
+
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     Double successRate;
+
     LocalDate startDate;
     LocalDate endDate;
     LocalDate createdAt;

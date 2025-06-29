@@ -27,5 +27,6 @@ public interface PhaseRepository extends JpaRepository<Phase, String> {
 
     List<Phase> findAllByPlanIdAndIsDeletedFalseOrderByStartDateAsc(String planId);
 
+    List<Phase> findByPlanIdAndIsDeletedFalse(String planId);
 
 }
