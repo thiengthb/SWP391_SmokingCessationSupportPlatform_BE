@@ -48,13 +48,22 @@ public class MailServiceImpl implements IMailService {
     @Value("${spring.mail.username}")
     String hostEmail;
 
+    private static final String VERIFICATION_EMAIL = "email/verification-email";
+    private static final String PAYMENT_SUCCESS_EMAIL = "email/payment_success_email";
+    private static final String MOTIVATION_EMAIL = "email/motivation_email";
+    private static final String REMINDER_EMAIL = "email/reminder_email";
+    private static final String RESET_PASSWORD_EMAIL = "email/reset_password_email";
+    private static final String MONTHLY_REPORT_EMAIL = "email/monthly_report_email";
+    private static final String BOOKING_REQUEST_EMAIL = "email/booking_request_email";
+    private static final String PLAN_SUMMARY_EMAIL = "email/plan_summary_email";
+
     @Override
     public void sendVerificationEmail(String to, String username, String verificationLink) {
         buildAndSendMail(
                 "Verify Email",
                 hostEmail,
                 to,
-                "verification-email",
+                VERIFICATION_EMAIL,
                 List.of(
                         Map.entry("username", username),
                         Map.entry("verificationLink", verificationLink)
@@ -76,7 +85,7 @@ public class MailServiceImpl implements IMailService {
                 "Payment Successful for Subscription ID " + subscription.getId(),
                 hostEmail,
                 account.getEmail(),
-                "motivation-template",
+                PAYMENT_SUCCESS_EMAIL,
                 List.of(
                         Map.entry("username", account.getUsername()),
                         Map.entry("amount", String.format("%.2f", amount / 100.0)),
@@ -93,7 +102,7 @@ public class MailServiceImpl implements IMailService {
                 "💪 Daily Motivation",
                 hostEmail,
                 to,
-                "motivation-template",
+                MOTIVATION_EMAIL,
                 List.of(
                         Map.entry("quote", message.getContent()),
                         Map.entry("sendTime", LocalDateTime.now())
@@ -108,7 +117,7 @@ public class MailServiceImpl implements IMailService {
                 "⏰ Friendly Reminder",
                 hostEmail,
                 to,
-                "reminder-template",
+                REMINDER_EMAIL,
                 List.of(
                         Map.entry("deadline", LocalDateTime.now().plusMinutes(30)),
                         Map.entry("resetLink", LocalDateTime.now())
@@ -123,7 +132,7 @@ public class MailServiceImpl implements IMailService {
                 "Reset password",
                 hostEmail,
                 to,
-                "reset-mail-template",
+                RESET_PASSWORD_EMAIL,
                 List.of(
                         Map.entry("userName", username),
                         Map.entry("resetLink", resetLink),
@@ -139,7 +148,7 @@ public class MailServiceImpl implements IMailService {
                 "Monthly performance report",
                 hostEmail,
                 to,
-                "monthly-report-email",
+                MONTHLY_REPORT_EMAIL,
                 List.of(
                         Map.entry("report", report)
                 )
@@ -172,7 +181,7 @@ public class MailServiceImpl implements IMailService {
                 "Plan Summary Report",
                 hostEmail,
                 to,
-                "plan-summary-template",
+                PLAN_SUMMARY_EMAIL,
                 List.of(
 
                 )
@@ -185,7 +194,7 @@ public class MailServiceImpl implements IMailService {
         buildAndSendMail("New Booking Request",
                 hostEmail,
                 to,
-                "coach-booking-request",
+                BOOKING_REQUEST_EMAIL,
                 List.of(
                         Map.entry("startedAt", startedAt),
                         Map.entry("endedAt", endedAt),

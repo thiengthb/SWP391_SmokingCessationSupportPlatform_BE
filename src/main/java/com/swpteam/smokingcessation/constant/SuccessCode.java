@@ -36,7 +36,7 @@ public enum SuccessCode {
     MEMBERSHIP_CREATED(1300, "success.membership.created"),
     MEMBERSHIP_UPDATED(1301, "success.membership.updated"),
     MEMBERSHIP_DELETED(1302, "success.membership.deleted"),
-    MEMBERSHIP_PAGE_FETCHED(1303, "success.membership.page_fetched"),
+    MEMBERSHIP_LIST_FETCHED(1303, "success.membership.list_fetched"),
     MEMBERSHIP_FETCHED_BY_ID(1304, "success.membership.fetched_by_id"),
 
     // Subscription Successes (1400-1499)

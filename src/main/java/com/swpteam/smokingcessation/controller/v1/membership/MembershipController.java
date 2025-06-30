@@ -1,12 +1,10 @@
 package com.swpteam.smokingcessation.controller.v1.membership;
 
-import com.swpteam.smokingcessation.common.PageResponse;
 import com.swpteam.smokingcessation.domain.dto.membership.MembershipCreateRequest;
 import com.swpteam.smokingcessation.domain.dto.membership.MembershipCurrencyUpdateRequest;
 import com.swpteam.smokingcessation.domain.dto.membership.MembershipResponse;
 import com.swpteam.smokingcessation.domain.dto.membership.MembershipUpdateRequest;
 import com.swpteam.smokingcessation.common.ApiResponse;
-import com.swpteam.smokingcessation.common.PageableRequest;
 import com.swpteam.smokingcessation.constant.SuccessCode;
 import com.swpteam.smokingcessation.service.interfaces.membership.IMembershipService;
 import com.swpteam.smokingcessation.utils.ResponseUtilService;
@@ -18,6 +16,8 @@ import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Slf4j
 @RestController
@@ -31,12 +31,10 @@ public class MembershipController {
     ResponseUtilService responseUtilService;
 
     @GetMapping
-    ResponseEntity<ApiResponse<PageResponse<MembershipResponse>>> getMembershipPage(
-            @Valid PageableRequest request
-    ) {
+    ResponseEntity<ApiResponse<List<MembershipResponse>>> getMembershipList() {
         return responseUtilService.buildSuccessResponse(
-                SuccessCode.MEMBERSHIP_PAGE_FETCHED,
-                membershipService.getMembershipPage(request)
+                SuccessCode.MEMBERSHIP_LIST_FETCHED,
+                membershipService.getMembershipList()
         );
     }
 

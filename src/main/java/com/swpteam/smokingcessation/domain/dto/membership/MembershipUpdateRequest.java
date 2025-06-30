@@ -18,5 +18,7 @@ public record MembershipUpdateRequest (
 
     Currency currency,
 
-    String description
+    String description,
+
+    Boolean highlighted
 ) {}

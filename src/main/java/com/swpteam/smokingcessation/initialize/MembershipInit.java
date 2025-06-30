@@ -40,7 +40,7 @@ public class MembershipInit implements CommandLineRunner {
                         .price(Double.parseDouble(localizePrice))
                         .currency(Currency.valueOf(localizeCurrency))
                         .durationDays(item.getDurationDays())
-                        .isHighlighted(item.isHighlighted())
+                        .highlighted(item.isHighlighted())
                         .description(localizeDescription)
                         .build();
 

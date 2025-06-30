@@ -32,8 +32,6 @@ public class RedisConfig {
             Map.entry("COMMENT_PAGE_CACHE", Duration.ofHours(1)),
             Map.entry("BOOKING_PAGE_CACHE", Duration.ofHours(1)),
             Map.entry("TIMETABLE_PAGE_CACHE", Duration.ofHours(1)),
-            Map.entry("MEMBERSHIP_PAGE_CACHE", Duration.ofHours(1)),
-            Map.entry("MEMBERSHIP_LIST_CACHE", Duration.ofHours(1)),
             Map.entry("NOTIFICATION_PAGE_CACHE", Duration.ofHours(1)),
             Map.entry("GOAL_PAGE_CACHE", Duration.ofHours(1)),
             Map.entry("REVIEW_PAGE_CACHE", Duration.ofHours(1)),

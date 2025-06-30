@@ -21,6 +21,7 @@ public class MembershipResponse {
     double price;
     Currency currency;
     String description;
+    boolean highlighted;
     LocalDateTime createdAt;
     LocalDateTime updatedAt;
 }

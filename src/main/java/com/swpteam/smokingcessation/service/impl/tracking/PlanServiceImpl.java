@@ -206,7 +206,6 @@ public class PlanServiceImpl implements IPlanService {
         return planResponses;
     }
 
-
     @Override
     @Transactional
     @CacheEvict(value = {"PLAN_CACHE", "PLAN_PAGE_CACHE"}, key = "#id", allEntries = true)

@@ -12,6 +12,7 @@ public interface AccountMapper {
 
     Account toEntity(AccountRequest request);
 
+    @Mapping(target = "havingSubscription", expression = "java(entity.isHavingSubscription())")
     AccountResponse toResponse(Account entity);
 
     void update(@MappingTarget Account entity, AccountUpdateRequest request);

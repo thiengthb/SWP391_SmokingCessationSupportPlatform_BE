@@ -44,21 +44,8 @@ public class MembershipServiceImpl implements IMembershipService {
     ICurrencyRateService currencyRateService;
 
     @Override
-    @Cacheable(value = "MEMBERSHIP_LIST_CACHE")
-    public List<MembershipResponse> getCategoryList() {
+    public List<MembershipResponse> getMembershipList() {
         return membershipRepository.findAll(Sort.by("name")).stream().map(membershipMapper::toResponse).toList();
-    }
-
-    @Override
-    @Cacheable(value = "MEMBERSHIP_PAGE_CACHE",
-            key = "#request.page + '-' + #request.size + '-' + #request.sortBy + '-' + #request.direction")
-    public PageResponse<MembershipResponse> getMembershipPage(PageableRequest request) {
-        ValidationUtil.checkFieldExist(Membership.class, request.sortBy());
-
-        Pageable pageable = PageableRequest.getPageable(request);
-        Page<Membership> memberships = membershipRepository.findAllByIsDeletedFalse(pageable);
-
-        return new PageResponse<>(memberships.map(membershipMapper::toResponse));
     }
 
     @Override
@@ -75,7 +62,6 @@ public class MembershipServiceImpl implements IMembershipService {
     @Transactional
     @PreAuthorize("hasRole('ADMIN')")
     @CachePut(value = "MEMBERSHIP_CACHE", key = "#result.getId()")
-    @CacheEvict(value = "MEMBERSHIP_PAGE_CACHE", allEntries = true)
     public MembershipResponse createMembership(MembershipCreateRequest request) {
         if (membershipRepository.existsByNameAndIsDeletedFalse(request.name()))
             throw new AppException(ErrorCode.MEMBERSHIP_NAME_DUPLICATE);
@@ -89,7 +75,6 @@ public class MembershipServiceImpl implements IMembershipService {
     @Transactional
     @PreAuthorize("hasRole('ADMIN')")
     @CachePut(value = "MEMBERSHIP_CACHE", key = "#result.getId()")
-    @CacheEvict(value = "MEMBERSHIP_PAGE_CACHE", allEntries = true)
     public MembershipResponse updateMembership(String id, MembershipUpdateRequest request) {
         Membership membership = findMembershipByIdOrThrowError(id);
 
@@ -101,7 +86,7 @@ public class MembershipServiceImpl implements IMembershipService {
     @Override
     @Transactional
     @PreAuthorize("hasRole('ADMIN')")
-    @CacheEvict(value = {"MEMBERSHIP_CACHE", "MEMBERSHIP_PAGE_CACHE"}, key = "#id", allEntries = true)
+    @CacheEvict(value = "MEMBERSHIP_CACHE", key = "#id")
     public void softDeleteMembershipById(String id) {
         Membership membership = findMembershipByIdOrThrowError(id);
         membership.setDeleted(true);
@@ -116,7 +101,6 @@ public class MembershipServiceImpl implements IMembershipService {
     @Override
     @Transactional
     @CachePut(value = "MEMBERSHIP_CACHE", key = "#result.getId()")
-    @CacheEvict(value = "MEMBERSHIP_PAGE_CACHE", allEntries = true)
     public MembershipResponse updateMembershipCurrency(String id, MembershipCurrencyUpdateRequest request) {
         Double rate = currencyRateService.getRate(request.currency().name().toUpperCase());
         if (rate == null)
