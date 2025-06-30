@@ -5,11 +5,13 @@ import com.swpteam.smokingcessation.domain.dto.setting.SettingResponse;
 import com.swpteam.smokingcessation.constant.ErrorCode;
 import com.swpteam.smokingcessation.domain.entity.Account;
 import com.swpteam.smokingcessation.domain.entity.Setting;
+import com.swpteam.smokingcessation.domain.enums.TrackingMode;
 import com.swpteam.smokingcessation.domain.mapper.SettingMapper;
 import com.swpteam.smokingcessation.exception.AppException;
 import com.swpteam.smokingcessation.repository.AccountRepository;
 import com.swpteam.smokingcessation.repository.SettingRepository;
 import com.swpteam.smokingcessation.service.interfaces.profile.ISettingService;
+import com.swpteam.smokingcessation.service.interfaces.tracking.ICounterService;
 import com.swpteam.smokingcessation.utils.AuthUtilService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -33,9 +35,10 @@ public class SettingServiceImpl implements ISettingService {
     SettingMapper settingMapper;
     AccountRepository accountRepository;
     AuthUtilService authUtilService;
+    ICounterService counterService;
 
     @Override
-    @Cacheable(value = "SETTING_CACHE", key = "#result.getId()")
+    @Cacheable(value = "SETTING_CACHE", key = "@authUtilService.getCurrentAccountOrThrowError().id")
     public SettingResponse getMySetting() {
         Account currentAccount = authUtilService.getCurrentAccountOrThrowError();
         return settingMapper.toResponse(findSettingByIdOrThrowError(currentAccount.getId()));
@@ -49,9 +52,18 @@ public class SettingServiceImpl implements ISettingService {
     
     @Override
     @Transactional
-    @CachePut(value = "SETTING_CACHE", key = "#result.getId()")
+    @CachePut(value = "SETTING_CACHE", key = "#accountId")
     public SettingResponse updateSetting(String accountId, SettingRequest request) {
         Setting setting = findSettingByIdOrThrowError(accountId);
+
+        if(setting.getChangeFlag()){
+            throw new AppException(ErrorCode.MODE_CHANGE_UNAVAILABLE);
+        }
+
+        if (setting.getTrackingMode() == TrackingMode.AUTO_COUNT && request.trackingMode() == TrackingMode.DAILY_RECORD) {
+            counterService.startCounter();
+            setting.setChangeFlag(true);
+        }
 
         settingMapper.update(setting, request);
 
@@ -60,7 +72,7 @@ public class SettingServiceImpl implements ISettingService {
 
     @Override
     @Transactional
-    @CachePut(value = "SETTING_CACHE", key = "#result.getId()")
+    @CachePut(value = "SETTING_CACHE", key = "#accountId")
     public SettingResponse resetMySetting() {
         Account account = authUtilService.getCurrentAccountOrThrowError();
 

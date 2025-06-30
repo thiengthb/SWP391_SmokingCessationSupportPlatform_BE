@@ -8,14 +8,15 @@ import com.swpteam.smokingcessation.domain.dto.account.AccountRequest;
 import com.swpteam.smokingcessation.domain.dto.account.AccountResponse;
 import com.swpteam.smokingcessation.domain.dto.account.AccountUpdateRequest;
 import com.swpteam.smokingcessation.domain.dto.account.ChangePasswordRequest;
-import com.swpteam.smokingcessation.domain.entity.Account;
-import com.swpteam.smokingcessation.domain.entity.Setting;
+import com.swpteam.smokingcessation.domain.entity.*;
 import com.swpteam.smokingcessation.domain.enums.AccountStatus;
 import com.swpteam.smokingcessation.domain.enums.AuthProvider;
 import com.swpteam.smokingcessation.domain.enums.Role;
 import com.swpteam.smokingcessation.domain.mapper.AccountMapper;
 import com.swpteam.smokingcessation.exception.AppException;
 import com.swpteam.smokingcessation.repository.AccountRepository;
+import com.swpteam.smokingcessation.repository.CoachRepository;
+import com.swpteam.smokingcessation.repository.MemberRepository;
 import com.swpteam.smokingcessation.service.interfaces.identity.IAccountService;
 import com.swpteam.smokingcessation.service.interfaces.profile.IGoalProgressService;
 import com.swpteam.smokingcessation.utils.AuthUtilService;
@@ -32,6 +33,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Optional;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -39,10 +42,11 @@ import org.springframework.transaction.annotation.Transactional;
 public class AccountServiceImpl implements IAccountService {
 
     AccountRepository accountRepository;
+    MemberRepository memberRepository;
+    CoachRepository coachRepository;
     AccountMapper accountMapper;
     AuthUtilService authUtilService;
     PasswordEncoder passwordEncoder;
-
     IGoalProgressService goalProgressService;
 
     @Override
@@ -79,8 +83,6 @@ public class AccountServiceImpl implements IAccountService {
         account.setPassword(passwordEncoder.encode(request.password()));
         account.setProvider(AuthProvider.LOCAL);
         account.setStatus(AccountStatus.INACTIVE);
-        account.setSetting(Setting.getDefaultSetting(account));
-        goalProgressService.ensureGlobalProgressForNewAccount(account);
 
         return accountMapper.toResponse(accountRepository.save(account));
     }
@@ -99,6 +101,9 @@ public class AccountServiceImpl implements IAccountService {
                             .status(AccountStatus.ONLINE)
                             .avatar((String) payload.get("picture"))
                             .build();
+
+                    setUpProfileForNewAccount(newAccount);
+
                     return accountRepository.save(newAccount);
                 });
     }
@@ -109,7 +114,38 @@ public class AccountServiceImpl implements IAccountService {
 
         account.setStatus(AccountStatus.OFFLINE);
 
+        setUpProfileForNewAccount(account);
+
         accountRepository.save(account);
+    }
+
+    private void setUpProfileForNewAccount(Account account) {
+        if (account.getStatus() == AccountStatus.BANNED || account.getStatus() == AccountStatus.INACTIVE) {
+            throw new AppException(ErrorCode.ACCOUNT_NEED_ACTIVATE);
+        }
+
+        switch (account.getRole()) {
+            case Role.MEMBER -> {
+                Optional<Member> member = memberRepository.findByIdAndIsDeletedFalse(account.getId());
+                if (member.isPresent()) {
+                    throw new AppException(ErrorCode.ACCOUNT_ALREADY_ACTIVATED);
+                }
+                account.setMember(Member.getDefaultMember(account));
+            }
+            case Role.COACH -> {
+                Optional<Coach> coach = coachRepository.findByIdAndIsDeletedFalse(account.getId());
+                if (coach.isPresent()) {
+                    throw new AppException(ErrorCode.ACCOUNT_ALREADY_ACTIVATED);
+                }
+                account.setCoach(Coach.getDefaultCoach(account));
+            }
+            default -> {
+                throw new AppException(ErrorCode.ROLE_NOT_SUPPORTED);
+            }
+        }
+        account.setSetting(Setting.getDefaultSetting(account));
+        account.setScore(Score.getDefaultScore(account));
+        goalProgressService.ensureGlobalProgressForNewAccount(account);
     }
 
     @Override
@@ -141,7 +177,8 @@ public class AccountServiceImpl implements IAccountService {
     public void updateStatus(String accountId, AccountStatus status) {
         Account account = findAccountByIdOrThrowError(accountId);
 
-        account.setStatus(AccountStatus.ONLINE);
+        account.setStatus(status);
+
         accountRepository.save(account);
     }
 

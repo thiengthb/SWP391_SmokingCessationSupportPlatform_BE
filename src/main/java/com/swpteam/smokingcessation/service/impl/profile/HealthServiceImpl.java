@@ -121,4 +121,22 @@ public class HealthServiceImpl implements IHealthService {
 
         return health;
     }
+
+    @Override
+    public Health findLatestHealthByAccountIdOrThrowError(String accountId){
+        Health health = healthRepository.findFirstByAccountIdAndIsDeletedFalseOrderByCreatedAtDesc(accountId)
+                .orElseThrow(() -> new AppException(ErrorCode.HEALTH_RECORD_NOT_FOUND));
+
+        if(health.getAccount().isDeleted()){
+            throw new AppException(ErrorCode.HEALTH_RECORD_NOT_FOUND);
+        }
+
+        return health;
+    }
+
+    @Override
+    public Health findLatestHealthByAccountIdOrNull(String accountId){
+        return healthRepository.findFirstByAccountIdAndIsDeletedFalseOrderByCreatedAtDesc(accountId)
+                .orElse(null);
+    }
 }

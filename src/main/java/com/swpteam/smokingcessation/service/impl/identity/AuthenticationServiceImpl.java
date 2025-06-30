@@ -150,13 +150,7 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
                 .status(AccountStatus.INACTIVE)
                 .role(Role.MEMBER)
                 .build();
-        account.setSetting(Setting.getDefaultSetting(account));
-        account.setScore(Score.getDefaultScore(account));
-
         accountRepository.save(account);
-
-        goalProgressService.ensureGlobalProgressForNewAccount(account);
-
         sendEmailVerification(account.getEmail());
     }
 

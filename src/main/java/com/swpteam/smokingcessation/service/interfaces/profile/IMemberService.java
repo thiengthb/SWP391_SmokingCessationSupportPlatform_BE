@@ -4,6 +4,7 @@ import com.swpteam.smokingcessation.common.PageResponse;
 import com.swpteam.smokingcessation.common.PageableRequest;
 import com.swpteam.smokingcessation.domain.dto.member.MemberRequest;
 import com.swpteam.smokingcessation.domain.dto.member.MemberResponse;
+import com.swpteam.smokingcessation.domain.dto.member.ProgressResponse;
 import com.swpteam.smokingcessation.domain.entity.Member;
 import org.springframework.data.domain.Page;
 
@@ -22,4 +23,6 @@ public interface IMemberService {
     Member findMemberByIdOrThrowError(String id);
 
     List<Member> findAllMember();
+
+    ProgressResponse getProgress();
 }
