@@ -4,6 +4,8 @@ import com.swpteam.smokingcessation.domain.entity.Health;
 import com.swpteam.smokingcessation.domain.entity.Member;
 import com.swpteam.smokingcessation.domain.entity.RecordHabit;
 import com.swpteam.smokingcessation.domain.entity.Setting;
+import com.swpteam.smokingcessation.repository.MemberRepository;
+import com.swpteam.smokingcessation.repository.RecordHabitRepository;
 import com.swpteam.smokingcessation.repository.SettingRepository;
 import com.swpteam.smokingcessation.service.interfaces.profile.IHealthService;
 import com.swpteam.smokingcessation.service.interfaces.tracking.IRecordHabitService;
@@ -29,9 +31,11 @@ public class ProgressScheduler {
     SettingRepository settingRepository;
     IHealthService healthService;
     IRecordHabitService recordHabitService;
+    MemberRepository memberRepository;
+    RecordHabitRepository recordHabitRepository;
 
     @Transactional
-    @Scheduled(cron = "0 * * * * *")
+    @Scheduled(cron = "0 */30 * * * *")
     public void calculateProgress() {
         List<Setting> settings = settingRepository.findAllByIsDeletedFalse();
 
@@ -65,11 +69,17 @@ public class ProgressScheduler {
         }
         RecordHabit recordHabit = recordHabitService.findRecordByDateOrNull(member.getId(), today);
 
-        int avoidedCigarettes = health.getCigarettesPerDay() - recordHabit.getCigarettesSmoked();
-        double moneySaved = avoidedCigarettes * (health.getPackPrice() / health.getCigarettesPerPack());
+        if (!recordHabit.isProgressed()) {
+            double avoidedCigarettes = health.getCigarettesPerDay() - recordHabit.getCigarettesSmoked();
+            double moneySaved = avoidedCigarettes * (health.getPackPrice() / health.getCigarettesPerPack());
 
-        member.setCigarettesAvoided(member.getCigarettesAvoided() + avoidedCigarettes);
-        member.setMoneySaved(member.getMoneySaved() + moneySaved);
+            member.setCigarettesAvoided(member.getCigarettesAvoided() + avoidedCigarettes);
+            member.setMoneySaved(member.getMoneySaved() + moneySaved);
+
+            recordHabit.setProgressed(true);
+            recordHabitRepository.save(recordHabit);
+            memberRepository.save(member);
+        }
     }
 
     private void progressAutoCount(Member member, Health health) {
@@ -78,5 +88,7 @@ public class ProgressScheduler {
 
         member.setCigarettesAvoided(member.getCigarettesAvoided() + avoidedCigarettes);
         member.setMoneySaved(member.getMoneySaved() + moneySaved);
+
+        memberRepository.save(member);
     }
 }
