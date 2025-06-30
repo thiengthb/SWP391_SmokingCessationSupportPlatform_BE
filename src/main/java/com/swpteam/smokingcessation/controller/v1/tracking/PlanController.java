@@ -4,6 +4,7 @@ import com.swpteam.smokingcessation.domain.dto.plan.PlanRequest;
 import com.swpteam.smokingcessation.domain.dto.plan.PlanResponse;
 import com.swpteam.smokingcessation.common.ApiResponse;
 import com.swpteam.smokingcessation.constant.SuccessCode;
+import com.swpteam.smokingcessation.domain.dto.plan.PlanSummaryResponse;
 import com.swpteam.smokingcessation.service.interfaces.tracking.IPlanService;
 import com.swpteam.smokingcessation.utils.ResponseUtilService;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -73,6 +74,17 @@ public class PlanController {
         planService.softDeletePlanById(id);
         return responseUtilService.buildSuccessResponse(
                 SuccessCode.PLAN_DELETED
+        );
+    }
+
+    @GetMapping("/summary/{planId}")
+    ResponseEntity<ApiResponse<PlanSummaryResponse>> getPlanSummary(
+            @PathVariable String planId
+    ) {
+        PlanSummaryResponse summary = planService.getPlanSummary(planId);
+        return responseUtilService.buildSuccessResponse(
+                SuccessCode.PLAN_FETCHED_BY_ID,
+                summary
         );
     }
 

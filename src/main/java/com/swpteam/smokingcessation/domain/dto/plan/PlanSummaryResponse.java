@@ -1,6 +1,7 @@
 package com.swpteam.smokingcessation.domain.dto.plan;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.swpteam.smokingcessation.domain.enums.PlanStatus;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -13,7 +14,6 @@ import java.time.LocalDate;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class PlanSummaryResponse {
-    String planId;
     String planName;
     LocalDate startDate;
     LocalDate endDate;
@@ -22,6 +22,5 @@ public class PlanSummaryResponse {
     int totalMostSmoked;
     int totalLeastSmoked;
     Double successRate;
-    double progress;
-    String status;
+    PlanStatus planStatus;
 }

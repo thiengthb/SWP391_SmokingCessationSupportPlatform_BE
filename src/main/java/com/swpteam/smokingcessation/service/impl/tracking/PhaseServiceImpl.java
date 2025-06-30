@@ -183,7 +183,8 @@ public class PhaseServiceImpl implements IPhaseService {
                 .map(phaseMapper::toResponse)
                 .toList();
     }
-
+    @Transactional
+    @PreAuthorize("hasRole('MEMBER')")
     @Override
     public List<PhaseSummaryResponse> getCompletedPhaseSummaries(String planId) {
         List<Phase> phases = phaseRepository.findByPlanIdAndIsDeletedFalse(planId);

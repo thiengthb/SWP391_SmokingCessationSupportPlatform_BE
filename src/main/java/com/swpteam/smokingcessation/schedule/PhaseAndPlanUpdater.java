@@ -115,22 +115,53 @@ public class PhaseAndPlanUpdater {
     private void processPlanCompletion(Plan plan, Account account) {
         int totalPhases = plan.getPhases().size();
         int successCount = 0;
+        int maxCig = 0;
+        Integer minCig = null;
+        long totalReportedDays = 0;
+        long totalNotReportedDays = 0;
 
+        // DUYỆT 1 LẦN QUA TẤT CẢ PHASE
         for (Phase phase : plan.getPhases()) {
+            // Đếm số phase thành công
             if (phase.getPhaseStatus().equals(PhaseStatus.SUCCESS)) {
                 successCount++;
             }
+
+            // Tìm max thuốc
+            Integer phaseMax = phase.getMostSmokeCig();
+            if (phaseMax != null && phaseMax > maxCig) {
+                maxCig = phaseMax;
+            }
+
+            // Tìm min thuốc
+            Integer phaseMin = phase.getLeastSmokeCig();
+            if (phaseMin != null) {
+                if (minCig == null || phaseMin < minCig) {
+                    minCig = phaseMin;
+                }
+            }
+
+            // Tính tổng ngày báo cáo và chưa báo cáo
+            totalReportedDays += phase.getTotalDaysReported();
+            totalNotReportedDays += phase.getTotalDaysNotReported();
         }
 
+        // Cập nhật thông tin plan
         double successRatio = (double) successCount / totalPhases;
         PlanStatus planStatus = (successCount > totalPhases / 2) ? PlanStatus.COMPLETE : PlanStatus.FAILED;
         plan.setPlanStatus(planStatus);
+        plan.setTotalMostSmoked(maxCig);
+        plan.setTotalLeastSmoked(minCig != null ? minCig : 0);
+        plan.setTotalDaysReported(totalReportedDays);
+        plan.setTotalDaysNotReported(totalNotReportedDays);
 
+        // Cộng điểm nếu thành công
         if (planStatus == PlanStatus.COMPLETE) {
             log.info("score bonus for planSuccess:");
             scoreService.updateScore(account.getId(), ScoreRule.PLAN_SUCCESS);
         }
 
+        // Cập nhật DB và gửi thông báo
         planService.updateCompletedPlan(plan, successRatio * 100.0, plan.getPlanStatus());
         notificationService.sendPlanDoneNotification(plan.getPlanName(), account.getId());
     }

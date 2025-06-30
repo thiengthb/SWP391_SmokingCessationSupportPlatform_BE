@@ -2,6 +2,7 @@ package com.swpteam.smokingcessation.domain.mapper;
 
 import com.swpteam.smokingcessation.domain.dto.plan.PlanRequest;
 import com.swpteam.smokingcessation.domain.dto.plan.PlanResponse;
+import com.swpteam.smokingcessation.domain.dto.plan.PlanSummaryResponse;
 import com.swpteam.smokingcessation.domain.entity.Account;
 import com.swpteam.smokingcessation.domain.entity.Plan;
 import org.mapstruct.*;
@@ -17,6 +18,8 @@ public interface PlanMapper {
 
     @Mapping(target = "phases", source = "phases")
     void update(@MappingTarget Plan plan, PlanRequest request);
+
+    PlanSummaryResponse toSummaryResponse(Plan plan);
 
     @Named("planRound")
     default double roundToTwoDecimal(Double value) {

@@ -5,6 +5,7 @@ import com.swpteam.smokingcessation.common.PageableRequest;
 import com.swpteam.smokingcessation.domain.dto.phase.PhaseRequest;
 import com.swpteam.smokingcessation.domain.dto.phase.PhaseResponse;
 import com.swpteam.smokingcessation.domain.dto.phase.PhaseTemplateResponse;
+import com.swpteam.smokingcessation.domain.dto.plan.PlanSummaryResponse;
 import com.swpteam.smokingcessation.domain.dto.plan.PlanTemplateResponse;
 import com.swpteam.smokingcessation.domain.dto.tip.TipResponse;
 import com.swpteam.smokingcessation.domain.entity.*;
@@ -308,6 +309,20 @@ public class PlanServiceImpl implements IPlanService {
     @Override
     public List<Plan> getAllActivePlans() {
         return planRepository.findAllByPlanStatusAndIsDeletedFalse(PlanStatus.ACTIVE);
+    }
+
+    @Override
+    @Transactional
+    @PreAuthorize("hasRole('MEMBER')")
+    public PlanSummaryResponse getPlanSummary(String planId) {
+        Plan plan = planRepository.findByIdAndIsDeletedFalse(planId)
+                .orElseThrow(() -> new AppException(ErrorCode.PLAN_NOT_FOUND));
+
+        if (plan.getPlanStatus() != PlanStatus.COMPLETE && plan.getPlanStatus() != PlanStatus.FAILED) {
+            throw new AppException(ErrorCode.PLAN_NOT_FOUND);
+        }
+
+        return planMapper.toSummaryResponse(plan);
     }
 
     private double getPlanProgress(Plan plan) {
