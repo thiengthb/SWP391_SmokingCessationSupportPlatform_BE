@@ -13,6 +13,6 @@ public record PlanRequest(
         @Size(max = 255, message = "PLAN_DESCRIPTION_TOO_LONG")
         String description,
 
-        @NotNull(message = "PLAN_STATUS_REQUIRED")
+        @NotNull(message = "PHASE_REQUIRED")
         List<PhaseRequest> phases
 ) {}

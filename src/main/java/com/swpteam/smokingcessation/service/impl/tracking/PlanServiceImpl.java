@@ -82,7 +82,8 @@ public class PlanServiceImpl implements IPlanService {
     public PlanResponse getMyCurrentPlan() {
         Account currentAccount = authUtilService.getCurrentAccountOrThrowError();
 
-        Plan plan = planRepository.findByAccountIdAndPlanStatusAndIsDeletedFalse(currentAccount.getId(), PlanStatus.ACTIVE)
+        Plan plan = planRepository.findFirstByAccountIdAndPlanStatusInAndIsDeletedFalse(currentAccount.getId(),
+                        List.of(PlanStatus.ACTIVE, PlanStatus.PENDING))
                 .orElseThrow(() -> new AppException(ErrorCode.PLAN_NOT_FOUND));
 
         PlanResponse planResponse = planMapper.toResponse(plan);
@@ -99,10 +100,11 @@ public class PlanServiceImpl implements IPlanService {
     @CacheEvict(value = "PLAN_PAGE_CACHE", allEntries = true)
     public PlanResponse createPlan(PlanRequest request) {
         Account currentAccount = authUtilService.getCurrentAccountOrThrowError();
-        Optional<Plan> existingActivePlan = planRepository.findByAccountIdAndPlanStatusAndIsDeletedFalse(
-                currentAccount.getId(), PlanStatus.ACTIVE
+        Optional<Plan> existingPlan = planRepository.findFirstByAccountIdAndPlanStatusInAndIsDeletedFalse(
+                currentAccount.getId(),
+                List.of(PlanStatus.ACTIVE, PlanStatus.PENDING)
         );
-        if (existingActivePlan.isPresent()) {
+        if (existingPlan.isPresent()) {
             throw new AppException(ErrorCode.PLAN_ALREADY_EXISTED);
         }
 
