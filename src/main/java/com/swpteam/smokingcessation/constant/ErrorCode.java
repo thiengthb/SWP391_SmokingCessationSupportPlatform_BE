@@ -138,6 +138,12 @@ public enum ErrorCode {
     FTND_SCORE_INVALID(2215, "error.plan.ftnd_score_invalid", HttpStatus.BAD_REQUEST),
     PLAN_ALREADY_EXISTED(2216, "error.plan.already_existed", HttpStatus.CONFLICT),
     INVALID_PLAN_DURATION(2217, "error.plan.invalid_duration", HttpStatus.BAD_REQUEST),
+    CANNOT_UPDATE_PLAN_NOT_PENDING(2218,"error.plan.invalid_plan_status",HttpStatus.BAD_REQUEST),
+    PLAN_ALREADY_EXISTED_A(2219, "error.plan.already_existed_a", HttpStatus.BAD_REQUEST),
+    PLAN_ALREADY_EXISTED_B(2220, "error.plan.already_existed_b", HttpStatus.BAD_REQUEST),
+    RESTRICT_PLAN_A(2221, "error.plan.restrict_plan_a", HttpStatus.BAD_REQUEST),
+    RESTRICT_PLAN_B(2222, "error.plan.restrict_plan_b", HttpStatus.BAD_REQUEST),
+
 
     // Phase Errors (2300-2399)
     PHASE_NOT_FOUND(2300, "error.phase.not_found", HttpStatus.NOT_FOUND),

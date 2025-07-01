@@ -1,6 +1,7 @@
 package com.swpteam.smokingcessation.domain.dto.plan;
 
 import com.swpteam.smokingcessation.domain.dto.phase.PhaseRequest;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
 
 import java.util.List;
@@ -14,5 +15,6 @@ public record PlanRequest(
         String description,
 
         @NotNull(message = "PHASE_REQUIRED")
+        @Valid
         List<PhaseRequest> phases
 ) {}

@@ -55,11 +55,11 @@ public class PhaseController {
         );
     }
 
-    @GetMapping("/plan/{planId}/completed")
+    @GetMapping("/plan/{Id}/completed")
     ResponseEntity<ApiResponse<List<PhaseSummaryResponse>>> getCompletedPhaseSummaries(
-            @PathVariable String planId
+            @PathVariable String Id
     ) {
-        List<PhaseSummaryResponse> summaries = phaseService.getCompletedPhaseSummaries(planId);
+        List<PhaseSummaryResponse> summaries = phaseService.getCompletedPhaseSummaries(Id);
         return responseUtilService.buildSuccessResponse(
                 SuccessCode.PHASE_LIST_FETCHED,
                 summaries

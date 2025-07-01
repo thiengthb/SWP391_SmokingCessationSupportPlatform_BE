@@ -30,5 +30,10 @@ public interface PlanRepository extends JpaRepository<Plan, String> {
             Collection<PlanStatus> statuses
     );
 
+    List<Plan> findAllByAccountIdAndPlanStatusInAndIsDeletedFalse(
+            String accountId,
+            Collection<PlanStatus> statuses
+    );
 
+    Optional<Plan> findByIdAndAccountIdAndIsDeletedFalse(String planId, String accountId);
 }

@@ -10,6 +10,7 @@ import com.swpteam.smokingcessation.domain.dto.plan.PlanTemplateResponse;
 import com.swpteam.smokingcessation.domain.dto.tip.TipResponse;
 import com.swpteam.smokingcessation.domain.entity.*;
 import com.swpteam.smokingcessation.domain.enums.PlanStatus;
+import com.swpteam.smokingcessation.domain.mapper.PhaseMapper;
 import com.swpteam.smokingcessation.domain.mapper.PlanMapper;
 import com.swpteam.smokingcessation.domain.dto.plan.PlanRequest;
 import com.swpteam.smokingcessation.domain.dto.plan.PlanResponse;
@@ -51,6 +52,7 @@ public class PlanServiceImpl implements IPlanService {
     AuthUtilService authUtilService;
     IPhaseService phaseService;
     MessageSourceService messageSourceService;
+    PhaseMapper phaseMapper;
 
     @Override
     @PreAuthorize("hasRole('MEMBER')")
@@ -100,6 +102,69 @@ public class PlanServiceImpl implements IPlanService {
     @CacheEvict(value = "PLAN_PAGE_CACHE", allEntries = true)
     public PlanResponse createPlan(PlanRequest request) {
         Account currentAccount = authUtilService.getCurrentAccountOrThrowError();
+
+        // get Plan with status active and pending
+        List<Plan> existingPlans = planRepository.findAllByAccountIdAndPlanStatusInAndIsDeletedFalse(
+                currentAccount.getId(),
+                List.of(PlanStatus.ACTIVE, PlanStatus.PENDING)
+        );
+
+        Optional<Plan> activePlan = existingPlans.stream()
+                .filter(p -> p.getPlanStatus() == PlanStatus.ACTIVE)
+                .findFirst();
+
+        List<Plan> pendingPlans = existingPlans.stream()
+                .filter(p -> p.getPlanStatus() == PlanStatus.PENDING)
+                .toList();
+
+        // check if reach limited plan(2) ? throw error
+        restrictPlanLimit(activePlan, pendingPlans);
+
+        // Validate phases in plan
+        validatePhaseDates(request.phases());
+
+        // Get start and end DATE of new plan
+        LocalDate newStartDate = request.phases().stream()
+                .map(PhaseRequest::startDate)
+                .min(LocalDate::compareTo)
+                .get();
+
+        LocalDate newEndDate = request.phases().stream()
+                .map(PhaseRequest::endDate)
+                .max(LocalDate::compareTo)
+                .get();
+
+        //new plan have to be after active || not conflict pending
+        restrictPlanDate(newStartDate, newEndDate, activePlan, pendingPlans);
+
+        Plan plan = planMapper.toEntity(request);
+        if (plan.getPhases() != null) {
+            plan.getPhases().forEach(phase -> {
+                phase.setPlan(plan);
+                if (phase.getTips() != null) {
+                    phase.getTips().forEach(tip -> tip.setPhase(phase));
+                }
+            });
+        }
+        plan.getPhases().sort(Comparator.comparing(Phase::getStartDate));
+        for (int i = 0; i < plan.getPhases().size(); i++) {
+            plan.getPhases().get(i).setPhase(i + 1);
+        }
+
+        plan.setAccount(currentAccount);
+        plan.setStartDate(newStartDate);
+        plan.setEndDate(newEndDate);
+
+        if (plan.getStartDate().isEqual(LocalDate.now())) {
+            plan.setPlanStatus(PlanStatus.ACTIVE);
+        } else {
+            plan.setPlanStatus(PlanStatus.PENDING);
+        }
+
+        return planMapper.toResponse(planRepository.save(plan));
+    }
+
+       /* Account currentAccount = authUtilService.getCurrentAccountOrThrowError();
         Optional<Plan> existingPlan = planRepository.findFirstByAccountIdAndPlanStatusInAndIsDeletedFalse(
                 currentAccount.getId(),
                 List.of(PlanStatus.ACTIVE, PlanStatus.PENDING)
@@ -137,23 +202,59 @@ public class PlanServiceImpl implements IPlanService {
             plan.setPlanStatus(PlanStatus.PENDING);
         }
         return planMapper.toResponse(planRepository.save(plan));
-    }
+        }
+        */
+
 
     @Override
     @Transactional
     @PreAuthorize("hasRole('MEMBER')")
     @CachePut(value = "PLAN_CACHE", key = "#result.getId()")
     @CacheEvict(value = "PLAN_PAGE_CACHE", allEntries = true)
-    public PlanResponse updatePlanById(String id, PlanRequest request) {
-        Plan plan = findPlanByIdOrThrowError(id);
+    public PlanResponse updatePlanById(String planId, PlanRequest request) {
+        Account currentAccount = authUtilService.getCurrentAccountOrThrowError();
+        Plan plan = planRepository.findByIdAndAccountIdAndIsDeletedFalse(planId, currentAccount.getId())
+                .orElseThrow(() -> new AppException(ErrorCode.PLAN_NOT_FOUND));
 
-        if (request.phases() == null || request.phases().isEmpty()) {
-            throw new AppException(ErrorCode.PHASE_REQUIRED);
+        // 2. Chỉ cho phép update nếu PENDING
+        if (plan.getPlanStatus() != PlanStatus.PENDING) {
+            throw new AppException(ErrorCode.CANNOT_UPDATE_PLAN_NOT_PENDING);
         }
 
+        // 3. Validate phase ngày tháng
         validatePhaseDates(request.phases());
-        planMapper.update(plan, request);
 
+        // 4. Xóa toàn bộ phase cũ (nếu phase có quan hệ orphanRemoval=true thì sẽ tự động xóa DB)
+        plan.getPhases().clear();
+
+        // 5. Map phase mới từ request
+        List<Phase> newPhases = request.phases().stream()
+                .map(phaseRequest -> {
+                    Phase phase = phaseMapper.toEntity(phaseRequest);
+                    phase.setPlan(plan);
+                    if (phase.getTips() != null) {
+                        phase.getTips().forEach(tip -> tip.setPhase(phase));
+                    }
+                    return phase;
+                })
+                .toList();
+
+        // 6. Sắp xếp thứ tự
+        newPhases.sort(Comparator.comparing(Phase::getStartDate));
+        for (int i = 0; i < newPhases.size(); i++) {
+            newPhases.get(i).setPhase(i + 1);
+        }
+
+        // 7. Gán lại list phase
+        plan.setPhases(newPhases);
+
+        // 8. Cập nhật plan info
+        plan.setPlanName(request.planName());
+        plan.setDescription(request.description());
+        plan.setStartDate(newPhases.getFirst().getStartDate());
+        plan.setEndDate(newPhases.getLast().getEndDate());
+
+        // 9. Lưu và trả về response
         return planMapper.toResponse(planRepository.save(plan));
     }
 
@@ -239,16 +340,20 @@ public class PlanServiceImpl implements IPlanService {
         return plan;
     }
 
+    //validate for each phase in Plan
     private void validatePhaseDates(List<PhaseRequest> phases) {
+        //if List<phases> null => throw exception
         if (phases == null || phases.isEmpty()) {
             throw new AppException(ErrorCode.PHASE_REQUIRED);
         }
 
         for (PhaseRequest phase : phases) {
+            //ensure that in each phase , phase endDate must be after phase startDate
             if (!phase.endDate().isAfter(phase.startDate())) {
                 throw new AppException(ErrorCode.INVALID_PHASE_DATE);
             }
             long days = ChronoUnit.DAYS.between(phase.startDate(), phase.endDate()) + 1;
+            //ensue each phase duration must >=7 days
             if (days < 7) {
                 throw new AppException(ErrorCode.PHASE_DURATION_TOO_SHORT);
             }
@@ -258,13 +363,14 @@ public class PlanServiceImpl implements IPlanService {
         for (int i = 0; i < phases.size() - 1; i++) {
             PhaseRequest current = phases.get(i);
             PhaseRequest next = phases.get(i + 1);
+            //check phase 1-2, 2-3, 3-4,...n to ensure that the next phase startDate has to be exactly after currentPhase endDate
             if (!next.startDate().equals(current.endDate().plusDays(1))) {
                 throw new AppException(ErrorCode.NEW_PHASE_CONFLICT);
             }
         }
 
         long totalDays = ChronoUnit.DAYS.between(phases.getFirst().startDate(), phases.getLast().endDate()) + 1;
-
+        //validate that the total amount of a plan have to be >= 14 days
         if (totalDays < 14) {
             throw new AppException(ErrorCode.INVALID_PLAN_DURATION);
         }
@@ -341,5 +447,31 @@ public class PlanServiceImpl implements IPlanService {
         }
         double passed = ChronoUnit.DAYS.between(start, now) + 1;
         return passed / total;
+    }
+
+    private void restrictPlanLimit(Optional<Plan> activePlan, List<Plan> pendingPlans) {
+        if (pendingPlans.size() >= 2) {
+            throw new AppException(ErrorCode.PLAN_ALREADY_EXISTED_A);
+        }
+        if (activePlan.isPresent() && !pendingPlans.isEmpty()) {
+            throw new AppException(ErrorCode.PLAN_ALREADY_EXISTED_B);
+        }
+    }
+
+    private void restrictPlanDate(LocalDate newStartDate, LocalDate newEndDate,
+                                  Optional<Plan> activePlan, List<Plan> pendingPlans) {
+        if (pendingPlans.size() == 1) {
+            Plan pending = pendingPlans.getFirst();
+            boolean isBefore = newEndDate.isBefore(pending.getStartDate());
+            boolean isAfter = newStartDate.isAfter(pending.getEndDate());
+            if (!(isBefore || isAfter)) {
+                throw new AppException(ErrorCode.RESTRICT_PLAN_A);
+            }
+        }
+        if (activePlan.isPresent()) {
+            if (!newStartDate.isAfter(activePlan.get().getEndDate())) {
+                throw new AppException(ErrorCode.RESTRICT_PLAN_B);
+            }
+        }
     }
 }
