@@ -28,18 +28,17 @@ public class NotificationRestController {
     ResponseUtilService responseUtilService;
 
     @GetMapping
-    ResponseEntity<ApiResponse<PageResponse<NotificationResponse>>> getChats(
+    ResponseEntity<ApiResponse<PageResponse<NotificationResponse>>> getNotifications(
             @Valid PageableRequest request
     ) {
         return responseUtilService.buildSuccessResponse(
                 SuccessCode.NOTIFICATION_PAGE_FETCHED,
                 notificationService.getMyNotificationsPage(request)
         );
-
     }
 
     @GetMapping("/{id}")
-    ResponseEntity<ApiResponse<NotificationResponse>> getChatsById(
+    ResponseEntity<ApiResponse<NotificationResponse>> getNotificationsById(
             @PathVariable String id
     ) {
         return responseUtilService.buildSuccessResponse(
@@ -49,7 +48,7 @@ public class NotificationRestController {
     }
 
     @DeleteMapping("/{id}")
-    ResponseEntity<ApiResponse<Void>> deleteChat(
+    ResponseEntity<ApiResponse<Void>> deleteNotification(
             @PathVariable String id
     ) {
         notificationService.deleteNotification(id);

@@ -19,4 +19,5 @@ public class NotificationResponse {
     String content;
     NotificationType notificationType;
     LocalDateTime sentAt;
+    boolean isRead;
 }
