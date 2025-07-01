@@ -4,7 +4,7 @@
     "price": 0,
     "currency": "membership.currency",
     "durationDays": -1,
-    "isHighlighted": false,
+    "highlighted": false,
     "description": "membership.free.description"
   },
   {
@@ -12,7 +12,7 @@
     "price": "membership.monthly.price",
     "currency": "membership.currency",
     "durationDays": 30,
-    "isHighlighted": false,
+    "highlighted": false,
     "description": "membership.monthly.description"
   },
   {
@@ -20,7 +20,7 @@
     "price": "membership.quarterly.price",
     "currency": "membership.currency",
     "durationDays": 90,
-    "isHighlighted": true,
+    "highlighted": true,
     "description": "membership.quarterly.description"
   },
   {
@@ -28,7 +28,7 @@
     "price": "membership.yearly.price",
     "currency": "membership.currency",
     "durationDays": 365,
-    "isHighlighted": false,
+    "highlighted": false,
     "description": "membership.yearly.description"
   }
 ]

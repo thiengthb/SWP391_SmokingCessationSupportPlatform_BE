@@ -22,6 +22,7 @@ public class AccountResponse {
     String phoneNumber;
     Role role;
     AccountStatus status;
+    boolean havingSubscription;
     LocalDateTime createdAt;
     LocalDateTime updatedAt;
 }

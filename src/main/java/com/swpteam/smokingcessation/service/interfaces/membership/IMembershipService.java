@@ -1,7 +1,5 @@
 package com.swpteam.smokingcessation.service.interfaces.membership;
 
-import com.swpteam.smokingcessation.common.PageResponse;
-import com.swpteam.smokingcessation.common.PageableRequest;
 import com.swpteam.smokingcessation.domain.dto.membership.MembershipCreateRequest;
 import com.swpteam.smokingcessation.domain.dto.membership.MembershipCurrencyUpdateRequest;
 import com.swpteam.smokingcessation.domain.dto.membership.MembershipResponse;
@@ -12,9 +10,7 @@ import java.util.List;
 
 public interface IMembershipService {
 
-    List<MembershipResponse> getCategoryList();
-
-    PageResponse<MembershipResponse> getMembershipPage(PageableRequest request);
+    List<MembershipResponse> getMembershipList();
 
     MembershipResponse getMembershipById(String id);
 

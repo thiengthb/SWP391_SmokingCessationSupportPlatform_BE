@@ -31,7 +31,7 @@ public class Membership extends AuditableEntity {
     double price;
     int durationDays;
     String description;
-    boolean isHighlighted;
+    boolean highlighted;
 
     @Enumerated(EnumType.STRING)
     Currency currency;

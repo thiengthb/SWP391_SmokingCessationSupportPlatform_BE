@@ -7,6 +7,7 @@ import com.stripe.model.PaymentIntent;
 import com.stripe.model.checkout.Session;
 import com.stripe.param.checkout.SessionCreateParams;
 import com.swpteam.smokingcessation.domain.entity.Account;
+import com.swpteam.smokingcessation.domain.enums.Currency;
 import com.swpteam.smokingcessation.integration.mail.MailServiceImpl;
 import com.swpteam.smokingcessation.domain.entity.Membership;
 import com.swpteam.smokingcessation.domain.entity.Subscription;
@@ -43,12 +44,8 @@ public class StripeService implements IStripeService {
     IMembershipService membershipService;
 
     @NonFinal
-    @Value("${stripe.success-url}")
-    protected String successUrl;
-
-    @NonFinal
-    @Value("${stripe.cancel-url}")
-    protected String cancelUrl;
+    @Value("${app.frontend-domain}")
+    protected String frontEndDomain;
 
     @Override
     public StripeResponse checkoutSubscription(StripeSubscriptionRequest request) {
@@ -66,7 +63,7 @@ public class StripeService implements IStripeService {
         SessionCreateParams.LineItem.PriceData priceData =
                 SessionCreateParams.LineItem.PriceData.builder()
                         .setCurrency(membership.getCurrency() != null ? membership.getCurrency().name().toUpperCase() : "USD")
-                        .setUnitAmount((long) membership.getPrice())
+                        .setUnitAmount(calculatePriceFromStripeUnit(membership.getPrice(), membership.getCurrency()))
                         .setProductData(productData)
                         .build();
 
@@ -80,8 +77,8 @@ public class StripeService implements IStripeService {
         SessionCreateParams params =
                 SessionCreateParams.builder()
                         .setMode(SessionCreateParams.Mode.PAYMENT)
-                        .setSuccessUrl(successUrl)
-                        .setCancelUrl(cancelUrl)
+                        .setSuccessUrl(frontEndDomain + "/payment?success=true")
+                        .setCancelUrl(frontEndDomain + "/payment?success=fail")
                         .putMetadata("accountId", account.getId())
                         .putMetadata("membershipName", membership.getName())
                         .putMetadata("transactionId", transaction.getId())
@@ -102,6 +99,20 @@ public class StripeService implements IStripeService {
                 .sessionId(session.getId())
                 .sessionUrl(session.getUrl())
                 .build();
+    }
+
+    private long calculatePriceFromStripeUnit(double amount, Currency currency) {
+        switch (currency) {
+            case Currency.USD -> {
+                return (long) amount * 100;
+            }
+            case Currency.VND -> {
+                return (long) amount;
+            }
+            default -> {
+                throw new AppException(ErrorCode.INVALID_CURRENCY);
+            }
+        }
     }
 
     @Override

@@ -50,13 +50,22 @@ public class MailServiceImpl implements IMailService {
     @Value("${spring.mail.username}")
     String hostEmail;
 
+    private static final String VERIFICATION_EMAIL = "email/verification-email";
+    private static final String PAYMENT_SUCCESS_EMAIL = "email/payment_success_email";
+    private static final String MOTIVATION_EMAIL = "email/motivation_email";
+    private static final String REMINDER_EMAIL = "email/reminder_email";
+    private static final String RESET_PASSWORD_EMAIL = "email/reset_password_email";
+    private static final String MONTHLY_REPORT_EMAIL = "email/monthly_report_email";
+    private static final String BOOKING_REQUEST_EMAIL = "email/booking_request_email";
+    private static final String PLAN_SUMMARY_EMAIL = "email/plan_summary_email";
+
     @Override
     public void sendVerificationEmail(String to, String username, String verificationLink) {
         buildAndSendMail(
                 "Verify Email",
                 hostEmail,
                 to,
-                "verification-email",
+                VERIFICATION_EMAIL,
                 List.of(
                         Map.entry("username", username),
                         Map.entry("verificationLink", verificationLink)
@@ -78,7 +87,7 @@ public class MailServiceImpl implements IMailService {
                 "Payment Successful for Subscription ID " + subscription.getId(),
                 hostEmail,
                 account.getEmail(),
-                "motivation-template",
+                PAYMENT_SUCCESS_EMAIL,
                 List.of(
                         Map.entry("username", account.getUsername()),
                         Map.entry("amount", String.format("%.2f", amount / 100.0)),
@@ -95,7 +104,7 @@ public class MailServiceImpl implements IMailService {
                 "💪 Daily Motivation",
                 hostEmail,
                 to,
-                "motivation-template",
+                MOTIVATION_EMAIL,
                 List.of(
                         Map.entry("quote", message.getContent()),
                         Map.entry("sendTime", LocalDateTime.now())
@@ -110,7 +119,7 @@ public class MailServiceImpl implements IMailService {
                 "⏰ Friendly Reminder",
                 hostEmail,
                 to,
-                "reminder-template",
+                REMINDER_EMAIL,
                 List.of(
                         Map.entry("deadline", LocalDateTime.now().plusMinutes(30)),
                         Map.entry("resetLink", LocalDateTime.now())
@@ -125,7 +134,7 @@ public class MailServiceImpl implements IMailService {
                 "Reset password",
                 hostEmail,
                 to,
-                "reset-mail-template",
+                RESET_PASSWORD_EMAIL,
                 List.of(
                         Map.entry("userName", username),
                         Map.entry("resetLink", resetLink),
@@ -141,7 +150,7 @@ public class MailServiceImpl implements IMailService {
                 "Monthly performance report",
                 hostEmail,
                 to,
-                "monthly-report-email",
+                MONTHLY_REPORT_EMAIL,
                 List.of(
                         Map.entry("report", report)
                 )
@@ -167,11 +176,8 @@ public class MailServiceImpl implements IMailService {
                         Map.entry("phaseStatus", phaseStatus.toString())
                 )
         );
-
         log.info("Phase summary mail sent to {}", accountId);
     }
-
-
 
     @Override
     public void sendPlanSummary(
@@ -190,7 +196,7 @@ public class MailServiceImpl implements IMailService {
                 "Plan Summary Report",
                 hostEmail,
                 accountId,
-                "plan-summary-template", // Tên file template thymeleaf bạn tạo sau
+                PLAN_SUMMARY_EMAIL,
                 List.of(
                         Map.entry("planName", planName),
                         Map.entry("startDate", startDate),
@@ -203,13 +209,24 @@ public class MailServiceImpl implements IMailService {
                         Map.entry("successRate", successRate)
                 )
         );
-
         log.info("Plan summary mail sent to {}", accountId);
     }
 
     @Override
     public void sendBookingRequestEmail(String to, BookingRequest request, String username, String coachName, String bookingLink) {
-
+        LocalDateTime startedAt = DateTimeUtil.reformat(request.startedAt());
+        LocalDateTime endedAt = DateTimeUtil.reformat(request.endedAt());
+        buildAndSendMail("New Booking Request",
+                hostEmail,
+                to,
+                BOOKING_REQUEST_EMAIL,
+                List.of(
+                        Map.entry("startedAt", startedAt),
+                        Map.entry("endedAt", endedAt),
+                        Map.entry("memberName", username),
+                        Map.entry("bookingLink", bookingLink),
+                        Map.entry("coachName", coachName)
+                ));
     }
 
     @Override
@@ -223,15 +240,13 @@ public class MailServiceImpl implements IMailService {
             helper.setReplyTo(request.email());
             helper.setSubject("New Message From User: " + request.subject());
 
-            StringBuilder textContent = new StringBuilder();
-            textContent
-                    .append("Name: ").append(request.name()).append("\n")
-                    .append("Email: ").append(request.email()).append("\n")
-                    .append("Subject: ").append(request.subject()).append("\n\n")
-                    .append("Content:\n")
-                    .append(request.content());
+            String textContent = "Name: " + request.name() + "\n" +
+                    "Email: " + request.email() + "\n" +
+                    "Subject: " + request.subject() + "\n\n" +
+                    "Content:\n" +
+                    request.content();
 
-            helper.setText(textContent.toString(), false);
+            helper.setText(textContent, false);
 
             mailSender.send(mimeMessage);
 
@@ -241,7 +256,6 @@ public class MailServiceImpl implements IMailService {
             throw new AppException(ErrorCode.EMAIL_SEND_FAILED);
         }
     }
-
 
     private void buildAndSendMail(
             String title,

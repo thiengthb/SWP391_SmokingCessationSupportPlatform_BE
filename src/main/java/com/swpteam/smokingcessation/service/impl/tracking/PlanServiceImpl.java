@@ -2,6 +2,7 @@ package com.swpteam.smokingcessation.service.impl.tracking;
 
 import com.swpteam.smokingcessation.common.PageResponse;
 import com.swpteam.smokingcessation.common.PageableRequest;
+import com.swpteam.smokingcessation.constant.ResourceFilePaths;
 import com.swpteam.smokingcessation.domain.dto.health.HealthResponse;
 import com.swpteam.smokingcessation.domain.dto.phase.PhaseRequest;
 import com.swpteam.smokingcessation.domain.dto.phase.PhaseResponse;
@@ -68,10 +69,6 @@ public class PlanServiceImpl implements IPlanService {
 
         return new PageResponse<>(plans.map(planMapper::toPageResponse));
     }
-
-
-
-
 
     @Override
     @Cacheable(value = "PLAN_CACHE", key = "#id")
@@ -373,7 +370,7 @@ public class PlanServiceImpl implements IPlanService {
     @CachePut(value = "PLAN_CACHE", key = "'ALL'")
     public List<PlanResponse> generateAllPlans() {
         // Load all templates
-        List<PlanTemplateResponse> templates = FileLoaderUtil.loadPlanTemplate("init_data/quit_plan/quit_plan_templates.json");
+        List<PlanTemplateResponse> templates = FileLoaderUtil.loadPlanTemplate(ResourceFilePaths.QUIT_PLAN_TEMPLATES);
 
         List<PlanResponse> planResponses = new ArrayList<>();
 
