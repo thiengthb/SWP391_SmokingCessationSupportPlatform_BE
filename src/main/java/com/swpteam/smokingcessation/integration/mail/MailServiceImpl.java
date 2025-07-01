@@ -9,6 +9,8 @@ import com.swpteam.smokingcessation.domain.dto.report.ReportSummaryResponse;
 import com.swpteam.smokingcessation.domain.entity.Account;
 import com.swpteam.smokingcessation.domain.entity.Message;
 import com.swpteam.smokingcessation.domain.entity.Subscription;
+import com.swpteam.smokingcessation.domain.enums.PhaseStatus;
+import com.swpteam.smokingcessation.domain.enums.PlanStatus;
 import com.swpteam.smokingcessation.exception.AppException;
 import com.swpteam.smokingcessation.service.interfaces.identity.IAccountService;
 import com.swpteam.smokingcessation.service.interfaces.membership.ISubscriptionService;
@@ -148,51 +150,66 @@ public class MailServiceImpl implements IMailService {
     }
 
     @Override
-    public void sendPhaseSummary(String to, PhaseResponse phaseResponse) {
+    public void sendPhaseSummary(String planName, LocalDate startDate, LocalDate endDate, long totalReportedDays, long totalNotReportedDays, int totalMostSmoked, double successRate, PhaseStatus phaseStatus, String accountId) {
         buildAndSendMail(
                 "Phase Summary Report",
                 hostEmail,
-                to,
-                "phase-summary-template", // Tên file template thymeleaf bạn sẽ tạo sau
+                accountId,
+                "phase-summary-template", // Tên file template Thymeleaf cho phase
                 List.of(
-                        Map.entry("phase", phaseResponse.getPhase()),
-                        Map.entry("phaseName", phaseResponse.getPhaseName()),
-                        Map.entry("startDate", phaseResponse.getStartDate()),
-                        Map.entry("endDate", phaseResponse.getEndDate()),
-                        Map.entry("successRate", String.format("%.2f%%", phaseResponse.getSuccessRate())),
-                        Map.entry("phaseResult", phaseResponse.getPhaseStatus())
+                        Map.entry("planName", planName),
+                        Map.entry("startDate", startDate),
+                        Map.entry("endDate", endDate),
+                        Map.entry("totalReportedDays", totalReportedDays),
+                        Map.entry("totalNotReportedDays", totalNotReportedDays),
+                        Map.entry("totalMostSmoked", totalMostSmoked),
+                        Map.entry("successRate", String.format("%.2f", successRate)),
+                        Map.entry("phaseStatus", phaseStatus.toString())
                 )
         );
-        log.info("Phase summary mail sent to {}", to);
+
+        log.info("Phase summary mail sent to {}", accountId);
     }
 
+
+
     @Override
-    public void sendPlanSummary(String to, PlanResponse planResponse) {
+    public void sendPlanSummary(
+            String planName,
+            LocalDate startDate,
+            LocalDate endDate,
+            long totalReportedDays,
+            long totalNotReportedDays,
+            int totalMostSmoked,
+            Integer totalLeastSmoked,
+            String accountId,
+            PlanStatus planStatus,
+            Double successRate
+    ) {
         buildAndSendMail(
                 "Plan Summary Report",
                 hostEmail,
-                to,
-                "plan-summary-template",
+                accountId,
+                "plan-summary-template", // Tên file template thymeleaf bạn tạo sau
                 List.of(
-
+                        Map.entry("planName", planName),
+                        Map.entry("startDate", startDate),
+                        Map.entry("endDate", endDate),
+                        Map.entry("totalReportedDays", totalReportedDays),
+                        Map.entry("totalNotReportedDays", totalNotReportedDays),
+                        Map.entry("totalMostSmoked", totalMostSmoked),
+                        Map.entry("totalLeastSmoked", totalLeastSmoked),
+                        Map.entry("planStatus", planStatus),
+                        Map.entry("successRate", successRate)
                 )
         );
+
+        log.info("Plan summary mail sent to {}", accountId);
     }
 
+    @Override
     public void sendBookingRequestEmail(String to, BookingRequest request, String username, String coachName, String bookingLink) {
-        LocalDateTime startedAt = DateTimeUtil.reformat(request.startedAt());
-        LocalDateTime endedAt = DateTimeUtil.reformat(request.endedAt());
-        buildAndSendMail("New Booking Request",
-                hostEmail,
-                to,
-                "coach-booking-request",
-                List.of(
-                        Map.entry("startedAt", startedAt),
-                        Map.entry("endedAt", endedAt),
-                        Map.entry("memberName", username),
-                        Map.entry("bookingLink", bookingLink),
-                        Map.entry("coachName", coachName)
-                ));
+
     }
 
     @Override

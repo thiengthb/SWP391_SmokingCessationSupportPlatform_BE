@@ -7,6 +7,10 @@ import com.swpteam.smokingcessation.domain.dto.booking.BookingRequest;
 import com.swpteam.smokingcessation.domain.dto.report.ReportSummaryResponse;
 import com.swpteam.smokingcessation.domain.entity.Account;
 import com.swpteam.smokingcessation.domain.entity.Message;
+import com.swpteam.smokingcessation.domain.enums.PhaseStatus;
+import com.swpteam.smokingcessation.domain.enums.PlanStatus;
+
+import java.time.LocalDate;
 
 public interface IMailService {
 
@@ -22,9 +26,28 @@ public interface IMailService {
 
     void sendReportEmail(String to, ReportSummaryResponse report);
 
-    void sendPhaseSummary(String to, PhaseResponse phaseResponse);
-
-    void sendPlanSummary(String to, PlanResponse planResponse);
+    void sendPhaseSummary(
+            String planName,
+            LocalDate startDate,
+            LocalDate endDate,
+            long totalReportedDays,
+            long totalNotReportedDays,
+            int totalMostSmoked,
+            double successRate,
+            PhaseStatus phaseStatus,
+            String accountId
+    );
+    void sendPlanSummary(    String planName,
+                             LocalDate startDate,
+                             LocalDate endDate,
+                             long totalReportedDays,
+                             long totalNotReportedDays,
+                             int totalMostSmoked,
+                             Integer totalLeastSmoked,
+                             String accountId,
+                             PlanStatus planStatus,
+                             Double successRate
+                             ) ;
 
     void sendBookingRequestEmail(String to, BookingRequest request, String username, String coachName, String bookingLink);
 

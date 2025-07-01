@@ -33,7 +33,10 @@ public enum ScoreRule {
 
     REPORT_ALL_PLAN(400,"no missing record in all phases"),
 
-    ACHIEVEMENT_EARNED(3000,"Member reach a goal");
+    ACHIEVEMENT_EARNED(3000,"Member reach a goal"),
+
+    NO_SMOKING_DAY_AUTO_COUNTER(10,"daily bonus for auto counter");
+
     private final int point;
     private final String label;
 

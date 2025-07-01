@@ -1,9 +1,11 @@
 package com.swpteam.smokingcessation.schedule;
 
 import com.swpteam.smokingcessation.domain.entity.*;
+import com.swpteam.smokingcessation.domain.enums.AccountStatus;
 import com.swpteam.smokingcessation.domain.enums.PhaseStatus;
 import com.swpteam.smokingcessation.domain.enums.PlanStatus;
 import com.swpteam.smokingcessation.domain.enums.ScoreRule;
+import com.swpteam.smokingcessation.integration.mail.IMailService;
 import com.swpteam.smokingcessation.service.interfaces.notification.INotificationService;
 import com.swpteam.smokingcessation.service.interfaces.profile.IScoreService;
 import com.swpteam.smokingcessation.service.interfaces.profile.ISettingService;
@@ -35,6 +37,7 @@ public class PhaseAndPlanUpdater {
     IRecordHabitService recordHabitService;
     IScoreService scoreService;
     INotificationService notificationService;
+    IMailService mailService;
 
     @Transactional
     @Scheduled(cron = "*/30 * * * * *")
@@ -120,20 +123,16 @@ public class PhaseAndPlanUpdater {
         long totalReportedDays = 0;
         long totalNotReportedDays = 0;
 
-        // DUYỆT 1 LẦN QUA TẤT CẢ PHASE
         for (Phase phase : plan.getPhases()) {
-            // Đếm số phase thành công
             if (phase.getPhaseStatus().equals(PhaseStatus.SUCCESS)) {
                 successCount++;
             }
 
-            // Tìm max thuốc
             Integer phaseMax = phase.getMostSmokeCig();
             if (phaseMax != null && phaseMax > maxCig) {
                 maxCig = phaseMax;
             }
 
-            // Tìm min thuốc
             Integer phaseMin = phase.getLeastSmokeCig();
             if (phaseMin != null) {
                 if (minCig == null || phaseMin < minCig) {
@@ -141,12 +140,10 @@ public class PhaseAndPlanUpdater {
                 }
             }
 
-            // Tính tổng ngày báo cáo và chưa báo cáo
             totalReportedDays += phase.getTotalDaysReported();
             totalNotReportedDays += phase.getTotalDaysNotReported();
         }
 
-        // Cập nhật thông tin plan
         double successRatio = (double) successCount / totalPhases;
         PlanStatus planStatus = (successCount > totalPhases / 2) ? PlanStatus.COMPLETE : PlanStatus.FAILED;
         plan.setPlanStatus(planStatus);
@@ -155,19 +152,23 @@ public class PhaseAndPlanUpdater {
         plan.setTotalDaysReported(totalReportedDays);
         plan.setTotalDaysNotReported(totalNotReportedDays);
 
-        // Cộng điểm nếu thành công
         if (planStatus == PlanStatus.COMPLETE) {
             log.info("score bonus for planSuccess:");
             scoreService.updateScore(account.getId(), ScoreRule.PLAN_SUCCESS);
         }
 
-        // Cập nhật DB và gửi thông báo
         planService.updateCompletedPlan(plan, successRatio * 100.0, plan.getPlanStatus());
-        notificationService.sendPlanDoneNotification(plan.getPlanName(), account.getId());
+        if(account.getStatus() == AccountStatus.ONLINE){
+            notificationService.sendPlanDoneNotification(plan.getPlanName(), account.getId());
+        }else {
+            mailService.sendPlanSummary(plan.getPlanName(),plan.getStartDate(),plan.getEndDate(),totalReportedDays,totalNotReportedDays,maxCig,minCig,account.getId(),plan.getPlanStatus(),plan.getSuccessRate());
+        }
     }
 
     private void processFullyReported(Plan plan, String accountId) {
-        if (allPhasesFullyReported(plan, accountId)) {
+        if ((plan.getPlanStatus() == PlanStatus.COMPLETE || plan.getPlanStatus() == PlanStatus.FAILED)
+                        && allPhasesFullyReported(plan, accountId)
+        ) {
             log.info("earned REPORT_ALL_PLAN score");
             scoreService.updateScore(accountId, ScoreRule.REPORT_ALL_PLAN);
         }

@@ -2,6 +2,7 @@ package com.swpteam.smokingcessation.service.impl.tracking;
 
 import com.swpteam.smokingcessation.domain.dto.phase.PhaseSummaryResponse;
 import com.swpteam.smokingcessation.domain.entity.RecordHabit;
+import com.swpteam.smokingcessation.domain.enums.AccountStatus;
 import com.swpteam.smokingcessation.domain.enums.PhaseStatus;
 import com.swpteam.smokingcessation.domain.enums.ScoreRule;
 import com.swpteam.smokingcessation.domain.mapper.PhaseMapper;
@@ -170,9 +171,21 @@ public class PhaseServiceImpl implements IPhaseService {
 
         phaseRepository.save(phase);
         notificationService.sendPhaseDoneNotification(phase.getPhase(),accountId);
-        PhaseResponse phaseResponse = phaseMapper.toResponse(phase);
-        String userMail = phase.getPlan().getAccount().getEmail();
-        //mailService.sendPhaseSummary(userMail, phaseResponse);
+        if (phase.getPlan().getAccount().getStatus() == AccountStatus.ONLINE) {
+            notificationService.sendPhaseDoneNotification(phase.getPhase(), accountId);
+        }else {
+            mailService.sendPhaseSummary(
+                    phase.getPlan().getPlanName(),
+                    phase.getPlan().getStartDate(),
+                    phase.getPlan().getEndDate(),
+                    totalDays - missingDays,
+                    missingDays,
+                    maxSmoked,
+                    successRate,
+                    phase.getPhaseStatus(),
+                    accountId);
+        }
+
 
     }
 

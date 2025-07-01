@@ -9,6 +9,7 @@ import com.swpteam.smokingcessation.domain.entity.Account;
 import com.swpteam.smokingcessation.domain.entity.RecordHabit;
 import com.swpteam.smokingcessation.domain.entity.Streak;
 import com.swpteam.smokingcessation.domain.enums.ScoreRule;
+import com.swpteam.smokingcessation.domain.enums.TrackingMode;
 import com.swpteam.smokingcessation.domain.mapper.RecordHabitMapper;
 import com.swpteam.smokingcessation.exception.AppException;
 import com.swpteam.smokingcessation.repository.RecordHabitRepository;
@@ -92,7 +93,11 @@ public class RecordHabitServiceImpl implements IRecordHabitService {
                 .orElseGet(() -> streakService.createStreak(curentAccount.getId(), 0));
 
         streakService.updateStreak(curentAccount.getId(), streak.getNumber() + 1);
-        scoreService.updateScore(curentAccount.getId(), ScoreRule.REPORT_DAY_HAS);
+        if(curentAccount.getSetting().getTrackingMode()== TrackingMode.DAILY_RECORD){
+            scoreService.updateScore(curentAccount.getId(), ScoreRule.REPORT_DAY_HAS);
+        }else{
+            scoreService.updateScore(curentAccount.getId(),ScoreRule.NO_SMOKING_DAY_AUTO_COUNTER);
+        }
         return recordHabitMapper.toResponse(recordHabitRepository.save(recordHabit));
     }
 
