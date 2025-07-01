@@ -5,7 +5,7 @@ import com.swpteam.smokingcessation.domain.entity.Setting;
 import com.swpteam.smokingcessation.domain.enums.AccountStatus;
 import com.swpteam.smokingcessation.domain.enums.AuthProvider;
 import com.swpteam.smokingcessation.domain.enums.Role;
-import com.swpteam.smokingcessation.repository.AccountRepository;
+import com.swpteam.smokingcessation.repository.jpa.AccountRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;

@@ -1,11 +1,11 @@
 package com.swpteam.smokingcessation.schedule;
 
 import com.swpteam.smokingcessation.domain.entity.Account;
-import com.swpteam.smokingcessation.integration.mail.MailServiceImpl;
+import com.swpteam.smokingcessation.feature.integration.mail.MailServiceImpl;
 import com.swpteam.smokingcessation.domain.entity.Message;
-import com.swpteam.smokingcessation.repository.MessageRepository;
+import com.swpteam.smokingcessation.repository.jpa.MessageRepository;
 import com.swpteam.smokingcessation.domain.entity.Setting;
-import com.swpteam.smokingcessation.repository.SettingRepository;
+import com.swpteam.smokingcessation.repository.jpa.SettingRepository;
 import com.swpteam.smokingcessation.domain.enums.MotivationFrequency;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;

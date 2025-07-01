@@ -5,7 +5,7 @@ import com.nimbusds.jose.JOSEException;
 import com.nimbusds.oauth2.sdk.ParseException;
 import com.swpteam.smokingcessation.common.ApiResponse;
 import com.swpteam.smokingcessation.constant.ErrorCode;
-import com.swpteam.smokingcessation.service.impl.internalization.MessageSourceService;
+import com.swpteam.smokingcessation.feature.version1.internalization.MessageSourceService;
 import com.swpteam.smokingcessation.utils.ResponseUtilService;
 import jakarta.mail.MessagingException;
 import jakarta.persistence.EntityNotFoundException;

@@ -1,6 +1,6 @@
 package com.swpteam.smokingcessation.security;
 
-import com.swpteam.smokingcessation.service.interfaces.identity.IAuthenticationService;
+import com.swpteam.smokingcessation.feature.version1.identity.service.IAuthenticationService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;

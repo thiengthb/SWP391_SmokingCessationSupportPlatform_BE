@@ -2,7 +2,7 @@ package com.swpteam.smokingcessation.initialize;
 
 import com.swpteam.smokingcessation.constant.App;
 import com.swpteam.smokingcessation.domain.entity.Category;
-import com.swpteam.smokingcessation.repository.CategoryRepository;
+import com.swpteam.smokingcessation.repository.jpa.CategoryRepository;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
