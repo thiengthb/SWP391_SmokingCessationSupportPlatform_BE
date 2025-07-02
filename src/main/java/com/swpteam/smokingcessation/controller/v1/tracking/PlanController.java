@@ -1,5 +1,9 @@
 package com.swpteam.smokingcessation.controller.v1.tracking;
 
+import com.swpteam.smokingcessation.common.PageResponse;
+import com.swpteam.smokingcessation.common.PageableRequest;
+import com.swpteam.smokingcessation.domain.dto.health.HealthResponse;
+import com.swpteam.smokingcessation.domain.dto.plan.PlanPageResponse;
 import com.swpteam.smokingcessation.domain.dto.plan.PlanRequest;
 import com.swpteam.smokingcessation.domain.dto.plan.PlanResponse;
 import com.swpteam.smokingcessation.common.ApiResponse;
@@ -34,6 +38,16 @@ public class PlanController {
         return responseUtilService.buildSuccessResponse(
                 SuccessCode.PLAN_FETCHED_BY_ID,
                 planService.getMyCurrentPlan()
+        );
+    }
+
+    @GetMapping
+    ResponseEntity<ApiResponse<PageResponse<PlanPageResponse>>> getPlanPage(
+            @Valid PageableRequest request
+    ) {
+        return responseUtilService.buildSuccessResponse(
+                SuccessCode.PLAN_PAGE_FETCHED,
+                planService.getMyPlanPage(request)
         );
     }
 

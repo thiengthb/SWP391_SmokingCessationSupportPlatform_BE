@@ -1,5 +1,6 @@
 package com.swpteam.smokingcessation.domain.mapper;
 
+import com.swpteam.smokingcessation.domain.dto.plan.PlanPageResponse;
 import com.swpteam.smokingcessation.domain.dto.plan.PlanRequest;
 import com.swpteam.smokingcessation.domain.dto.plan.PlanResponse;
 import com.swpteam.smokingcessation.domain.dto.plan.PlanSummaryResponse;
@@ -20,6 +21,8 @@ public interface PlanMapper {
     void update(@MappingTarget Plan plan, PlanRequest request);
 
     PlanSummaryResponse toSummaryResponse(Plan plan);
+
+    PlanPageResponse toPageResponse(Plan plan);
 
     @Named("planRound")
     default double roundToTwoDecimal(Double value) {

@@ -1,5 +1,6 @@
 package com.swpteam.smokingcessation.repository;
 
+import com.swpteam.smokingcessation.domain.entity.Health;
 import com.swpteam.smokingcessation.domain.entity.Plan;
 import com.swpteam.smokingcessation.domain.enums.PlanStatus;
 import org.springframework.data.domain.Page;
@@ -34,6 +35,7 @@ public interface PlanRepository extends JpaRepository<Plan, String> {
             String accountId,
             Collection<PlanStatus> statuses
     );
+    Page<Plan> findAllByIsDeletedFalse(Pageable pageable);
 
     Optional<Plan> findByIdAndAccountIdAndIsDeletedFalse(String planId, String accountId);
 }
