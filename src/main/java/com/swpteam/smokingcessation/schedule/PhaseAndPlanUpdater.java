@@ -54,7 +54,6 @@ public class PhaseAndPlanUpdater {
             //find plan using accountId and plan status is ACTIVE (1 account only have 1 active plan)
             try {
                 plan = planService.findByAccountIdAndPlanStatusAndIsDeletedFalse(account.getId(), PlanStatus.ACTIVE);
-                log.info("found active plan with accId:{}", plan.getAccount().getId());
             } catch (Exception e) {
                 log.warn("No ACTIVE plan found for account: {}", account.getId());
                 continue;
@@ -78,6 +77,7 @@ public class PhaseAndPlanUpdater {
     @Scheduled(cron = "0 0 0 * * *")
     public void checkPendingPlans() {
         planService.dailyCheckingPlanStatus();
+        phaseService.dailyCheckingPhaseStatus();
     }
 
 
@@ -158,16 +158,16 @@ public class PhaseAndPlanUpdater {
         }
 
         planService.updateCompletedPlan(plan, successRatio * 100.0, plan.getPlanStatus());
-        if(account.getStatus() == AccountStatus.ONLINE){
+        if (account.getStatus() == AccountStatus.ONLINE) {
             notificationService.sendPlanDoneNotification(plan.getPlanName(), account.getId());
-        }else {
-            mailService.sendPlanSummary(plan.getPlanName(),plan.getStartDate(),plan.getEndDate(),totalReportedDays,totalNotReportedDays,maxCig,minCig,account.getId(),plan.getPlanStatus(),plan.getSuccessRate());
+        } else {
+            mailService.sendPlanSummary(plan.getPlanName(), plan.getStartDate(), plan.getEndDate(), totalReportedDays, totalNotReportedDays, maxCig, minCig, account.getId(), plan.getPlanStatus(), plan.getSuccessRate());
         }
     }
 
     private void processFullyReported(Plan plan, String accountId) {
         if ((plan.getPlanStatus() == PlanStatus.COMPLETE || plan.getPlanStatus() == PlanStatus.FAILED)
-                        && allPhasesFullyReported(plan, accountId)
+                && allPhasesFullyReported(plan, accountId)
         ) {
             log.info("earned REPORT_ALL_PLAN score");
             scoreService.updateScore(accountId, ScoreRule.REPORT_ALL_PLAN);

@@ -9,6 +9,7 @@ import com.swpteam.smokingcessation.domain.dto.plan.PlanSummaryResponse;
 import com.swpteam.smokingcessation.domain.dto.plan.PlanTemplateResponse;
 import com.swpteam.smokingcessation.domain.dto.tip.TipResponse;
 import com.swpteam.smokingcessation.domain.entity.*;
+import com.swpteam.smokingcessation.domain.enums.PhaseStatus;
 import com.swpteam.smokingcessation.domain.enums.PlanStatus;
 import com.swpteam.smokingcessation.domain.mapper.PhaseMapper;
 import com.swpteam.smokingcessation.domain.mapper.PlanMapper;
@@ -157,8 +158,15 @@ public class PlanServiceImpl implements IPlanService {
 
         if (plan.getStartDate().isEqual(LocalDate.now())) {
             plan.setPlanStatus(PlanStatus.ACTIVE);
+            plan.getPhases().getFirst().setPhaseStatus(PhaseStatus.ACTIVE);
+            for (int i = 1; i < plan.getPhases().size(); i++) {
+                plan.getPhases().get(i).setPhaseStatus(PhaseStatus.PENDING);
+            }
         } else {
             plan.setPlanStatus(PlanStatus.PENDING);
+            plan.getPhases().forEach(phase -> {
+                phase.setPhaseStatus(PhaseStatus.PENDING);
+            });
         }
 
         return planMapper.toResponse(planRepository.save(plan));
@@ -386,6 +394,7 @@ public class PlanServiceImpl implements IPlanService {
         for (Plan plan : pendingPlans) {
             if (plan.getStartDate().isEqual(today)) {
                 plan.setPlanStatus(PlanStatus.ACTIVE);
+                plan.getPhases().getFirst().setPhaseStatus(PhaseStatus.ACTIVE);
             }
         }
         planRepository.saveAll(pendingPlans);

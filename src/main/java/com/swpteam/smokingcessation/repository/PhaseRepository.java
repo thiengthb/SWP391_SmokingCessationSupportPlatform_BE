@@ -1,6 +1,7 @@
 package com.swpteam.smokingcessation.repository;
 
 import com.swpteam.smokingcessation.domain.entity.Phase;
+import com.swpteam.smokingcessation.domain.enums.PhaseStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -28,5 +29,7 @@ public interface PhaseRepository extends JpaRepository<Phase, String> {
     List<Phase> findAllByPlanIdAndIsDeletedFalseOrderByStartDateAsc(String planId);
 
     List<Phase> findByPlanIdAndIsDeletedFalse(String planId);
+
+    List<Phase> findByStartDateAndPhaseStatusAndIsDeletedFalse(LocalDate today, PhaseStatus phaseStatus);
 
 }

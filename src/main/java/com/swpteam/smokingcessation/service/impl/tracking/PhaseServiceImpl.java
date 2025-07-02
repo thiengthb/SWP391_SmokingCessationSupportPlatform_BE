@@ -95,7 +95,7 @@ public class PhaseServiceImpl implements IPhaseService {
         long successDays = 0;
         long missingDays = 0;
         int totalCigs = 0;
-        String accountId=phase.getPlan().getAccount().getId();
+        String accountId = phase.getPlan().getAccount().getId();
 
         Map<LocalDate, RecordHabit> recordMap = new HashMap<>();
         for (RecordHabit record : allRecords) {
@@ -115,7 +115,7 @@ public class PhaseServiceImpl implements IPhaseService {
                 int cigs = record.getCigarettesSmoked();
                 totalCigs += record.getCigarettesSmoked();
 
-                if(cigs > maxSmoked){
+                if (cigs > maxSmoked) {
                     maxSmoked = cigs;
                 }
 
@@ -128,9 +128,9 @@ public class PhaseServiceImpl implements IPhaseService {
                 }
             }
         }
-        if(isPhaseFullyReported(totalDays,allRecords)){
+        if (isPhaseFullyReported(totalDays, allRecords)) {
             log.info("report all phase award:");
-            scoreService.updateScore(accountId,ScoreRule.REPORTED_ALL_PHASE);
+            scoreService.updateScore(accountId, ScoreRule.REPORTED_ALL_PHASE);
         }
 
         long allowedTotalCigs = maxCigPerDay * totalDays;
@@ -160,7 +160,7 @@ public class PhaseServiceImpl implements IPhaseService {
 
 
         phase.setTotalDaysNotReported(missingDays);
-        phase.setTotalDaysReported(totalDays-missingDays);
+        phase.setTotalDaysReported(totalDays - missingDays);
         if (missingDays == totalDays) {
             phase.setMostSmokeCig(0);
             phase.setLeastSmokeCig(0);
@@ -170,10 +170,10 @@ public class PhaseServiceImpl implements IPhaseService {
         }
 
         phaseRepository.save(phase);
-        notificationService.sendPhaseDoneNotification(phase.getPhase(),accountId);
+        notificationService.sendPhaseDoneNotification(phase.getPhase(), accountId);
         if (phase.getPlan().getAccount().getStatus() == AccountStatus.ONLINE) {
             notificationService.sendPhaseDoneNotification(phase.getPhase(), accountId);
-        }else {
+        } else {
             mailService.sendPhaseSummary(
                     phase.getPlan().getPlanName(),
                     phase.getPlan().getStartDate(),
@@ -196,6 +196,7 @@ public class PhaseServiceImpl implements IPhaseService {
                 .map(phaseMapper::toResponse)
                 .toList();
     }
+
     @Transactional
     @PreAuthorize("hasRole('MEMBER')")
     @Override
@@ -219,6 +220,17 @@ public class PhaseServiceImpl implements IPhaseService {
     @Override
     public boolean isPhaseFullyReported(Long totalDays, List<RecordHabit> recordHabits) {
         return !recordHabits.isEmpty() && recordHabits.size() == totalDays;
+
+    }
+
+    @Override
+    public void dailyCheckingPhaseStatus() {
+        LocalDate now = LocalDate.now();
+        List<Phase> pendingPhases = phaseRepository.findByStartDateAndPhaseStatusAndIsDeletedFalse(now, PhaseStatus.PENDING);
+        if (!pendingPhases.isEmpty()) {
+            pendingPhases.forEach(phase -> phase.setPhaseStatus(PhaseStatus.ACTIVE));
+            phaseRepository.saveAll(pendingPhases);
+        }
 
     }
 }

@@ -27,4 +27,6 @@ public interface IPhaseService {
     List<PhaseSummaryResponse> getCompletedPhaseSummaries(String planId);
 
     boolean isPhaseFullyReported(Long totalDays, List<RecordHabit> recordHabits);
+
+    void dailyCheckingPhaseStatus();
 }
