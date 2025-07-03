@@ -21,6 +21,9 @@ public class Score extends AuditableEntity {
 
     int score;
 
+    @Column(name = "score_rank")
+    int rank;
+
     public static Score getDefaultScore(Account account) {
         return Score.builder()
                 .account(account)
