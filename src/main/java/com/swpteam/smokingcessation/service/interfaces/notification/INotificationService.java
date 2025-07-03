@@ -12,6 +12,10 @@ public interface INotificationService {
 
     void sendBookingNotification(String username, String coachId);
 
+    void sendPlanDoneNotification(String planName, String accountId );
+
+    void sendPhaseDoneNotification(int phase, String accountId);
+
     void markAsRead(String id);
 
     PageResponse<NotificationResponse> getMyNotificationsPage(PageableRequest request);

@@ -1,5 +1,6 @@
 package com.swpteam.smokingcessation.repository;
 
+import com.swpteam.smokingcessation.domain.entity.Health;
 import com.swpteam.smokingcessation.domain.entity.Plan;
 import com.swpteam.smokingcessation.domain.enums.PlanStatus;
 import org.springframework.data.domain.Page;
@@ -8,6 +9,7 @@ import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -24,5 +26,16 @@ public interface PlanRepository extends JpaRepository<Plan, String> {
 
     Optional<Plan> findByAccountIdAndPlanStatusAndIsDeletedFalse(String accountId, PlanStatus planStatus);
 
+    Optional<Plan> findFirstByAccountIdAndPlanStatusInAndIsDeletedFalse(
+            String accountId,
+            Collection<PlanStatus> statuses
+    );
 
+    List<Plan> findAllByAccountIdAndPlanStatusInAndIsDeletedFalse(
+            String accountId,
+            Collection<PlanStatus> statuses
+    );
+    Page<Plan> findAllByIsDeletedFalse(Pageable pageable);
+
+    Optional<Plan> findByIdAndAccountIdAndIsDeletedFalse(String planId, String accountId);
 }

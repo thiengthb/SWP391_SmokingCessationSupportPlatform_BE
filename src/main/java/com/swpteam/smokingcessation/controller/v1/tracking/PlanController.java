@@ -1,9 +1,14 @@
 package com.swpteam.smokingcessation.controller.v1.tracking;
 
+import com.swpteam.smokingcessation.common.PageResponse;
+import com.swpteam.smokingcessation.common.PageableRequest;
+import com.swpteam.smokingcessation.domain.dto.health.HealthResponse;
+import com.swpteam.smokingcessation.domain.dto.plan.PlanPageResponse;
 import com.swpteam.smokingcessation.domain.dto.plan.PlanRequest;
 import com.swpteam.smokingcessation.domain.dto.plan.PlanResponse;
 import com.swpteam.smokingcessation.common.ApiResponse;
 import com.swpteam.smokingcessation.constant.SuccessCode;
+import com.swpteam.smokingcessation.domain.dto.plan.PlanSummaryResponse;
 import com.swpteam.smokingcessation.service.interfaces.tracking.IPlanService;
 import com.swpteam.smokingcessation.utils.ResponseUtilService;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -33,6 +38,16 @@ public class PlanController {
         return responseUtilService.buildSuccessResponse(
                 SuccessCode.PLAN_FETCHED_BY_ID,
                 planService.getMyCurrentPlan()
+        );
+    }
+
+    @GetMapping
+    ResponseEntity<ApiResponse<PageResponse<PlanPageResponse>>> getPlanPage(
+            @Valid PageableRequest request
+    ) {
+        return responseUtilService.buildSuccessResponse(
+                SuccessCode.PLAN_PAGE_FETCHED,
+                planService.getMyPlanPage(request)
         );
     }
 
@@ -73,6 +88,17 @@ public class PlanController {
         planService.softDeletePlanById(id);
         return responseUtilService.buildSuccessResponse(
                 SuccessCode.PLAN_DELETED
+        );
+    }
+
+    @GetMapping("/summary/{planId}")
+    ResponseEntity<ApiResponse<PlanSummaryResponse>> getPlanSummary(
+            @PathVariable String planId
+    ) {
+        PlanSummaryResponse summary = planService.getPlanSummary(planId);
+        return responseUtilService.buildSuccessResponse(
+                SuccessCode.PLAN_FETCHED_BY_ID,
+                summary
         );
     }
 

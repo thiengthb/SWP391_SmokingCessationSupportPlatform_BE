@@ -80,6 +80,24 @@ public class NotificationServiceImpl implements INotificationService {
     }
 
     @Override
+    public void sendPlanDoneNotification(String planName, String accountId) {
+        NotificationRequest request = new NotificationRequest(
+                accountId,
+                "Plan " + planName + " has completed",
+                NotificationType.LIVE);
+        sendNotification(request);
+    }
+
+    @Override
+    public void sendPhaseDoneNotification(int phase, String accountId) {
+        NotificationRequest request = new NotificationRequest(
+                accountId,
+                "phase " +  phase + "has completed",
+                NotificationType.LIVE);
+        sendNotification(request);
+    }
+
+    @Override
     @Transactional
     @CachePut(value = "NOTIFICATION_CACHE", key = "#result.getId()")
     @CacheEvict(value = "NOTIFICATION_PAGE_CACHE", allEntries = true)

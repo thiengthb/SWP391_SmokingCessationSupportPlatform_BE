@@ -25,7 +25,9 @@ public class PhaseResponse {
     String description;
     Integer cigaretteBound;
     PhaseStatus phaseStatus;
-    @JsonIgnore
+
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     double successRate;
+
     List<TipResponse> tips;
 }

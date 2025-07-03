@@ -14,7 +14,7 @@ public record PhaseRequest(
         @Size(max = 255, message = "PHASE_DESCRIPTION_TOO_LONG")
         String description,
 
-        @Positive(message = "CIGARETTE_BOUND_INVALID")
+        @Min(value = 0, message = "CIGARETTE_BOUND_INVALID")
         @NotNull(message = "PHASE_CIGARETTE_BOUND_REQUIRED")
         Integer cigaretteBound,
 

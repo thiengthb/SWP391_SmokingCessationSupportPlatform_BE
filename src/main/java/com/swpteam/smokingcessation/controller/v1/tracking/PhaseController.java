@@ -3,6 +3,7 @@ package com.swpteam.smokingcessation.controller.v1.tracking;
 import com.swpteam.smokingcessation.domain.dto.phase.PhaseResponse;
 import com.swpteam.smokingcessation.common.ApiResponse;
 import com.swpteam.smokingcessation.constant.SuccessCode;
+import com.swpteam.smokingcessation.domain.dto.phase.PhaseSummaryResponse;
 import com.swpteam.smokingcessation.service.interfaces.tracking.IPhaseService;
 import com.swpteam.smokingcessation.utils.ResponseUtilService;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -53,5 +54,17 @@ public class PhaseController {
                 SuccessCode.PHASE_DELETED
         );
     }
+
+    @GetMapping("/plan/{Id}/completed")
+    ResponseEntity<ApiResponse<List<PhaseSummaryResponse>>> getCompletedPhaseSummaries(
+            @PathVariable String Id
+    ) {
+        List<PhaseSummaryResponse> summaries = phaseService.getCompletedPhaseSummaries(Id);
+        return responseUtilService.buildSuccessResponse(
+                SuccessCode.PHASE_LIST_FETCHED,
+                summaries
+        );
+    }
+
 
 }

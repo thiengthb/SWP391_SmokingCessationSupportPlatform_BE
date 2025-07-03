@@ -139,6 +139,12 @@ public enum ErrorCode {
     FTND_SCORE_INVALID(2215, "error.plan.ftnd_score_invalid", HttpStatus.BAD_REQUEST),
     PLAN_ALREADY_EXISTED(2216, "error.plan.already_existed", HttpStatus.CONFLICT),
     INVALID_PLAN_DURATION(2217, "error.plan.invalid_duration", HttpStatus.BAD_REQUEST),
+    CANNOT_UPDATE_PLAN_NOT_PENDING(2218,"error.plan.invalid_plan_status",HttpStatus.BAD_REQUEST),
+    PLAN_ALREADY_EXISTED_A(2219, "error.plan.already_existed_a", HttpStatus.BAD_REQUEST),
+    PLAN_ALREADY_EXISTED_B(2220, "error.plan.already_existed_b", HttpStatus.BAD_REQUEST),
+    RESTRICT_PLAN_A(2221, "error.plan.restrict_plan_a", HttpStatus.BAD_REQUEST),
+    RESTRICT_PLAN_B(2222, "error.plan.restrict_plan_b", HttpStatus.BAD_REQUEST),
+
 
     // Phase Errors (2300-2399)
     PHASE_NOT_FOUND(2300, "error.phase.not_found", HttpStatus.NOT_FOUND),
@@ -156,6 +162,7 @@ public enum ErrorCode {
     PHASE_DURATION_TOO_SHORT(2312, "error.phase.duration_too_short", HttpStatus.BAD_REQUEST),
     INVALID_PHASE_DATE(2313, "error.phase.invalid_date", HttpStatus.BAD_REQUEST),
     NEW_PHASE_CONFLICT(2314, "error.phase.new_phase_conflict", HttpStatus.CONFLICT),
+    NO_COMPLETED_PHASE_FOUND(2315,"error.phase.no_completed_phase_found",HttpStatus.BAD_REQUEST),
 
     // Chatbot Errors (2400-2499)
     PROMPT_REQUIRED(2400, "error.chatbot.prompt_required", HttpStatus.BAD_REQUEST),
