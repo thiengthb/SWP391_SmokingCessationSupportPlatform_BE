@@ -2,22 +2,23 @@ package com.swpteam.smokingcessation.service.impl.identity;
 
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import com.nimbusds.jwt.SignedJWT;
-import com.swpteam.smokingcessation.domain.dto.auth.request.*;
+import com.swpteam.smokingcessation.constant.ErrorCode;
+import com.swpteam.smokingcessation.domain.dto.account.AccountResponse;
+import com.swpteam.smokingcessation.domain.dto.auth.request.AuthenticationRequest;
+import com.swpteam.smokingcessation.domain.dto.auth.request.RegisterRequest;
+import com.swpteam.smokingcessation.domain.dto.auth.request.ResetPasswordRequest;
+import com.swpteam.smokingcessation.domain.dto.auth.request.TokenRequest;
+import com.swpteam.smokingcessation.domain.dto.auth.response.AuthenticationResponse;
 import com.swpteam.smokingcessation.domain.entity.Account;
-import com.swpteam.smokingcessation.domain.entity.Score;
+import com.swpteam.smokingcessation.domain.entity.Token;
+import com.swpteam.smokingcessation.domain.enums.AccountStatus;
 import com.swpteam.smokingcessation.domain.enums.AuthProvider;
+import com.swpteam.smokingcessation.domain.enums.Role;
 import com.swpteam.smokingcessation.domain.mapper.AccountMapper;
+import com.swpteam.smokingcessation.exception.AppException;
 import com.swpteam.smokingcessation.integration.google.GoogleTokenVerifier;
 import com.swpteam.smokingcessation.integration.mail.IMailService;
 import com.swpteam.smokingcessation.repository.AccountRepository;
-import com.swpteam.smokingcessation.domain.dto.account.AccountResponse;
-import com.swpteam.smokingcessation.domain.enums.AccountStatus;
-import com.swpteam.smokingcessation.domain.enums.Role;
-import com.swpteam.smokingcessation.domain.dto.auth.response.AuthenticationResponse;
-import com.swpteam.smokingcessation.domain.entity.Setting;
-import com.swpteam.smokingcessation.constant.ErrorCode;
-import com.swpteam.smokingcessation.domain.entity.Token;
-import com.swpteam.smokingcessation.exception.AppException;
 import com.swpteam.smokingcessation.repository.TokenRepository;
 import com.swpteam.smokingcessation.security.UserPrincipal;
 import com.swpteam.smokingcessation.service.interfaces.identity.IAccountService;
@@ -73,6 +74,7 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
         GoogleIdToken.Payload payload = googleTokenVerifier.verify(request.token());
 
         Account account = accountService.createAccountByGoogle(payload);
+        accountService.updateStatus(account.getId(), AccountStatus.ONLINE);
         String accessToken = tokenService.generateAccessToken(account);
         String refreshToken = tokenService.generateRefreshToken(account);
 

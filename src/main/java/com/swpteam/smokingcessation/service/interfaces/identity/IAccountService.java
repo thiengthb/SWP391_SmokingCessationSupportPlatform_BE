@@ -11,6 +11,8 @@ import com.swpteam.smokingcessation.domain.entity.Account;
 import com.swpteam.smokingcessation.domain.enums.AccountStatus;
 import com.swpteam.smokingcessation.domain.enums.Role;
 
+import java.util.List;
+
 public interface IAccountService {
 
     PageResponse<AccountResponse> getAccountsPage(PageableRequest request);
@@ -20,6 +22,8 @@ public interface IAccountService {
     AccountResponse getCurrentAccount();
 
     void verifyAccount(String accountId);
+
+    List<AccountResponse> getOnlineAccounts();
 
     AccountResponse createAccount(AccountRequest request);
 

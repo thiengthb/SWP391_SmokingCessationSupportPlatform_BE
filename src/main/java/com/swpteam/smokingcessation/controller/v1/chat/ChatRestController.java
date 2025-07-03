@@ -4,7 +4,7 @@ import com.swpteam.smokingcessation.common.ApiResponse;
 import com.swpteam.smokingcessation.common.PageResponse;
 import com.swpteam.smokingcessation.common.PageableRequest;
 import com.swpteam.smokingcessation.constant.SuccessCode;
-import com.swpteam.smokingcessation.domain.dto.chat.ChatRestResponse;
+import com.swpteam.smokingcessation.domain.dto.chat.ChatResponse;
 import com.swpteam.smokingcessation.service.interfaces.chat.IChatService;
 import com.swpteam.smokingcessation.utils.ResponseUtilService;
 import jakarta.validation.Valid;
@@ -19,12 +19,12 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class ChatRestController {
-    
+
     IChatService chatService;
     ResponseUtilService responseUtilService;
 
     @GetMapping
-    ResponseEntity<ApiResponse<PageResponse<ChatRestResponse>>> getChats(
+    ResponseEntity<ApiResponse<PageResponse<ChatResponse>>> getChats(
             @Valid PageableRequest request
     ) {
         return responseUtilService.buildSuccessResponse(
@@ -34,7 +34,7 @@ public class ChatRestController {
     }
 
     @GetMapping("/{accountId}")
-    ResponseEntity<ApiResponse<PageResponse<ChatRestResponse>>> getChatsById(
+    ResponseEntity<ApiResponse<PageResponse<ChatResponse>>> getChatsById(
             @PathVariable String accountId,
             @Valid PageableRequest request
     ) {

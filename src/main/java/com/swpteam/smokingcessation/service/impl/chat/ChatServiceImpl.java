@@ -5,7 +5,6 @@ import com.swpteam.smokingcessation.common.PageableRequest;
 import com.swpteam.smokingcessation.constant.ErrorCode;
 import com.swpteam.smokingcessation.domain.dto.chat.ChatRequest;
 import com.swpteam.smokingcessation.domain.dto.chat.ChatResponse;
-import com.swpteam.smokingcessation.domain.dto.chat.ChatRestResponse;
 import com.swpteam.smokingcessation.domain.entity.Account;
 import com.swpteam.smokingcessation.domain.entity.Chat;
 import com.swpteam.smokingcessation.domain.mapper.ChatMapper;
@@ -36,8 +35,6 @@ public class ChatServiceImpl implements IChatService {
     public ChatResponse sendChatMessage(ChatRequest request) {
         Account account = accountService.findAccountByIdOrThrowError(request.accountId());
 
-        boolean isFirstTime = !chatRepository.existsByAccountIdAndIsDeletedFalse(request.accountId());
-
         Chat chat = Chat.builder()
                 .account(account)
                 .content(request.content())
@@ -46,28 +43,27 @@ public class ChatServiceImpl implements IChatService {
         chatRepository.save(chat);
 
         ChatResponse chatResponse = chatMapper.toResponse(chat);
-        chatResponse.setFirstTime(isFirstTime);
         return chatResponse;
     }
 
     @Override
-    public PageResponse<ChatRestResponse> getChats(PageableRequest request) {
+    public PageResponse<ChatResponse> getChats(PageableRequest request) {
         ValidationUtil.checkFieldExist(Chat.class, request.sortBy());
 
         Pageable pageable = PageableRequest.getPageable(request);
         Page<Chat> chats = chatRepository.findAllByIsDeletedFalse(pageable);
 
-        return new PageResponse<>(chats.map(chatMapper::toRestResponse));
+        return new PageResponse<>(chats.map(chatMapper::toResponse));
     }
 
     @Override
-    public PageResponse<ChatRestResponse> getChatsById(String id, PageableRequest request) {
+    public PageResponse<ChatResponse> getChatsById(String id, PageableRequest request) {
         ValidationUtil.checkFieldExist(Chat.class, request.sortBy());
 
         Pageable pageable = PageableRequest.getPageable(request);
         Page<Chat> chats = chatRepository.findByAccountIdAndIsDeletedFalse(id, pageable);
 
-        return new PageResponse<>(chats.map(chatMapper::toRestResponse));
+        return new PageResponse<>(chats.map(chatMapper::toResponse));
     }
 
     @Override
