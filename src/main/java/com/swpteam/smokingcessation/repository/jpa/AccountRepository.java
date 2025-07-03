@@ -1,6 +1,7 @@
-package com.swpteam.smokingcessation.repository;
+package com.swpteam.smokingcessation.repository.jpa;
 
 import com.swpteam.smokingcessation.domain.entity.Account;
+import com.swpteam.smokingcessation.domain.enums.AccountStatus;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

@@ -1,4 +1,4 @@
-package com.swpteam.smokingcessation.repository;
+package com.swpteam.smokingcessation.repository.jpa;
 
 import com.swpteam.smokingcessation.domain.entity.Phase;
 import com.swpteam.smokingcessation.domain.enums.PhaseStatus;

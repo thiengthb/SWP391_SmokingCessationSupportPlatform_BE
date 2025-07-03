@@ -1,8 +1,9 @@
-package com.swpteam.smokingcessation.controller.v1.tracking;
+package com.swpteam.smokingcessation.feature.version1.tracking.controller;
 
 import com.swpteam.smokingcessation.domain.dto.phase.PhaseResponse;
 import com.swpteam.smokingcessation.common.ApiResponse;
 import com.swpteam.smokingcessation.constant.SuccessCode;
+import com.swpteam.smokingcessation.domain.dto.phase.PhaseSummaryResponse;
 import com.swpteam.smokingcessation.feature.version1.tracking.service.IPhaseService;
 import com.swpteam.smokingcessation.utils.ResponseUtilService;
 import io.swagger.v3.oas.annotations.tags.Tag;

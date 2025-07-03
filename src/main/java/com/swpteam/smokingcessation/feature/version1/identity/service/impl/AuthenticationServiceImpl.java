@@ -1,4 +1,4 @@
-package com.swpteam.smokingcessation.service.impl.identity;
+package com.swpteam.smokingcessation.feature.version1.identity.service.impl;
 
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
 import com.nimbusds.jwt.SignedJWT;
@@ -18,19 +18,8 @@ import com.swpteam.smokingcessation.domain.mapper.AccountMapper;
 import com.swpteam.smokingcessation.feature.integration.google.GoogleTokenVerifier;
 import com.swpteam.smokingcessation.feature.integration.mail.IMailService;
 import com.swpteam.smokingcessation.repository.jpa.AccountRepository;
-import com.swpteam.smokingcessation.domain.dto.account.AccountResponse;
-import com.swpteam.smokingcessation.domain.enums.AccountStatus;
-import com.swpteam.smokingcessation.domain.enums.Role;
-import com.swpteam.smokingcessation.domain.dto.auth.response.AuthenticationResponse;
-import com.swpteam.smokingcessation.constant.ErrorCode;
-import com.swpteam.smokingcessation.domain.entity.Token;
 import com.swpteam.smokingcessation.exception.AppException;
 import com.swpteam.smokingcessation.repository.jpa.TokenRepository;
-import com.swpteam.smokingcessation.exception.AppException;
-import com.swpteam.smokingcessation.integration.google.GoogleTokenVerifier;
-import com.swpteam.smokingcessation.integration.mail.IMailService;
-import com.swpteam.smokingcessation.repository.AccountRepository;
-import com.swpteam.smokingcessation.repository.TokenRepository;
 import com.swpteam.smokingcessation.security.UserPrincipal;
 import com.swpteam.smokingcessation.feature.version1.identity.service.IAccountService;
 import com.swpteam.smokingcessation.feature.version1.identity.service.IAuthenticationService;

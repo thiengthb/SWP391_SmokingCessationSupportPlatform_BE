@@ -5,6 +5,8 @@ import com.swpteam.smokingcessation.domain.enums.AccountStatus;
 import com.swpteam.smokingcessation.domain.enums.PhaseStatus;
 import com.swpteam.smokingcessation.domain.enums.PlanStatus;
 import com.swpteam.smokingcessation.domain.enums.ScoreRule;
+import com.swpteam.smokingcessation.feature.integration.mail.IMailService;
+import com.swpteam.smokingcessation.feature.version1.notification.service.INotificationService;
 import com.swpteam.smokingcessation.feature.version1.profile.service.IScoreService;
 import com.swpteam.smokingcessation.feature.version1.profile.service.ISettingService;
 import com.swpteam.smokingcessation.feature.version1.tracking.service.IPhaseService;
@@ -126,16 +128,14 @@ public class PhaseAndPlanUpdater {
                 successCount++;
             }
 
-            Integer phaseMax = phase.getMostSmokeCig();
-            if (phaseMax != null && phaseMax > maxCig) {
+            int phaseMax = phase.getMostSmokeCig();
+            if (phaseMax > maxCig) {
                 maxCig = phaseMax;
             }
 
-            Integer phaseMin = phase.getLeastSmokeCig();
-            if (phaseMin != null) {
-                if (minCig == null || phaseMin < minCig) {
-                    minCig = phaseMin;
-                }
+            int phaseMin = phase.getLeastSmokeCig();
+            if (minCig == null || phaseMin < minCig) {
+                minCig = phaseMin;
             }
 
             totalReportedDays += phase.getTotalDaysReported();

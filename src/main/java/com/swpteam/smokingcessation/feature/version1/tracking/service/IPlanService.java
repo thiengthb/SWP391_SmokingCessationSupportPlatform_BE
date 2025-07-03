@@ -1,4 +1,4 @@
-package com.swpteam.smokingcessation.service.interfaces.tracking;
+package com.swpteam.smokingcessation.feature.version1.tracking.service;
 
 import com.swpteam.smokingcessation.common.PageResponse;
 import com.swpteam.smokingcessation.common.PageableRequest;

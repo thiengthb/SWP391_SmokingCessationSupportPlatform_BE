@@ -1,10 +1,10 @@
-package com.swpteam.smokingcessation.controller.v1.chat;
+package com.swpteam.smokingcessation.feature.version1.chat.controller;
 
 import com.swpteam.smokingcessation.common.ApiResponse;
 import com.swpteam.smokingcessation.common.PageResponse;
 import com.swpteam.smokingcessation.common.PageableRequest;
 import com.swpteam.smokingcessation.constant.SuccessCode;
-import com.swpteam.smokingcessation.domain.dto.chat.ChatRestResponse;
+import com.swpteam.smokingcessation.domain.dto.chat.ChatResponse;
 import com.swpteam.smokingcessation.feature.version1.chat.service.IChatService;
 import com.swpteam.smokingcessation.utils.ResponseUtilService;
 import jakarta.validation.Valid;

@@ -1,4 +1,4 @@
-package com.swpteam.smokingcessation.service.impl.tracking;
+package com.swpteam.smokingcessation.feature.version1.tracking.service.impl;
 
 import com.swpteam.smokingcessation.domain.dto.phase.PhaseSummaryResponse;
 import com.swpteam.smokingcessation.domain.entity.RecordHabit;
@@ -10,9 +10,11 @@ import com.swpteam.smokingcessation.domain.dto.phase.PhaseResponse;
 import com.swpteam.smokingcessation.constant.ErrorCode;
 import com.swpteam.smokingcessation.domain.entity.Phase;
 import com.swpteam.smokingcessation.exception.AppException;
+import com.swpteam.smokingcessation.feature.integration.mail.IMailService;
+import com.swpteam.smokingcessation.feature.version1.notification.service.INotificationService;
+import com.swpteam.smokingcessation.feature.version1.tracking.service.IPhaseService;
 import com.swpteam.smokingcessation.repository.jpa.PhaseRepository;
 import com.swpteam.smokingcessation.feature.version1.profile.service.IScoreService;
-import com.swpteam.smokingcessation.feature.version1.tracking.service.IPhaseService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;

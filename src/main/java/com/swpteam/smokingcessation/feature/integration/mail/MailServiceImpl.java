@@ -2,8 +2,6 @@ package com.swpteam.smokingcessation.feature.integration.mail;
 
 import com.swpteam.smokingcessation.constant.ErrorCode;
 import com.swpteam.smokingcessation.domain.dto.contact.ContactRequest;
-import com.swpteam.smokingcessation.domain.dto.phase.PhaseResponse;
-import com.swpteam.smokingcessation.domain.dto.plan.PlanResponse;
 import com.swpteam.smokingcessation.domain.dto.booking.BookingRequest;
 import com.swpteam.smokingcessation.domain.dto.report.ReportSummaryResponse;
 import com.swpteam.smokingcessation.domain.entity.Account;
@@ -58,6 +56,7 @@ public class MailServiceImpl implements IMailService {
     private static final String MONTHLY_REPORT_EMAIL = "email/monthly_report_email";
     private static final String BOOKING_REQUEST_EMAIL = "email/booking_request_email";
     private static final String PLAN_SUMMARY_EMAIL = "email/plan_summary_email";
+    private static final String PHASE_SUMMARY_EMAIL = "email/phase_summary_email";
 
     @Override
     public void sendVerificationEmail(String to, String username, String verificationLink) {
@@ -164,7 +163,7 @@ public class MailServiceImpl implements IMailService {
                 "Phase Summary Report",
                 hostEmail,
                 accountId,
-                "phase-summary-template", // Tên file template Thymeleaf cho phase
+                PHASE_SUMMARY_EMAIL,
                 List.of(
                         Map.entry("planName", planName),
                         Map.entry("startDate", startDate),
