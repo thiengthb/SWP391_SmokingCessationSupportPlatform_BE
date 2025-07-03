@@ -194,6 +194,7 @@ public enum ErrorCode {
     BOOKING_OUTSIDE_WORKING_HOURS(2609, "error.booking.outside_working_hours", HttpStatus.BAD_REQUEST),
     BOOKING_TIME_CONFLICT(2610, "error.booking.time_conflict", HttpStatus.CONFLICT),
     BOOKING_ALREADY_IN_PROCESS(2611, "error.booking.already_in_process", HttpStatus.CONFLICT),
+    COACH_IS_BUSY(2612,"error.booking.reject_auto",HttpStatus.BAD_REQUEST),
 
     // Category Errors (2700-2799)
     CATEGORY_NAME_REQUIRED(2700, "error.category.name_required", HttpStatus.BAD_REQUEST),

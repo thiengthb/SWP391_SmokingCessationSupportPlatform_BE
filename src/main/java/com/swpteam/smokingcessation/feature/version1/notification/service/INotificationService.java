@@ -10,11 +10,11 @@ public interface INotificationService {
 
     void sendNotification(NotificationRequest request);
 
+    void sendApprovedNotification(String memberId,String coachUserName);
+
     void sendBookingNotification(String username, String coachId);
 
-    void sendPlanDoneNotification(String planName, String accountId );
-
-    void sendPhaseDoneNotification(int phase, String accountId);
+    void sendBookingRejectNotification(String content, String memberId);
 
     void markAsRead(String id);
 
@@ -26,5 +26,10 @@ public interface INotificationService {
 
     void deleteAllMyNotification();
 
+    void sendPlanDoneNotification(String planName, String accountId);
+
+    void sendPhaseDoneNotification(int phase, String accountId);
+
     Notification findNotificationByIdOrThrowError(String id);
+
 }

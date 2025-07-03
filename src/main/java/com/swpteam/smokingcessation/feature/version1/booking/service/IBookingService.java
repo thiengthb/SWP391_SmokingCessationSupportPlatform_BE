@@ -25,7 +25,7 @@ public interface IBookingService {
 
     void deleteBookingById(String id);
 
-    BookingResponse createBookingWithMeet(BookingRequest request);
+    // BookingResponse createBookingWithMeet(BookingRequest request);
 
     Booking findBookingByIdOrThrowError(String id);
 }

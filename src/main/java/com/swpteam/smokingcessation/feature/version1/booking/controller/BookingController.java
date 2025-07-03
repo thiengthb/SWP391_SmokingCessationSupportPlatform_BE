@@ -101,7 +101,7 @@ public class BookingController {
         );
     }
 
-    @PostMapping("/with-meet")
+  /*  @PostMapping("/with-meet")
     public ResponseEntity<ApiResponse<BookingResponse>> createBookingWithMeet(
             @Valid @RequestBody BookingRequest request
     ) {
@@ -110,5 +110,7 @@ public class BookingController {
                 bookingService.createBookingWithMeet(request)
         );
     }
+
+   */
 
 }

@@ -183,7 +183,7 @@ public class PhaseServiceImpl implements IPhaseService {
                     maxSmoked,
                     successRate,
                     phase.getPhaseStatus(),
-                    accountId);
+                    phase.getPlan().getAccount().getEmail());
         }
 
 

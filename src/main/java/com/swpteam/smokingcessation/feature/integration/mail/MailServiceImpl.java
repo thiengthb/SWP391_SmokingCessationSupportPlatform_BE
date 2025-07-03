@@ -118,7 +118,7 @@ public class MailServiceImpl implements IMailService {
                 "⏰ Friendly Reminder",
                 hostEmail,
                 to,
-                REMINDER_EMAIL,
+                "reminder-template",
                 List.of(
                         Map.entry("deadline", LocalDateTime.now().plusMinutes(30)),
                         Map.entry("resetLink", LocalDateTime.now())
@@ -158,11 +158,11 @@ public class MailServiceImpl implements IMailService {
     }
 
     @Override
-    public void sendPhaseSummary(String planName, LocalDate startDate, LocalDate endDate, long totalReportedDays, long totalNotReportedDays, int totalMostSmoked, double successRate, PhaseStatus phaseStatus, String accountId) {
+    public void sendPhaseSummary(String planName, LocalDate startDate, LocalDate endDate, long totalReportedDays, long totalNotReportedDays, int totalMostSmoked, double successRate, PhaseStatus phaseStatus, String mail) {
         buildAndSendMail(
                 "Phase Summary Report",
                 hostEmail,
-                accountId,
+                mail,
                 PHASE_SUMMARY_EMAIL,
                 List.of(
                         Map.entry("planName", planName),
@@ -175,7 +175,7 @@ public class MailServiceImpl implements IMailService {
                         Map.entry("phaseStatus", phaseStatus.toString())
                 )
         );
-        log.info("Phase summary mail sent to {}", accountId);
+        log.info("Phase summary mail sent to {}", mail);
     }
 
     @Override
@@ -187,14 +187,14 @@ public class MailServiceImpl implements IMailService {
             long totalNotReportedDays,
             int totalMostSmoked,
             Integer totalLeastSmoked,
-            String accountId,
+            String email,
             PlanStatus planStatus,
             Double successRate
     ) {
         buildAndSendMail(
                 "Plan Summary Report",
                 hostEmail,
-                accountId,
+                email,
                 PLAN_SUMMARY_EMAIL,
                 List.of(
                         Map.entry("planName", planName),
@@ -208,7 +208,7 @@ public class MailServiceImpl implements IMailService {
                         Map.entry("successRate", successRate)
                 )
         );
-        log.info("Plan summary mail sent to {}", accountId);
+        log.info("Plan summary mail sent to {}", email);
     }
 
     @Override
@@ -255,6 +255,33 @@ public class MailServiceImpl implements IMailService {
             throw new AppException(ErrorCode.EMAIL_SEND_FAILED);
         }
     }
+
+    @Override
+    public void sendRejectNotificationMail(String to, String content) {
+        buildAndSendMail(
+                "Booking Rejected",
+                hostEmail,
+                to,
+                "booking-rejected",
+                List.of(
+                        Map.entry("content", content)
+                )
+        );
+    }
+
+    @Override
+    public void sendApprovedNotificationMail(String to, String content) {
+        buildAndSendMail(
+                "Booking Approved",
+                hostEmail,
+                to,
+                "booking-approved",
+                List.of(
+                        Map.entry("content", content)
+                )
+        );
+    }
+
 
     private void buildAndSendMail(
             String title,
