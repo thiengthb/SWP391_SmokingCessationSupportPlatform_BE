@@ -56,7 +56,7 @@ public class SettingServiceImpl implements ISettingService {
     public SettingResponse updateSetting(String accountId, SettingRequest request) {
         Setting setting = findSettingByIdOrThrowError(accountId);
 
-        if(setting.getChangeFlag()){
+        if(setting.isChangeFlag()){
             throw new AppException(ErrorCode.MODE_CHANGE_UNAVAILABLE);
         }
 
