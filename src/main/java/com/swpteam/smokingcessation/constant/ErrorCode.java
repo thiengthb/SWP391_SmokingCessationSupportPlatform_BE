@@ -195,6 +195,8 @@ public enum ErrorCode {
     BOOKING_TIME_CONFLICT(2610, "error.booking.time_conflict", HttpStatus.CONFLICT),
     BOOKING_ALREADY_IN_PROCESS(2611, "error.booking.already_in_process", HttpStatus.CONFLICT),
     COACH_IS_BUSY(2612,"error.booking.reject_auto",HttpStatus.BAD_REQUEST),
+    DECLINE_REASON_NOT_ALLOWED(2613,"error.booking.accept",HttpStatus.BAD_REQUEST),
+    DECLINE_REASON_REQUIRED(2614,"error.booking.reject",HttpStatus.BAD_REQUEST),
 
     // Category Errors (2700-2799)
     CATEGORY_NAME_REQUIRED(2700, "error.category.name_required", HttpStatus.BAD_REQUEST),
