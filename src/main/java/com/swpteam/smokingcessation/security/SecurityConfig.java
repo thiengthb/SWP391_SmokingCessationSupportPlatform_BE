@@ -40,6 +40,7 @@ public class SecurityConfig {
             "/ws/**",
             "/api/v1/webhook/stripe",
             "/api/v1/auth/**",
+            "/api/v1/auth/verify",
             "/api/v1/memberships/**",
             "/api/test/**",
     };

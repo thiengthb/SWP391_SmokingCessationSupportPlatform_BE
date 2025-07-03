@@ -1,7 +1,7 @@
 package com.swpteam.smokingcessation.feature.version1.profile.service;
 
+import com.swpteam.smokingcessation.domain.dto.member.MemberProfileResponse;
 import com.swpteam.smokingcessation.domain.dto.member.MemberRequest;
-import com.swpteam.smokingcessation.domain.dto.member.MemberResponse;
 import com.swpteam.smokingcessation.domain.dto.member.ProgressResponse;
 import com.swpteam.smokingcessation.domain.entity.Member;
 
@@ -9,13 +9,15 @@ import java.util.List;
 
 public interface IMemberService {
 
-    MemberResponse createMember(MemberRequest request);
+    MemberProfileResponse getMyMemberProfile();
 
-    MemberResponse getMemberById(String accountId);
+    MemberProfileResponse getMemberById(String accountId);
 
-    MemberResponse updateMemberById(String accountId, MemberRequest request);
+    MemberProfileResponse createMember(MemberRequest request);
 
-    MemberResponse updateMyMemberProfile(MemberRequest request);
+    MemberProfileResponse updateMemberById(String accountId, MemberRequest request);
+
+    MemberProfileResponse updateMyMemberProfile(MemberRequest request);
 
     Member findMemberByIdOrThrowError(String id);
 

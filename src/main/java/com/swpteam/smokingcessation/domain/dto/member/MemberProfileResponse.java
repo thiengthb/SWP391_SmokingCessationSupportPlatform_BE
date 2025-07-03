@@ -14,15 +14,16 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class MemberResponse {
+public class MemberProfileResponse {
     String id;
+    String username;
     String fullName;
-    LocalDate dob;
+    String email;
+    String phoneNumber;
     String address;
     MemberGender gender;
-    int score;
-    int highestStreak;
-    LocalDateTime lastCounterReset;
+    LocalDate dob;
+    String avatar;
+    String bio;
     LocalDateTime createdAt;
-    LocalDateTime updatedAt;
 }

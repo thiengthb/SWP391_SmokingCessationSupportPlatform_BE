@@ -35,6 +35,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Slf4j
 @Service
@@ -99,10 +100,11 @@ public class AccountServiceImpl implements IAccountService {
     @Transactional
     public Account createAccountByGoogle(GoogleIdToken.Payload payload) {
         String email = payload.getEmail();
-        return accountRepository.findByEmail(email)
+        Account account = accountRepository.findByEmail(email)
                 .orElseGet(() -> {
                     Account newAccount = Account.builder()
                             .username(RandomUtil.generateRandomUsername())
+                            .password(UUID.randomUUID().toString())
                             .email(payload.getEmail())
                             .provider(AuthProvider.GOOGLE)
                             .role(Role.MEMBER)
@@ -114,6 +116,11 @@ public class AccountServiceImpl implements IAccountService {
 
                     return accountRepository.save(newAccount);
                 });
+        if (account.getAvatar() == null) {
+            account.setAvatar((String) payload.get("picture"));
+            accountRepository.save(account);
+        }
+        return account;
     }
 
     @Override

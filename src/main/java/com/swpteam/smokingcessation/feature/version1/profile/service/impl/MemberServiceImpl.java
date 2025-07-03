@@ -1,10 +1,10 @@
 package com.swpteam.smokingcessation.feature.version1.profile.service.impl;
 
+import com.swpteam.smokingcessation.domain.dto.member.MemberProfileResponse;
 import com.swpteam.smokingcessation.domain.dto.member.MemberRequest;
 import com.swpteam.smokingcessation.domain.dto.member.ProgressResponse;
 import com.swpteam.smokingcessation.domain.entity.Account;
 import com.swpteam.smokingcessation.domain.mapper.MemberMapper;
-import com.swpteam.smokingcessation.domain.dto.member.MemberResponse;
 import com.swpteam.smokingcessation.constant.ErrorCode;
 import com.swpteam.smokingcessation.domain.entity.Member;
 import com.swpteam.smokingcessation.exception.AppException;
@@ -32,14 +32,21 @@ public class MemberServiceImpl implements IMemberService {
     AuthUtilService authUtilService;
 
     @Override
-    public MemberResponse getMemberById(String accountId) {
+    public MemberProfileResponse getMyMemberProfile() {
+        Account currentAccount = authUtilService.getCurrentAccountOrThrowError();
+
+        return memberMapper.toResponse(findMemberByIdOrThrowError(currentAccount.getId()));
+    }
+
+    @Override
+    public MemberProfileResponse getMemberById(String accountId) {
         return memberMapper.toResponse(findMemberByIdOrThrowError(accountId));
     }
 
     @Override
     @Transactional
     @PreAuthorize("hasRole('MEMBER')")
-    public MemberResponse createMember(MemberRequest request) {
+    public MemberProfileResponse createMember(MemberRequest request) {
         Account currentAccount = authUtilService.getCurrentAccountOrThrowError();
 
         if (memberRepository.existsById(currentAccount.getId())) {
@@ -55,7 +62,7 @@ public class MemberServiceImpl implements IMemberService {
     @Override
     @Transactional
     @PreAuthorize("hasRole('MEMBER')")
-    public MemberResponse updateMyMemberProfile(MemberRequest request) {
+    public MemberProfileResponse updateMyMemberProfile(MemberRequest request) {
         Account currentAccount = authUtilService.getCurrentAccountOrThrowError();
 
         Member member = findMemberByIdOrThrowError(currentAccount.getId());
@@ -68,7 +75,7 @@ public class MemberServiceImpl implements IMemberService {
     @Override
     @Transactional
     @PreAuthorize("hasRole('ADMIN')")
-    public MemberResponse updateMemberById(String accountId, MemberRequest request) {
+    public MemberProfileResponse updateMemberById(String accountId, MemberRequest request) {
         Member member = findMemberByIdOrThrowError(accountId);
 
         memberMapper.updateMember(member, request);

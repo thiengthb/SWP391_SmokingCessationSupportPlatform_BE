@@ -1,7 +1,7 @@
 package com.swpteam.smokingcessation.domain.mapper;
 
+import com.swpteam.smokingcessation.domain.dto.member.MemberProfileResponse;
 import com.swpteam.smokingcessation.domain.dto.member.MemberRequest;
-import com.swpteam.smokingcessation.domain.dto.member.MemberResponse;
 import com.swpteam.smokingcessation.domain.entity.Member;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -17,7 +17,11 @@ public interface MemberMapper {
     Member toEntity(MemberRequest request);
 
     @Mapping(target = "id", source = "account.id")
-    MemberResponse toResponse(Member entity);
+    @Mapping(target = "username", source = "account.username")
+    @Mapping(target = "email", source = "account.email")
+    @Mapping(target = "phoneNumber", source = "account.phoneNumber")
+    @Mapping(target = "avatar", source = "account.avatar")
+    MemberProfileResponse toResponse(Member entity);
 
     void updateMember(@MappingTarget Member entity, MemberRequest request);
 }

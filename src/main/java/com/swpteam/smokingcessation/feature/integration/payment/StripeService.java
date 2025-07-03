@@ -20,6 +20,7 @@ import com.swpteam.smokingcessation.exception.AppException;
 import com.swpteam.smokingcessation.feature.version1.membership.service.impl.TransactionServiceImpl;
 import com.swpteam.smokingcessation.feature.version1.identity.service.IAccountService;
 import com.swpteam.smokingcessation.feature.version1.membership.service.IMembershipService;
+import com.swpteam.smokingcessation.utils.AuthUtilService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -40,6 +41,7 @@ public class StripeService implements IStripeService {
     SubscriptionServiceImpl subscriptionService;
     MailServiceImpl mailServiceImpl;
 
+    AuthUtilService authUtilService;
     IAccountService accountService;
     IMembershipService membershipService;
 
@@ -51,9 +53,9 @@ public class StripeService implements IStripeService {
     public StripeResponse checkoutSubscription(StripeSubscriptionRequest request) {
         Membership membership = membershipService.findMembershipByNameOrThrowError(request.membershipName());
 
-        Account account = accountService.findAccountByIdOrThrowError(request.accountId());
+        Account currentAccount = authUtilService.getCurrentAccountOrThrowError();
 
-        Transaction transaction = transactionService.createTransaction(account, membership.getPrice());
+        Transaction transaction = transactionService.createTransaction(currentAccount, membership.getPrice());
 
         SessionCreateParams.LineItem.PriceData.ProductData productData =
                 SessionCreateParams.LineItem.PriceData.ProductData.builder()
@@ -79,7 +81,7 @@ public class StripeService implements IStripeService {
                         .setMode(SessionCreateParams.Mode.PAYMENT)
                         .setSuccessUrl(frontEndDomain + "/payment?success=true")
                         .setCancelUrl(frontEndDomain + "/payment?success=fail")
-                        .putMetadata("accountId", account.getId())
+                        .putMetadata("accountId", currentAccount.getId())
                         .putMetadata("membershipName", membership.getName())
                         .putMetadata("transactionId", transaction.getId())
                         .addLineItem(lineItem)
@@ -89,8 +91,6 @@ public class StripeService implements IStripeService {
         try {
             session = Session.create(params);
         } catch (StripeException e) {
-            log.error(e.getMessage());
-            e.printStackTrace();
             throw new AppException(ErrorCode.UNCATEGORIZED_ERROR);
         }
 

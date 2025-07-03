@@ -1,7 +1,7 @@
 package com.swpteam.smokingcessation.feature.version1.profile.controller;
 
+import com.swpteam.smokingcessation.domain.dto.member.MemberProfileResponse;
 import com.swpteam.smokingcessation.domain.dto.member.MemberRequest;
-import com.swpteam.smokingcessation.domain.dto.member.MemberResponse;
 import com.swpteam.smokingcessation.common.ApiResponse;
 import com.swpteam.smokingcessation.constant.SuccessCode;
 import com.swpteam.smokingcessation.domain.dto.member.ProgressResponse;
@@ -25,8 +25,16 @@ public class MemberController {
     IMemberService memberService;
     ResponseUtilService responseUtilService;
 
+    @GetMapping("/my-profile")
+    ResponseEntity<ApiResponse<MemberProfileResponse>> getMyMemberProfile() {
+        return responseUtilService.buildSuccessResponse(
+                SuccessCode.MEMBER_FETCHED_BY_ID,
+                memberService.getMyMemberProfile()
+        );
+    }
+
     @GetMapping("/{accountId}")
-    ResponseEntity<ApiResponse<MemberResponse>> getMemberById(
+    ResponseEntity<ApiResponse<MemberProfileResponse>> getMemberById(
             @PathVariable String accountId
     ) {
         return responseUtilService.buildSuccessResponse(
@@ -44,7 +52,7 @@ public class MemberController {
     }
 
     @PostMapping
-    ResponseEntity<ApiResponse<MemberResponse>> createMember(
+    ResponseEntity<ApiResponse<MemberProfileResponse>> createMember(
             @RequestBody @Valid MemberRequest request
     ) {
         return responseUtilService.buildSuccessResponse(
@@ -54,13 +62,23 @@ public class MemberController {
     }
 
     @PutMapping("/{accountId}")
-    ResponseEntity<ApiResponse<MemberResponse>> updateMemberById(
+    ResponseEntity<ApiResponse<MemberProfileResponse>> updateMemberById(
             @PathVariable String accountId,
             @RequestBody MemberRequest request
     ) {
         return responseUtilService.buildSuccessResponse(
                 SuccessCode.MEMBER_UPDATED,
                 memberService.updateMemberById(accountId, request)
+        );
+    }
+
+    @PutMapping("/my-profile")
+    ResponseEntity<ApiResponse<MemberProfileResponse>> updateMyMemberProfile(
+            @RequestBody MemberRequest request
+    ) {
+        return responseUtilService.buildSuccessResponse(
+                SuccessCode.MEMBER_UPDATED,
+                memberService.updateMyMemberProfile(request)
         );
     }
     

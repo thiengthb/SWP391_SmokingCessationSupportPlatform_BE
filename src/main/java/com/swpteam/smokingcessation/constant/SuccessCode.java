@@ -200,7 +200,13 @@ public enum SuccessCode {
     COUNTER_FETCHED(3701, "success.counter.fetched"),
 
     // Contact Success (3800-3899)
-    CONTACT_SUCCESS(3801,"success.contact.success")
+    CONTACT_SUCCESS(3801,"success.contact.success"),
+
+    // Transaction Success (3900-3999)
+    TRANSACTION_FETCH_BY_ACCOUNT(3901, "success.transaction.fetch_by_account"),
+    TRANSACTION_FETCH_BY_ID(3901, "success.transaction.fetch_by_id"),
+
+
     ;
     int code;
     String messageLocaleKey;
