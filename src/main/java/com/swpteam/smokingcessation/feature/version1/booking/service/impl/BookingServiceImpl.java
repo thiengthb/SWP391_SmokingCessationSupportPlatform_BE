@@ -118,23 +118,23 @@ public class BookingServiceImpl implements IBookingService {
         Account member = authUtilService.getCurrentAccountOrThrowError();
         Account coach = accountService.findAccountByIdOrThrowError(request.coachId());
 
-        //check if this member already created booking that overlap?throw except
-        validateMemberBookingConflict(member.getId(), request.coachId(),
-                request.startedAt(), request.endedAt(), null);
+                    //check if this member already created booking that overlap?throw except
+                    validateMemberBookingConflict(member.getId(), request.coachId(),
+                            request.startedAt(), request.endedAt(), null);
 
-        Booking booking = bookingMapper.toEntity(request);
-        booking.setMember(member);
-        booking.setCoach(coach);
-        booking.setStatus(BookingStatus.PENDING);
+            Booking booking = bookingMapper.toEntity(request);
+            booking.setMember(member);
+            booking.setCoach(coach);
+            booking.setStatus(BookingStatus.PENDING);
 
 
-        //check if booking coach_timetable
-        if (timeTableService.isBookingTimeInAnyTimeTable(request.startedAt(), request.endedAt(), request.coachId())) {
-            booking.setStatus(BookingStatus.REJECTED);
-            booking.setDeclineReason(ErrorCode.COACH_IS_BUSY.toString());
+            //check if booking coach_timetable
+            if (timeTableService.isBookingTimeInAnyTimeTable(request.startedAt(), request.endedAt(), request.coachId())) {
+                booking.setStatus(BookingStatus.REJECTED);
+                booking.setDeclineReason(ErrorCode.COACH_IS_BUSY.toString());
 
-            Booking savedBooking = bookingRepository.save(booking);
-            sendRejectNotification(member, booking.getDeclineReason());
+                Booking savedBooking = bookingRepository.save(booking);
+                sendRejectNotification(member, booking.getDeclineReason());
 
             return bookingMapper.toResponse(savedBooking);
         } else {
@@ -308,18 +308,17 @@ public class BookingServiceImpl implements IBookingService {
     private void validateMemberBookingConflict(String memberId, String coachId,
                                                LocalDateTime startedAt, LocalDateTime endedAt,
                                                String excludeBookingId) {
-        // Lấy tất cả booking PENDING của member này với coach này
-        List<Booking> memberPendingBookings = bookingRepository.findAllByMemberIdAndCoachIdAndStatusAndIsDeletedFalse(
-                memberId, coachId, BookingStatus.PENDING);
+        //take booking list of this account to this coachId
+        List<Booking> memberPendingBookings = bookingRepository.findAllByMemberIdAndCoachIdAndIsDeletedFalse(
+                memberId, coachId);
 
         for (Booking existingBooking : memberPendingBookings) {
-            // Skip nếu là booking hiện tại đang update
+                //if id=updateBookingId => skip
             if (existingBooking.getId().equals(excludeBookingId)) {
                 continue;
             }
 
-            // Check overlap: 2 khoảng thời gian có trùng nhau không?
-            // Overlap = KHÔNG (end1 < start2 HOẶC start1 > end2)
+            //check overlap
             boolean overlaps = !(endedAt.isBefore(existingBooking.getStartedAt()) ||
                     startedAt.isAfter(existingBooking.getEndedAt()));
 

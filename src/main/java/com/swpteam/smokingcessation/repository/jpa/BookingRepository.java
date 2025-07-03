@@ -23,7 +23,7 @@ public interface BookingRepository extends JpaRepository<Booking, String> {
 
     List<Booking> findAllByCoachIdAndStatusAndIsDeletedFalse(String coachId, BookingStatus status);
 
-    List<Booking> findAllByMemberIdAndCoachIdAndStatusAndIsDeletedFalse(String memberId,String coachId,BookingStatus bookingStatus);
+    List<Booking> findAllByMemberIdAndCoachIdAndIsDeletedFalse(String memberId,String coachId);
 
     boolean existsByCoachIdAndIsDeletedFalseAndStartedAtLessThanAndEndedAtGreaterThan(
             String coachId,
