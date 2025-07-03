@@ -52,4 +52,8 @@ public interface IMailService {
     void sendBookingRequestEmail(String to, BookingRequest request, String username, String coachName, String bookingLink);
 
     void sendContactMail(ContactRequest request);
+
+    void sendRejectNotificationMail(String to, String content);
+
+    void sendApprovedNotificationMail(String to, String content);
 }

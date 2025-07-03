@@ -118,7 +118,7 @@ public class MailServiceImpl implements IMailService {
                 "⏰ Friendly Reminder",
                 hostEmail,
                 to,
-                REMINDER_EMAIL,
+                "reminder-template",
                 List.of(
                         Map.entry("deadline", LocalDateTime.now().plusMinutes(30)),
                         Map.entry("resetLink", LocalDateTime.now())
@@ -255,6 +255,33 @@ public class MailServiceImpl implements IMailService {
             throw new AppException(ErrorCode.EMAIL_SEND_FAILED);
         }
     }
+
+    @Override
+    public void sendRejectNotificationMail(String to, String content) {
+        buildAndSendMail(
+                "Booking Rejected",
+                hostEmail,
+                to,
+                "booking-rejected",
+                List.of(
+                        Map.entry("content", content)
+                )
+        );
+    }
+
+    @Override
+    public void sendApprovedNotificationMail(String to, String content) {
+        buildAndSendMail(
+                "Booking Approved",
+                hostEmail,
+                to,
+                "booking-approved",
+                List.of(
+                        Map.entry("content", content)
+                )
+        );
+    }
+
 
     private void buildAndSendMail(
             String title,

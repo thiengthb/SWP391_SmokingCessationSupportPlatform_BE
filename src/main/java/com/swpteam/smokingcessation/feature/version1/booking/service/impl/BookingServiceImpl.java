@@ -1,4 +1,4 @@
-package com.swpteam.smokingcessation.feature.version1.booking.service.impl;
+package com.swpteam.smokingcessation.service.impl.booking;
 
 import com.swpteam.smokingcessation.common.PageResponse;
 import com.swpteam.smokingcessation.common.PageableRequest;
@@ -12,13 +12,14 @@ import com.swpteam.smokingcessation.domain.enums.AccountStatus;
 import com.swpteam.smokingcessation.domain.enums.BookingStatus;
 import com.swpteam.smokingcessation.domain.mapper.BookingMapper;
 import com.swpteam.smokingcessation.exception.AppException;
-import com.swpteam.smokingcessation.feature.integration.google.GoogleCalendarService;
-import com.swpteam.smokingcessation.feature.integration.mail.IMailService;
-import com.swpteam.smokingcessation.repository.jpa.BookingRepository;
-import com.swpteam.smokingcessation.repository.jpa.TimeTableRepository;
-import com.swpteam.smokingcessation.feature.version1.booking.service.IBookingService;
-import com.swpteam.smokingcessation.feature.version1.identity.service.IAccountService;
-import com.swpteam.smokingcessation.feature.version1.notification.service.INotificationService;
+import com.swpteam.smokingcessation.integration.google.GoogleCalendarService;
+import com.swpteam.smokingcessation.integration.mail.IMailService;
+import com.swpteam.smokingcessation.repository.BookingRepository;
+import com.swpteam.smokingcessation.repository.TimeTableRepository;
+import com.swpteam.smokingcessation.service.interfaces.booking.IBookingService;
+import com.swpteam.smokingcessation.service.interfaces.booking.ITimeTableService;
+import com.swpteam.smokingcessation.service.interfaces.identity.IAccountService;
+import com.swpteam.smokingcessation.service.interfaces.notification.INotificationService;
 import com.swpteam.smokingcessation.utils.AuthUtilService;
 import com.swpteam.smokingcessation.utils.ValidationUtil;
 import lombok.AccessLevel;
@@ -36,6 +37,10 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
 @Slf4j
 @Service
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
@@ -43,7 +48,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class BookingServiceImpl implements IBookingService {
 
     BookingRepository bookingRepository;
-    TimeTableRepository timeTableRepository;
+    ITimeTableService timeTableService;
     BookingMapper bookingMapper;
     GoogleCalendarService googleCalendarService;
     IAccountService accountService;
@@ -113,36 +118,30 @@ public class BookingServiceImpl implements IBookingService {
         Account member = authUtilService.getCurrentAccountOrThrowError();
         Account coach = accountService.findAccountByIdOrThrowError(request.coachId());
 
-        boolean inWorkingTime = timeTableRepository
-                .findByCoach_IdAndStartedAtLessThanEqualAndEndedAtGreaterThanEqual(
-                        request.coachId(), request.startedAt(), request.endedAt()
-                ).isPresent();
-        if (!inWorkingTime) {
-            throw new AppException(ErrorCode.BOOKING_OUTSIDE_WORKING_HOURS);
-        }
+        //check if this member already created booking that overlap?throw except
+        validateMemberBookingConflict(member.getId(), request.coachId(),
+                request.startedAt(), request.endedAt(), null);
 
-        boolean isOverlapped = bookingRepository.existsByCoachIdAndIsDeletedFalseAndStartedAtLessThanAndEndedAtGreaterThan(
-                request.coachId(),
-                request.endedAt(),
-                request.startedAt()
-        );
-        if (isOverlapped) {
-            throw new AppException(ErrorCode.BOOKING_TIME_CONFLICT);
-        }
         Booking booking = bookingMapper.toEntity(request);
         booking.setMember(member);
         booking.setCoach(coach);
         booking.setStatus(BookingStatus.PENDING);
 
-        BookingResponse response = bookingMapper.toResponse(bookingRepository.save(booking));
 
-        if (coach.getStatus() == AccountStatus.ONLINE) {
-            notificationService.sendBookingNotification(member.getUsername(), coach.getId());
+        //check if booking coach_timetable
+        if (timeTableService.isBookingTimeInAnyTimeTable(request.startedAt(), request.endedAt(), request.coachId())) {
+            booking.setStatus(BookingStatus.REJECTED);
+            booking.setDeclineReason(ErrorCode.COACH_IS_BUSY.toString());
+
+            Booking savedBooking = bookingRepository.save(booking);
+            sendRejectNotification(member, booking.getDeclineReason());
+
+            return bookingMapper.toResponse(savedBooking);
         } else {
-            String bookingLink = FRONTEND_DOMAIN + "/bookings?id=" + booking.getId();
-            mailService.sendBookingRequestEmail(coach.getEmail(), request, member.getUsername(), coach.getUsername(), bookingLink);
+            Booking savedBooking = bookingRepository.save(booking);
+            sendBookingRequestNotification(coach, member, savedBooking, request);
+            return bookingMapper.toResponse(savedBooking);
         }
-        return response;
     }
 
     @Override
@@ -151,14 +150,44 @@ public class BookingServiceImpl implements IBookingService {
     @CachePut(value = "BOOKING_CACHE", key = "#result.getId()")
     @CacheEvict(value = "BOOKING_PAGE_CACHE", allEntries = true)
     public BookingResponse updateMyBookingRequestStatus(String id, BookingAnswerRequest request) {
-        Booking booking = checkAndGetMyBooking(id);
+        Booking booking = findBookingByIdOrThrowError(id);
 
-        if (!booking.getStatus().equals(BookingStatus.PENDING)) {
+        if (booking.getStatus() != BookingStatus.PENDING) {
             throw new AppException(ErrorCode.BOOKING_ALREADY_IN_PROCESS);
         }
 
-        if (request.accepted()) {
+        if (!authUtilService.isOwner(booking.getCoach().getId())) {
+            throw new AppException(ErrorCode.UNAUTHORIZED);
+        }
+
+        if (Boolean.TRUE.equals(request.accepted())) {
             booking.setStatus(BookingStatus.APPROVED);
+
+            timeTableService.createTimeTableAuto(booking.getStartedAt(), booking.getEndedAt(), booking.getCoach());
+
+            List<Booking> pendingConflicts = bookingRepository.findAllByCoachIdAndStatusAndIsDeletedFalse(
+                    booking.getCoach().getId(),
+                    BookingStatus.PENDING
+            );
+            //reject other booking in the accepted booking period
+            List<Booking> toReject = new ArrayList<>();
+            for (Booking other : pendingConflicts) {
+
+                if (other.getId().equals(id)) continue;
+
+                boolean overlaps = !(booking.getEndedAt().isBefore(other.getStartedAt()) ||
+                        booking.getStartedAt().isAfter(other.getEndedAt()));
+
+                if (overlaps) {
+                    other.setStatus(BookingStatus.REJECTED);
+                    other.setDeclineReason(ErrorCode.COACH_IS_BUSY.toString());
+                    toReject.add(other);
+                    sendRejectNotification(other.getMember(), other.getDeclineReason());
+                }
+            }
+            SendApprovedNotification(booking.getMember(),booking.getCoach());
+            bookingRepository.saveAll(toReject);
+
         } else {
             booking.setStatus(BookingStatus.REJECTED);
             booking.setDeclineReason(request.declineReason());
@@ -175,10 +204,23 @@ public class BookingServiceImpl implements IBookingService {
     public BookingResponse updateBookingById(String id, BookingRequest request) {
         Booking booking = findBookingByIdOrThrowError(id);
 
+        if (booking.getStatus() != BookingStatus.PENDING) {
+            throw new AppException(ErrorCode.BOOKING_ALREADY_IN_PROCESS);
+        }
+
         boolean haveAccess = authUtilService.isAdminOrOwner(booking.getMember().getId());
         if (!haveAccess) {
             throw new AppException(ErrorCode.UNAUTHORIZED);
         }
+
+        validateMemberBookingConflict(
+                booking.getMember().getId(),
+                request.coachId(),
+                request.startedAt(),
+                request.endedAt(),
+                id
+        );
+
 
         bookingMapper.update(booking, request);
 
@@ -201,45 +243,8 @@ public class BookingServiceImpl implements IBookingService {
     }
 
     @Override
-    @Transactional
-    @CachePut(value = "BOOKING_CACHE", key = "#result.getId()")
-    @CacheEvict(value = "BOOKING_PAGE_CACHE", allEntries = true)
-    public BookingResponse createBookingWithMeet(BookingRequest request) {
-        Account member = authUtilService.getCurrentAccountOrThrowError();
-        Account coach = accountService.findAccountByIdOrThrowError(request.coachId());
-
-        String meetingUrl = null;
-        try {
-            meetingUrl = googleCalendarService.createGoogleMeetEvent(
-                    request.accessToken(),
-                    request.startedAt().toString(),
-                    request.endedAt().toString()
-            );
-        } catch (Exception e) {
-            throw new AppException(ErrorCode.GOOGLE_CALENDAR_ERROR);
-        }
-
-        Booking booking = bookingMapper.toEntity(request);
-        booking.setMember(member);
-        booking.setCoach(coach);
-        booking.setMeetLink(meetingUrl);
-
-        return bookingMapper.toResponse(bookingRepository.save(booking));
-    }
-
-    @Override
-    @Transactional
     public Booking findBookingByIdOrThrowError(String id) {
-        Booking booking = bookingRepository.findByIdAndIsDeletedFalse(id)
-                .orElseThrow(() -> new AppException(ErrorCode.BOOKING_NOT_FOUND));
-
-        if (booking.getMember().isDeleted() || booking.getCoach().isDeleted()) {
-            booking.setDeleted(true);
-            bookingRepository.save(booking);
-            throw new AppException(ErrorCode.BOOKING_NOT_FOUND);
-        }
-
-        return booking;
+        return null;
     }
 
     private Booking checkAndGetMyBooking(String id) {
@@ -253,4 +258,104 @@ public class BookingServiceImpl implements IBookingService {
         return booking;
     }
 
+    /*
+        @Override
+        @Transactional
+        @CachePut(value = "BOOKING_CACHE", key = "#result.getId()")
+        @CacheEvict(value = "BOOKING_PAGE_CACHE", allEntries = true)
+        public BookingResponse createBookingWithMeet(BookingRequest request) {
+            Account member = authUtilService.getCurrentAccountOrThrowError();
+            Account coach = accountService.findAccountByIdOrThrowError(request.coachId());
+
+            String meetingUrl = null;
+            try {
+                meetingUrl = googleCalendarService.createGoogleMeetEvent(
+                        request.accessToken(),
+                        request.startedAt().toString(),
+                        request.endedAt().toString()
+                );
+            } catch (Exception e) {
+                throw new AppException(ErrorCode.GOOGLE_CALENDAR_ERROR);
+            }
+
+            Booking booking = bookingMapper.toEntity(request);
+            booking.setMember(member);
+            booking.setCoach(coach);
+            booking.setMeetLink(meetingUrl);
+
+            return bookingMapper.toResponse(bookingRepository.save(booking));
+        }
+
+        @Override
+        @Transactional
+        public Booking findBookingByIdOrThrowError(String id) {
+            Booking booking = bookingRepository.findByIdAndIsDeletedFalse(id)
+                    .orElseThrow(() -> new AppException(ErrorCode.BOOKING_NOT_FOUND));
+
+            if (booking.getMember().isDeleted() || booking.getCoach().isDeleted()) {
+                booking.setDeleted(true);
+                bookingRepository.save(booking);
+                throw new AppException(ErrorCode.BOOKING_NOT_FOUND);
+            }
+
+            return booking;
+        }
+
+
+     */
+    private void validateMemberBookingConflict(String memberId, String coachId,
+                                               LocalDateTime startedAt, LocalDateTime endedAt,
+                                               String excludeBookingId) {
+        // Lấy tất cả booking PENDING của member này với coach này
+        List<Booking> memberPendingBookings = bookingRepository.findAllByMemberIdAndCoachIdAndStatusAndIsDeletedFalse(
+                memberId, coachId, BookingStatus.PENDING);
+
+        for (Booking existingBooking : memberPendingBookings) {
+            // Skip nếu là booking hiện tại đang update
+            if (existingBooking.getId().equals(excludeBookingId)) {
+                continue;
+            }
+
+            // Check overlap: 2 khoảng thời gian có trùng nhau không?
+            // Overlap = KHÔNG (end1 < start2 HOẶC start1 > end2)
+            boolean overlaps = !(endedAt.isBefore(existingBooking.getStartedAt()) ||
+                    startedAt.isAfter(existingBooking.getEndedAt()));
+
+            if (overlaps) {
+                throw new AppException(ErrorCode.BOOKING_TIME_CONFLICT);
+            }
+        }
+    }
+
+    private void sendRejectNotification(Account member, String reason) {
+        if (member.getStatus() == AccountStatus.ONLINE) {
+            notificationService.sendBookingRejectNotification(reason, member.getId());
+        } else {
+            mailService.sendRejectNotificationMail(member.getEmail(), reason);
+        }
+    }
+
+    private void SendApprovedNotification(Account member,Account coach){
+        if (member.getStatus() == AccountStatus.ONLINE) {
+            notificationService.sendApprovedNotification(member.getId(),coach.getUsername());
+        } else {
+            mailService.sendApprovedNotificationMail(member.getEmail(),coach.getUsername());
+        }
+    }
+
+    private void sendBookingRequestNotification(Account coach, Account member,
+                                                Booking savedBooking, BookingRequest request) {
+        if (coach.getStatus() == AccountStatus.ONLINE) {
+            notificationService.sendBookingNotification(member.getUsername(), coach.getId());
+        } else {
+            String bookingLink = FRONTEND_DOMAIN + "/bookings?id=" + savedBooking.getId();
+            mailService.sendBookingRequestEmail(
+                    coach.getEmail(),
+                    request,
+                    member.getUsername(),
+                    coach.getUsername(),
+                    bookingLink
+            );
+        }
+    }
 }

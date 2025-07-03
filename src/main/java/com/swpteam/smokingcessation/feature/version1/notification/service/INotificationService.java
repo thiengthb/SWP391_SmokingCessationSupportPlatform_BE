@@ -1,4 +1,4 @@
-package com.swpteam.smokingcessation.feature.version1.notification.service;
+package com.swpteam.smokingcessation.service.interfaces.notification;
 
 import com.swpteam.smokingcessation.common.PageResponse;
 import com.swpteam.smokingcessation.common.PageableRequest;
@@ -10,11 +10,11 @@ public interface INotificationService {
 
     void sendNotification(NotificationRequest request);
 
+    void sendApprovedNotification(String memberId,String coachUserName);
+
     void sendBookingNotification(String username, String coachId);
 
-    void sendPlanDoneNotification(String planName, String accountId );
-
-    void sendPhaseDoneNotification(int phase, String accountId);
+    void sendBookingRejectNotification(String content, String memberId);
 
     void markAsRead(String id);
 

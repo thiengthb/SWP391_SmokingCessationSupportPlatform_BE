@@ -8,6 +8,7 @@ import com.swpteam.smokingcessation.domain.dto.timetable.TimeTableRequest;
 import com.swpteam.smokingcessation.domain.dto.timetable.TimeTableResponse;
 import com.swpteam.smokingcessation.domain.entity.Account;
 import com.swpteam.smokingcessation.domain.entity.Booking;
+import com.swpteam.smokingcessation.domain.entity.Coach;
 import com.swpteam.smokingcessation.domain.entity.TimeTable;
 import com.swpteam.smokingcessation.domain.mapper.TimeTableMapper;
 import com.swpteam.smokingcessation.exception.AppException;
@@ -29,6 +30,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
 
 @Slf4j
 @Service
@@ -61,7 +66,6 @@ public class TimeTableServiceImpl implements ITimeTableService {
         ValidationUtil.checkFieldExist(Booking.class, request.sortBy());
 
         Account currentAccount = authUtilService.getCurrentAccountOrThrowError();
-
         Pageable pageable = PageableRequest.getPageable(request);
         Page<TimeTable> timeTables = timeTableRepository.findAllByCoach_IdAndIsDeletedFalse(currentAccount.getId(), pageable);
 
@@ -100,6 +104,29 @@ public class TimeTableServiceImpl implements ITimeTableService {
         timeTable.setCoach(coach);
 
         return timeTableMapper.toResponse(timeTableRepository.save(timeTable));
+    }
+
+    @Override
+    public void createTimeTableAuto(LocalDateTime start, LocalDateTime end, Account coach) {
+        TimeTable timeTable = TimeTable.builder()
+                .startedAt(start)
+                .endedAt(end)
+                .coach(coach)
+                .build();
+        timeTableRepository.save(timeTable);
+
+
+
+    }
+    public boolean isBookingTimeInAnyTimeTable(LocalDateTime bookingStart, LocalDateTime bookingEnd, String coachId) {
+        List<TimeTable> timeTables = timeTableRepository.getAllByCoachIdAndIsDeletedFalse(coachId);
+        for (TimeTable tt : timeTables) {
+            boolean overlaps = !(bookingEnd.isBefore(tt.getStartedAt()) || bookingStart.isAfter(tt.getEndedAt()));
+            if (overlaps) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override
@@ -142,7 +169,7 @@ public class TimeTableServiceImpl implements ITimeTableService {
     @Transactional
     public TimeTable findTimeTableByIdOrThrowError(String id) {
         TimeTable timeTable = timeTableRepository.findByIdAndIsDeletedFalse(id)
-                .orElseThrow(()->new AppException(ErrorCode.TIMETABLE_NOT_FOUND));
+                .orElseThrow(() -> new AppException(ErrorCode.TIMETABLE_NOT_FOUND));
 
         if (timeTable.getCoach().isDeleted()) {
             timeTable.setDeleted(true);

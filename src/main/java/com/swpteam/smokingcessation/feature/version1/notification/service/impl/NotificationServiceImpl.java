@@ -12,7 +12,6 @@ import com.swpteam.smokingcessation.domain.mapper.NotificationMapper;
 import com.swpteam.smokingcessation.exception.AppException;
 import com.swpteam.smokingcessation.repository.jpa.NotificationRepository;
 import com.swpteam.smokingcessation.feature.version1.identity.service.IAccountService;
-import com.swpteam.smokingcessation.feature.version1.notification.service.INotificationService;
 import com.swpteam.smokingcessation.utils.AuthUtilService;
 import com.swpteam.smokingcessation.utils.ValidationUtil;
 import lombok.AccessLevel;
@@ -71,11 +70,30 @@ public class NotificationServiceImpl implements INotificationService {
     }
 
     @Override
+    public void sendApprovedNotification(String memberId,String coachUserName) {
+        NotificationRequest request = new NotificationRequest(
+                memberId,
+                "Your booking with coach " + coachUserName +" have been approved",
+                NotificationType.LIVE);
+        sendNotification(request);
+    }
+
+    @Override
     public void sendBookingNotification(String username, String coachId) {
         NotificationRequest request = new NotificationRequest(
                 coachId,
                 "You have a new booking from " + username,
                 NotificationType.LIVE);
+        sendNotification(request);
+    }
+
+    @Override
+    public void sendBookingRejectNotification(String content, String memberId) {
+        NotificationRequest request = new NotificationRequest(
+                memberId,
+                content,
+                NotificationType.LIVE
+        );
         sendNotification(request);
     }
 
