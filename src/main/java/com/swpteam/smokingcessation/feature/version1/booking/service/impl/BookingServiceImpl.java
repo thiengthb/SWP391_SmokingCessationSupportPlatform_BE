@@ -1,4 +1,4 @@
-package com.swpteam.smokingcessation.service.impl.booking;
+package com.swpteam.smokingcessation.feature.version1.booking.service.impl;
 
 import com.swpteam.smokingcessation.common.PageResponse;
 import com.swpteam.smokingcessation.common.PageableRequest;
@@ -12,14 +12,13 @@ import com.swpteam.smokingcessation.domain.enums.AccountStatus;
 import com.swpteam.smokingcessation.domain.enums.BookingStatus;
 import com.swpteam.smokingcessation.domain.mapper.BookingMapper;
 import com.swpteam.smokingcessation.exception.AppException;
-import com.swpteam.smokingcessation.integration.google.GoogleCalendarService;
-import com.swpteam.smokingcessation.integration.mail.IMailService;
-import com.swpteam.smokingcessation.repository.BookingRepository;
-import com.swpteam.smokingcessation.repository.TimeTableRepository;
-import com.swpteam.smokingcessation.service.interfaces.booking.IBookingService;
-import com.swpteam.smokingcessation.service.interfaces.booking.ITimeTableService;
-import com.swpteam.smokingcessation.service.interfaces.identity.IAccountService;
-import com.swpteam.smokingcessation.service.interfaces.notification.INotificationService;
+import com.swpteam.smokingcessation.feature.integration.google.GoogleCalendarService;
+import com.swpteam.smokingcessation.feature.integration.mail.IMailService;
+import com.swpteam.smokingcessation.feature.version1.booking.service.IBookingService;
+import com.swpteam.smokingcessation.feature.version1.booking.service.ITimeTableService;
+import com.swpteam.smokingcessation.feature.version1.identity.service.IAccountService;
+import com.swpteam.smokingcessation.feature.version1.notification.service.INotificationService;
+import com.swpteam.smokingcessation.repository.jpa.BookingRepository;
 import com.swpteam.smokingcessation.utils.AuthUtilService;
 import com.swpteam.smokingcessation.utils.ValidationUtil;
 import lombok.AccessLevel;
@@ -187,6 +186,8 @@ public class BookingServiceImpl implements IBookingService {
             }
             SendApprovedNotification(booking.getMember(), booking.getCoach());
             bookingRepository.saveAll(toReject);
+            sendRejectNotification(booking.getMember(), booking.getDeclineReason());
+
 
         } else {
             booking.setStatus(BookingStatus.REJECTED);

@@ -10,6 +10,7 @@ import com.swpteam.smokingcessation.domain.entity.Notification;
 import com.swpteam.smokingcessation.domain.enums.NotificationType;
 import com.swpteam.smokingcessation.domain.mapper.NotificationMapper;
 import com.swpteam.smokingcessation.exception.AppException;
+import com.swpteam.smokingcessation.feature.version1.notification.service.INotificationService;
 import com.swpteam.smokingcessation.repository.jpa.NotificationRepository;
 import com.swpteam.smokingcessation.feature.version1.identity.service.IAccountService;
 import com.swpteam.smokingcessation.utils.AuthUtilService;

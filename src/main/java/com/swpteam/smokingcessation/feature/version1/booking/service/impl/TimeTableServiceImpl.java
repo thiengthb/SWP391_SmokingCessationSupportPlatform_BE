@@ -12,8 +12,8 @@ import com.swpteam.smokingcessation.domain.entity.Coach;
 import com.swpteam.smokingcessation.domain.entity.TimeTable;
 import com.swpteam.smokingcessation.domain.mapper.TimeTableMapper;
 import com.swpteam.smokingcessation.exception.AppException;
-import com.swpteam.smokingcessation.repository.jpa.TimeTableRepository;
 import com.swpteam.smokingcessation.feature.version1.booking.service.ITimeTableService;
+import com.swpteam.smokingcessation.repository.jpa.TimeTableRepository;
 
 import com.swpteam.smokingcessation.feature.version1.identity.service.IAccountService;
 import com.swpteam.smokingcessation.utils.AuthUtilService;

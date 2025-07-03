@@ -1,11 +1,8 @@
 package com.swpteam.smokingcessation.feature.integration.mail;
 
 import com.swpteam.smokingcessation.domain.dto.contact.ContactRequest;
-import com.swpteam.smokingcessation.domain.dto.phase.PhaseResponse;
-import com.swpteam.smokingcessation.domain.dto.plan.PlanResponse;
 import com.swpteam.smokingcessation.domain.dto.booking.BookingRequest;
 import com.swpteam.smokingcessation.domain.dto.report.ReportSummaryResponse;
-import com.swpteam.smokingcessation.domain.entity.Account;
 import com.swpteam.smokingcessation.domain.entity.Message;
 import com.swpteam.smokingcessation.domain.enums.PhaseStatus;
 import com.swpteam.smokingcessation.domain.enums.PlanStatus;
@@ -35,7 +32,7 @@ public interface IMailService {
             int totalMostSmoked,
             double successRate,
             PhaseStatus phaseStatus,
-            String accountId
+            String mail
     );
     void sendPlanSummary(    String planName,
                              LocalDate startDate,
@@ -44,7 +41,7 @@ public interface IMailService {
                              long totalNotReportedDays,
                              int totalMostSmoked,
                              Integer totalLeastSmoked,
-                             String accountId,
+                             String email,
                              PlanStatus planStatus,
                              Double successRate
                              ) ;

@@ -1,4 +1,4 @@
-package com.swpteam.smokingcessation.service.interfaces.booking;
+package com.swpteam.smokingcessation.feature.version1.booking.service;
 
 import com.swpteam.smokingcessation.common.PageResponse;
 import com.swpteam.smokingcessation.common.PageableRequest;
