@@ -185,7 +185,7 @@ public class BookingServiceImpl implements IBookingService {
                     sendRejectNotification(other.getMember(), other.getDeclineReason());
                 }
             }
-            SendApprovedNotification(booking.getMember(),booking.getCoach());
+            SendApprovedNotification(booking.getMember(), booking.getCoach());
             bookingRepository.saveAll(toReject);
 
         } else {
@@ -244,7 +244,9 @@ public class BookingServiceImpl implements IBookingService {
 
     @Override
     public Booking findBookingByIdOrThrowError(String id) {
-        return null;
+
+        return bookingRepository.findByIdAndIsDeletedFalse(id)
+                .orElseThrow(() -> new AppException(ErrorCode.BOOKING_NOT_FOUND));
     }
 
     private Booking checkAndGetMyBooking(String id) {
@@ -335,13 +337,11 @@ public class BookingServiceImpl implements IBookingService {
         }
     }
 
-    private void SendApprovedNotification(Account member,Account coach){
-        if (member.getStatus() == AccountStatus.ONLINE) {
-            notificationService.sendApprovedNotification(member.getId(),coach.getUsername());
-        } else {
-            mailService.sendApprovedNotificationMail(member.getEmail(),coach.getUsername());
+    private void SendApprovedNotification(Account member, Account coach) {
+            notificationService.sendApprovedNotification(member.getId(), coach.getUsername());
+            mailService.sendApprovedNotificationMail(member.getEmail(), coach.getUsername());
         }
-    }
+
 
     private void sendBookingRequestNotification(Account coach, Account member,
                                                 Booking savedBooking, BookingRequest request) {
