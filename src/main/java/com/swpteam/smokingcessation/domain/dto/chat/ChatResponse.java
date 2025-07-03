@@ -1,6 +1,7 @@
 package com.swpteam.smokingcessation.domain.dto.chat;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.swpteam.smokingcessation.domain.dto.account.AccountResponse;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -13,8 +14,8 @@ import java.time.LocalDateTime;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class ChatResponse {
-    String username;
+    String id;
+    AccountResponse author;
     String content;
-    LocalDateTime sentAt;
-    boolean isFirstTime;
+    LocalDateTime timestamp;
 }

@@ -33,6 +33,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 @Slf4j
@@ -69,6 +70,13 @@ public class AccountServiceImpl implements IAccountService {
     @Override
     public AccountResponse getCurrentAccount() {
         return accountMapper.toResponse(authUtilService.getCurrentAccountOrThrowError());
+    }
+
+    @Override
+    public List<AccountResponse> getOnlineAccounts() {
+        return accountRepository.findAllByStatusAndIsDeletedFalse(AccountStatus.ONLINE).stream()
+                .map(accountMapper::toResponse)
+                .toList();
     }
 
     @Override

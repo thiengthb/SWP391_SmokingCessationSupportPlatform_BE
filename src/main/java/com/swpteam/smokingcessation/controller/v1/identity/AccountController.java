@@ -19,6 +19,8 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/accounts")
@@ -44,6 +46,14 @@ public class AccountController {
         return responseUtilService.buildSuccessResponse(
                 SuccessCode.ACCOUNT_CREATED,
                 accountService.getAccountsPage(request)
+        );
+    }
+
+    @GetMapping("/online-users")
+    ResponseEntity<ApiResponse<List<AccountResponse>>> getOnlineAccounts() {
+        return responseUtilService.buildSuccessResponse(
+                SuccessCode.ACCOUNT_CREATED,
+                accountService.getOnlineAccounts()
         );
     }
 
