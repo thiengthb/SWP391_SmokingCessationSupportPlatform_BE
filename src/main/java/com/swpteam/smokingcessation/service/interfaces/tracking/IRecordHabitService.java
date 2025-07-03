@@ -32,4 +32,8 @@ public interface IRecordHabitService {
     Optional<RecordHabit> getLatestRecordBeforeDate(String accountId, LocalDate date);
 
     List<RecordHabit> getAllRecordNoSmoke(String accountId);
+
+    boolean checkHabitRecordExistence(String accountId, LocalDate date);
+
+    RecordHabit findRecordByDateOrNull(String accountId, LocalDate date);
 }

@@ -1,25 +1,21 @@
 package com.swpteam.smokingcessation.service.impl.profile;
 
-import com.swpteam.smokingcessation.common.PageResponse;
 import com.swpteam.smokingcessation.domain.dto.member.MemberRequest;
+import com.swpteam.smokingcessation.domain.dto.member.ProgressResponse;
 import com.swpteam.smokingcessation.domain.entity.Account;
 import com.swpteam.smokingcessation.domain.mapper.MemberMapper;
 import com.swpteam.smokingcessation.domain.dto.member.MemberResponse;
-import com.swpteam.smokingcessation.common.PageableRequest;
 import com.swpteam.smokingcessation.constant.ErrorCode;
 import com.swpteam.smokingcessation.domain.entity.Member;
 import com.swpteam.smokingcessation.exception.AppException;
 import com.swpteam.smokingcessation.repository.MemberRepository;
 import com.swpteam.smokingcessation.service.interfaces.profile.IMemberService;
 import com.swpteam.smokingcessation.utils.AuthUtilService;
-import com.swpteam.smokingcessation.utils.ValidationUtil;
 import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
@@ -101,8 +97,16 @@ public class MemberServiceImpl implements IMemberService {
         }
         log.info("found {} member", members.size());
         return members;
+    }
 
+    @Override
+    public ProgressResponse getProgress(){
+        Member member = authUtilService.getCurrentAccountOrThrowError().getMember();
 
+        return ProgressResponse.builder()
+                .cigarettesAvoided((int) Math.floor(member.getCigarettesAvoided()))
+                .moneySaved((int) Math.floor(member.getMoneySaved()))
+                .build();
     }
 
 }

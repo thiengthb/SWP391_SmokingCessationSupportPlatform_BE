@@ -145,7 +145,6 @@ public class RecordHabitServiceImpl implements IRecordHabitService {
     @Override
     public Optional<RecordHabit> getRecordByDate(String accountId, LocalDate date) {
         return recordHabitRepository.findByAccountIdAndDate(accountId, date);
-
     }
 
     @Override
@@ -160,4 +159,13 @@ public class RecordHabitServiceImpl implements IRecordHabitService {
         return recordHabits;
     }
 
+    @Override
+    public boolean checkHabitRecordExistence(String accountId, LocalDate date){
+        return recordHabitRepository.existsByAccountIdAndDateAndIsDeletedFalse(accountId, date);
+    }
+
+    @Override
+    public RecordHabit findRecordByDateOrNull(String accountId, LocalDate date){
+        return recordHabitRepository.findByAccountIdAndDate(accountId, date).orElse(null);
+    }
 }

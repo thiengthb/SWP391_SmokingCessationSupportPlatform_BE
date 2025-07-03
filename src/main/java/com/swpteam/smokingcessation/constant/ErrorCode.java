@@ -83,6 +83,7 @@ public enum ErrorCode {
     TRACKING_MODE_REQUIRED(1602, "error.settings.tracking_mode_required", HttpStatus.BAD_REQUEST),
     MOTIVATION_REQUIRED(1603, "error.settings.motivation_required", HttpStatus.BAD_REQUEST),
     REPORT_DEADLINE_REQUIRED(1606, "error.settings.report_deadline_required", HttpStatus.BAD_REQUEST),
+    MODE_CHANGE_UNAVAILABLE(1607,"error.settings.mode_change_unavailable", HttpStatus.BAD_REQUEST),
 
     // Member Errors (1700-1799)
     MEMBER_ALREADY_EXISTS(1700, "error.member.already_exists", HttpStatus.CONFLICT),

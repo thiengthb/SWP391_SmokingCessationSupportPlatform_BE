@@ -25,4 +25,8 @@ public interface IHealthService {
     void softDeleteHealthById(String id);
 
     Health findHealthByIdOrThrowError(String id);
+
+    Health findLatestHealthByAccountIdOrThrowError(String accountId);
+
+    Health findLatestHealthByAccountIdOrNull(String accountId);
 }

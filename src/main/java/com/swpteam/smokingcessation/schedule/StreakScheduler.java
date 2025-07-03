@@ -48,7 +48,7 @@ public class StreakScheduler {
                 LocalDateTime deadlineDateTime = LocalDateTime.of(today, deadline);
 
                 if (!now.isAfter(deadlineDateTime)) {
-                    return;
+                    continue;
                 }
 
                 boolean hasRecord = recordHabitRepository
@@ -57,7 +57,7 @@ public class StreakScheduler {
                 Streak streak = streakRepository.findByAccountIdAndIsDeletedFalse(accountId)
                         .orElse(null);
                 if (streak == null || hasRecord || streak.getNumber() == 0) {
-                    return;
+                    continue;
                 }
 
                 streakService.resetStreak(accountId);

@@ -96,6 +96,7 @@ public enum SuccessCode {
     MEMBER_CREATED(2100, "success.member.created"),
     MEMBER_UPDATED(2101, "success.member.updated"),
     MEMBER_FETCHED_BY_ID(2103, "success.member.fetched_by_id"),
+    MEMBER_PROGRESS_FETCHED(2104, "success.progress.fetched"),
 
     // Booking Successes (2200-2299)
     BOOKING_CREATED(2200, "success.booking.created"),

@@ -29,6 +29,8 @@ public class Member extends AuditableEntity {
     int score;
     int highestStreak;
     LocalDateTime lastCounterReset;
+    double cigarettesAvoided;
+    double moneySaved;
 
     @Enumerated(EnumType.STRING)
     MemberGender gender;

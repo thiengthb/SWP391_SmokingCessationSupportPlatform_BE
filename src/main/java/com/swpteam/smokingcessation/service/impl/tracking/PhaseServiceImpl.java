@@ -10,7 +10,6 @@ import com.swpteam.smokingcessation.domain.dto.phase.PhaseResponse;
 import com.swpteam.smokingcessation.constant.ErrorCode;
 import com.swpteam.smokingcessation.domain.entity.Phase;
 import com.swpteam.smokingcessation.exception.AppException;
-import com.swpteam.smokingcessation.integration.mail.IMailService;
 import com.swpteam.smokingcessation.repository.PhaseRepository;
 import com.swpteam.smokingcessation.service.interfaces.notification.INotificationService;
 import com.swpteam.smokingcessation.service.interfaces.profile.IScoreService;

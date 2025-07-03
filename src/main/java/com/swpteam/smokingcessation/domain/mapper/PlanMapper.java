@@ -23,9 +23,4 @@ public interface PlanMapper {
     PlanSummaryResponse toSummaryResponse(Plan plan);
 
     PlanPageResponse toPageResponse(Plan plan);
-
-    @Named("planRound")
-    default double roundToTwoDecimal(Double value) {
-        return value == null ? 0.0 : Math.round(value * 100.0) / 100.0;
-    }
 }
