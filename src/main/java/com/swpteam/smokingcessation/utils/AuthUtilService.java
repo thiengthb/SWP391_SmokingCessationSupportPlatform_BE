@@ -4,7 +4,7 @@ import com.swpteam.smokingcessation.constant.ErrorCode;
 import com.swpteam.smokingcessation.domain.entity.Account;
 import com.swpteam.smokingcessation.domain.enums.Role;
 import com.swpteam.smokingcessation.exception.AppException;
-import com.swpteam.smokingcessation.repository.AccountRepository;
+import com.swpteam.smokingcessation.repository.jpa.AccountRepository;
 import com.swpteam.smokingcessation.security.UserPrincipal;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.AccessLevel;

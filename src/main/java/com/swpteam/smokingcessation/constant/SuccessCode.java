@@ -36,7 +36,7 @@ public enum SuccessCode {
     MEMBERSHIP_CREATED(1300, "success.membership.created"),
     MEMBERSHIP_UPDATED(1301, "success.membership.updated"),
     MEMBERSHIP_DELETED(1302, "success.membership.deleted"),
-    MEMBERSHIP_PAGE_FETCHED(1303, "success.membership.page_fetched"),
+    MEMBERSHIP_LIST_FETCHED(1303, "success.membership.list_fetched"),
     MEMBERSHIP_FETCHED_BY_ID(1304, "success.membership.fetched_by_id"),
 
     // Subscription Successes (1400-1499)
@@ -200,7 +200,13 @@ public enum SuccessCode {
     COUNTER_FETCHED(3701, "success.counter.fetched"),
 
     // Contact Success (3800-3899)
-    CONTACT_SUCCESS(3801,"success.contact.success")
+    CONTACT_SUCCESS(3801,"success.contact.success"),
+
+    // Transaction Success (3900-3999)
+    TRANSACTION_FETCH_BY_ACCOUNT(3901, "success.transaction.fetch_by_account"),
+    TRANSACTION_FETCH_BY_ID(3901, "success.transaction.fetch_by_id"),
+
+
     ;
     int code;
     String messageLocaleKey;

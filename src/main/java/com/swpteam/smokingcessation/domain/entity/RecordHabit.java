@@ -27,7 +27,6 @@ public class RecordHabit extends AuditableEntity {
 
     String note;
 
-    @Column(nullable = false)
     LocalDate date;
 
     boolean progressed;

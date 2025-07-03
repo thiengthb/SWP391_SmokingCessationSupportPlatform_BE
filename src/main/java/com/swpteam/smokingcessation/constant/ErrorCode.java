@@ -90,6 +90,8 @@ public enum ErrorCode {
     MEMBER_NOT_FOUND(1701, "error.member.not_found", HttpStatus.NOT_FOUND),
     INVALID_DOB(1702, "error.member.invalid_dob", HttpStatus.BAD_REQUEST),
     GENDER_REQUIRED(1703, "error.member.gender_required", HttpStatus.BAD_REQUEST),
+    ADDRESS_TOO_LONG(1704, "error.member.address_too_long", HttpStatus.BAD_REQUEST),
+    BIO_TOO_LONG(1704, "error.member.bio_too_long", HttpStatus.BAD_REQUEST),
 
     // Message Errors (1800-1899)
     MESSAGE_NOT_FOUND(1800, "error.message.not_found", HttpStatus.NOT_FOUND),

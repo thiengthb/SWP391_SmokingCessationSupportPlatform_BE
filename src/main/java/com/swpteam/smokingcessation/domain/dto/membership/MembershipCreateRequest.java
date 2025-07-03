@@ -24,5 +24,7 @@ public record MembershipCreateRequest (
     @NotNull(message = "CURRENCY_REQUIRED")
     Currency currency,
 
-    String description
+    String description,
+
+    Boolean highlighted
 ) {}

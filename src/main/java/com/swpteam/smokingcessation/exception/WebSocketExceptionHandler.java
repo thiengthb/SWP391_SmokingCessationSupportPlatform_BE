@@ -2,7 +2,7 @@ package com.swpteam.smokingcessation.exception;
 
 
 import com.swpteam.smokingcessation.constant.ErrorCode;
-import com.swpteam.smokingcessation.service.impl.internalization.MessageSourceService;
+import com.swpteam.smokingcessation.feature.version1.internalization.MessageSourceService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.messaging.handler.annotation.MessageExceptionHandler;
 import org.springframework.messaging.handler.annotation.support.MethodArgumentNotValidException;

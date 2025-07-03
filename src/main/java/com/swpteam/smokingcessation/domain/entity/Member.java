@@ -26,6 +26,8 @@ public class Member extends AuditableEntity {
     String fullName;
     LocalDate dob;
     String address;
+    String bio;
+
     int score;
     int highestStreak;
     LocalDateTime lastCounterReset;

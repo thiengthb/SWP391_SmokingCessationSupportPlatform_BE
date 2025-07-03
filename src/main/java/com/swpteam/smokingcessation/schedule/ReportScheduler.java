@@ -1,8 +1,8 @@
 package com.swpteam.smokingcessation.schedule;
 
 import com.swpteam.smokingcessation.domain.dto.report.ReportSummaryResponse;
-import com.swpteam.smokingcessation.integration.mail.IMailService;
-import com.swpteam.smokingcessation.repository.AccountRepository;
+import com.swpteam.smokingcessation.feature.integration.mail.IMailService;
+import com.swpteam.smokingcessation.repository.jpa.AccountRepository;
 import com.swpteam.smokingcessation.repository.report.IReportRepository;
 import jakarta.mail.MessagingException;
 import lombok.AccessLevel;
