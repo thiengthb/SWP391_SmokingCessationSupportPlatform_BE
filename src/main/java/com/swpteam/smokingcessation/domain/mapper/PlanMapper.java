@@ -11,7 +11,6 @@ import org.mapstruct.*;
 @Mapper(componentModel = "spring", uses = PhaseMapper.class)
 public interface PlanMapper {
     @Mapping(source = "account.id", target = "accountId")
-    @Mapping(target = "successRate", qualifiedByName = "planRound")
     PlanResponse toResponse(Plan plan);
 
     @Mapping(target = "phases", source = "phases")
