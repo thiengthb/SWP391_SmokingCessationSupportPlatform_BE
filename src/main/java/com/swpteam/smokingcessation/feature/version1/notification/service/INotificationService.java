@@ -6,6 +6,8 @@ import com.swpteam.smokingcessation.domain.dto.notification.NotificationRequest;
 import com.swpteam.smokingcessation.domain.dto.notification.NotificationResponse;
 import com.swpteam.smokingcessation.domain.entity.Notification;
 
+import java.time.LocalDateTime;
+
 public interface INotificationService {
 
     void sendNotification(NotificationRequest request);
@@ -31,5 +33,8 @@ public interface INotificationService {
     void sendPhaseDoneNotification(int phase, String accountId);
 
     Notification findNotificationByIdOrThrowError(String id);
+
+   void  sendUpcomingBookingNotification(String memberId, LocalDateTime startBookingTime);
+
 
 }

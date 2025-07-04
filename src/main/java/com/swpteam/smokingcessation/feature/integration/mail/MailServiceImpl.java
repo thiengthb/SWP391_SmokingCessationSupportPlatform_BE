@@ -23,6 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring6.SpringTemplateEngine;
@@ -228,6 +229,22 @@ public class MailServiceImpl implements IMailService {
                 ));
     }
 
+
+    @Override
+    public void sendUpcomingBookingReminderMail(String to, String coachId, LocalDateTime startTime, String coachName) {
+        LocalDateTime startedAt = DateTimeUtil.reformat(startTime);
+        buildAndSendMail("Upcoming booking"
+                , hostEmail,
+                to,
+                BOOKING_REQUEST_EMAIL,
+                List.of(
+                        Map.entry("startedAt", startedAt),
+                        Map.entry("coachName", coachName)
+                )
+
+        );
+    }
+
     @Override
     public void sendContactMail(ContactRequest request) {
         try {
@@ -256,6 +273,7 @@ public class MailServiceImpl implements IMailService {
         }
     }
 
+    @Async
     @Override
     public void sendRejectNotificationMail(String to, String content) {
         buildAndSendMail(
@@ -269,6 +287,7 @@ public class MailServiceImpl implements IMailService {
         );
     }
 
+    @Async
     @Override
     public void sendApprovedNotificationMail(String to, String content) {
         buildAndSendMail(

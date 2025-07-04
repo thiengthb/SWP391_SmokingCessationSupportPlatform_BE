@@ -100,6 +100,15 @@ public class TimeTableServiceImpl implements ITimeTableService {
     public TimeTableResponse createTimeTable(TimeTableRequest request) {
         Account coach = authUtilService.getCurrentAccountOrThrowError();
 
+        List<TimeTable> timeTables = timeTableRepository.getAllByCoachIdAndIsDeletedFalse(coach.getId());
+        for (TimeTable tt : timeTables) {
+            boolean overlaps = !(request.endedAt().isBefore(tt.getStartedAt()) ||
+                    request.startedAt().isAfter(tt.getEndedAt()));
+            if (overlaps) {
+                throw new AppException(ErrorCode.TIMETABLE_TIME_CONFLICT);
+            }
+        }
+
         TimeTable timeTable = timeTableMapper.toEntity(request);
         timeTable.setCoach(coach);
 
@@ -107,8 +116,13 @@ public class TimeTableServiceImpl implements ITimeTableService {
     }
 
     @Override
+    @PreAuthorize("hasRole('COACH')")
+    @CachePut(value = "TIMETABLE_CACHE", key = "#result.getId()")
+    @CacheEvict(value = "TIMETABLE_PAGE_CACHE", allEntries = true)
     public void createTimeTableAuto(LocalDateTime start, LocalDateTime end, Account coach) {
         TimeTable timeTable = TimeTable.builder()
+                .name("booking with member")
+                .description("You have a booking schedule with member during this time")
                 .startedAt(start)
                 .endedAt(end)
                 .coach(coach)
@@ -116,8 +130,8 @@ public class TimeTableServiceImpl implements ITimeTableService {
         timeTableRepository.save(timeTable);
 
 
-
     }
+
     public boolean isBookingTimeInAnyTimeTable(LocalDateTime bookingStart, LocalDateTime bookingEnd, String coachId) {
         List<TimeTable> timeTables = timeTableRepository.getAllByCoachIdAndIsDeletedFalse(coachId);
         for (TimeTable tt : timeTables) {

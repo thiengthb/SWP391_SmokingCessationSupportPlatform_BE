@@ -184,7 +184,9 @@
                         sendRejectNotification(other.getMember(), other.getDeclineReason());
                     }
                 }
+                log.info("Before sending email notification - time={}", LocalDateTime.now());
                 SendApprovedNotification(booking.getMember(), booking.getCoach());
+                log.info("After sending email notification - time={}", LocalDateTime.now());
                 bookingRepository.saveAll(toReject);
 
             } else {
@@ -193,8 +195,9 @@
                 sendRejectNotification(booking.getMember(), booking.getDeclineReason());
 
             }
-
+            log.info("response at:{}",LocalDateTime.now());
             return bookingMapper.toResponse(bookingRepository.save(booking));
+
         }
 
         @Override

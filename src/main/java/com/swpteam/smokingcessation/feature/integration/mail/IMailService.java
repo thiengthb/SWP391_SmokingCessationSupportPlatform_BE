@@ -8,6 +8,7 @@ import com.swpteam.smokingcessation.domain.enums.PhaseStatus;
 import com.swpteam.smokingcessation.domain.enums.PlanStatus;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public interface IMailService {
 
@@ -53,4 +54,7 @@ public interface IMailService {
     void sendRejectNotificationMail(String to, String content);
 
     void sendApprovedNotificationMail(String to, String content);
+
+    void sendUpcomingBookingReminderMail(String to, String coachId, LocalDateTime startTime,String coachName);
+
 }
