@@ -36,6 +36,7 @@ public class RedisConfig {
             Map.entry("GOAL_PAGE_CACHE", Duration.ofHours(1)),
             Map.entry("REVIEW_PAGE_CACHE", Duration.ofHours(1)),
             Map.entry("PLAN_PAGE_CACHE", Duration.ofHours(1)),
+            Map.entry("PLAN_TEMPLATE_CACHE", Duration.ofHours(1)),
             Map.entry("FEEDBACK_PAGE_CACHE", Duration.ofHours(1)),
 
             Map.entry("BLOG_CACHE", Duration.ofMinutes(30)),

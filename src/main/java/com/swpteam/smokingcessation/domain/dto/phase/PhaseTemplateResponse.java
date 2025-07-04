@@ -13,7 +13,7 @@ import java.util.List;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class PhaseTemplateResponse {
-    int phase;
+    int phaseNo;
     String phaseName;
     int duration;
     int cigaretteBound;

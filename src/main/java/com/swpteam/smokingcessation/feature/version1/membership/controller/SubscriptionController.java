@@ -48,6 +48,14 @@ public class SubscriptionController {
         );
     }
 
+    @GetMapping("/my-current")
+    ResponseEntity<ApiResponse<SubscriptionResponse>> getMyCurrentSubscription() {
+        return responseUtilService.buildSuccessResponse(
+                SuccessCode.SUBSCRIPTION_FETCHED_BY_ID,
+                subscriptionService.getMyCurrentSubscription()
+        );
+    }
+
     @GetMapping("/account/{id}")
     ResponseEntity<ApiResponse<PageResponse<SubscriptionResponse>>> getSubscriptionPageByAccountId(
             @PathVariable String id,

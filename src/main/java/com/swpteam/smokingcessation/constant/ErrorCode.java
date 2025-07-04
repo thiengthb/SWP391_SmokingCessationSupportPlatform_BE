@@ -110,6 +110,7 @@ public enum ErrorCode {
     SMOKE_YEAR_INVALID(1909, "error.health_record.smoke_year_invalid", HttpStatus.BAD_REQUEST),
     SMOKE_YEAR_TOO_HIGH(1910, "error.health_record.smoke_year_too_high", HttpStatus.BAD_REQUEST),
     HEALTH_RECORD_UPDATE_FAILED(1911, "error.health_record.update_failed", HttpStatus.BAD_REQUEST),
+    HEALTH_RECORD_ALREADY_TAKEN_TODAY(1912, "error.health_record.already_taken_today", HttpStatus.BAD_REQUEST),
 
     // Record Errors (2000-2099)
     RECORD_NOT_FOUND(2000, "error.record.not_found", HttpStatus.NOT_FOUND),

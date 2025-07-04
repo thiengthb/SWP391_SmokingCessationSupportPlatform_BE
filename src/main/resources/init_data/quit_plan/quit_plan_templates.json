@@ -4,9 +4,9 @@
       "planName": "plan.superfast.name",
       "description": "plan.superfast.desc",
       "totalDuration": 14,
-      "plan": [
+      "phases": [
         {
-          "phase": 1,
+          "phaseNo": 1,
           "phaseName": "plan.superfast.phase1.name",
           "duration": 7,
           "cigaretteBound": 5,
@@ -18,7 +18,7 @@
           ]
         },
         {
-          "phase": 2,
+          "phaseNo": 2,
           "phaseName": "plan.superfast.phase2.name",
           "duration": 7,
           "cigaretteBound": 0,
@@ -35,9 +35,9 @@
       "planName": "plan.fast.name",
       "description": "plan.fast.desc",
       "totalDuration": 21,
-      "plan": [
+      "phases": [
         {
-          "phase": 1,
+          "phaseNo": 1,
           "phaseName": "plan.fast.phase1.name",
           "duration": 7,
           "cigaretteBound": 10,
@@ -49,7 +49,7 @@
           ]
         },
         {
-          "phase": 2,
+          "phaseNo": 2,
           "phaseName": "plan.fast.phase2.name",
           "duration": 7,
           "cigaretteBound": 5,
@@ -61,7 +61,7 @@
           ]
         },
         {
-          "phase": 3,
+          "phaseNo": 3,
           "phaseName": "plan.fast.phase3.name",
           "duration": 7,
           "cigaretteBound": 0,
@@ -78,9 +78,9 @@
       "planName": "plan.standard.name",
       "description": "plan.standard.desc",
       "totalDuration": 30,
-      "plan": [
+      "phases": [
         {
-          "phase": 1,
+          "phaseNo": 1,
           "phaseName": "plan.standard.phase1.name",
           "duration": 7,
           "cigaretteBound": 15,
@@ -92,7 +92,7 @@
           ]
         },
         {
-          "phase": 2,
+          "phaseNo": 2,
           "phaseName": "plan.standard.phase2.name",
           "duration": 7,
           "cigaretteBound": 10,
@@ -104,7 +104,7 @@
           ]
         },
         {
-          "phase": 3,
+          "phaseNo": 3,
           "phaseName": "plan.standard.phase3.name",
           "duration": 7,
           "cigaretteBound": 5,
@@ -116,7 +116,7 @@
           ]
         },
         {
-          "phase": 4,
+          "phaseNo": 4,
           "phaseName": "plan.standard.phase4.name",
           "duration": 9,
           "cigaretteBound": 0,
@@ -133,9 +133,9 @@
       "planName": "plan.positive.name",
       "description": "plan.positive.desc",
       "totalDuration": 60,
-      "plan": [
+      "phases": [
         {
-          "phase": 1,
+          "phaseNo": 1,
           "phaseName": "plan.positive.phase1.name",
           "duration": 10,
           "cigaretteBound": 20,
@@ -147,7 +147,7 @@
           ]
         },
         {
-          "phase": 2,
+          "phaseNo": 2,
           "phaseName": "plan.positive.phase2.name",
           "duration": 10,
           "cigaretteBound": 15,
@@ -159,7 +159,7 @@
           ]
         },
         {
-          "phase": 3,
+          "phaseNo": 3,
           "phaseName": "plan.positive.phase3.name",
           "duration": 10,
           "cigaretteBound": 10,
@@ -171,7 +171,7 @@
           ]
         },
         {
-          "phase": 4,
+          "phaseNo": 4,
           "phaseName": "plan.positive.phase4.name",
           "duration": 15,
           "cigaretteBound": 5,
@@ -183,7 +183,7 @@
           ]
         },
         {
-          "phase": 5,
+          "phaseNo": 5,
           "phaseName": "plan.positive.phase5.name",
           "duration": 15,
           "cigaretteBound": 0,
@@ -200,9 +200,9 @@
       "planName": "plan.longterm.name",
       "description": "plan.longterm.desc",
       "totalDuration": 90,
-      "plan": [
+      "phases": [
         {
-          "phase": 1,
+          "phaseNo": 1,
           "phaseName": "plan.longterm.phase1.name",
           "duration": 15,
           "cigaretteBound": 25,
@@ -214,7 +214,7 @@
           ]
         },
         {
-          "phase": 2,
+          "phaseNo": 2,
           "phaseName": "plan.longterm.phase2.name",
           "duration": 15,
           "cigaretteBound": 18,
@@ -226,7 +226,7 @@
           ]
         },
         {
-          "phase": 3,
+          "phaseNo": 3,
           "phaseName": "plan.longterm.phase3.name",
           "duration": 15,
           "cigaretteBound": 12,
@@ -238,7 +238,7 @@
           ]
         },
         {
-          "phase": 4,
+          "phaseNo": 4,
           "phaseName": "plan.longterm.phase4.name",
           "duration": 15,
           "cigaretteBound": 6,
@@ -250,7 +250,7 @@
           ]
         },
         {
-          "phase": 5,
+          "phaseNo": 5,
           "phaseName": "plan.longterm.phase5.name",
           "duration": 15,
           "cigaretteBound": 3,
@@ -262,7 +262,7 @@
           ]
         },
         {
-          "phase": 6,
+          "phaseNo": 6,
           "phaseName": "plan.longterm.phase6.name",
           "duration": 15,
           "cigaretteBound": 0,

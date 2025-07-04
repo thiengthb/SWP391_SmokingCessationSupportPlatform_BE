@@ -1,7 +1,7 @@
 package com.swpteam.smokingcessation.domain.enums;
 
-public enum TransactionType {
+public enum PaymentMethod {
     CARD,
-    QR,
+    PAYPAL,
     BANKING
 }

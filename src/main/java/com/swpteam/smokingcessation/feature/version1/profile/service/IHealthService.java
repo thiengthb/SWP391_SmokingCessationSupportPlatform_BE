@@ -2,21 +2,24 @@ package com.swpteam.smokingcessation.feature.version1.profile.service;
 
 import com.swpteam.smokingcessation.common.PageResponse;
 import com.swpteam.smokingcessation.common.PageableRequest;
+import com.swpteam.smokingcessation.domain.dto.health.HealthListItemResponse;
 import com.swpteam.smokingcessation.domain.dto.health.HealthRequest;
 import com.swpteam.smokingcessation.domain.dto.health.HealthResponse;
 import com.swpteam.smokingcessation.domain.entity.Health;
 
 public interface IHealthService {
 
-    PageResponse<HealthResponse> getHealthPage(PageableRequest request);
+    PageResponse<HealthListItemResponse> getHealthPage(PageableRequest request);
 
-    PageResponse<HealthResponse> getMyHealthPage(PageableRequest request);
+    PageResponse<HealthListItemResponse> getMyHealthPage(PageableRequest request);
+
+    PageResponse<HealthListItemResponse> getHealthPageByAccountId(String accountId, PageableRequest request);
 
     HealthResponse getHealthById(String id);
 
-    boolean hasCompleteFTNDAssessment();
+    HealthResponse getMyLastestHealth();
 
-    PageResponse<HealthResponse> getHealthPageByAccountId(String accountId, PageableRequest request);
+    boolean hasCompleteFTNDAssessment();
 
     HealthResponse createHealth(HealthRequest request);
 

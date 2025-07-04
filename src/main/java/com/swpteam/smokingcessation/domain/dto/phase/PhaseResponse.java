@@ -18,7 +18,7 @@ import java.util.List;
 public class PhaseResponse {
     String id;
     String planId;
-    int phase;
+    int phaseNo;
     LocalDate startDate;
     LocalDate endDate;
     String phaseName;

@@ -1,9 +1,7 @@
-package com.swpteam.smokingcessation.domain.dto.transaction;
+package com.swpteam.smokingcessation.domain.dto.health;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.swpteam.smokingcessation.domain.enums.Currency;
-import com.swpteam.smokingcessation.domain.enums.TransactionStatus;
-import com.swpteam.smokingcessation.domain.enums.PaymentMethod;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -15,11 +13,12 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class TransactionListItemResponse {
+public class HealthListItemResponse {
     String id;
-    double amount;
-    TransactionStatus status;
+    int ftndLevel;
+    int cigarettesPerDay;
+    int cigarettesPerPack;
+    double packPrice;
     Currency currency;
-    PaymentMethod method;
     LocalDateTime createdAt;
 }

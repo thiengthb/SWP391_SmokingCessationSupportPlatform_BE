@@ -170,9 +170,9 @@ public class PhaseServiceImpl implements IPhaseService {
         }
 
         phaseRepository.save(phase);
-        notificationService.sendPhaseDoneNotification(phase.getPhase(), accountId);
+        notificationService.sendPhaseDoneNotification(phase.getPhaseNo(), accountId);
         if (phase.getPlan().getAccount().getStatus() == AccountStatus.ONLINE) {
-            notificationService.sendPhaseDoneNotification(phase.getPhase(), accountId);
+            notificationService.sendPhaseDoneNotification(phase.getPhaseNo(), accountId);
         } else {
             mailService.sendPhaseSummary(
                     phase.getPlan().getPlanName(),

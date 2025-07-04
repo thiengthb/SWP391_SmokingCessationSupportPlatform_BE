@@ -17,5 +17,5 @@ public class PlanTemplateResponse {
     String planName;
     String description;
     int totalDuration;
-    List<PhaseTemplateResponse> plan;
+    List<PhaseTemplateResponse> phases;
 }

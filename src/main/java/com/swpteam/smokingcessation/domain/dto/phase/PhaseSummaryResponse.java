@@ -14,6 +14,7 @@ import java.time.LocalDate;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class PhaseSummaryResponse {
+    int phaseNo;
     String phaseName;
     LocalDate startDate;
     LocalDate endDate;

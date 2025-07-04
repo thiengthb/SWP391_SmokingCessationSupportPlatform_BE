@@ -1,13 +1,16 @@
 package com.swpteam.smokingcessation.feature.version1.profile.service.impl;
 
+import com.swpteam.smokingcessation.domain.dto.account.AccountUpdateRequest;
+import com.swpteam.smokingcessation.domain.dto.member.MemberCreateRequest;
 import com.swpteam.smokingcessation.domain.dto.member.MemberProfileResponse;
-import com.swpteam.smokingcessation.domain.dto.member.MemberRequest;
+import com.swpteam.smokingcessation.domain.dto.member.MemberUpdateRequest;
 import com.swpteam.smokingcessation.domain.dto.member.ProgressResponse;
 import com.swpteam.smokingcessation.domain.entity.Account;
 import com.swpteam.smokingcessation.domain.mapper.MemberMapper;
 import com.swpteam.smokingcessation.constant.ErrorCode;
 import com.swpteam.smokingcessation.domain.entity.Member;
 import com.swpteam.smokingcessation.exception.AppException;
+import com.swpteam.smokingcessation.feature.version1.identity.service.IAccountService;
 import com.swpteam.smokingcessation.repository.jpa.MemberRepository;
 import com.swpteam.smokingcessation.feature.version1.profile.service.IMemberService;
 import com.swpteam.smokingcessation.utils.AuthUtilService;
@@ -30,6 +33,7 @@ public class MemberServiceImpl implements IMemberService {
     MemberMapper memberMapper;
     MemberRepository memberRepository;
     AuthUtilService authUtilService;
+    IAccountService accountService;
 
     @Override
     public MemberProfileResponse getMyMemberProfile() {
@@ -46,7 +50,7 @@ public class MemberServiceImpl implements IMemberService {
     @Override
     @Transactional
     @PreAuthorize("hasRole('MEMBER')")
-    public MemberProfileResponse createMember(MemberRequest request) {
+    public MemberProfileResponse createMember(MemberCreateRequest request) {
         Account currentAccount = authUtilService.getCurrentAccountOrThrowError();
 
         if (memberRepository.existsById(currentAccount.getId())) {
@@ -62,12 +66,20 @@ public class MemberServiceImpl implements IMemberService {
     @Override
     @Transactional
     @PreAuthorize("hasRole('MEMBER')")
-    public MemberProfileResponse updateMyMemberProfile(MemberRequest request) {
+    public MemberProfileResponse updateMyMemberProfile(MemberUpdateRequest request) {
         Account currentAccount = authUtilService.getCurrentAccountOrThrowError();
 
         Member member = findMemberByIdOrThrowError(currentAccount.getId());
 
         memberMapper.updateMember(member, request);
+
+        accountService.updateAccountWithoutRole(member.getAccount().getId(),
+                new AccountUpdateRequest(
+                        request.email(),
+                        null,
+                        request.phoneNumber()
+                )
+        );
 
         return memberMapper.toResponse(memberRepository.save(member));
     }
@@ -75,10 +87,18 @@ public class MemberServiceImpl implements IMemberService {
     @Override
     @Transactional
     @PreAuthorize("hasRole('ADMIN')")
-    public MemberProfileResponse updateMemberById(String accountId, MemberRequest request) {
+    public MemberProfileResponse updateMemberById(String accountId, MemberUpdateRequest request) {
         Member member = findMemberByIdOrThrowError(accountId);
 
         memberMapper.updateMember(member, request);
+
+        accountService.updateAccountWithoutRole(member.getAccount().getId(),
+                new AccountUpdateRequest(
+                        request.email(),
+                        null,
+                        request.phoneNumber()
+                )
+        );
 
         return memberMapper.toResponse(memberRepository.save(member));
     }

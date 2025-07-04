@@ -3,12 +3,15 @@ package com.swpteam.smokingcessation.feature.version1.profile.service.impl;
 import com.swpteam.smokingcessation.common.PageResponse;
 import com.swpteam.smokingcessation.common.PageableRequest;
 import com.swpteam.smokingcessation.constant.ErrorCode;
-import com.swpteam.smokingcessation.domain.dto.coach.CoachRequest;
+import com.swpteam.smokingcessation.domain.dto.account.AccountUpdateRequest;
+import com.swpteam.smokingcessation.domain.dto.coach.CoachCreateRequest;
 import com.swpteam.smokingcessation.domain.dto.coach.CoachResponse;
+import com.swpteam.smokingcessation.domain.dto.coach.CoachUpdateRequest;
 import com.swpteam.smokingcessation.domain.entity.Account;
 import com.swpteam.smokingcessation.domain.entity.Coach;
 import com.swpteam.smokingcessation.domain.mapper.CoachMapper;
 import com.swpteam.smokingcessation.exception.AppException;
+import com.swpteam.smokingcessation.feature.version1.identity.service.IAccountService;
 import com.swpteam.smokingcessation.repository.jpa.CoachRepository;
 import com.swpteam.smokingcessation.feature.version1.profile.service.ICoachService;
 import com.swpteam.smokingcessation.utils.AuthUtilService;
@@ -32,6 +35,7 @@ public class CoachServiceImpl implements ICoachService {
     CoachRepository coachRepository;
     CoachMapper coachMapper;
     AuthUtilService authUtilService;
+    IAccountService accountService;
 
     @Override
     public PageResponse<CoachResponse> getCoachPage(PageableRequest request) {
@@ -58,7 +62,7 @@ public class CoachServiceImpl implements ICoachService {
     @Override
     @Transactional
     @PreAuthorize("hasRole('COACH')")
-    public CoachResponse registerCoachProfile(CoachRequest request) {
+    public CoachResponse registerCoachProfile(CoachCreateRequest request) {
         Account currentAccount = authUtilService.getCurrentAccountOrThrowError();
 
         if (coachRepository.existsById(currentAccount.getId())) {
@@ -74,12 +78,20 @@ public class CoachServiceImpl implements ICoachService {
     @Override
     @Transactional
     @PreAuthorize("hasRole('COACH)")
-    public CoachResponse updateMyCoachProfile(CoachRequest request) {
+    public CoachResponse updateMyCoachProfile(CoachUpdateRequest request) {
         Account currentAccount = authUtilService.getCurrentAccountOrThrowError();
 
         Coach coach = findCoachById(currentAccount.getId());
 
         coachMapper.update(coach, request);
+
+        accountService.updateAccountWithoutRole(coach.getAccount().getId(),
+                new AccountUpdateRequest(
+                        request.email(),
+                        null,
+                        request.phoneNumber()
+                )
+        );
 
         return coachMapper.toResponse(coachRepository.save(coach));
     }
@@ -87,10 +99,18 @@ public class CoachServiceImpl implements ICoachService {
     @Override
     @Transactional
     @PreAuthorize("hasAnyRole('ADMIN')")
-    public CoachResponse updateCoachById(String id, CoachRequest request) {
+    public CoachResponse updateCoachById(String id, CoachUpdateRequest request) {
         Coach coach = findCoachById(id);
 
         coachMapper.update(coach, request);
+
+        accountService.updateAccountWithoutRole(coach.getAccount().getId(),
+                new AccountUpdateRequest(
+                        request.email(),
+                        null,
+                        request.phoneNumber()
+                )
+        );
 
         return coachMapper.toResponse(coachRepository.save(coach));
     }

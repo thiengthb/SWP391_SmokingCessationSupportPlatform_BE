@@ -1,7 +1,8 @@
 package com.swpteam.smokingcessation.domain.mapper;
 
 import com.swpteam.smokingcessation.domain.dto.member.MemberProfileResponse;
-import com.swpteam.smokingcessation.domain.dto.member.MemberRequest;
+import com.swpteam.smokingcessation.domain.dto.member.MemberCreateRequest;
+import com.swpteam.smokingcessation.domain.dto.member.MemberUpdateRequest;
 import com.swpteam.smokingcessation.domain.entity.Member;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -14,7 +15,7 @@ public interface MemberMapper {
     @Mapping(target = "score", ignore = true)
     @Mapping(target = "highestStreak", ignore = true)
     @Mapping(target = "lastCounterReset", ignore = true)
-    Member toEntity(MemberRequest request);
+    Member toEntity(MemberCreateRequest request);
 
     @Mapping(target = "id", source = "account.id")
     @Mapping(target = "username", source = "account.username")
@@ -23,5 +24,5 @@ public interface MemberMapper {
     @Mapping(target = "avatar", source = "account.avatar")
     MemberProfileResponse toResponse(Member entity);
 
-    void updateMember(@MappingTarget Member entity, MemberRequest request);
+    void updateMember(@MappingTarget Member entity, MemberUpdateRequest request);
 }

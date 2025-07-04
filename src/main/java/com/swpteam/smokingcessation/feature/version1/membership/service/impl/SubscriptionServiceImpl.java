@@ -2,6 +2,7 @@ package com.swpteam.smokingcessation.feature.version1.membership.service.impl;
 
 import com.swpteam.smokingcessation.common.PageResponse;
 import com.swpteam.smokingcessation.domain.entity.Account;
+import com.swpteam.smokingcessation.domain.enums.PaymentMethod;
 import com.swpteam.smokingcessation.domain.mapper.SubscriptionMapper;
 import com.swpteam.smokingcessation.domain.entity.Membership;
 import com.swpteam.smokingcessation.domain.dto.subscription.SubscriptionRequest;
@@ -27,6 +28,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Slf4j
 @Service
@@ -82,6 +84,23 @@ public class SubscriptionServiceImpl implements ISubscriptionService {
     }
 
     @Override
+    public SubscriptionResponse getMyCurrentSubscription() {
+        Account currentAccount = authUtilService.getCurrentAccountOrThrowError();
+
+        List<Subscription> subscriptions = subscriptionRepository.findAllByAccountIdAndIsDeletedFalse(currentAccount.getId());
+        Subscription subscription = null;
+        for (Subscription item: subscriptions) {
+            if (item.isActive()) {
+                subscription = item;
+                break;
+            }
+        }
+        if (subscription == null) throw new AppException(ErrorCode.SUBSCRIPTION_NOT_FOUND);
+
+        return subscriptionMapper.toResponse(subscription);
+    }
+
+    @Override
     @Transactional
     public Subscription createSubscription(String accountId, String membershipName) {
         Account account = accountService.findAccountByIdOrThrowError(accountId);
@@ -93,6 +112,8 @@ public class SubscriptionServiceImpl implements ISubscriptionService {
                 .membership(membership)
                 .startDate(LocalDate.now())
                 .endDate(LocalDate.now().plusDays(membership.getDurationDays()))
+//                .autoRenew(true)
+//                .method(method)
                 .build();
 
         return subscriptionRepository.save(subscription);

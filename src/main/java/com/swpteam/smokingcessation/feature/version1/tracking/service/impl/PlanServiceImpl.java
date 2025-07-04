@@ -147,7 +147,7 @@ public class PlanServiceImpl implements IPlanService {
         }
         plan.getPhases().sort(Comparator.comparing(Phase::getStartDate));
         for (int i = 0; i < plan.getPhases().size(); i++) {
-            plan.getPhases().get(i).setPhase(i + 1);
+            plan.getPhases().get(i).setPhaseNo(i + 1);
         }
 
         plan.setAccount(currentAccount);
@@ -225,7 +225,7 @@ public class PlanServiceImpl implements IPlanService {
 
         // 5. Get current phases sorted by phase number
         List<Phase> currentPhases = new ArrayList<>(plan.getPhases());
-        currentPhases.sort(Comparator.comparing(Phase::getPhase));
+        currentPhases.sort(Comparator.comparing(Phase::getPhaseNo));
 
         // 6. Merge phases based on phase number
         int requestSize = sortedPhaseRequests.size();
@@ -270,7 +270,7 @@ public class PlanServiceImpl implements IPlanService {
                 Phase newPhase = phaseMapper.toEntity(phaseRequest);
 
                 newPhase.setPlan(plan);
-                newPhase.setPhase(i + 1); // Set phase number
+                newPhase.setPhaseNo(i + 1); // Set phase number
                 newPhase.setPhaseStatus(PhaseStatus.PENDING); // New phases are PENDING
 
                 // Set tips for new phase
@@ -365,7 +365,7 @@ public class PlanServiceImpl implements IPlanService {
 
     @Override
     @PreAuthorize("hasRole('MEMBER')")
-    @CachePut(value = "PLAN_CACHE", key = "'ALL'")
+    @CachePut(value = "PLAN_TEMPLATE_CACHE")
     public List<PlanResponse> generateAllPlans() {
         // Load all templates
         List<PlanTemplateResponse> templates = FileLoaderUtil.loadPlanTemplate(ResourceFilePaths.QUIT_PLAN_TEMPLATES);
@@ -377,7 +377,7 @@ public class PlanServiceImpl implements IPlanService {
             LocalDate currentPhaseStartDate = planStartDate;
             List<PhaseResponse> phases = new ArrayList<>();
 
-            for (PhaseTemplateResponse phase : template.getPlan()) {
+            for (PhaseTemplateResponse phase : template.getPhases()) {
                 LocalDate phaseEndDate = currentPhaseStartDate.plusDays(phase.getDuration() - 1);
 
                 List<TipResponse> tipResponses = phase.getTips().stream()
@@ -387,7 +387,7 @@ public class PlanServiceImpl implements IPlanService {
                         .toList();
 
                 PhaseResponse response = PhaseResponse.builder()
-                        .phase(phase.getPhase())
+                        .phaseNo(phase.getPhaseNo())
                         .phaseName(messageSourceService.getLocalizeMessage(phase.getPhaseName()))
                         .cigaretteBound(phase.getCigaretteBound())
                         .startDate(currentPhaseStartDate)

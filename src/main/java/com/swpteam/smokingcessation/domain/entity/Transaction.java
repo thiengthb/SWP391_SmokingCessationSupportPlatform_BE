@@ -1,7 +1,8 @@
 package com.swpteam.smokingcessation.domain.entity;
 
+import com.swpteam.smokingcessation.domain.enums.Currency;
 import com.swpteam.smokingcessation.domain.enums.TransactionStatus;
-import com.swpteam.smokingcessation.domain.enums.TransactionType;
+import com.swpteam.smokingcessation.domain.enums.PaymentMethod;
 import com.swpteam.smokingcessation.common.AuditableEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -23,10 +24,13 @@ public class Transaction extends AuditableEntity {
     double amount;
 
     @Enumerated(EnumType.STRING)
+    Currency currency;
+
+    @Enumerated(EnumType.STRING)
     TransactionStatus status;
 
     @Enumerated(EnumType.STRING)
-    TransactionType type;
+    PaymentMethod method;
 
     public static Transaction startTransaction(Account account) {
         return Transaction.builder()

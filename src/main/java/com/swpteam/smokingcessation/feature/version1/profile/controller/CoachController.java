@@ -4,8 +4,9 @@ import com.swpteam.smokingcessation.common.ApiResponse;
 import com.swpteam.smokingcessation.common.PageResponse;
 import com.swpteam.smokingcessation.common.PageableRequest;
 import com.swpteam.smokingcessation.constant.SuccessCode;
-import com.swpteam.smokingcessation.domain.dto.coach.CoachRequest;
+import com.swpteam.smokingcessation.domain.dto.coach.CoachCreateRequest;
 import com.swpteam.smokingcessation.domain.dto.coach.CoachResponse;
+import com.swpteam.smokingcessation.domain.dto.coach.CoachUpdateRequest;
 import com.swpteam.smokingcessation.feature.version1.profile.service.ICoachService;
 import com.swpteam.smokingcessation.utils.ResponseUtilService;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -48,9 +49,17 @@ public class CoachController {
         );
     }
 
+    @GetMapping("/my-profile")
+    ResponseEntity<ApiResponse<CoachResponse>> getMyCoachProfile() {
+        return responseUtilService.buildSuccessResponse(
+                SuccessCode.COACH_FETCHED_BY_ID,
+                coachService.getMyCoachProfile()
+        );
+    }
+
     @PostMapping
     ResponseEntity<ApiResponse<CoachResponse>> createCoach(
-            @Valid @RequestBody CoachRequest request
+            @Valid @RequestBody CoachCreateRequest request
     ) {
         return responseUtilService.buildSuccessResponse(
                 SuccessCode.COACH_CREATED,
@@ -61,11 +70,21 @@ public class CoachController {
     @PutMapping("/{id}")
     ResponseEntity<ApiResponse<CoachResponse>> updateCoachById(
             @PathVariable String id,
-            @Valid @RequestBody CoachRequest request
+            @Valid @RequestBody CoachUpdateRequest request
     ) {
         return responseUtilService.buildSuccessResponse(
                 SuccessCode.COACH_UPDATED,
                 coachService.updateCoachById(id, request)
+        );
+    }
+
+    @PutMapping("/my-profile")
+    ResponseEntity<ApiResponse<CoachResponse>> updateMyCoachProfile(
+            @Valid @RequestBody CoachUpdateRequest request
+    ) {
+        return responseUtilService.buildSuccessResponse(
+                SuccessCode.COACH_UPDATED,
+                coachService.updateMyCoachProfile(request)
         );
     }
 

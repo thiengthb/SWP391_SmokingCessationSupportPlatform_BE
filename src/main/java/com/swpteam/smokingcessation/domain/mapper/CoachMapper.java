@@ -1,7 +1,8 @@
 package com.swpteam.smokingcessation.domain.mapper;
 
-import com.swpteam.smokingcessation.domain.dto.coach.CoachRequest;
+import com.swpteam.smokingcessation.domain.dto.coach.CoachCreateRequest;
 import com.swpteam.smokingcessation.domain.dto.coach.CoachResponse;
+import com.swpteam.smokingcessation.domain.dto.coach.CoachUpdateRequest;
 import com.swpteam.smokingcessation.domain.entity.Coach;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -12,7 +13,7 @@ public interface CoachMapper {
     @Mapping(source = "account.id", target = "accountId")
     CoachResponse toResponse(Coach coach);
 
-    Coach toEntity(CoachRequest coachRequest);
+    Coach toEntity(CoachCreateRequest coachCreateRequest);
 
-    void update(@MappingTarget Coach coach, CoachRequest request);
+    void update(@MappingTarget Coach coach, CoachUpdateRequest request);
 }

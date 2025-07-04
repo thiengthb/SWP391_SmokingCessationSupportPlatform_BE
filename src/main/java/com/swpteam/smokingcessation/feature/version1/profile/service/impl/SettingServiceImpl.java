@@ -56,11 +56,13 @@ public class SettingServiceImpl implements ISettingService {
     public SettingResponse updateSetting(String accountId, SettingRequest request) {
         Setting setting = findSettingByIdOrThrowError(accountId);
 
-        if(setting.getChangeFlag()){
+        if(setting.isChangeFlag() && setting.getTrackingMode() != request.trackingMode()){
             throw new AppException(ErrorCode.MODE_CHANGE_UNAVAILABLE);
         }
 
-        if (setting.getTrackingMode() == TrackingMode.AUTO_COUNT && request.trackingMode() == TrackingMode.DAILY_RECORD) {
+        if (setting.getTrackingMode() == TrackingMode.AUTO_COUNT
+                && request.trackingMode() == TrackingMode.DAILY_RECORD
+        ) {
             counterService.startCounter();
             setting.setChangeFlag(true);
         }
