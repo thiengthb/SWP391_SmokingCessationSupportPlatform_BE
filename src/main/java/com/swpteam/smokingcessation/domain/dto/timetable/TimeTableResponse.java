@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class TimeTableResponse {
-
+        String name;
         String id;
         String coachId;
         String description;
