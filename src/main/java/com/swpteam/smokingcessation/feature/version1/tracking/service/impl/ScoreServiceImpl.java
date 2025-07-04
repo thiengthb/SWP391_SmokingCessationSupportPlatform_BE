@@ -14,10 +14,12 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Slf4j
@@ -30,6 +32,7 @@ public class ScoreServiceImpl implements IScoreService {
     ScoreMapper scoreMapper;
     AuthUtilService authUtilService;
     SimpMessagingTemplate messagingTemplate;
+    RedisTemplate<String, String> redisTemplate;
 
     @Override
     public Score updateScore(String accountId, ScoreRule point) {
@@ -39,7 +42,10 @@ public class ScoreServiceImpl implements IScoreService {
         int current = score.getScore();
         int updated = Math.max(0, current + point.getPoint());
 
-        score.setScore(updated);
+        if (updated > current) {
+            score.setScore(updated);
+            score.setScoreAchievedAt(LocalDateTime.now());
+        }
         log.info("Updated score: [{}]", updated);
         Score saved = scoreRepository.save(score);
         updateRanking();
@@ -49,9 +55,16 @@ public class ScoreServiceImpl implements IScoreService {
 
     @Override
     public List<ScoreResponse> getScoreList() {
-        List<Score> scores = scoreRepository.findTop10ByAccountIsDeletedFalseOrderByScoreDesc();
+        List<Score> scores = scoreRepository.findTop10ByAccountIsDeletedFalseOrderByRankAsc();
 
-        Account account = authUtilService.getCurrentAccountOrThrowError();
+        Account account = authUtilService.getCurrentAccount().orElse(null);
+
+        if (account == null) {
+            return scores.stream()
+                    .map(scoreMapper::toResponse)
+                    .toList();
+        }
+
         boolean isInTop10 = scores.stream()
                 .anyMatch(score -> score.getAccount().getId().equals(account.getId()));
 
@@ -64,8 +77,8 @@ public class ScoreServiceImpl implements IScoreService {
                 .toList();
     }
 
-    public void updateLeaderboard(){
-        List<Score> scores = scoreRepository.findTop10ByAccountIsDeletedFalseOrderByScoreDesc();
+    public void updateLeaderboard() {
+        List<Score> scores = scoreRepository.findTop10ByAccountIsDeletedFalseOrderByRankAsc();
 
         Account account = authUtilService.getCurrentAccountOrThrowError();
         boolean isInTop10 = scores.stream()
@@ -89,14 +102,13 @@ public class ScoreServiceImpl implements IScoreService {
     }
 
     @Transactional
-    private void updateRanking(){
-        List<Score> scores = scoreRepository.findAllByAccountIsDeletedFalseOrderByScoreDesc();
+    private void updateRanking() {
+        List<Score> scores = scoreRepository.findAllByAccountIsDeletedFalseOrderByScoreDescScoreAchievedAtAsc();
 
         int rank = 1;
-        for(Score score : scores){
-            score.setRank(rank);
-            rank++;
-            scoreRepository.save(score);
+        for (Score score : scores) {
+            score.setRank(rank++);
         }
+        scoreRepository.saveAll(scores);
     }
 }
