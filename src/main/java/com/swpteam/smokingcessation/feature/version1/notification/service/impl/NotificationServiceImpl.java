@@ -71,10 +71,10 @@ public class NotificationServiceImpl implements INotificationService {
     }
 
     @Override
-    public void sendApprovedNotification(String memberId,String coachUserName) {
+    public void sendApprovedNotification(String memberId, String coachUserName) {
         NotificationRequest request = new NotificationRequest(
                 memberId,
-                "Your booking with coach " + coachUserName +" have been approved",
+                "Your booking with coach " + coachUserName + " have been approved",
                 NotificationType.LIVE);
         sendNotification(request);
     }
@@ -85,6 +85,16 @@ public class NotificationServiceImpl implements INotificationService {
                 coachId,
                 "You have a new booking from " + username,
                 NotificationType.LIVE);
+        sendNotification(request);
+    }
+
+    @Override
+    public void sendUpcomingBookingNotification(String memberId, LocalDateTime startBookingTime) {
+        NotificationRequest request = new NotificationRequest(
+                memberId,
+                "You have an upcoming booking from: " + startBookingTime,
+                NotificationType.LIVE
+        );
         sendNotification(request);
     }
 
@@ -111,7 +121,7 @@ public class NotificationServiceImpl implements INotificationService {
     public void sendPhaseDoneNotification(int phase, String accountId) {
         NotificationRequest request = new NotificationRequest(
                 accountId,
-                "phase " +  phase + "has completed",
+                "phase " + phase + "has completed",
                 NotificationType.LIVE);
         sendNotification(request);
     }
@@ -194,5 +204,6 @@ public class NotificationServiceImpl implements INotificationService {
         return notificationRepository.findByIdAndIsDeletedFalse(id)
                 .orElseThrow(() -> new AppException(ErrorCode.NOTIFICATION_NOT_FOUND));
     }
+
 
 }
