@@ -117,7 +117,7 @@ public class TimeTableServiceImpl implements ITimeTableService {
 
     @Override
     @PreAuthorize("hasRole('COACH')")
-    @CachePut(value = "TIMETABLE_CACHE", key = "#result.getId()")
+    //@CachePut(value = "TIMETABLE_CACHE", key = "#result.getId()")
     @CacheEvict(value = "TIMETABLE_PAGE_CACHE", allEntries = true)
     public void createTimeTableAuto(LocalDateTime start, LocalDateTime end, Account coach) {
         TimeTable timeTable = TimeTable.builder()
