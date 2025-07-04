@@ -5,7 +5,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
-public record CoachRequest (
+public record CoachCreateRequest(
         
     @NotBlank(message = "COACH_FULL_NAME_REQUIRED")
     String fullName,
@@ -15,7 +15,7 @@ public record CoachRequest (
 
     @NotNull(message = "COACH_EXPERIENCE_YEARS_REQUIRED")
     @Min(value = 1, message = "COACH_EXPERIENCE_YEARS_MUST_BE_NON_NEGATIVE")
-    int experienceYears,
+    Integer experienceYears,
 
     @NotBlank(message = "COACH_SOCIAL_LINK_REQUIRED")
     String socialLinks,

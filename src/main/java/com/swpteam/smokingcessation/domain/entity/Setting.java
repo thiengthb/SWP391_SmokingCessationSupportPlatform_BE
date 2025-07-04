@@ -39,7 +39,7 @@ public class Setting extends AuditableEntity {
 
     LocalTime reportDeadline;
 
-    Boolean changeFlag;
+    boolean changeFlag;
 
     public static Setting getDefaultSetting(Account account) {
         return Setting.builder()

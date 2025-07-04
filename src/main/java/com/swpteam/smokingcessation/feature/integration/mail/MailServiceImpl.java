@@ -118,7 +118,7 @@ public class MailServiceImpl implements IMailService {
                 "⏰ Friendly Reminder",
                 hostEmail,
                 to,
-                "reminder-template",
+                REMINDER_EMAIL,
                 List.of(
                         Map.entry("deadline", LocalDateTime.now().plusMinutes(30)),
                         Map.entry("resetLink", LocalDateTime.now())

@@ -1,6 +1,7 @@
 package com.swpteam.smokingcessation.feature.version1.profile.controller;
 
 import com.swpteam.smokingcessation.common.PageResponse;
+import com.swpteam.smokingcessation.domain.dto.health.HealthListItemResponse;
 import com.swpteam.smokingcessation.domain.dto.health.HealthRequest;
 import com.swpteam.smokingcessation.domain.dto.health.HealthResponse;
 import com.swpteam.smokingcessation.common.ApiResponse;
@@ -29,12 +30,22 @@ public class HealthController {
     ResponseUtilService responseUtilService;
 
     @GetMapping
-    ResponseEntity<ApiResponse<PageResponse<HealthResponse>>> getHealthPage(
+    ResponseEntity<ApiResponse<PageResponse<HealthListItemResponse>>> getHealthPage(
             @Valid PageableRequest request
     ) {
         return responseUtilService.buildSuccessResponse(
                 SuccessCode.HEALTH_PAGE_FETCHED,
                 healthService.getHealthPage(request)
+        );
+    }
+
+    @GetMapping("/my-page")
+    ResponseEntity<ApiResponse<PageResponse<HealthListItemResponse>>> getMyHealthPage(
+            @Valid PageableRequest request
+    ) {
+        return responseUtilService.buildSuccessResponse(
+                SuccessCode.HEALTH_PAGE_FETCHED,
+                healthService.getMyHealthPage(request)
         );
     }
 
@@ -48,6 +59,14 @@ public class HealthController {
         );
     }
 
+    @GetMapping("/mine")
+    ResponseEntity<ApiResponse<HealthResponse>> getHealthById() {
+        return responseUtilService.buildSuccessResponse(
+                SuccessCode.HEALTH_FETCHED_BY_ID,
+                healthService.getMyLastestHealth()
+        );
+    }
+
     @GetMapping("/ftnd-status")
     ResponseEntity<ApiResponse<Boolean>> getMyFTNDStatus() {
         return responseUtilService.buildSuccessResponse(
@@ -57,7 +76,7 @@ public class HealthController {
     }
 
     @GetMapping("/account/{id}")
-    ResponseEntity<ApiResponse<PageResponse<HealthResponse>>> getHealthPageByAccountId(
+    ResponseEntity<ApiResponse<PageResponse<HealthListItemResponse>>> getHealthPageByAccountId(
             @PathVariable String id,
             @Valid PageableRequest request
     ) {

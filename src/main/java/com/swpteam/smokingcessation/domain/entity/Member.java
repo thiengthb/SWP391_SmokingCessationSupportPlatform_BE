@@ -42,6 +42,7 @@ public class Member extends AuditableEntity {
                 .account(account)
                 .fullName(null)
                 .dob(LocalDate.of(2000, 1, 1))
+                .bio(null)
                 .address(null)
                 .score(0)
                 .lastCounterReset(null)

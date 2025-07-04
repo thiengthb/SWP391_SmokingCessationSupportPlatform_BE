@@ -5,12 +5,15 @@ import com.swpteam.smokingcessation.common.PageableRequest;
 import com.swpteam.smokingcessation.domain.dto.subscription.SubscriptionRequest;
 import com.swpteam.smokingcessation.domain.dto.subscription.SubscriptionResponse;
 import com.swpteam.smokingcessation.domain.entity.Subscription;
+import com.swpteam.smokingcessation.domain.enums.PaymentMethod;
 
 public interface ISubscriptionService {
 
     PageResponse<SubscriptionResponse> getSubscriptionPage(PageableRequest request);
 
     PageResponse<SubscriptionResponse> getMySubscriptionPage(PageableRequest request);
+
+    SubscriptionResponse getMyCurrentSubscription();
 
     PageResponse<SubscriptionResponse> getSubscriptionPageByAccountId(String accountId, PageableRequest request);
 

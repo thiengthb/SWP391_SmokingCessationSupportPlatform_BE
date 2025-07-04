@@ -10,8 +10,8 @@ import org.mapstruct.MappingTarget;
 
 @Mapper(componentModel = "spring",uses = TipMapper.class)
 public interface PhaseMapper {
+
     @Mapping(target = "successRate", expression = "java(roundToTwoDecimal(phase.getSuccessRate()))")
-    @Mapping(source = "phase", target = "phase")
     @Mapping(source = "plan.id",target = "planId")
     PhaseResponse toResponse(Phase phase);
 

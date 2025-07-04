@@ -20,6 +20,7 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
@@ -32,6 +33,7 @@ public class ChatServiceImpl implements IChatService {
     AuthUtilService authUtilService;
 
     @Override
+    @Transactional
     public ChatResponse sendChatMessage(ChatRequest request) {
         Account account = accountService.findAccountByIdOrThrowError(request.accountId());
 

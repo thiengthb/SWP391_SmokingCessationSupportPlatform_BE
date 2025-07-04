@@ -2,7 +2,7 @@ package com.swpteam.smokingcessation.domain.dto.transaction;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.swpteam.smokingcessation.domain.enums.TransactionStatus;
-import com.swpteam.smokingcessation.domain.enums.TransactionType;
+import com.swpteam.smokingcessation.domain.enums.PaymentMethod;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -19,6 +19,6 @@ public class TransactionResponse {
     String accountId;
     double amount;
     TransactionStatus status;
-    TransactionType transactionType;
+    PaymentMethod method;
     LocalDateTime createAt;
 }

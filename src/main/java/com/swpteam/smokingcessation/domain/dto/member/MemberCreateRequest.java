@@ -7,7 +7,7 @@ import jakarta.validation.constraints.Size;
 
 import java.time.LocalDate;
 
-public record MemberRequest (
+public record MemberCreateRequest(
 
     String fullName,
     

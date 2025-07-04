@@ -1,9 +1,10 @@
 package com.swpteam.smokingcessation.feature.version1.profile.controller;
 
+import com.swpteam.smokingcessation.domain.dto.member.MemberCreateRequest;
 import com.swpteam.smokingcessation.domain.dto.member.MemberProfileResponse;
-import com.swpteam.smokingcessation.domain.dto.member.MemberRequest;
 import com.swpteam.smokingcessation.common.ApiResponse;
 import com.swpteam.smokingcessation.constant.SuccessCode;
+import com.swpteam.smokingcessation.domain.dto.member.MemberUpdateRequest;
 import com.swpteam.smokingcessation.domain.dto.member.ProgressResponse;
 import com.swpteam.smokingcessation.feature.version1.profile.service.IMemberService;
 import com.swpteam.smokingcessation.utils.ResponseUtilService;
@@ -53,7 +54,7 @@ public class MemberController {
 
     @PostMapping
     ResponseEntity<ApiResponse<MemberProfileResponse>> createMember(
-            @RequestBody @Valid MemberRequest request
+            @RequestBody @Valid MemberCreateRequest request
     ) {
         return responseUtilService.buildSuccessResponse(
                 SuccessCode.MEMBER_CREATED,
@@ -64,7 +65,7 @@ public class MemberController {
     @PutMapping("/{accountId}")
     ResponseEntity<ApiResponse<MemberProfileResponse>> updateMemberById(
             @PathVariable String accountId,
-            @RequestBody MemberRequest request
+            @RequestBody MemberUpdateRequest request
     ) {
         return responseUtilService.buildSuccessResponse(
                 SuccessCode.MEMBER_UPDATED,
@@ -74,7 +75,7 @@ public class MemberController {
 
     @PutMapping("/my-profile")
     ResponseEntity<ApiResponse<MemberProfileResponse>> updateMyMemberProfile(
-            @RequestBody MemberRequest request
+            @RequestBody MemberUpdateRequest request
     ) {
         return responseUtilService.buildSuccessResponse(
                 SuccessCode.MEMBER_UPDATED,

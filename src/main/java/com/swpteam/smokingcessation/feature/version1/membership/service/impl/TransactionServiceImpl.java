@@ -7,7 +7,8 @@ import com.swpteam.smokingcessation.domain.dto.transaction.TransactionResponse;
 import com.swpteam.smokingcessation.domain.entity.Account;
 import com.swpteam.smokingcessation.domain.entity.Subscription;
 import com.swpteam.smokingcessation.domain.entity.Transaction;
-import com.swpteam.smokingcessation.domain.enums.TransactionType;
+import com.swpteam.smokingcessation.domain.enums.Currency;
+import com.swpteam.smokingcessation.domain.enums.PaymentMethod;
 import com.swpteam.smokingcessation.domain.mapper.TransactionMapper;
 import com.swpteam.smokingcessation.repository.jpa.TransactionRepository;
 import com.swpteam.smokingcessation.domain.enums.TransactionStatus;
@@ -59,12 +60,13 @@ public class TransactionServiceImpl implements ITransactionService {
 
     @Override
     @Transactional
-    public Transaction createTransaction(Account account, double amount) {
+    public Transaction createTransaction(Account account, double amount, Currency currency) {
         accountService.findAccountByIdOrThrowError(account.getId());
 
         Transaction transaction = Transaction.startTransaction(account);
         transaction.setAmount(amount);
-        transaction.setType(TransactionType.CARD);
+        transaction.setCurrency(currency);
+        transaction.setMethod(PaymentMethod.CARD);
 
         return transactionRepository.save(transaction);
     }

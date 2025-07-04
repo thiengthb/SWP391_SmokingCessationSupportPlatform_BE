@@ -143,14 +143,14 @@ public class PhaseAndPlanUpdater {
         }
 
         double successRatio = (double) successCount / totalPhases;
-        PlanStatus planStatus = (successCount > totalPhases / 2) ? PlanStatus.COMPLETE : PlanStatus.FAILED;
+        PlanStatus planStatus = (successCount > totalPhases / 2) ? PlanStatus.COMPLETED : PlanStatus.FAILED;
         plan.setPlanStatus(planStatus);
         plan.setTotalMostSmoked(maxCig);
         plan.setTotalLeastSmoked(minCig != null ? minCig : 0);
         plan.setTotalDaysReported(totalReportedDays);
         plan.setTotalDaysNotReported(totalNotReportedDays);
 
-        if (planStatus == PlanStatus.COMPLETE) {
+        if (planStatus == PlanStatus.COMPLETED) {
             log.info("score bonus for planSuccess:");
             scoreService.updateScore(account.getId(), ScoreRule.PLAN_SUCCESS);
         }
@@ -164,7 +164,7 @@ public class PhaseAndPlanUpdater {
     }
 
     private void processFullyReported(Plan plan, String accountId) {
-        if ((plan.getPlanStatus() == PlanStatus.COMPLETE || plan.getPlanStatus() == PlanStatus.FAILED)
+        if ((plan.getPlanStatus() == PlanStatus.COMPLETED || plan.getPlanStatus() == PlanStatus.FAILED)
                 && allPhasesFullyReported(plan, accountId)
         ) {
             log.info("earned REPORT_ALL_PLAN score");

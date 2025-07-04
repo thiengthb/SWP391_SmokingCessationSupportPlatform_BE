@@ -6,6 +6,7 @@ import com.swpteam.smokingcessation.domain.dto.transaction.TransactionListItemRe
 import com.swpteam.smokingcessation.domain.dto.transaction.TransactionResponse;
 import com.swpteam.smokingcessation.domain.entity.Account;
 import com.swpteam.smokingcessation.domain.entity.Transaction;
+import com.swpteam.smokingcessation.domain.enums.Currency;
 
 public interface ITransactionService {
 
@@ -13,7 +14,7 @@ public interface ITransactionService {
 
     TransactionResponse getTransactionById(String id);
 
-    Transaction createTransaction(Account account, double amount);
+    Transaction createTransaction(Account account, double amount, Currency currency);
 
     void makeAsPaid(String transactionId);
 }

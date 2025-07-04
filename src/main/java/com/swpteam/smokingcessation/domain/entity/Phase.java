@@ -24,7 +24,7 @@ public class Phase extends AuditableEntity {
     @JoinColumn(name = "planId", nullable = false, updatable = false)
     Plan plan;
 
-    int phase;
+    int phaseNo;
     String phaseName;
     String description;
     int cigaretteBound;
