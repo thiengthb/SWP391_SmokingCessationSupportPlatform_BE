@@ -19,6 +19,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -59,6 +60,7 @@ public class ChatServiceImpl implements IChatService {
     }
 
     @Override
+    @PreAuthorize("isAuthenticated()")
     public PageResponse<ChatResponse> getChatsById(String id, PageableRequest request) {
         ValidationUtil.checkFieldExist(Chat.class, request.sortBy());
 
@@ -69,6 +71,7 @@ public class ChatServiceImpl implements IChatService {
     }
 
     @Override
+    @PreAuthorize("isAuthenticated()")
     public void softDeleteChat(String id) {
         Chat chat = chatRepository.findByIdAndIsDeletedFalse(id)
                 .orElseThrow(() -> new AppException(ErrorCode.CHAT_NOT_FOUND));

@@ -12,7 +12,7 @@ import java.util.Optional;
 public interface ScoreRepository extends JpaRepository<Score, String> {
     Optional<Score> findByAccountIdAndIsDeletedFalse(String accountId);
 
-    List<Score> findTop10ByAccountIsDeletedFalseOrderByScoreDesc();
+    List<Score> findTop10ByAccountIsDeletedFalseOrderByRankAsc();
 
-    List<Score> findAllByAccountIsDeletedFalseOrderByScoreDesc();
+    List<Score> findAllByAccountIsDeletedFalseOrderByScoreDescScoreAchievedAtAsc();
 }

@@ -5,6 +5,8 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Getter
 @Setter
@@ -23,6 +25,8 @@ public class Score extends AuditableEntity {
 
     @Column(name = "score_rank")
     int rank;
+
+    LocalDateTime scoreAchievedAt;
 
     public static Score getDefaultScore(Account account) {
         return Score.builder()
