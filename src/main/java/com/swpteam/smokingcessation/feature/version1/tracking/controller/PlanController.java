@@ -40,8 +40,8 @@ public class PlanController {
         );
     }
 
-    @GetMapping
-    ResponseEntity<ApiResponse<PageResponse<PlanPageResponse>>> getPlanPage(
+    @GetMapping("/my-plans")
+    ResponseEntity<ApiResponse<PageResponse<PlanPageResponse>>> getMyPlanPage(
             @Valid PageableRequest request
     ) {
         return responseUtilService.buildSuccessResponse(

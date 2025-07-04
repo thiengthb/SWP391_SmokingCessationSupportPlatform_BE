@@ -14,6 +14,7 @@ import java.time.LocalDate;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class PlanPageResponse {
+    String id;
     String planName;
     LocalDate startDate;
     LocalDate endDate;

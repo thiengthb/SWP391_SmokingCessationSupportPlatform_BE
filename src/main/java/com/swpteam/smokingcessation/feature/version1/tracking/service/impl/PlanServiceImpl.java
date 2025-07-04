@@ -534,7 +534,7 @@ public class PlanServiceImpl implements IPlanService {
         Plan plan = planRepository.findByIdAndIsDeletedFalse(planId)
                 .orElseThrow(() -> new AppException(ErrorCode.PLAN_NOT_FOUND));
 
-        if (plan.getPlanStatus() != PlanStatus.COMPLETE && plan.getPlanStatus() != PlanStatus.FAILED) {
+        if (plan.getPlanStatus() != PlanStatus.COMPLETED && plan.getPlanStatus() != PlanStatus.FAILED) {
             throw new AppException(ErrorCode.PLAN_NOT_FOUND);
         }
 
