@@ -36,5 +36,7 @@ public interface INotificationService {
 
    void  sendUpcomingBookingNotification(String memberId, LocalDateTime startBookingTime);
 
+    void sendBookingCancelledNotification(String coachId, String memberUsername);
+
 
 }

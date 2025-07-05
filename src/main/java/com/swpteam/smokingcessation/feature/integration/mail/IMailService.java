@@ -57,4 +57,7 @@ public interface IMailService {
 
     void sendUpcomingBookingReminderMail(String to, String coachId, LocalDateTime startTime,String coachName);
 
+    void sendBookingCancelledEmail(String to, String memberName, LocalDateTime startedAt, LocalDateTime endedAt);
+
+
 }

@@ -99,6 +99,16 @@ public class NotificationServiceImpl implements INotificationService {
     }
 
     @Override
+    public void sendBookingCancelledNotification(String coachId, String memberUsername) {
+        NotificationRequest request = new NotificationRequest(
+                coachId,
+                "Booking with " + memberUsername + " has been cancelled by the member.",
+                NotificationType.LIVE
+        );
+        sendNotification(request);
+    }
+
+    @Override
     public void sendBookingRejectNotification(String content, String memberId) {
         NotificationRequest request = new NotificationRequest(
                 memberId,

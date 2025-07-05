@@ -58,6 +58,7 @@ public class MailServiceImpl implements IMailService {
     private static final String BOOKING_REQUEST_EMAIL = "email/booking_request_email";
     private static final String PLAN_SUMMARY_EMAIL = "email/plan_summary_email";
     private static final String PHASE_SUMMARY_EMAIL = "email/phase_summary_email";
+    private static final String BOOKING_CANCELLED_COACH = "email/booking_cancelled_by_member";
 
     @Override
     public void sendVerificationEmail(String to, String username, String verificationLink) {
@@ -242,6 +243,21 @@ public class MailServiceImpl implements IMailService {
                         Map.entry("coachName", coachName)
                 )
 
+        );
+    }
+
+    @Override
+    public void sendBookingCancelledEmail(String to, String memberName, LocalDateTime startedAt, LocalDateTime endedAt) {
+        buildAndSendMail(
+                "Booking Cancelled",
+                hostEmail,
+                to,
+                BOOKING_CANCELLED_COACH,
+                List.of(
+                        Map.entry("memberName", memberName),
+                        Map.entry("startedAt", DateTimeUtil.reformat(startedAt)),
+                        Map.entry("endedAt", DateTimeUtil.reformat(endedAt))
+                )
         );
     }
 

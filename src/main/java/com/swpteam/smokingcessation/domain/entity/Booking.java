@@ -34,4 +34,6 @@ public class Booking extends AuditableEntity {
     String bookingReason;
 
     String declineReason;
+
+    boolean notifyBeforeBooking = false;
 }
