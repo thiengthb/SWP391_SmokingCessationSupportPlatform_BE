@@ -23,28 +23,25 @@ import java.util.List;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class BookingScheduler {
-    /*
+
     BookingRepository bookingRepository;
     INotificationService notificationService;
     IMailService mailService;
 
-    @Scheduled (cron = "0 0 0 * * *")
-    public void notifyTodayBookings() {
-        log.info("notify approved bookings");
+    @Scheduled(cron = "0 0 * * * *") // every hour
+    public void notifyUpcomingBookings() {
+        log.info("Notify bookings in next 2 hours");
 
-        LocalDate today = LocalDate.now();
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime twoHoursLater = now.plusHours(2);
 
-        LocalDateTime startOfDay = today.atStartOfDay();
-        LocalDateTime endOfDay = today.atTime(LocalTime.MAX);
-
-        // Tìm booking APPROVE bắt đầu trong hôm nay
-        List<Booking> bookings = bookingRepository.findAllByStatusAndStartedAtBetweenAndIsDeletedFalse(
+        List<Booking> bookings = bookingRepository.findAllByStatusAndStartedAtBetweenAndIsDeletedFalseAndNotifyBeforeBookingFalse(
                 BookingStatus.APPROVED,
-                startOfDay,
-                endOfDay
+                now,
+                twoHoursLater
         );
 
-        log.info("Found {} approved bookings for today", bookings.size());
+        log.info("Found {} bookings to notify", bookings.size());
 
         for (Booking booking : bookings) {
             try {
@@ -53,22 +50,26 @@ public class BookingScheduler {
                         booking.getStartedAt()
                 );
 
-                mailService.sendUpcomingBookingReminderMail(booking.getMember().getEmail()
-                        ,booking.getCoach().getId()
-                        ,booking.getStartedAt()
-                        ,booking.getCoach().getUsername()
+                mailService.sendUpcomingBookingReminderMail(
+                        booking.getMember().getEmail(),
+                        booking.getCoach().getId(),
+                        booking.getStartedAt(),
+                        booking.getCoach().getUsername()
                 );
 
-                log.info("Notification sent for booking id={}", booking.getId());
+                booking.setNotifyBeforeBooking(true);
+                bookingRepository.save(booking);
+
+                log.info("Notified booking id={}", booking.getId());
             } catch (Exception e) {
-                log.error("Error sending notification for booking id={}", booking.getId(), e);
+                log.error("Error notifying booking id={}", booking.getId(), e);
             }
         }
 
-        log.info("BookingScheduler: Completed notifying today's bookings");
+        log.info("BookingScheduler: Done");
     }
 
-    @Scheduled(cron = "0 59 23 * * *")
+    /*@Scheduled(cron = "0 59 23 * * *")
     public void autoRejectPendingBookings() {
         log.info("reset pending bookings");
 
@@ -106,6 +107,8 @@ public class BookingScheduler {
         bookingRepository.saveAll(pendingBookings);
         log.info("BookingScheduler: Completed resetting pending bookings");
     }
-*/
+
+
+     */
 }
 
