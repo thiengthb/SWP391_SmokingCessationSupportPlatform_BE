@@ -14,7 +14,7 @@ import lombok.experimental.FieldDefaults;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class AuthenticationResponse {
 
-    @JsonProperty("user")
+    @JsonProperty("account")
     AccountResponse accountResponse;
 
     String accessToken;

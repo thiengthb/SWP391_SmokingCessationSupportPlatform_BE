@@ -26,5 +26,8 @@ public class Notification extends AuditableEntity {
 
     String content;
     LocalDateTime sentAt;
-    boolean isRead;
+
+    // Escape reserved keyword
+    @Column(name = "`read`")
+    boolean read;
 }

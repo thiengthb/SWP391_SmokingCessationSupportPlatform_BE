@@ -29,6 +29,9 @@ public class Subscription extends AuditableEntity {
     LocalDate startDate;
     LocalDate endDate;
 
+//    PaymentMethod method;
+//    boolean autoRenew;
+
     public boolean isActive() {
         LocalDate today = LocalDate.now();
         return (startDate == null || !today.isBefore(startDate)) &&

@@ -34,7 +34,14 @@ public class Plan extends AuditableEntity {
     String description;
     LocalDate startDate;
     LocalDate endDate;
+
+    long totalDaysReported;
+    long totalDaysNotReported;
+    int totalMostSmoked;
+    int totalLeastSmoked;
+
     double successRate;
+    double progress;
 
     @Enumerated(EnumType.STRING)
     PlanStatus planStatus;

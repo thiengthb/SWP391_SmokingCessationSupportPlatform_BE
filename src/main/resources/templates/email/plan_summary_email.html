@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plan Summary Report</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f5f5f5;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 20px auto;
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        }
+
+        .header {
+            background: linear-gradient(135deg, #212529 0%, #495057 100%);
+            color: white;
+            padding: 40px 30px;
+            text-align: center;
+            position: relative;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"><g fill="none" fill-rule="evenodd"><g fill="%23ffffff" fill-opacity="0.05"><circle cx="30" cy="30" r="2"/></g></svg>');
+        }
+
+        .header h1 {
+            font-size: 28px;
+            font-weight: 300;
+            margin-bottom: 10px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 16px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .content {
+            padding: 40px 30px;
+        }
+
+        .plan-header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding-bottom: 30px;
+            border-bottom: 2px solid #e9ecef;
+        }
+
+        .plan-name {
+            font-size: 24px;
+            font-weight: 700;
+            color: #212529;
+            margin-bottom: 15px;
+        }
+
+        .duration-info {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 20px;
+            display: inline-block;
+        }
+
+        .date-range {
+            color: #495057;
+            font-size: 16px;
+            font-weight: 500;
+        }
+
+        .stats-section {
+            margin-bottom: 30px;
+        }
+
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #212529;
+            margin-bottom: 20px;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .stat-card {
+            background: #ffffff;
+            border: 2px solid #e9ecef;
+            border-radius: 12px;
+            padding: 30px;
+            text-align: center;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            border-color: #212529;
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #212529, #495057);
+            border-radius: 12px 12px 0 0;
+        }
+
+        .stat-value {
+            font-size: 36px;
+            font-weight: 700;
+            color: #212529;
+            margin-bottom: 10px;
+        }
+
+        .stat-label {
+            color: #6c757d;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 500;
+        }
+
+        .smoking-stats {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 12px;
+            padding: 30px;
+            margin-top: 30px;
+        }
+
+        .smoking-title {
+            text-align: center;
+            font-size: 18px;
+            font-weight: 600;
+            color: #212529;
+            margin-bottom: 25px;
+        }
+
+        .smoking-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .smoking-item {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            border: 1px solid #dee2e6;
+        }
+
+        .smoking-value {
+            font-size: 28px;
+            font-weight: 700;
+            color: #212529;
+            margin-bottom: 8px;
+        }
+
+        .smoking-label {
+            color: #6c757d;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .success-rate-section {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+            padding: 25px;
+            border-radius: 12px;
+            text-align: center;
+            margin: 30px 0;
+        }
+
+        .success-rate-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            opacity: 0.9;
+        }
+
+        .success-rate-value {
+            font-size: 42px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .success-rate-label {
+            font-size: 14px;
+            opacity: 0.8;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .plan-status {
+            text-align: center;
+            margin: 30px 0;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 12px 30px;
+            border-radius: 25px;
+            font-weight: 600;
+            font-size: 16px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .status-completed {
+            background: linear-gradient(135deg, #28a745, #20c997);
+            color: white;
+        }
+
+        .status-active {
+            background: linear-gradient(135deg, #007bff, #0056b3);
+            color: white;
+        }
+
+        .status-paused {
+            background: linear-gradient(135deg, #ffc107, #ff8c00);
+            color: white;
+        }
+
+        .status-cancelled {
+            background: linear-gradient(135deg, #dc3545, #c82333);
+            color: white;
+        }
+
+        .summary-box {
+            background: linear-gradient(135deg, #212529 0%, #495057 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 12px;
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .summary-text {
+            font-size: 16px;
+            opacity: 0.9;
+            line-height: 1.7;
+        }
+
+        .footer {
+            background: #f8f9fa;
+            padding: 30px;
+            text-align: center;
+            border-top: 1px solid #e9ecef;
+        }
+
+        .footer p {
+            color: #6c757d;
+            font-size: 14px;
+        }
+
+        .encouragement {
+            background: #e7f3ff;
+            border-left: 4px solid #0066cc;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .encouragement p {
+            color: #004080;
+            font-weight: 500;
+            margin: 0;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                margin: 10px;
+                border-radius: 0;
+            }
+
+            .header, .content {
+                padding: 30px 20px;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .smoking-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>📋 Plan Summary Report</h1>
+        <p>Complete overview of your smoking cessation journey</p>
+    </div>
+
+    <div class="content">
+        <div class="plan-header">
+            <div class="plan-name" th:text="${planName}">My Quit Smoking Plan</div>
+            <div class="duration-info">
+                <div class="date-range">
+                    <span th:text="${#temporals.format(startDate, 'MMMM dd, yyyy')}">January 01, 2024</span>
+                    -
+                    <span th:text="${#temporals.format(endDate, 'MMMM dd, yyyy')}">March 31, 2024</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="plan-status">
+            <div class="status-badge"
+                 th:classappend="${planStatus.toString().toLowerCase() == 'completed'} ? 'status-completed' :
+                                 ${planStatus.toString().toLowerCase() == 'active'} ? 'status-active' :
+                                 ${planStatus.toString().toLowerCase() == 'paused'} ? 'status-paused' : 'status-cancelled'"
+                 th:text="${planStatus}">COMPLETED</div>
+        </div>
+
+        <div class="success-rate-section" th:if="${successRate != null}">
+            <div class="success-rate-title">Success Rate</div>
+            <div class="success-rate-value" th:text="${#numbers.formatDecimal(successRate, 1, 1)} + '%'">85.5%</div>
+            <div class="success-rate-label">Overall Performance</div>
+        </div>
+
+        <div class="stats-section">
+            <div class="section-title">Reporting Overview</div>
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value" th:text="${totalReportedDays}">75</div>
+                    <div class="stat-label">Days Reported</div>
+                </div>
+
+                <div class="stat-card">
+                    <div class="stat-value" th:text="${totalNotReportedDays}">15</div>
+                    <div class="stat-label">Days Not Reported</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="smoking-stats">
+            <div class="smoking-title">📊 Smoking Statistics</div>
+            <div class="smoking-grid">
+                <div class="smoking-item">
+                    <div class="smoking-value" th:text="${totalMostSmoked}">20</div>
+                    <div class="smoking-label">Most Smoked (Single Day)</div>
+                </div>
+
+                <div class="smoking-item">
+                    <div class="smoking-value" th:text="${totalLeastSmoked != null ? totalLeastSmoked : 'N/A'}">0</div>
+                    <div class="smoking-label">Least Smoked (Single Day)</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="summary-box">
+            <div class="summary-text">
+                <span th:if="${planStatus.toString().toLowerCase() == 'completed'}">
+                    🎉 You've completed your smoking cessation plan! This journey shows your commitment to a healthier lifestyle.
+                    Remember, every cigarette not smoked is a victory.
+                </span>
+                <span th:if="${planStatus.toString().toLowerCase() == 'active'}">
+                    💪 Your smoking cessation plan is currently active. Keep up the great work and stay committed to your goals!
+                </span>
+                <span th:if="${planStatus.toString().toLowerCase() == 'paused'}">
+                    ⏸️ Your plan is currently paused. When you're ready, continue your journey towards a smoke-free life.
+                </span>
+                <span th:if="${planStatus.toString().toLowerCase() == 'cancelled'}">
+                    Remember, every attempt to quit smoking is a step forward. Consider starting a new plan when you're ready.
+                </span>
+            </div>
+        </div>
+
+        <div class="encouragement" th:if="${planStatus.toString().toLowerCase() == 'completed'}">
+            <p>🎉 Congratulations on completing your plan! Your dedication to tracking and reducing smoking habits is commendable. Keep building on this success!</p>
+        </div>
+
+        <div class="encouragement" th:if="${planStatus.toString().toLowerCase() == 'active'}">
+            <p>💪 Keep going! You're making excellent progress. Stay focused on your goals and remember why you started this journey.</p>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>Your health journey matters. Stay committed to your goals!</p>
+        <p style="margin-top: 10px; opacity: 0.7;">
+            Report generated on <span th:text="${#temporals.format(#temporals.createNow(), 'MMMM dd, yyyy HH:mm')}">March 31, 2024 16:45</span>
+        </p>
+    </div>
+</div>
+</body>
+</html>

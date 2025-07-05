@@ -5,6 +5,6 @@ public enum PlanStatus {
     INACTIVE,
     CANCELLED,
     PENDING,
-    COMPLETE,
+    COMPLETED,
     FAILED
 }

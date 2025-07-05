@@ -1,7 +1,10 @@
 package com.swpteam.smokingcessation.domain.dto.phase;
 
+import com.swpteam.smokingcessation.domain.dto.tip.TipRequest;
 import jakarta.validation.constraints.*;
+
 import java.time.LocalDate;
+import java.util.List;
 
 public record PhaseRequest(
 
@@ -11,7 +14,7 @@ public record PhaseRequest(
         @Size(max = 255, message = "PHASE_DESCRIPTION_TOO_LONG")
         String description,
 
-        @Positive(message = "CIGARETTE_BOUND_INVALID")
+        @Min(value = 0, message = "CIGARETTE_BOUND_INVALID")
         @NotNull(message = "PHASE_CIGARETTE_BOUND_REQUIRED")
         Integer cigaretteBound,
 
@@ -21,7 +24,9 @@ public record PhaseRequest(
 
         @NotNull(message = "PHASE_END_DATE_REQUIRED")
         @Future(message = "PHASE_END_DATE_INVALID")
-        LocalDate endDate
+        LocalDate endDate,
+
+        List<TipRequest> tips
 
 ) {
 }

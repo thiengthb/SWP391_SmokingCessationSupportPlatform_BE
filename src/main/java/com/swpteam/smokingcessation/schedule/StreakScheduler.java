@@ -5,11 +5,11 @@ import com.swpteam.smokingcessation.domain.entity.Setting;
 import com.swpteam.smokingcessation.domain.entity.Streak;
 import com.swpteam.smokingcessation.domain.enums.ScoreRule;
 import com.swpteam.smokingcessation.exception.AppException;
-import com.swpteam.smokingcessation.repository.RecordHabitRepository;
-import com.swpteam.smokingcessation.repository.SettingRepository;
-import com.swpteam.smokingcessation.repository.StreakRepository;
-import com.swpteam.smokingcessation.service.interfaces.profile.IScoreService;
-import com.swpteam.smokingcessation.service.interfaces.tracking.IStreakService;
+import com.swpteam.smokingcessation.repository.jpa.RecordHabitRepository;
+import com.swpteam.smokingcessation.repository.jpa.SettingRepository;
+import com.swpteam.smokingcessation.repository.jpa.StreakRepository;
+import com.swpteam.smokingcessation.feature.version1.profile.service.IScoreService;
+import com.swpteam.smokingcessation.feature.version1.tracking.service.IStreakService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -48,7 +48,7 @@ public class StreakScheduler {
                 LocalDateTime deadlineDateTime = LocalDateTime.of(today, deadline);
 
                 if (!now.isAfter(deadlineDateTime)) {
-                    return;
+                    continue;
                 }
 
                 boolean hasRecord = recordHabitRepository
@@ -57,7 +57,7 @@ public class StreakScheduler {
                 Streak streak = streakRepository.findByAccountIdAndIsDeletedFalse(accountId)
                         .orElse(null);
                 if (streak == null || hasRecord || streak.getNumber() == 0) {
-                    return;
+                    continue;
                 }
 
                 streakService.resetStreak(accountId);

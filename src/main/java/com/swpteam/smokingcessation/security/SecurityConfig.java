@@ -1,6 +1,6 @@
 package com.swpteam.smokingcessation.security;
 
-import com.swpteam.smokingcessation.service.interfaces.identity.IAuthenticationService;
+import com.swpteam.smokingcessation.feature.version1.identity.service.IAuthenticationService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -38,9 +38,10 @@ public class SecurityConfig {
             "/swagger-ui/**",
             "/v3/api-docs/**",
             "/ws/**",
-            "/api/webhook/stripe",
+            "/api/v1/webhook/stripe",
             "/api/v1/auth/**",
             "/api/v1/auth/verify",
+            "/api/v1/memberships/**",
             "/api/test/**",
     };
 

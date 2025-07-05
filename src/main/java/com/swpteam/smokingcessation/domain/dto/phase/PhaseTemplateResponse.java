@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.util.List;
+
 @Data
 @Builder
 @NoArgsConstructor
@@ -11,7 +13,10 @@ import lombok.experimental.FieldDefaults;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class PhaseTemplateResponse {
-    int phase;
-    int cigaretteBound;
+    int phaseNo;
+    String phaseName;
     int duration;
+    int cigaretteBound;
+    String description;
+    List<String> tips;
 }

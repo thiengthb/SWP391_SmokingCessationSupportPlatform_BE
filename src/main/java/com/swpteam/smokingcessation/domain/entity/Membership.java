@@ -28,9 +28,10 @@ public class Membership extends AuditableEntity {
     List<Subscription> subscriptions = new ArrayList<>();
 
     String name;
-    int durationDays;
     double price;
+    int durationDays;
     String description;
+    boolean highlighted;
 
     @Enumerated(EnumType.STRING)
     Currency currency;

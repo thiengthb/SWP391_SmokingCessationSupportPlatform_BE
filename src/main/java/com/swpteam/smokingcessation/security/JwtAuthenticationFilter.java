@@ -1,6 +1,6 @@
 package com.swpteam.smokingcessation.security;
 
-import com.swpteam.smokingcessation.service.interfaces.identity.IAuthenticationService;
+import com.swpteam.smokingcessation.feature.version1.identity.service.IAuthenticationService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

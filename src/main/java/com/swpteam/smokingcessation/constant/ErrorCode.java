@@ -21,6 +21,7 @@ public enum ErrorCode {
     INVALID_MESSAGE_KEY(1005, "error.general.invalid_message_key", HttpStatus.BAD_REQUEST),
     MESSAGE_ERROR(1006, "error.general.message", HttpStatus.BAD_REQUEST),
     INVALID_FIELD(1006, "error.general.invalid_field", HttpStatus.BAD_REQUEST),
+    ROLE_NOT_SUPPORTED(1007, "error.general.role_not_supported", HttpStatus.FORBIDDEN),
 
     // Account Errors (1100-1199)
     ACCOUNT_REQUIRED(1100, "error.account.required", HttpStatus.BAD_REQUEST),
@@ -38,6 +39,7 @@ public enum ErrorCode {
     ROLE_REQUIRED(1112, "error.account.role_required", HttpStatus.BAD_REQUEST),
     SELF_BAN_DISALLOWED(1113, "error.account.self_ban_disallowed", HttpStatus.BAD_REQUEST),
     WRONG_PASSWORD(1114, "error.account.wrong_password", HttpStatus.BAD_REQUEST),
+    ACCOUNT_NEED_ACTIVATE(1115, "error.account.need_activate", HttpStatus.FORBIDDEN),
 
     // Authentication & Token Errors (1200-1299)
     TOKEN_REQUIRED(1200, "error.token.required", HttpStatus.UNAUTHORIZED),
@@ -81,12 +83,15 @@ public enum ErrorCode {
     TRACKING_MODE_REQUIRED(1602, "error.settings.tracking_mode_required", HttpStatus.BAD_REQUEST),
     MOTIVATION_REQUIRED(1603, "error.settings.motivation_required", HttpStatus.BAD_REQUEST),
     REPORT_DEADLINE_REQUIRED(1606, "error.settings.report_deadline_required", HttpStatus.BAD_REQUEST),
+    MODE_CHANGE_UNAVAILABLE(1607,"error.settings.mode_change_unavailable", HttpStatus.BAD_REQUEST),
 
     // Member Errors (1700-1799)
     MEMBER_ALREADY_EXISTS(1700, "error.member.already_exists", HttpStatus.CONFLICT),
     MEMBER_NOT_FOUND(1701, "error.member.not_found", HttpStatus.NOT_FOUND),
     INVALID_DOB(1702, "error.member.invalid_dob", HttpStatus.BAD_REQUEST),
     GENDER_REQUIRED(1703, "error.member.gender_required", HttpStatus.BAD_REQUEST),
+    ADDRESS_TOO_LONG(1704, "error.member.address_too_long", HttpStatus.BAD_REQUEST),
+    BIO_TOO_LONG(1704, "error.member.bio_too_long", HttpStatus.BAD_REQUEST),
 
     // Message Errors (1800-1899)
     MESSAGE_NOT_FOUND(1800, "error.message.not_found", HttpStatus.NOT_FOUND),
@@ -105,6 +110,7 @@ public enum ErrorCode {
     SMOKE_YEAR_INVALID(1909, "error.health_record.smoke_year_invalid", HttpStatus.BAD_REQUEST),
     SMOKE_YEAR_TOO_HIGH(1910, "error.health_record.smoke_year_too_high", HttpStatus.BAD_REQUEST),
     HEALTH_RECORD_UPDATE_FAILED(1911, "error.health_record.update_failed", HttpStatus.BAD_REQUEST),
+    HEALTH_RECORD_ALREADY_TAKEN_TODAY(1912, "error.health_record.already_taken_today", HttpStatus.BAD_REQUEST),
 
     // Record Errors (2000-2099)
     RECORD_NOT_FOUND(2000, "error.record.not_found", HttpStatus.NOT_FOUND),
@@ -136,6 +142,12 @@ public enum ErrorCode {
     FTND_SCORE_INVALID(2215, "error.plan.ftnd_score_invalid", HttpStatus.BAD_REQUEST),
     PLAN_ALREADY_EXISTED(2216, "error.plan.already_existed", HttpStatus.CONFLICT),
     INVALID_PLAN_DURATION(2217, "error.plan.invalid_duration", HttpStatus.BAD_REQUEST),
+    CANNOT_UPDATE_PLAN_NOT_PENDING(2218,"error.plan.invalid_plan_status",HttpStatus.BAD_REQUEST),
+    PLAN_ALREADY_EXISTED_A(2219, "error.plan.already_existed_a", HttpStatus.BAD_REQUEST),
+    PLAN_ALREADY_EXISTED_B(2220, "error.plan.already_existed_b", HttpStatus.BAD_REQUEST),
+    RESTRICT_PLAN_A(2221, "error.plan.restrict_plan_a", HttpStatus.BAD_REQUEST),
+    RESTRICT_PLAN_B(2222, "error.plan.restrict_plan_b", HttpStatus.BAD_REQUEST),
+
 
     // Phase Errors (2300-2399)
     PHASE_NOT_FOUND(2300, "error.phase.not_found", HttpStatus.NOT_FOUND),
@@ -153,6 +165,7 @@ public enum ErrorCode {
     PHASE_DURATION_TOO_SHORT(2312, "error.phase.duration_too_short", HttpStatus.BAD_REQUEST),
     INVALID_PHASE_DATE(2313, "error.phase.invalid_date", HttpStatus.BAD_REQUEST),
     NEW_PHASE_CONFLICT(2314, "error.phase.new_phase_conflict", HttpStatus.CONFLICT),
+    NO_COMPLETED_PHASE_FOUND(2315,"error.phase.no_completed_phase_found",HttpStatus.BAD_REQUEST),
 
     // Chatbot Errors (2400-2499)
     PROMPT_REQUIRED(2400, "error.chatbot.prompt_required", HttpStatus.BAD_REQUEST),
@@ -182,6 +195,9 @@ public enum ErrorCode {
     BOOKING_OUTSIDE_WORKING_HOURS(2609, "error.booking.outside_working_hours", HttpStatus.BAD_REQUEST),
     BOOKING_TIME_CONFLICT(2610, "error.booking.time_conflict", HttpStatus.CONFLICT),
     BOOKING_ALREADY_IN_PROCESS(2611, "error.booking.already_in_process", HttpStatus.CONFLICT),
+    COACH_IS_BUSY(2612,"error.booking.reject_auto",HttpStatus.BAD_REQUEST),
+    DECLINE_REASON_NOT_ALLOWED(2613,"error.booking.accept",HttpStatus.BAD_REQUEST),
+    DECLINE_REASON_REQUIRED(2614,"error.booking.reject",HttpStatus.BAD_REQUEST),
 
     // Category Errors (2700-2799)
     CATEGORY_NAME_REQUIRED(2700, "error.category.name_required", HttpStatus.BAD_REQUEST),
@@ -274,7 +290,16 @@ public enum ErrorCode {
     TIMETABLE_ENDED_AT_INVALID(3806, "error.timetable.ended_at_invalid", HttpStatus.BAD_REQUEST),
 
     // Score Errors (3900-3999)
-    SCORE_NOT_FOUND(3806, "error.score.not_found", HttpStatus.NOT_FOUND)
+    SCORE_NOT_FOUND(3806, "error.score.not_found", HttpStatus.NOT_FOUND),
+
+    // Contact (4000-4099)
+    NAME_REQUIRED(4001, "error.contact.name_required", HttpStatus.BAD_REQUEST),
+    EMAIL_NOT_VALID(4003, "error.contact.email_not_valid", HttpStatus.BAD_REQUEST),
+    MAIL_REQUIRED(4002, "error.contact.email_required", HttpStatus.BAD_REQUEST),
+    MAIL_SUBJECT_REQUIRED(4004, "error.contact.subject_required", HttpStatus.BAD_REQUEST),
+    CONTENT_RESTRICTED(4005, "error.contact.content_required", HttpStatus.BAD_REQUEST),
+    CONTENT_TOO_SHORT(4006, "error.contact.content_too_short", HttpStatus.BAD_REQUEST),
+    CONTENT_TOO_LONG(4007, "error.contact.content_too_long", HttpStatus.BAD_REQUEST),
 
     ;
     int code;

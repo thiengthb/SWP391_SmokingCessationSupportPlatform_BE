@@ -1,24 +1,28 @@
 package com.swpteam.smokingcessation.domain.dto.health;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.swpteam.smokingcessation.domain.enums.Currency;
+import lombok.*;
+import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDateTime;
 
-@Getter
-@Setter
+@Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@FieldDefaults(level = AccessLevel.PRIVATE)
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class HealthResponse {
+    String id;
     String accountId;
+    String ftndAnswers;
+    int ftndLevel;
     int cigarettesPerDay;
     int cigarettesPerPack;
-    int fndLevel;
     double packPrice;
+    Currency currency;
     String reasonToQuit;
     int smokeYear;
-    LocalDateTime updatedAt;
     LocalDateTime createdAt;
 }

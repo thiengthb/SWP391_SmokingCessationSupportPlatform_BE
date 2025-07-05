@@ -25,12 +25,13 @@ public class Booking extends AuditableEntity {
     @JoinColumn(name = "coachId", nullable = false)
     Account coach;
 
-    String meetLink;
     LocalDateTime startedAt;
     LocalDateTime endedAt;
 
     @Enumerated(EnumType.STRING)
     BookingStatus status;
+
+    String bookingReason;
 
     String declineReason;
 }

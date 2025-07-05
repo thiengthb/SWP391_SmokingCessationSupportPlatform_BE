@@ -28,4 +28,3 @@ public class Score extends AuditableEntity {
                 .build();
     }
 }
-//enum

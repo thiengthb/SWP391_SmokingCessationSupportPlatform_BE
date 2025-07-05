@@ -6,5 +6,6 @@ public enum PhaseStatus {
     CANCELLED,
     FAILED,
     SUCCESS,
+    PENDING,
     COMPLETED
 }

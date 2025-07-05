@@ -17,11 +17,13 @@ import java.time.LocalDateTime;
 public class AccountResponse {
 
     String id;
+    String avatar;
     String username;
     String email;
     String phoneNumber;
     Role role;
     AccountStatus status;
+    boolean havingSubscription;
     LocalDateTime createdAt;
     LocalDateTime updatedAt;
 }
