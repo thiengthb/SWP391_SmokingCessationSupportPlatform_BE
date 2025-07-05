@@ -51,7 +51,8 @@ public class RedisConfig {
             Map.entry("COMMENT_CACHE", Duration.ofMinutes(3)),
             Map.entry("BOOKING_CACHE", Duration.ofMinutes(5)),
             Map.entry("REVIEW_CACHE", Duration.ofMinutes(5)),
-            Map.entry("TIME_TABLE_CACHE", Duration.ofMinutes(5))
+            Map.entry("TIME_TABLE_CACHE", Duration.ofMinutes(5)),
+            Map.entry("LEADERBOARD_CACHE", Duration.ofMinutes(10))
     );
 
     @Value("${spring.redis.host}")
@@ -71,8 +72,11 @@ public class RedisConfig {
         mapper.registerModule(new JavaTimeModule());
         mapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
         mapper.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.ANY);
-        mapper.activateDefaultTyping(LaissezFaireSubTypeValidator.instance,
-                ObjectMapper.DefaultTyping.NON_FINAL, JsonTypeInfo.As.PROPERTY);
+        mapper.activateDefaultTyping(
+                LaissezFaireSubTypeValidator.instance,
+                ObjectMapper.DefaultTyping.NON_FINAL,
+                JsonTypeInfo.As.PROPERTY
+        );
 
         GenericJackson2JsonRedisSerializer serializer = new GenericJackson2JsonRedisSerializer(mapper);
 
