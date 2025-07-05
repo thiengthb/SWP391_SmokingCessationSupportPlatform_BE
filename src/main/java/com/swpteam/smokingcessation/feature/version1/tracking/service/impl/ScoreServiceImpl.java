@@ -1,6 +1,7 @@
 package com.swpteam.smokingcessation.feature.version1.tracking.service.impl;
 
 import com.swpteam.smokingcessation.constant.ErrorCode;
+import com.swpteam.smokingcessation.domain.dto.score.ScoreLeaderboardWrapper;
 import com.swpteam.smokingcessation.domain.dto.score.ScoreResponse;
 import com.swpteam.smokingcessation.domain.entity.Account;
 import com.swpteam.smokingcessation.domain.entity.Score;
@@ -8,18 +9,19 @@ import com.swpteam.smokingcessation.domain.enums.ScoreRule;
 import com.swpteam.smokingcessation.domain.mapper.ScoreMapper;
 import com.swpteam.smokingcessation.exception.AppException;
 import com.swpteam.smokingcessation.feature.version1.profile.service.IScoreService;
+import com.swpteam.smokingcessation.feature.version1.tracking.service.ILeaderboardCacheService;
 import com.swpteam.smokingcessation.repository.jpa.ScoreRepository;
 import com.swpteam.smokingcessation.utils.AuthUtilService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -32,7 +34,8 @@ public class ScoreServiceImpl implements IScoreService {
     ScoreMapper scoreMapper;
     AuthUtilService authUtilService;
     SimpMessagingTemplate messagingTemplate;
-    RedisTemplate<String, String> redisTemplate;
+    ILeaderboardCacheService leaderboardCacheService;
+
 
     @Override
     public Score updateScore(String accountId, ScoreRule point) {
@@ -55,43 +58,41 @@ public class ScoreServiceImpl implements IScoreService {
 
     @Override
     public List<ScoreResponse> getScoreList() {
-        List<Score> scores = scoreRepository.findTop10ByAccountIsDeletedFalseOrderByRankAsc();
+        ScoreLeaderboardWrapper wrapper = leaderboardCacheService.getLeaderboardWrapper();
+        List<ScoreResponse> cachedLeaderboard = new ArrayList<>(wrapper.getLeaderboard()); // ✅ Fix here
 
         Account account = authUtilService.getCurrentAccount().orElse(null);
-
         if (account == null) {
-            return scores.stream()
-                    .map(scoreMapper::toResponse)
-                    .toList();
+            return cachedLeaderboard;
         }
 
-        boolean isInTop10 = scores.stream()
-                .anyMatch(score -> score.getAccount().getId().equals(account.getId()));
+        boolean isInTop10 = cachedLeaderboard.stream()
+                .filter(score -> score != null && score.getUsername() != null)
+                .anyMatch(score -> score.getUsername().equals(account.getUsername()));
 
         if (!isInTop10) {
-            scores.add(getScoreByAccount(account));
+            Score myScore = getScoreByAccount(account);
+            cachedLeaderboard.add(scoreMapper.toResponse(myScore));
         }
 
-        return scores.stream()
-                .map(scoreMapper::toResponse)
-                .toList();
+        return cachedLeaderboard;
     }
 
     public void updateLeaderboard() {
-        List<Score> scores = scoreRepository.findTop10ByAccountIsDeletedFalseOrderByRankAsc();
+        ScoreLeaderboardWrapper wrapper = leaderboardCacheService.updateLeaderboardWrapper();
+        List<ScoreResponse> cachedLeaderboard = wrapper.getLeaderboard();
 
         Account account = authUtilService.getCurrentAccountOrThrowError();
-        boolean isInTop10 = scores.stream()
-                .anyMatch(score -> score.getAccount().getId().equals(account.getId()));
+
+        boolean isInTop10 = cachedLeaderboard.stream()
+                .filter(score -> score != null && score.getUsername() != null)
+                .anyMatch(score -> score.getUsername().equals(account.getUsername()));
 
         if (!isInTop10) {
-            scores.add(getScoreByAccount(account));
+            cachedLeaderboard.add(scoreMapper.toResponse(getScoreByAccount(account)));
         }
 
-        List<ScoreResponse> leaderboardDto = scores.stream()
-                .map(scoreMapper::toResponse)
-                .toList();
-        messagingTemplate.convertAndSend("/topic/leaderboard", leaderboardDto);
+        messagingTemplate.convertAndSend("/topic/leaderboard", cachedLeaderboard);
     }
 
 
@@ -111,4 +112,5 @@ public class ScoreServiceImpl implements IScoreService {
         }
         scoreRepository.saveAll(scores);
     }
+
 }

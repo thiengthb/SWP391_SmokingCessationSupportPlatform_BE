@@ -1,7 +1,5 @@
 package com.swpteam.smokingcessation.feature.version1.profile.service;
 
-import com.swpteam.smokingcessation.common.PageResponse;
-import com.swpteam.smokingcessation.common.PageableRequest;
 import com.swpteam.smokingcessation.domain.dto.score.ScoreResponse;
 import com.swpteam.smokingcessation.domain.entity.Account;
 import com.swpteam.smokingcessation.domain.entity.Score;
