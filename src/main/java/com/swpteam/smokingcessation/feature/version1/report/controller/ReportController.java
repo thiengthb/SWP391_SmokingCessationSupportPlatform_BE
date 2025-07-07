@@ -4,6 +4,8 @@ import com.swpteam.smokingcessation.common.ApiResponse;
 import com.swpteam.smokingcessation.constant.SuccessCode;
 import com.swpteam.smokingcessation.domain.dto.report.ReportSummaryRequest;
 import com.swpteam.smokingcessation.domain.dto.report.ReportSummaryResponse;
+import com.swpteam.smokingcessation.domain.dto.report.UserActivityResponse;
+import com.swpteam.smokingcessation.domain.dto.report.UserDistributionResponse;
 import com.swpteam.smokingcessation.feature.version1.report.service.IReportService;
 import com.swpteam.smokingcessation.utils.ResponseUtilService;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -16,6 +18,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/v1/reports")
 @RequiredArgsConstructor
@@ -27,7 +31,7 @@ public class ReportController {
     ResponseUtilService responseUtilService;
 
     @GetMapping("/summary")
-    public ResponseEntity<ApiResponse<ReportSummaryResponse>> getReportSummary(
+    ResponseEntity<ApiResponse<ReportSummaryResponse>> getReportSummary(
             @Valid ReportSummaryRequest reportSummaryRequest
     ) {
         return responseUtilService.buildSuccessResponse(
@@ -36,4 +40,23 @@ public class ReportController {
         );
     }
 
+    @GetMapping("/user-growth")
+    ResponseEntity<ApiResponse<List<UserActivityResponse>>> getUserGrowth(
+            @Valid ReportSummaryRequest reportSummaryRequest
+    ) {
+        return responseUtilService.buildSuccessResponse(
+                SuccessCode.REPORT_SUMMARY_FETCHED,
+                reportService.getUserGrowth(reportSummaryRequest)
+        );
+    }
+
+    @GetMapping("user-distribution")
+    ResponseEntity<ApiResponse<UserDistributionResponse>> getUserDistribution(
+
+    ) {
+        return responseUtilService.buildSuccessResponse(
+                SuccessCode.REPORT_SUMMARY_FETCHED,
+                reportService.getUserDistribution()
+        );
+    }
 }
