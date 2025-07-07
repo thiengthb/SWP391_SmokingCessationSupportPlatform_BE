@@ -24,8 +24,6 @@ public interface IPlanService {
 
     PlanResponse updatePlanById(String id, PlanRequest request);
 
-    List<PlanResponse> generateAllPlans();
-
     Plan findPlanByIdOrThrowError(String id);
 
     void softDeletePlanById(String id);

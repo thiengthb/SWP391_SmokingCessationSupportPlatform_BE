@@ -49,16 +49,7 @@ public class PlanController {
                 planService.getMyPlanPage(request)
         );
     }
-
-    @GetMapping("/template")
-    public ResponseEntity<ApiResponse<List<PlanResponse>>> getPlanTemplate() {
-        return responseUtilService.buildSuccessResponse(
-                SuccessCode.PLAN_TEMPLATE_FETCHED,
-                planService.generateAllPlans()
-        );
-    }
-
-
+    
     @PostMapping
     ResponseEntity<ApiResponse<PlanResponse>> createPlan(
             @Valid @RequestBody PlanRequest request
