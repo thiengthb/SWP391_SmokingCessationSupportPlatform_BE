@@ -166,8 +166,8 @@
             if (Boolean.TRUE.equals(request.accepted())) {
                 booking.setStatus(BookingStatus.APPROVED);
 
-                timeTableService.createTimeTableAuto(booking.getStartedAt(), booking.getEndedAt(), booking.getCoach());
-
+                TimeTable timeTable = timeTableService.createTimeTableAuto(booking.getStartedAt(), booking.getEndedAt(), booking.getCoach(),booking);
+                booking.setTimeTable(timeTable);
                 List<Booking> pendingConflicts = bookingRepository.findAllByCoachIdAndStatusAndIsDeletedFalse(
                         booking.getCoach().getId(),
                         BookingStatus.PENDING

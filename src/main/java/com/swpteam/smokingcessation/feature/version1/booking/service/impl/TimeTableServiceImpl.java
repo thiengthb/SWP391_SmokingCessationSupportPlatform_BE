@@ -13,6 +13,8 @@ import com.swpteam.smokingcessation.domain.entity.TimeTable;
 import com.swpteam.smokingcessation.domain.mapper.TimeTableMapper;
 import com.swpteam.smokingcessation.exception.AppException;
 import com.swpteam.smokingcessation.feature.version1.booking.service.ITimeTableService;
+import com.swpteam.smokingcessation.feature.version1.notification.service.INotificationService;
+import com.swpteam.smokingcessation.repository.jpa.BookingRepository;
 import com.swpteam.smokingcessation.repository.jpa.TimeTableRepository;
 
 import com.swpteam.smokingcessation.feature.version1.identity.service.IAccountService;
@@ -45,6 +47,7 @@ public class TimeTableServiceImpl implements ITimeTableService {
     TimeTableMapper timeTableMapper;
     IAccountService accountService;
     AuthUtilService authUtilService;
+    BookingRepository bookingRepository;
 
     @Override
     @Cacheable(value = "TIMETABLE_PAGE_CACHE",
@@ -119,15 +122,16 @@ public class TimeTableServiceImpl implements ITimeTableService {
     @PreAuthorize("hasRole('COACH')")
     //@CachePut(value = "TIMETABLE_CACHE", key = "#result.getId()")
     @CacheEvict(value = "TIMETABLE_PAGE_CACHE", allEntries = true)
-    public void createTimeTableAuto(LocalDateTime start, LocalDateTime end, Account coach) {
+    public TimeTable createTimeTableAuto(LocalDateTime start, LocalDateTime end, Account coach,Booking booking) {
         TimeTable timeTable = TimeTable.builder()
                 .name("booking with member")
                 .description("You have a booking schedule with member during this time")
                 .startedAt(start)
                 .endedAt(end)
                 .coach(coach)
+                .booking(booking)
                 .build();
-        timeTableRepository.save(timeTable);
+        return timeTableRepository.save(timeTable);
 
 
     }
@@ -156,10 +160,22 @@ public class TimeTableServiceImpl implements ITimeTableService {
             throw new AppException(ErrorCode.UNAUTHORIZED);
         }
 
+        List<TimeTable> existingTimeTables = timeTableRepository.getAllByCoachIdAndIsDeletedFalse(timeTable.getCoach().getId());
+        for (TimeTable existing : existingTimeTables) {
+            if (existing.getId().equals(id)) continue;
+
+            boolean overlaps = !(request.endedAt().isBefore(existing.getStartedAt()) ||
+                    request.startedAt().isAfter(existing.getEndedAt()));
+            if (overlaps) {
+                throw new AppException(ErrorCode.TIMETABLE_TIME_CONFLICT);
+            }
+        }
+
         timeTableMapper.update(timeTable, request);
 
         Account coach = authUtilService.getCurrentAccountOrThrowError();
         timeTable.setCoach(coach);
+
         return timeTableMapper.toResponse(timeTableRepository.save(timeTable));
     }
 
@@ -173,6 +189,12 @@ public class TimeTableServiceImpl implements ITimeTableService {
         boolean haveAccess = authUtilService.isAdminOrOwner(timeTable.getCoach().getId());
         if (!haveAccess) {
             throw new AppException(ErrorCode.UNAUTHORIZED);
+        }
+
+        Booking linkedBooking = timeTable.getBooking();
+        if (linkedBooking != null && !linkedBooking.isDeleted()) {
+            linkedBooking.setDeleted(true);
+            bookingRepository.save(linkedBooking);
         }
 
         timeTable.setDeleted(true);
@@ -193,5 +215,6 @@ public class TimeTableServiceImpl implements ITimeTableService {
 
         return timeTable;
     }
+
 
 }
