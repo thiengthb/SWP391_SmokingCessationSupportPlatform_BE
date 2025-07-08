@@ -184,51 +184,61 @@ public class PlanServiceImpl implements IPlanService {
             throw new AppException(ErrorCode.CANNOT_UPDATE_PLAN_NOT_PENDING);
         }
 
-        // 2. Validate phase ngày tháng và sort theo startDate
         validatePhaseDates(request.phases());
 
+        LocalDate[] dateRange = getDateRangeFromPhases(request.phases());
+        LocalDate newStartDate = dateRange[0];
+        LocalDate newEndDate = dateRange[1];
+
+        validatePlanConflicts(currentAccount.getId(), planId, newStartDate, newEndDate);
+
+        updatePlanPhases(plan, request.phases());
+        updatePlanBasicInfo(plan, request);
+
+        updatePlanDatesAndStatus(plan, newStartDate, newEndDate);
+
+        return planMapper.toResponse(planRepository.save(plan));
+    }
+
+
+
+    private LocalDate[] getDateRangeFromPhases(List<PhaseRequest> phases) {
+        LocalDate startDate = phases.stream()
+                .map(PhaseRequest::startDate)
+                .min(LocalDate::compareTo)
+                .orElseThrow(() -> new AppException(ErrorCode.PHASE_REQUIRED));
+
+        LocalDate endDate = phases.stream()
+                .map(PhaseRequest::endDate)
+                .max(LocalDate::compareTo)
+                .orElseThrow(() -> new AppException(ErrorCode.PHASE_REQUIRED));
+
+        return new LocalDate[]{startDate, endDate};
+    }
+
+    private void validatePlanConflicts(String accountId, String excludePlanId, LocalDate startDate, LocalDate endDate) {
         List<Plan> existingPlans = planRepository.findAllByAccountIdAndPlanStatusInAndIsDeletedFalse(
-                currentAccount.getId(),
-                List.of(PlanStatus.ACTIVE, PlanStatus.PENDING)
-        );
+                accountId, List.of(PlanStatus.ACTIVE, PlanStatus.PENDING));
 
         Optional<Plan> activePlan = existingPlans.stream()
                 .filter(p -> p.getPlanStatus() == PlanStatus.ACTIVE)
                 .findFirst();
 
         List<Plan> pendingPlans = existingPlans.stream()
-                .filter(p -> p.getPlanStatus() == PlanStatus.PENDING && !p.getId().equals(planId))
+                .filter(p -> p.getPlanStatus() == PlanStatus.PENDING && !p.getId().equals(excludePlanId))
                 .toList();
 
-        LocalDate newStartDate = request.phases().stream()
-                .map(PhaseRequest::startDate)
-                .min(LocalDate::compareTo)
-                .get();
+        restrictPlanDate(startDate, endDate, activePlan, pendingPlans);
+    }
 
-        LocalDate newEndDate = request.phases().stream()
-                .map(PhaseRequest::endDate)
-                .max(LocalDate::compareTo)
-                .get();
-
-        // 3. Validate conflict với other plans
-        restrictPlanDate(newStartDate, newEndDate, activePlan, pendingPlans);
-
-        // 4. Sort request phases và assign phase number
-        List<PhaseRequest> sortedPhaseRequests = new ArrayList<>(request.phases());
+    private void updatePlanPhases(Plan plan, List<PhaseRequest> phaseRequests) {
+        List<PhaseRequest> sortedPhaseRequests = new ArrayList<>(phaseRequests);
         sortedPhaseRequests.sort(Comparator.comparing(PhaseRequest::startDate));
 
-        // 5. Get current phases sorted by phase number
-        List<Phase> currentPhases = new ArrayList<>(plan.getPhases());
-        currentPhases.sort(Comparator.comparing(Phase::getPhase));
-
-        // 6. Merge phases based on phase number
-        int requestSize = sortedPhaseRequests.size();
-        int currentSize = currentPhases.size();
-
-        // Handle existing phases (merge or update)
         mergeAndUpdatePhases(plan, sortedPhaseRequests);
+    }
 
-        // 9. Update plan basic info
+    private void updatePlanBasicInfo(Plan plan, PlanRequest request) {
         if (request.planName() != null && !request.planName().trim().isEmpty()) {
             plan.setPlanName(request.planName());
         }
@@ -236,27 +246,33 @@ public class PlanServiceImpl implements IPlanService {
         if (request.description() != null && !request.description().trim().isEmpty()) {
             plan.setDescription(request.description());
         }
-
-        // 10. Update plan start and end dates based on merged phases
-        plan.setStartDate(newStartDate);
-        plan.setEndDate(newEndDate);
-        if (plan.getStartDate().isEqual(LocalDate.now())) {
-            plan.setPlanStatus(PlanStatus.ACTIVE);
-            plan.getPhases().getFirst().setPhaseStatus(PhaseStatus.ACTIVE);
-            for (int i = 1; i < plan.getPhases().size(); i++) {
-                plan.getPhases().get(i).setPhaseStatus(PhaseStatus.PENDING);
-            }
-        } else {
-            plan.setPlanStatus(PlanStatus.PENDING);
-            plan.getPhases().forEach(phase -> {
-                phase.setPhaseStatus(PhaseStatus.PENDING);
-            });
-        }
-
-        // 11. Save and return response
-        return planMapper.toResponse(planRepository.save(plan));
     }
 
+    private void updatePlanDatesAndStatus(Plan plan, LocalDate startDate, LocalDate endDate) {
+        plan.setStartDate(startDate);
+        plan.setEndDate(endDate);
+
+        LocalDate today = LocalDate.now();
+        if (startDate.isEqual(today)) {
+            plan.setPlanStatus(PlanStatus.ACTIVE);
+            setPhaseStatusForActivePlan(plan);
+        } else {
+            plan.setPlanStatus(PlanStatus.PENDING);
+            plan.getPhases().forEach(phase -> phase.setPhaseStatus(PhaseStatus.PENDING));
+        }
+    }
+
+    private void setPhaseStatusForActivePlan(Plan plan) {
+        List<Phase> phases = plan.getPhases();
+        phases.sort(Comparator.comparing(Phase::getPhase));
+
+        if (!phases.isEmpty()) {
+            phases.get(0).setPhaseStatus(PhaseStatus.ACTIVE);
+            for (int i = 1; i < phases.size(); i++) {
+                phases.get(i).setPhaseStatus(PhaseStatus.PENDING);
+            }
+        }
+    }
     private void mergeTips(Phase existingPhase, List<TipRequest> tipRequests) {
         List<Tip> currentTips = existingPhase.getTips();
 
