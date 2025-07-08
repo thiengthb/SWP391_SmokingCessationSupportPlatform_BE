@@ -59,6 +59,9 @@ public class MailServiceImpl implements IMailService {
     private static final String PLAN_SUMMARY_EMAIL = "email/plan_summary_email";
     private static final String PHASE_SUMMARY_EMAIL = "email/phase_summary_email";
     private static final String BOOKING_CANCELLED_COACH = "email/booking_cancelled_by_member";
+    private static final String BOOKING_CANCELLED_SEND_MEMBER = "email/booking_reject";
+    private static final String BOOKING_APPROVED = "email/booking_approved";
+
 
 
     @Override
@@ -298,7 +301,7 @@ public class MailServiceImpl implements IMailService {
                 "Booking Rejected",
                 hostEmail,
                 to,
-                "booking-reject",
+                BOOKING_CANCELLED_SEND_MEMBER ,
                 List.of(
                         Map.entry("content", content)
                 )
@@ -312,7 +315,7 @@ public class MailServiceImpl implements IMailService {
                 "Booking Approved",
                 hostEmail,
                 to,
-                "booking-approved",
+                BOOKING_APPROVED,
                 List.of(
                         Map.entry("content", content)
                 )

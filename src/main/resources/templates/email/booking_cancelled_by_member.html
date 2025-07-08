@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <title>Booking Cancelled</title>
+</head>
+<body style="font-family: Arial, sans-serif; padding: 20px; background-color: #f4f4f4;">
+<div style="max-width: 600px; margin: auto; background: #ffffff; padding: 20px; border-radius: 8px;">
+  <h2 style="color: #e74c3c;">Lịch hẹn đã bị hủy</h2>
+  <p>Xin chào Coach,</p>
+  <p>Thành viên <strong th:text="${memberName}">[memberName]</strong> đã hủy một buổi đặt lịch với bạn.</p>
+  <p>
+    <strong>Thời gian dự kiến:</strong><br/>
+    Bắt đầu: <span th:text="${startedAt}">[startedAt]</span><br/>
+    Kết thúc: <span th:text="${endedAt}">[endedAt]</span>
+  </p>
+  <p>Vui lòng kiểm tra lại lịch trình của bạn trong hệ thống.</p>
+  <p style="margin-top: 30px;">Trân trọng,<br/><em>Đội ngũ hỗ trợ Cai thuốc</em></p>
+</div>
+</body>
+</html>
