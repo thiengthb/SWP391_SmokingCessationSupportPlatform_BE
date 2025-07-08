@@ -228,6 +228,10 @@
                     request.endedAt(),
                     id
             );
+            if (timeTableService.isBookingTimeInAnyTimeTable(request.startedAt(), request.endedAt(), request.coachId())) {
+                throw new AppException(ErrorCode.COACH_IS_BUSY);
+            }
+
 
 
             bookingMapper.update(booking, request);
@@ -246,6 +250,7 @@
             Booking booking = findBookingByIdOrThrowError(id);
 
         //if booking == approved , delete -> notify -> delete timetable
+            //if not => delete
             if (booking.getStatus() == BookingStatus.APPROVED) {
                 notificationService.sendBookingCancelledNotification(
                         booking.getCoach().getId(),
