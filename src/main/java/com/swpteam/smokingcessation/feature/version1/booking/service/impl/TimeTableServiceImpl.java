@@ -12,6 +12,8 @@ import com.swpteam.smokingcessation.domain.entity.Coach;
 import com.swpteam.smokingcessation.domain.entity.TimeTable;
 import com.swpteam.smokingcessation.domain.mapper.TimeTableMapper;
 import com.swpteam.smokingcessation.exception.AppException;
+import com.swpteam.smokingcessation.feature.integration.mail.IMailService;
+import com.swpteam.smokingcessation.feature.integration.mail.MailServiceImpl;
 import com.swpteam.smokingcessation.feature.version1.booking.service.ITimeTableService;
 import com.swpteam.smokingcessation.feature.version1.notification.service.INotificationService;
 import com.swpteam.smokingcessation.repository.jpa.BookingRepository;
@@ -48,6 +50,9 @@ public class TimeTableServiceImpl implements ITimeTableService {
     IAccountService accountService;
     AuthUtilService authUtilService;
     BookingRepository bookingRepository;
+    INotificationService notificationService;
+    IMailService mailService;
+
 
     @Override
     @Cacheable(value = "TIMETABLE_PAGE_CACHE",
@@ -195,6 +200,8 @@ public class TimeTableServiceImpl implements ITimeTableService {
         if (linkedBooking != null && !linkedBooking.isDeleted()) {
             linkedBooking.setDeleted(true);
             bookingRepository.save(linkedBooking);
+            notificationService.sendBookingRejectNotification("Your booking has been cancelled",linkedBooking.getMember().getId());
+            mailService.sendRejectNotificationMail(linkedBooking.getMember().getEmail(),"Coach mắc việc đột xuất");
         }
 
         timeTable.setDeleted(true);

@@ -60,6 +60,7 @@ public class MailServiceImpl implements IMailService {
     private static final String PHASE_SUMMARY_EMAIL = "email/phase_summary_email";
     private static final String BOOKING_CANCELLED_COACH = "email/booking_cancelled_by_member";
 
+
     @Override
     public void sendVerificationEmail(String to, String username, String verificationLink) {
         buildAndSendMail(
@@ -292,11 +293,12 @@ public class MailServiceImpl implements IMailService {
     @Async
     @Override
     public void sendRejectNotificationMail(String to, String content) {
+        log.info("nội dung đc gửi đi: {}",content);
         buildAndSendMail(
                 "Booking Rejected",
                 hostEmail,
                 to,
-                "booking-rejected",
+                "booking-reject",
                 List.of(
                         Map.entry("content", content)
                 )
