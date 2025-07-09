@@ -23,6 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring6.SpringTemplateEngine;
@@ -57,6 +58,11 @@ public class MailServiceImpl implements IMailService {
     private static final String BOOKING_REQUEST_EMAIL = "email/booking_request_email";
     private static final String PLAN_SUMMARY_EMAIL = "email/plan_summary_email";
     private static final String PHASE_SUMMARY_EMAIL = "email/phase_summary_email";
+    private static final String BOOKING_CANCELLED_COACH = "email/booking_cancelled_by_member";
+    private static final String BOOKING_CANCELLED_SEND_MEMBER = "email/booking_reject";
+    private static final String BOOKING_APPROVED = "email/booking_approved";
+
+
 
     @Override
     public void sendVerificationEmail(String to, String username, String verificationLink) {
@@ -228,6 +234,37 @@ public class MailServiceImpl implements IMailService {
                 ));
     }
 
+
+    @Override
+    public void sendUpcomingBookingReminderMail(String to, String coachId, LocalDateTime startTime, String coachName) {
+        LocalDateTime startedAt = DateTimeUtil.reformat(startTime);
+        buildAndSendMail("Upcoming booking"
+                , hostEmail,
+                to,
+                BOOKING_REQUEST_EMAIL,
+                List.of(
+                        Map.entry("startedAt", startedAt),
+                        Map.entry("coachName", coachName)
+                )
+
+        );
+    }
+
+    @Override
+    public void sendBookingCancelledEmail(String to, String memberName, LocalDateTime startedAt, LocalDateTime endedAt) {
+        buildAndSendMail(
+                "Booking Cancelled",
+                hostEmail,
+                to,
+                BOOKING_CANCELLED_COACH,
+                List.of(
+                        Map.entry("memberName", memberName),
+                        Map.entry("startedAt", DateTimeUtil.reformat(startedAt)),
+                        Map.entry("endedAt", DateTimeUtil.reformat(endedAt))
+                )
+        );
+    }
+
     @Override
     public void sendContactMail(ContactRequest request) {
         try {
@@ -256,26 +293,29 @@ public class MailServiceImpl implements IMailService {
         }
     }
 
+    @Async
     @Override
     public void sendRejectNotificationMail(String to, String content) {
+        log.info("nội dung đc gửi đi: {}",content);
         buildAndSendMail(
                 "Booking Rejected",
                 hostEmail,
                 to,
-                "booking-rejected",
+                BOOKING_CANCELLED_SEND_MEMBER ,
                 List.of(
                         Map.entry("content", content)
                 )
         );
     }
 
+    @Async
     @Override
     public void sendApprovedNotificationMail(String to, String content) {
         buildAndSendMail(
                 "Booking Approved",
                 hostEmail,
                 to,
-                "booking-approved",
+                BOOKING_APPROVED,
                 List.of(
                         Map.entry("content", content)
                 )

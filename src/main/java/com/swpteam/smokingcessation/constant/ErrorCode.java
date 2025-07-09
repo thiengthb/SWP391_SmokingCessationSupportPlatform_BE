@@ -288,6 +288,7 @@ public enum ErrorCode {
     TIMETABLE_ENDED_AT_REQUIRED(3804, "error.timetable.ended_at_required", HttpStatus.BAD_REQUEST),
     TIMETABLE_STARTED_AT_INVALID(3805, "error.timetable.started_at_invalid", HttpStatus.BAD_REQUEST),
     TIMETABLE_ENDED_AT_INVALID(3806, "error.timetable.ended_at_invalid", HttpStatus.BAD_REQUEST),
+    TIMETABLE_TIME_CONFLICT(3807,"error.timetable.duplicate",HttpStatus.BAD_REQUEST),
 
     // Score Errors (3900-3999)
     SCORE_NOT_FOUND(3806, "error.score.not_found", HttpStatus.NOT_FOUND),

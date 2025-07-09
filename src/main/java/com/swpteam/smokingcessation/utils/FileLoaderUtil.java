@@ -3,8 +3,6 @@ package com.swpteam.smokingcessation.utils;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.swpteam.smokingcessation.domain.dto.membership.MembershipInitDTO;
-import com.swpteam.smokingcessation.domain.dto.plan.PlanTemplateResponse;
-import com.swpteam.smokingcessation.domain.dto.plan.PlanTemplateWrapper;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.ClassPathResource;
@@ -40,20 +38,6 @@ public class FileLoaderUtil {
         }
         catch (Exception e) {
             throw new RuntimeException("Failed to parse JSON file: " + path, e);
-        }
-    }
-
-    public List<PlanTemplateResponse> loadPlanTemplate(String path) {
-        try {
-            InputStream inputStream = new ClassPathResource(path).getInputStream();
-
-            PlanTemplateWrapper wrapper = objectMapper.readValue(inputStream, PlanTemplateWrapper.class);
-
-            return wrapper.getLevels();
-        }
-        catch (IOException e) {
-            log.error("Failed to load plan template from: {}", path, e);
-            throw new RuntimeException("Unable to load plan template", e);
         }
     }
 
