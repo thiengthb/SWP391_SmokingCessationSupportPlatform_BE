@@ -2,7 +2,6 @@ package com.swpteam.smokingcessation.domain.dto.report;
 
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Past;
-import jakarta.validation.constraints.PastOrPresent;
 
 import java.time.LocalDateTime;
 
@@ -11,6 +10,5 @@ public record ReportSummaryRequest (
     @NotNull(message = "REPORT_FROM_DATE_REQUIRED")
     LocalDateTime from,
 
-    @PastOrPresent(message = "REPORT_TO_DATE_INVALID")
     LocalDateTime to
 ) {}

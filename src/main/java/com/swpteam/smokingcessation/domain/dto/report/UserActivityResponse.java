@@ -14,7 +14,5 @@ import java.time.LocalDate;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class UserActivityResponse {
     LocalDate date;
-    int currentAccounts;
     int newAccounts;
-    int activeAccounts;
 }

@@ -2,10 +2,7 @@ package com.swpteam.smokingcessation.feature.version1.report.controller;
 
 import com.swpteam.smokingcessation.common.ApiResponse;
 import com.swpteam.smokingcessation.constant.SuccessCode;
-import com.swpteam.smokingcessation.domain.dto.report.ReportSummaryRequest;
-import com.swpteam.smokingcessation.domain.dto.report.ReportSummaryResponse;
-import com.swpteam.smokingcessation.domain.dto.report.UserActivityResponse;
-import com.swpteam.smokingcessation.domain.dto.report.UserDistributionResponse;
+import com.swpteam.smokingcessation.domain.dto.report.*;
 import com.swpteam.smokingcessation.feature.version1.report.service.IReportService;
 import com.swpteam.smokingcessation.utils.ResponseUtilService;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -45,18 +42,27 @@ public class ReportController {
             @Valid ReportSummaryRequest reportSummaryRequest
     ) {
         return responseUtilService.buildSuccessResponse(
-                SuccessCode.REPORT_SUMMARY_FETCHED,
+                SuccessCode.USER_GROWTH_FETCHED,
                 reportService.getUserGrowth(reportSummaryRequest)
         );
     }
 
     @GetMapping("user-distribution")
     ResponseEntity<ApiResponse<UserDistributionResponse>> getUserDistribution(
-
     ) {
         return responseUtilService.buildSuccessResponse(
-                SuccessCode.REPORT_SUMMARY_FETCHED,
+                SuccessCode.USER_DISTRIBUTION_FETCHED,
                 reportService.getUserDistribution()
+        );
+    }
+
+    @GetMapping("revenue")
+    ResponseEntity<ApiResponse<List<RevenueResponse>>> getRevenue(
+            @Valid ReportSummaryRequest reportSummaryRequest
+    ){
+        return responseUtilService.buildSuccessResponse(
+                SuccessCode.REVENUE_FETCHED,
+                reportService.getRevenue(reportSummaryRequest)
         );
     }
 }

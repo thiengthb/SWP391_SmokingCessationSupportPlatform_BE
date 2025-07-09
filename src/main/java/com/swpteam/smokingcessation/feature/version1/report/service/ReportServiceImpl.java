@@ -1,9 +1,6 @@
 package com.swpteam.smokingcessation.feature.version1.report.service;
 
-import com.swpteam.smokingcessation.domain.dto.report.UserActivityResponse;
-import com.swpteam.smokingcessation.domain.dto.report.ReportSummaryRequest;
-import com.swpteam.smokingcessation.domain.dto.report.ReportSummaryResponse;
-import com.swpteam.smokingcessation.domain.dto.report.UserDistributionResponse;
+import com.swpteam.smokingcessation.domain.dto.report.*;
 import com.swpteam.smokingcessation.repository.jpa.AccountRepository;
 import com.swpteam.smokingcessation.repository.jpa.TransactionRepository;
 import com.swpteam.smokingcessation.repository.report.IReportRepository;
@@ -59,5 +56,16 @@ public class ReportServiceImpl implements IReportService {
     @Override
     public UserDistributionResponse getUserDistribution() {
         return IReportRepository.getUserDistribution();
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @Override
+    public List<RevenueResponse> getRevenue(ReportSummaryRequest request){
+        LocalDateTime to = LocalDateTime.now();
+        LocalDateTime from = request.from();
+        if (request.to() != null) {
+            to = request.to();
+        }
+        return IReportRepository.getRevenue(from, to);
     }
 }
