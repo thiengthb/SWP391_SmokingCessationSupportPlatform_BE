@@ -2,25 +2,27 @@ package com.swpteam.smokingcessation.feature.version1.tracking.service.impl;
 
 import com.swpteam.smokingcessation.common.PageResponse;
 import com.swpteam.smokingcessation.common.PageableRequest;
-import com.swpteam.smokingcessation.constant.ResourceFilePaths;
+import com.swpteam.smokingcessation.constant.ErrorCode;
 import com.swpteam.smokingcessation.domain.dto.phase.PhaseRequest;
-import com.swpteam.smokingcessation.domain.dto.phase.PhaseResponse;
-import com.swpteam.smokingcessation.domain.dto.plan.*;
+import com.swpteam.smokingcessation.domain.dto.plan.PlanPageResponse;
+import com.swpteam.smokingcessation.domain.dto.plan.PlanRequest;
+import com.swpteam.smokingcessation.domain.dto.plan.PlanResponse;
+import com.swpteam.smokingcessation.domain.dto.plan.PlanSummaryResponse;
 import com.swpteam.smokingcessation.domain.dto.tip.TipRequest;
-import com.swpteam.smokingcessation.domain.dto.tip.TipResponse;
-import com.swpteam.smokingcessation.domain.entity.*;
+import com.swpteam.smokingcessation.domain.entity.Account;
+import com.swpteam.smokingcessation.domain.entity.Phase;
+import com.swpteam.smokingcessation.domain.entity.Plan;
+import com.swpteam.smokingcessation.domain.entity.Tip;
 import com.swpteam.smokingcessation.domain.enums.PhaseStatus;
 import com.swpteam.smokingcessation.domain.enums.PlanStatus;
 import com.swpteam.smokingcessation.domain.mapper.PhaseMapper;
 import com.swpteam.smokingcessation.domain.mapper.PlanMapper;
-import com.swpteam.smokingcessation.constant.ErrorCode;
 import com.swpteam.smokingcessation.exception.AppException;
-import com.swpteam.smokingcessation.repository.jpa.PlanRepository;
 import com.swpteam.smokingcessation.feature.version1.internalization.MessageSourceService;
 import com.swpteam.smokingcessation.feature.version1.tracking.service.IPhaseService;
 import com.swpteam.smokingcessation.feature.version1.tracking.service.IPlanService;
+import com.swpteam.smokingcessation.repository.jpa.PlanRepository;
 import com.swpteam.smokingcessation.utils.AuthUtilService;
-import com.swpteam.smokingcessation.utils.FileLoaderUtil;
 import com.swpteam.smokingcessation.utils.ValidationUtil;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -37,7 +39,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @Service
