@@ -16,7 +16,7 @@ public interface IMailService {
 
     void sendPaymentSuccessEmail(String to, String subscriptionId, double amount);
 
-    void sendMotivationMail(String to, Message message);
+    void sendMotivationMail(String to, String motivation);
 
     void sendReminderMail(String to);
 

@@ -113,9 +113,6 @@ public class SettingServiceImpl implements ISettingService {
     @Override
     public List<Setting> getAllSetting(){
         List<Setting> settings= settingRepository.findAllWhereAccountNotAdminOrCoach();
-        if(settings.isEmpty()){
-            throw new AppException(ErrorCode.ACCOUNT_NOT_FOUND);
-        }
         return settings;
     }
 }

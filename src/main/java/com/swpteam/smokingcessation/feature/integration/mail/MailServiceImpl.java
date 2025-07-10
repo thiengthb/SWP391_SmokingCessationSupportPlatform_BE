@@ -104,14 +104,14 @@ public class MailServiceImpl implements IMailService {
     }
 
     @Override
-    public void sendMotivationMail(String to, Message message) {
+    public void sendMotivationMail(String to, String motivation) {
         buildAndSendMail(
                 "💪 Daily Motivation",
                 hostEmail,
                 to,
                 MOTIVATION_EMAIL,
                 List.of(
-                        Map.entry("quote", message.getContent()),
+                        Map.entry("quote", motivation),
                         Map.entry("sendTime", LocalDateTime.now())
                 )
         );
