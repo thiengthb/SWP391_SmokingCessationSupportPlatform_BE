@@ -1,6 +1,7 @@
 package com.swpteam.smokingcessation.feature.version1.tracking.service.impl;
 
 import com.swpteam.smokingcessation.domain.dto.phase.PhaseSummaryResponse;
+import com.swpteam.smokingcessation.domain.entity.Health;
 import com.swpteam.smokingcessation.domain.entity.RecordHabit;
 import com.swpteam.smokingcessation.domain.enums.AccountStatus;
 import com.swpteam.smokingcessation.domain.enums.PhaseStatus;
@@ -12,6 +13,7 @@ import com.swpteam.smokingcessation.domain.entity.Phase;
 import com.swpteam.smokingcessation.exception.AppException;
 import com.swpteam.smokingcessation.feature.integration.mail.IMailService;
 import com.swpteam.smokingcessation.feature.version1.notification.service.INotificationService;
+import com.swpteam.smokingcessation.feature.version1.profile.service.IHealthService;
 import com.swpteam.smokingcessation.feature.version1.tracking.service.IPhaseService;
 import com.swpteam.smokingcessation.repository.jpa.PhaseRepository;
 import com.swpteam.smokingcessation.feature.version1.profile.service.IScoreService;
@@ -42,6 +44,7 @@ public class PhaseServiceImpl implements IPhaseService {
     IScoreService scoreService;
     INotificationService notificationService;
     IMailService mailService;
+    IHealthService healthService;
 
     @Override
     @PreAuthorize("hasRole('MEMBER')")
@@ -169,11 +172,28 @@ public class PhaseServiceImpl implements IPhaseService {
             phase.setLeastSmokeCig(minSmoked);
         }
 
+        Health initialHealth = healthService.getInitialHealth(accountId);
+        int baselineCigsPerDay = initialHealth.getCigarettesPerDay();
+
+// Tính số điếu/ngày trung bình của phase hiện tại
+        double avgCigsPerDay = (totalDays - missingDays == 0) ? 0 : ((double) totalCigs / (totalDays - missingDays));
+
+// Tính % cải thiện
+        double improvedPercent = 0;
+        if (baselineCigsPerDay > 0) {
+            improvedPercent = ((baselineCigsPerDay - avgCigsPerDay) / baselineCigsPerDay) * 100.0;
+            improvedPercent = Math.max(improvedPercent, 0);
+        }
+
+        String healthImprovedSummary;
+        if (improvedPercent <= 0) {
+            healthImprovedSummary = "Bạn chưa có cải thiện về sức khỏe trong giai đoạn này.";
+        } else {
+            healthImprovedSummary = String.format("Bạn đã khỏe hơn khoảng %.0f%% so với thời điểm bắt đầu hành trình.", improvedPercent);
+        }
+
         phaseRepository.save(phase);
         notificationService.sendPhaseDoneNotification(phase.getPhaseNo(), accountId);
-        if (phase.getPlan().getAccount().getStatus() == AccountStatus.ONLINE) {
-            notificationService.sendPhaseDoneNotification(phase.getPhaseNo(), accountId);
-        } else {
             mailService.sendPhaseSummary(
                     phase.getPlan().getPlanName(),
                     phase.getPlan().getStartDate(),
@@ -183,11 +203,12 @@ public class PhaseServiceImpl implements IPhaseService {
                     maxSmoked,
                     successRate,
                     phase.getPhaseStatus(),
-                    phase.getPlan().getAccount().getEmail());
+                    phase.getPlan().getAccount().getEmail(),
+                    healthImprovedSummary
+            );
         }
 
 
-    }
 
     @Override
     public List<PhaseResponse> getPhaseListByPlanIdAndStartDate(String planId) {

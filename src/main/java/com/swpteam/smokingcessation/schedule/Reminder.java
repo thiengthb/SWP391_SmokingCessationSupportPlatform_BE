@@ -52,7 +52,7 @@ public class Reminder {
         }
     }
 
-    @Scheduled(cron = "30 * * * * *")
+    @Scheduled(cron = "0 0 0 * * *")
     public void sendDailyMotivation() {
         sendMotivation(MotivationFrequency.DAILY);
     }

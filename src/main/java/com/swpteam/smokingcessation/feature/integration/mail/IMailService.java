@@ -33,7 +33,8 @@ public interface IMailService {
             int totalMostSmoked,
             double successRate,
             PhaseStatus phaseStatus,
-            String mail
+            String mail,
+            String healthImprovedSummary
     );
     void sendPlanSummary(    String planName,
                              LocalDate startDate,

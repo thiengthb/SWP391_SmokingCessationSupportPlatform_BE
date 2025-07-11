@@ -19,11 +19,12 @@ public record PhaseRequest(
         Integer cigaretteBound,
 
         @NotNull(message = "PHASE_START_DATE_REQUIRED")
-        @FutureOrPresent(message = "PHASE_START_DATE_INVALID")
+       // @FutureOrPresent(message = "PHASE_START_DATE_INVALID")
         LocalDate startDate,
 
         @NotNull(message = "PHASE_END_DATE_REQUIRED")
-        @Future(message = "PHASE_END_DATE_INVALID")
+       // @Future(message = "PHASE_END_DATE_INVALID")
+        @FutureOrPresent
         LocalDate endDate,
 
         List<TipRequest> tips

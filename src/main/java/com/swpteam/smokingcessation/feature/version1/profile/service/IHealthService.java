@@ -32,4 +32,6 @@ public interface IHealthService {
     Health findLatestHealthByAccountIdOrThrowError(String accountId);
 
     Health findLatestHealthByAccountIdOrNull(String accountId);
+
+    Health getInitialHealth(String accountId);
 }
