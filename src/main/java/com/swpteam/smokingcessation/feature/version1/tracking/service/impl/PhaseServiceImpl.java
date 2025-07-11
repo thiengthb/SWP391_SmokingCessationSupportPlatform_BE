@@ -143,7 +143,7 @@ public class PhaseServiceImpl implements IPhaseService {
         if (allowedTotalCigs == 0) {
             successRate = (totalCigs == 0) ? 100.0 : 0.0;
         } else {
-            successRate = ((allowedTotalCigs - totalCigs) * 100.0) / allowedTotalCigs;
+            successRate = ((double) successDays / totalDays) * 100;
         }
 
         if (failedDueToCigaretteOveruse || failedDueToMissingRecords) {
