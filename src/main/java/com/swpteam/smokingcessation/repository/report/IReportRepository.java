@@ -1,9 +1,6 @@
 package com.swpteam.smokingcessation.repository.report;
 
-import com.swpteam.smokingcessation.domain.dto.report.RevenueResponse;
-import com.swpteam.smokingcessation.domain.dto.report.UserActivityResponse;
-import com.swpteam.smokingcessation.domain.dto.report.ReportSummaryResponse;
-import com.swpteam.smokingcessation.domain.dto.report.UserDistributionResponse;
+import com.swpteam.smokingcessation.domain.dto.report.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -16,4 +13,6 @@ public interface IReportRepository {
     UserDistributionResponse getUserDistribution();
 
     List<RevenueResponse> getRevenue(LocalDateTime from, LocalDateTime to);
+
+    PremiumDistributionResponse getPremiumDistribution();
 }

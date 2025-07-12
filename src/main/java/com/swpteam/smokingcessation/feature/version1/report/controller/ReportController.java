@@ -65,4 +65,13 @@ public class ReportController {
                 reportService.getRevenue(reportSummaryRequest)
         );
     }
+
+    @GetMapping("premium-distribution")
+    ResponseEntity<ApiResponse<PremiumDistributionResponse>> getPremiumDistribution(
+    ){
+        return responseUtilService.buildSuccessResponse(
+                SuccessCode.PREMIUM_DISTRIBUTION_FETCHED,
+                reportService.getPremiumDistribution()
+        );
+    }
 }

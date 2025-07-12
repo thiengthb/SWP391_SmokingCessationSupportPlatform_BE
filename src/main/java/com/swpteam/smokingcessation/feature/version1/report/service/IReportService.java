@@ -13,4 +13,6 @@ public interface IReportService {
     UserDistributionResponse getUserDistribution();
 
     List<RevenueResponse> getRevenue(ReportSummaryRequest request);
+
+    PremiumDistributionResponse getPremiumDistribution();
 }

@@ -60,12 +60,18 @@ public class ReportServiceImpl implements IReportService {
 
     @PreAuthorize("hasRole('ADMIN')")
     @Override
-    public List<RevenueResponse> getRevenue(ReportSummaryRequest request){
+    public List<RevenueResponse> getRevenue(ReportSummaryRequest request) {
         LocalDateTime to = LocalDateTime.now();
         LocalDateTime from = request.from();
         if (request.to() != null) {
             to = request.to();
         }
         return IReportRepository.getRevenue(from, to);
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @Override
+    public PremiumDistributionResponse getPremiumDistribution() {
+        return IReportRepository.getPremiumDistribution();
     }
 }

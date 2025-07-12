@@ -1,10 +1,7 @@
 package com.swpteam.smokingcessation.repository.report;
 
 
-import com.swpteam.smokingcessation.domain.dto.report.ReportSummaryResponse;
-import com.swpteam.smokingcessation.domain.dto.report.RevenueResponse;
-import com.swpteam.smokingcessation.domain.dto.report.UserActivityResponse;
-import com.swpteam.smokingcessation.domain.dto.report.UserDistributionResponse;
+import com.swpteam.smokingcessation.domain.dto.report.*;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -115,5 +112,27 @@ public class ReportRepositoryImpl implements IReportRepository {
                     .build());
         }
         return revenue;
+    }
+
+    @Override
+    public PremiumDistributionResponse getPremiumDistribution() {
+        Object[] result = (Object[]) entityManager.createNativeQuery("""
+                        SELECT
+                            COUNT(*) as total_accounts,
+                            (
+                                SELECT COUNT(DISTINCT s.account_id)
+                                FROM subscription s
+                                WHERE s.is_deleted = false
+                            ) as premium_accounts
+                        FROM account a
+                        WHERE a.is_deleted = false
+                        """)
+                .getSingleResult();
+
+        return PremiumDistributionResponse.builder()
+                .totalAccounts(((Long) result[0]).intValue())
+                .premiumAccounts(((Long) result[1]).intValue())
+                .nonPremiumAccounts(((Long) result[0]).intValue() - ((Long) result[1]).intValue())
+                .build();
     }
 }
