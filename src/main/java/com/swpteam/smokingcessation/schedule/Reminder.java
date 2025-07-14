@@ -97,15 +97,23 @@ public class Reminder {
         log.info("Sending motivation messages to {} user(s)", dailySettings.size());
         for (Setting setting : dailySettings) {
             String email = setting.getAccount().getEmail();
-          // String randomMotivationMessage = getRandomMotivationMessage().getContent();
-
             String language = String.valueOf(setting.getLanguage());
-            String aiMotivation = aiService.generateMotivationMessage(language);
+
+            String motivationMessage;
+            double chance = Math.random();
+
             try {
-                mailServiceImpl.sendMotivationMail(email, aiMotivation);
+                if (chance < 0.7) {
+                    motivationMessage = getRandomMotivationMessage().getContent();
+                } else {
+                    motivationMessage = aiService.generateMotivationMessage(language);
+                }
+
+                mailServiceImpl.sendMotivationMail(email, motivationMessage);
             } catch (Exception e) {
                 log.error("Failed to send motivation to email: {}", email, e);
             }
         }
+
     }
 }
