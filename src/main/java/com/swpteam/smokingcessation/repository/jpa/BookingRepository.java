@@ -25,6 +25,10 @@ public interface BookingRepository extends JpaRepository<Booking, String> {
 
     List<Booking> findAllByMemberIdAndCoachIdAndIsDeletedFalse(String memberId,String coachId);
 
+    List<Booking> findAllByStatusAndStartedAtBetweenAndIsDeletedFalseAndNotifyBeforeBookingFalse(  BookingStatus status,
+                                                                                                   LocalDateTime start,
+                                                                                                   LocalDateTime end);
+
     boolean existsByCoachIdAndIsDeletedFalseAndStartedAtLessThanAndEndedAtGreaterThan(
             String coachId,
             LocalDateTime endedAt,

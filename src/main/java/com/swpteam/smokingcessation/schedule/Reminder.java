@@ -1,6 +1,7 @@
 package com.swpteam.smokingcessation.schedule;
 
 import com.swpteam.smokingcessation.domain.entity.Account;
+import com.swpteam.smokingcessation.feature.integration.AI.AIService;
 import com.swpteam.smokingcessation.feature.integration.mail.MailServiceImpl;
 import com.swpteam.smokingcessation.domain.entity.Message;
 import com.swpteam.smokingcessation.repository.jpa.MessageRepository;
@@ -28,6 +29,7 @@ public class Reminder {
     MailServiceImpl mailServiceImpl;
     SettingRepository settingRepository;
     Random random = new Random();
+    AIService aiService;
 
     @Scheduled(cron = "0 * * * * *")
     public void sendReminders() {
@@ -50,7 +52,7 @@ public class Reminder {
         }
     }
 
-    @Scheduled(cron = "0 0 8 * * *")
+    @Scheduled(cron = "0 0 0 * * *")
     public void sendDailyMotivation() {
         sendMotivation(MotivationFrequency.DAILY);
     }
@@ -95,12 +97,23 @@ public class Reminder {
         log.info("Sending motivation messages to {} user(s)", dailySettings.size());
         for (Setting setting : dailySettings) {
             String email = setting.getAccount().getEmail();
-            Message randomMotivationMessage = getRandomMotivationMessage();
+            String language = String.valueOf(setting.getLanguage());
+
+            String motivationMessage;
+            double chance = Math.random();
+
             try {
-                mailServiceImpl.sendMotivationMail(email, randomMotivationMessage);
+                if (chance < 0.7) {
+                    motivationMessage = getRandomMotivationMessage().getContent();
+                } else {
+                    motivationMessage = aiService.generateMotivationMessage(language);
+                }
+
+                mailServiceImpl.sendMotivationMail(email, motivationMessage);
             } catch (Exception e) {
                 log.error("Failed to send motivation to email: {}", email, e);
             }
         }
+
     }
 }

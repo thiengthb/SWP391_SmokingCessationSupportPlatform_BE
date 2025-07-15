@@ -8,6 +8,7 @@ import com.swpteam.smokingcessation.domain.enums.PhaseStatus;
 import com.swpteam.smokingcessation.domain.enums.PlanStatus;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public interface IMailService {
 
@@ -15,7 +16,7 @@ public interface IMailService {
 
     void sendPaymentSuccessEmail(String to, String subscriptionId, double amount);
 
-    void sendMotivationMail(String to, Message message);
+    void sendMotivationMail(String to, String motivation);
 
     void sendReminderMail(String to);
 
@@ -32,7 +33,8 @@ public interface IMailService {
             int totalMostSmoked,
             double successRate,
             PhaseStatus phaseStatus,
-            String mail
+            String mail,
+            String healthImprovedSummary
     );
     void sendPlanSummary(    String planName,
                              LocalDate startDate,
@@ -53,4 +55,10 @@ public interface IMailService {
     void sendRejectNotificationMail(String to, String content);
 
     void sendApprovedNotificationMail(String to, String content);
+
+    void sendUpcomingBookingReminderMail(String to, String coachId, LocalDateTime startTime,String coachName);
+
+    void sendBookingCancelledEmail(String to, String memberName, LocalDateTime startedAt, LocalDateTime endedAt);
+
+
 }

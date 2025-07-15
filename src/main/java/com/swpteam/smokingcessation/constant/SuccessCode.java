@@ -191,6 +191,8 @@ public enum SuccessCode {
     TIMETABLE_CREATED(3400, "success.timetable.created"),
     TIMETABLE_PAGE_FETCHED(3401, "success.timetable.page_fetched"),
     TIMETABLE_FETCHED_BY_ID(3402, "success.timetable.fetched_by_id"),
+    TIMETABLE_UPDATED(3403,"success.timetable.updated"),
+    TIMETABLE_DELETED(3404, "success.timetable.deleted"),
 
     // Setting Successes (3500-3599)
     SETTING_UPDATED(3500, "success.setting.updated"),

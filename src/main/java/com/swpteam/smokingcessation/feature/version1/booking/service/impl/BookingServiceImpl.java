@@ -8,6 +8,7 @@
     import com.swpteam.smokingcessation.domain.dto.booking.BookingResponse;
     import com.swpteam.smokingcessation.domain.entity.Account;
     import com.swpteam.smokingcessation.domain.entity.Booking;
+    import com.swpteam.smokingcessation.domain.entity.TimeTable;
     import com.swpteam.smokingcessation.domain.enums.AccountStatus;
     import com.swpteam.smokingcessation.domain.enums.BookingStatus;
     import com.swpteam.smokingcessation.domain.mapper.BookingMapper;
@@ -19,6 +20,7 @@
     import com.swpteam.smokingcessation.feature.version1.identity.service.IAccountService;
     import com.swpteam.smokingcessation.feature.version1.notification.service.INotificationService;
     import com.swpteam.smokingcessation.repository.jpa.BookingRepository;
+    import com.swpteam.smokingcessation.repository.jpa.TimeTableRepository;
     import com.swpteam.smokingcessation.utils.AuthUtilService;
     import com.swpteam.smokingcessation.utils.ValidationUtil;
     import lombok.AccessLevel;
@@ -39,6 +41,7 @@
     import java.time.LocalDateTime;
     import java.util.ArrayList;
     import java.util.List;
+    import java.util.Optional;
 
     @Slf4j
     @Service
@@ -54,6 +57,7 @@
         INotificationService notificationService;
         AuthUtilService authUtilService;
         IMailService mailService;
+        TimeTableRepository timeTableRepository;
 
         @NonFinal
         @Value("${app.frontend-domain}")
@@ -162,8 +166,8 @@
             if (Boolean.TRUE.equals(request.accepted())) {
                 booking.setStatus(BookingStatus.APPROVED);
 
-                timeTableService.createTimeTableAuto(booking.getStartedAt(), booking.getEndedAt(), booking.getCoach());
-
+                TimeTable timeTable = timeTableService.createTimeTableAuto(booking.getStartedAt(), booking.getEndedAt(), booking.getCoach(),booking);
+                booking.setTimeTable(timeTable);
                 List<Booking> pendingConflicts = bookingRepository.findAllByCoachIdAndStatusAndIsDeletedFalse(
                         booking.getCoach().getId(),
                         BookingStatus.PENDING
@@ -184,7 +188,9 @@
                         sendRejectNotification(other.getMember(), other.getDeclineReason());
                     }
                 }
+                log.info("Before sending email notification - time={}", LocalDateTime.now());
                 SendApprovedNotification(booking.getMember(), booking.getCoach());
+                log.info("After sending email notification - time={}", LocalDateTime.now());
                 bookingRepository.saveAll(toReject);
 
             } else {
@@ -193,8 +199,9 @@
                 sendRejectNotification(booking.getMember(), booking.getDeclineReason());
 
             }
-
+            log.info("response at:{}",LocalDateTime.now());
             return bookingMapper.toResponse(bookingRepository.save(booking));
+
         }
 
         @Override
@@ -221,6 +228,10 @@
                     request.endedAt(),
                     id
             );
+            if (timeTableService.isBookingTimeInAnyTimeTable(request.startedAt(), request.endedAt(), request.coachId())) {
+                throw new AppException(ErrorCode.COACH_IS_BUSY);
+            }
+
 
 
             bookingMapper.update(booking, request);
@@ -238,10 +249,38 @@
         public void deleteBookingById(String id) {
             Booking booking = findBookingByIdOrThrowError(id);
 
-            booking.setDeleted(true);
+        //if booking == approved , delete -> notify -> delete timetable
+            //if not => delete
+            if (booking.getStatus() == BookingStatus.APPROVED) {
+                notificationService.sendBookingCancelledNotification(
+                        booking.getCoach().getId(),
+                        booking.getMember().getUsername()
+                );
 
+                mailService.sendBookingCancelledEmail(
+                        booking.getCoach().getEmail(),
+                        booking.getMember().getUsername(),
+                        booking.getStartedAt(),
+                        booking.getEndedAt()
+                );
+
+                Optional<TimeTable> optionalTimeTable = timeTableRepository
+                        .findByCoach_IdAndStartedAtAndEndedAtAndIsDeletedFalse(
+                                booking.getCoach().getId(),
+                                booking.getStartedAt(),
+                                booking.getEndedAt()
+                        );
+
+                optionalTimeTable.ifPresent(timeTable -> {
+                    timeTable.setDeleted(true);
+                    timeTableRepository.save(timeTable);
+                });
+            }
+
+            booking.setDeleted(true);
             bookingRepository.save(booking);
         }
+
 
         @Override
         public Booking findBookingByIdOrThrowError(String id) {

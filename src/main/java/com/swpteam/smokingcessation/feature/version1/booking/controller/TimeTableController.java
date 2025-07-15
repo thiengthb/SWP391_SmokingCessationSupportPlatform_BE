@@ -67,4 +67,29 @@ public class TimeTableController {
                 timeTableService.createTimeTable(request)
         );
     }
+
+    @PutMapping("/{id}")
+    ResponseEntity<ApiResponse<TimeTableResponse>> updateTimeTable(
+            @PathVariable String id,
+            @Valid @RequestBody TimeTableRequest request
+    ) {
+        return responseUtilService.buildSuccessResponse(
+                SuccessCode.TIMETABLE_UPDATED,
+                timeTableService.updateTimeTableById(id, request)
+        );
+    }
+
+
+    @DeleteMapping("/{id}")
+    ResponseEntity<ApiResponse<Void>> deleteTimeTable(
+            @PathVariable String id
+    ) {
+        timeTableService.softDeleteTimeTableById(id);
+        return responseUtilService.buildSuccessResponse(
+                SuccessCode.TIMETABLE_DELETED,
+                null
+        );
+    }
+
+
 }

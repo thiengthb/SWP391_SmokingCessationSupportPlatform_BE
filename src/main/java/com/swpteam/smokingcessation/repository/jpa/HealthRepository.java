@@ -27,4 +27,7 @@ public interface HealthRepository extends JpaRepository<Health, String> {
 
     List<Health> findByCreatedAtBetween(LocalDateTime start, LocalDateTime end);
 
+    Optional<Health> findFirstByAccountIdAndIsDeletedFalseOrderByCreatedAtAsc(String accountId);
+
+
 }

@@ -5,6 +5,7 @@ import com.swpteam.smokingcessation.common.AuditableEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToOne;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -28,4 +29,8 @@ public class TimeTable extends AuditableEntity {
     @JoinColumn(name = "coachId", nullable = false)
     @JsonBackReference
     Account coach;
+
+    @OneToOne
+    @JoinColumn(name = "booking_id", unique = true)
+    Booking booking;
 }
