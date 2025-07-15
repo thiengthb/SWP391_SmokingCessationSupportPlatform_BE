@@ -104,14 +104,14 @@ public class MailServiceImpl implements IMailService {
     }
 
     @Override
-    public void sendMotivationMail(String to, Message message) {
+    public void sendMotivationMail(String to, String motivation) {
         buildAndSendMail(
                 "💪 Daily Motivation",
                 hostEmail,
                 to,
                 MOTIVATION_EMAIL,
                 List.of(
-                        Map.entry("quote", message.getContent()),
+                        Map.entry("quote", motivation),
                         Map.entry("sendTime", LocalDateTime.now())
                 )
         );
@@ -164,7 +164,7 @@ public class MailServiceImpl implements IMailService {
     }
 
     @Override
-    public void sendPhaseSummary(String planName, LocalDate startDate, LocalDate endDate, long totalReportedDays, long totalNotReportedDays, int totalMostSmoked, double successRate, PhaseStatus phaseStatus, String mail) {
+    public void sendPhaseSummary(String planName, LocalDate startDate, LocalDate endDate, long totalReportedDays, long totalNotReportedDays, int totalMostSmoked, double successRate, PhaseStatus phaseStatus, String mail,String healthImprovedSummary) {
         buildAndSendMail(
                 "Phase Summary Report",
                 hostEmail,
@@ -178,7 +178,8 @@ public class MailServiceImpl implements IMailService {
                         Map.entry("totalNotReportedDays", totalNotReportedDays),
                         Map.entry("totalMostSmoked", totalMostSmoked),
                         Map.entry("successRate", String.format("%.2f", successRate)),
-                        Map.entry("phaseStatus", phaseStatus.toString())
+                        Map.entry("phaseStatus", phaseStatus.toString()),
+                        Map.entry("healthImproved",healthImprovedSummary)
                 )
         );
         log.info("Phase summary mail sent to {}", mail);

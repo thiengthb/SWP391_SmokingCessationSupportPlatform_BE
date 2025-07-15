@@ -8,6 +8,7 @@ import com.swpteam.smokingcessation.domain.entity.Score;
 import com.swpteam.smokingcessation.domain.enums.ScoreRule;
 import com.swpteam.smokingcessation.domain.mapper.ScoreMapper;
 import com.swpteam.smokingcessation.exception.AppException;
+import com.swpteam.smokingcessation.feature.version1.identity.service.IAccountService;
 import com.swpteam.smokingcessation.feature.version1.profile.service.IScoreService;
 import com.swpteam.smokingcessation.feature.version1.tracking.service.ILeaderboardCacheService;
 import com.swpteam.smokingcessation.repository.jpa.ScoreRepository;
@@ -35,6 +36,7 @@ public class ScoreServiceImpl implements IScoreService {
     AuthUtilService authUtilService;
     SimpMessagingTemplate messagingTemplate;
     ILeaderboardCacheService leaderboardCacheService;
+    IAccountService accountService;
 
 
     @Override
@@ -52,7 +54,7 @@ public class ScoreServiceImpl implements IScoreService {
         log.info("Updated score: [{}]", updated);
         Score saved = scoreRepository.save(score);
         updateRanking();
-        updateLeaderboard();
+        updateLeaderboard(accountId);
         return saved;
     }
 
@@ -78,12 +80,12 @@ public class ScoreServiceImpl implements IScoreService {
         return cachedLeaderboard;
     }
 
-    public void updateLeaderboard() {
+    public void updateLeaderboard(String accountId) {
         ScoreLeaderboardWrapper wrapper = leaderboardCacheService.updateLeaderboardWrapper();
         List<ScoreResponse> cachedLeaderboard = wrapper.getLeaderboard();
 
-        Account account = authUtilService.getCurrentAccountOrThrowError();
-
+       // Account account = authUtilService.getCurrentAccountOrThrowError();
+        Account account = accountService.findAccountByIdOrThrowError(accountId);
         boolean isInTop10 = cachedLeaderboard.stream()
                 .filter(score -> score != null && score.getUsername() != null)
                 .anyMatch(score -> score.getUsername().equals(account.getUsername()));
