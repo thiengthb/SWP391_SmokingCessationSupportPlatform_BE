@@ -10,6 +10,5 @@ public record ReportSummaryRequest (
     @NotNull(message = "REPORT_FROM_DATE_REQUIRED")
     LocalDateTime from,
 
-    @Past(message = "REPORT_TO_DATE_INVALID")
     LocalDateTime to
 ) {}

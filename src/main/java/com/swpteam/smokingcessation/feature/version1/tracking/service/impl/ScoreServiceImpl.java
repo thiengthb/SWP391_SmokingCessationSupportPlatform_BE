@@ -61,7 +61,7 @@ public class ScoreServiceImpl implements IScoreService {
     @Override
     public List<ScoreResponse> getScoreList() {
         ScoreLeaderboardWrapper wrapper = leaderboardCacheService.getLeaderboardWrapper();
-        List<ScoreResponse> cachedLeaderboard = new ArrayList<>(wrapper.getLeaderboard()); // ✅ Fix here
+        List<ScoreResponse> cachedLeaderboard = new ArrayList<>(wrapper.getLeaderboard());
 
         Account account = authUtilService.getCurrentAccount().orElse(null);
         if (account == null) {
@@ -84,8 +84,12 @@ public class ScoreServiceImpl implements IScoreService {
         ScoreLeaderboardWrapper wrapper = leaderboardCacheService.updateLeaderboardWrapper();
         List<ScoreResponse> cachedLeaderboard = wrapper.getLeaderboard();
 
-       // Account account = authUtilService.getCurrentAccountOrThrowError();
-        Account account = accountService.findAccountByIdOrThrowError(accountId);
+        Account account = authUtilService.getCurrentAccount().orElse(null);
+        if (account == null) {
+            messagingTemplate.convertAndSend("/topic/leaderboard", cachedLeaderboard);
+            return;
+        }
+
         boolean isInTop10 = cachedLeaderboard.stream()
                 .filter(score -> score != null && score.getUsername() != null)
                 .anyMatch(score -> score.getUsername().equals(account.getUsername()));

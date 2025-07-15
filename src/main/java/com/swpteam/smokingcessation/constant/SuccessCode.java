@@ -158,6 +158,10 @@ public enum SuccessCode {
 
     // Report Successes (3000-3099)
     REPORT_SUMMARY_FETCHED(3000, "success.report.summary_fetched"),
+    USER_DISTRIBUTION_FETCHED(3001, "success.report.user_distribution_fetched"),
+    USER_GROWTH_FETCHED(3002, "success.report.user_growth_fetched"),
+    REVENUE_FETCHED(3003, "success.report.revenue_fetched"),
+    PREMIUM_DISTRIBUTION_FETCHED(3003, "success.report.premium_distribution.fetched"),
 
     // Goal Successes (3100-3199)
     GOAL_CREATED(3100, "success.goal.created"),
