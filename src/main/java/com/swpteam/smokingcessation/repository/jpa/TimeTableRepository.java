@@ -32,4 +32,7 @@ public interface TimeTableRepository extends JpaRepository<TimeTable, String> {
             LocalDateTime startedAt,
             LocalDateTime endedAt
     );
+
+    Page<TimeTable> findByCoachIdAndNameContainingIgnoreCaseAndIsDeletedFalse(String coachId, String name, Pageable pageable);
+
 }
