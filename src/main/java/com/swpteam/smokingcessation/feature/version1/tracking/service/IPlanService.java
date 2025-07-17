@@ -37,4 +37,7 @@ public interface IPlanService {
     List<Plan> getAllActivePlans();
 
     PlanSummaryResponse getPlanSummary(String planId);
+
+    PageResponse<PlanPageResponse> searchMyPlansByName(String name, PageableRequest request);
+
 }
