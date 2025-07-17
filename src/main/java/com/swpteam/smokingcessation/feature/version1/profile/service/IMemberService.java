@@ -1,5 +1,7 @@
 package com.swpteam.smokingcessation.feature.version1.profile.service;
 
+import com.swpteam.smokingcessation.common.PageResponse;
+import com.swpteam.smokingcessation.common.PageableRequest;
 import com.swpteam.smokingcessation.domain.dto.member.MemberCreateRequest;
 import com.swpteam.smokingcessation.domain.dto.member.MemberProfileResponse;
 import com.swpteam.smokingcessation.domain.dto.member.MemberUpdateRequest;
@@ -9,6 +11,7 @@ import com.swpteam.smokingcessation.domain.entity.Member;
 import java.util.List;
 
 public interface IMemberService {
+    PageResponse<MemberProfileResponse> searchMembersByName(String name, PageableRequest request);
 
     MemberProfileResponse getMyMemberProfile();
 

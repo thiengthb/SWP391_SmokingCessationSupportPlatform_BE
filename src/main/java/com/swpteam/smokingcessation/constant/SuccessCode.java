@@ -38,6 +38,7 @@ public enum SuccessCode {
     MEMBERSHIP_DELETED(1302, "success.membership.deleted"),
     MEMBERSHIP_LIST_FETCHED(1303, "success.membership.list_fetched"),
     MEMBERSHIP_FETCHED_BY_ID(1304, "success.membership.fetched_by_id"),
+    MEMBER_FETCHED_BY_FULLNAME(1305,"success.membership.fetchedByFullName"),
 
     // Subscription Successes (1400-1499)
     SUBSCRIPTION_CREATED(1400, "success.subscription.created"),

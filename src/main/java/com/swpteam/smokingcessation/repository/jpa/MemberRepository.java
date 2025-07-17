@@ -19,5 +19,7 @@ public interface MemberRepository extends JpaRepository<Member, String> {
 
     Page<Member> findAllByIsDeletedFalse(Pageable pageable);
 
+    Page<Member> findByFullNameContainingIgnoreCaseAndIsDeletedFalse(String fullName,Pageable pageable);
+
     List<Member> findAllByIsDeletedFalse();
 }
