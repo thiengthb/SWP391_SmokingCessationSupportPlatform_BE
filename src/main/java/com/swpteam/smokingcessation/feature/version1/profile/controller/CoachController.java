@@ -39,6 +39,17 @@ public class CoachController {
         );
     }
 
+    @GetMapping("/search")
+    ResponseEntity<ApiResponse<PageResponse<CoachResponse>>> searchCoachesByName(
+            @RequestParam String name,
+            @Valid PageableRequest request
+    ) {
+        return responseUtilService.buildSuccessResponse(
+                SuccessCode.COACH_PAGE_FETCHED,
+                coachService.searchCoachesByName(name, request)
+        );
+    }
+
     @GetMapping("/{id}")
     ResponseEntity<ApiResponse<CoachResponse>> getCoachById(
             @PathVariable String id
