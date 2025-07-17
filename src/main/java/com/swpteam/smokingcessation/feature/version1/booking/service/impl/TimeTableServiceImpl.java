@@ -153,6 +153,20 @@ public class TimeTableServiceImpl implements ITimeTableService {
     }
 
     @Override
+    @PreAuthorize("hasRole('COACH')")
+    public PageResponse<TimeTableResponse> searchMyTimetablesByName(String name, PageableRequest request) {
+        ValidationUtil.checkFieldExist(TimeTable.class, request.sortBy());
+
+        Account currentAccount = authUtilService.getCurrentAccountOrThrowError();
+        Pageable pageable = PageableRequest.getPageable(request);
+
+        Page<TimeTable> timetables = timeTableRepository
+                .findByCoachIdAndNameContainingIgnoreCaseAndIsDeletedFalse(currentAccount.getId(), name, pageable);
+
+        return new PageResponse<>(timetables.map(timeTableMapper::toResponse));
+    }
+
+    @Override
     @Transactional
     @PreAuthorize("hasAnyRole('ADMIN', 'COACH')")
     @CachePut(value = "TIMETABLE_CACHE", key = "#result.getId()")

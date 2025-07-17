@@ -31,4 +31,7 @@ public interface ITimeTableService {
     TimeTable createTimeTableAuto(LocalDateTime start, LocalDateTime end, Account coach, Booking booking);
 
     boolean isBookingTimeInAnyTimeTable(LocalDateTime bookingStart, LocalDateTime bookingEnd, String coachId);
+
+    PageResponse<TimeTableResponse> searchMyTimetablesByName(String name, PageableRequest request);
+
 }
