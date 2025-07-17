@@ -18,4 +18,5 @@ public class HallOfFameResponse {
     LocalDateTime timestamp;
     String criteriaType;
     int criteriaValue;
+    String description;
 }

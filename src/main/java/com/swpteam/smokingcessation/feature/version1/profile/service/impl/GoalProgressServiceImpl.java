@@ -40,6 +40,7 @@ public class GoalProgressServiceImpl implements IGoalProgressService {
                         .timestamp(gp.getEarnedAt())
                         .criteriaType(gp.getGoal().getCriteriaType().toString())
                         .criteriaValue(gp.getGoal().getCriteriaValue())
+                        .description(gp.getGoal().getDescription())
                         .build()).toList();
     }
 
