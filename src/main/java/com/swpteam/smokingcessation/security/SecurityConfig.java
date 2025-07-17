@@ -45,7 +45,8 @@ public class SecurityConfig {
             "/api/test/**",
             "/api/v1/accounts/online-users",
             "/api/v1/scores/**",
-            "/api/v1/chats/**"
+            "/api/v1/chats/**",
+            "/api/v1/goals/hall-of-fame"
     };
 
     JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;

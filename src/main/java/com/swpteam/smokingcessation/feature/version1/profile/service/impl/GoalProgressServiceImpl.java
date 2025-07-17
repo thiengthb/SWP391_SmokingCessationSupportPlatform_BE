@@ -1,8 +1,11 @@
 package com.swpteam.smokingcessation.feature.version1.profile.service.impl;
 
+import com.swpteam.smokingcessation.domain.dto.account.AccountResponse;
+import com.swpteam.smokingcessation.domain.dto.goal.HallOfFameResponse;
 import com.swpteam.smokingcessation.domain.entity.Account;
 import com.swpteam.smokingcessation.domain.entity.Goal;
 import com.swpteam.smokingcessation.domain.entity.GoalProgress;
+import com.swpteam.smokingcessation.domain.mapper.AccountMapper;
 import com.swpteam.smokingcessation.repository.jpa.AccountRepository;
 import com.swpteam.smokingcessation.repository.jpa.GoalProgressRepository;
 import com.swpteam.smokingcessation.repository.jpa.GoalRepository;
@@ -27,6 +30,18 @@ public class GoalProgressServiceImpl implements IGoalProgressService {
     GoalProgressRepository goalProgressRepository;
     GoalRepository goalRepository;
     AccountRepository accountRepository;
+    AccountMapper accountMapper;
+
+    @Override
+    public List<HallOfFameResponse> getHallOfFame(){
+        return goalProgressRepository.findEarliestCompletedProgressPerMedalGoal().stream()
+                .map(gp -> HallOfFameResponse.builder()
+                        .account(accountMapper.toResponse(gp.getAccount()))
+                        .timestamp(gp.getEarnedAt())
+                        .criteriaType(gp.getGoal().getCriteriaType().toString())
+                        .criteriaValue(gp.getGoal().getCriteriaValue())
+                        .build()).toList();
+    }
 
     @Override
     public void createGoalProgress(Goal goal, Account account) {
@@ -43,12 +58,12 @@ public class GoalProgressServiceImpl implements IGoalProgressService {
         BigDecimal goalValue = BigDecimal.valueOf(goal.getCriteriaValue());
 
         return switch (goal.getCriteriaType()) {
-            case STREAK -> goalRepository.StreakGoalProgression(accountId).compareTo(goalValue) >= 0;
-            case SMOKE_FREE -> goalRepository.SmokeFreeGoalProgression(accountId).compareTo(goalValue) >= 0;
-            case MONEY_SAVED -> goalRepository.MoneySavedGoalProgression(accountId).compareTo(goalValue) >= 0;
-            case PLAN_STREAK -> goalRepository.PlanStreakGoalProgression(accountId).compareTo(goalValue) >= 0;
-            case PLAN_COMPLETE -> goalRepository.PlanGoalProgression(accountId).compareTo(goalValue) >= 0;
-            case PHASE_COMPLETE -> goalRepository.PhaseGoalProgression(accountId).compareTo(goalValue) >= 0;
+            case STREAK -> goalProgressRepository.StreakGoalProgression(accountId).compareTo(goalValue) >= 0;
+            case SMOKE_FREE -> goalProgressRepository.SmokeFreeGoalProgression(accountId).compareTo(goalValue) >= 0;
+            case MONEY_SAVED -> goalProgressRepository.MoneySavedGoalProgression(accountId).compareTo(goalValue) >= 0;
+            case PLAN_STREAK -> goalProgressRepository.PlanStreakGoalProgression(accountId).compareTo(goalValue) >= 0;
+            case PLAN_COMPLETE -> goalProgressRepository.PlanGoalProgression(accountId).compareTo(goalValue) >= 0;
+            case PHASE_COMPLETE -> goalProgressRepository.PhaseGoalProgression(accountId).compareTo(goalValue) >= 0;
         };
     }
 
@@ -70,12 +85,12 @@ public class GoalProgressServiceImpl implements IGoalProgressService {
         BigDecimal goalValue = BigDecimal.valueOf(goal.getCriteriaValue());
 
         BigDecimal progress = switch (goal.getCriteriaType()) {
-            case STREAK -> goalRepository.StreakGoalProgression(accountId);
-            case SMOKE_FREE -> goalRepository.SmokeFreeGoalProgression(accountId);
-            case MONEY_SAVED -> goalRepository.MoneySavedGoalProgression(accountId);
-            case PLAN_STREAK -> goalRepository.PlanStreakGoalProgression(accountId);
-            case PLAN_COMPLETE -> goalRepository.PlanGoalProgression(accountId);
-            case PHASE_COMPLETE -> goalRepository.PhaseGoalProgression(accountId);
+            case STREAK -> goalProgressRepository.StreakGoalProgression(accountId);
+            case SMOKE_FREE -> goalProgressRepository.SmokeFreeGoalProgression(accountId);
+            case MONEY_SAVED -> goalProgressRepository.MoneySavedGoalProgression(accountId);
+            case PLAN_STREAK -> goalProgressRepository.PlanStreakGoalProgression(accountId);
+            case PLAN_COMPLETE -> goalProgressRepository.PlanGoalProgression(accountId);
+            case PHASE_COMPLETE -> goalProgressRepository.PhaseGoalProgression(accountId);
         };
 
         if (progress != null && goalValue.compareTo(BigDecimal.ZERO) > 0) {

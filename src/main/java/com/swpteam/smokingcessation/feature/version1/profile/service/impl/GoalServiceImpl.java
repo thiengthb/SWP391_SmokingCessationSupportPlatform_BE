@@ -1,18 +1,16 @@
 package com.swpteam.smokingcessation.feature.version1.profile.service.impl;
 
 import com.swpteam.smokingcessation.constant.ErrorCode;
-import com.swpteam.smokingcessation.domain.dto.goal.GoalCreateRequest;
-import com.swpteam.smokingcessation.domain.dto.goal.GoalDetailsResponse;
-import com.swpteam.smokingcessation.domain.dto.goal.GoalListItemResponse;
-import com.swpteam.smokingcessation.domain.dto.goal.GoalUpdateRequest;
+import com.swpteam.smokingcessation.domain.dto.goal.*;
 import com.swpteam.smokingcessation.domain.entity.Account;
 import com.swpteam.smokingcessation.domain.entity.Goal;
+import com.swpteam.smokingcessation.domain.enums.GoalDifficulty;
 import com.swpteam.smokingcessation.domain.enums.Role;
 import com.swpteam.smokingcessation.domain.mapper.GoalMapper;
 import com.swpteam.smokingcessation.exception.AppException;
-import com.swpteam.smokingcessation.repository.jpa.GoalRepository;
 import com.swpteam.smokingcessation.feature.version1.profile.service.IGoalProgressService;
 import com.swpteam.smokingcessation.feature.version1.profile.service.IGoalService;
+import com.swpteam.smokingcessation.repository.jpa.GoalRepository;
 import com.swpteam.smokingcessation.utils.AuthUtilService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -102,12 +100,22 @@ public class GoalServiceImpl implements IGoalService {
     @CacheEvict(value = "GOAL_PAGE_CACHE", allEntries = true)
     public GoalDetailsResponse createGoal(GoalCreateRequest request) {
         Account currentAccount = authUtilService.getCurrentAccountOrThrowError();
+        GoalDifficulty difficulty;
+        if (currentAccount.getRole() == Role.ADMIN) {
+            difficulty = request.goalDifficulty() != null
+                    ? GoalDifficulty.valueOf(request.goalDifficulty())
+                    : GoalDifficulty.NORMAL;
+        } else {
+            //defaults to normal
+            difficulty = GoalDifficulty.NORMAL;
+        }
 
         if (goalRepository.existsByNameAndAccountIdAndIsDeletedFalse(request.name(), currentAccount.getId())) {
             throw new AppException(ErrorCode.GOAL_ALREADY_EXISTS);
         }
 
         Goal goal = goalMapper.toEntity(request);
+        goal.setDifficulty(difficulty);
         if (currentAccount.getRole() != Role.ADMIN) {
             goal.setAccount(currentAccount);
         }
