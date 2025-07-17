@@ -35,6 +35,9 @@ public interface AccountRepository extends JpaRepository<Account, String> {
 
     List<Account> findAllByIsDeletedFalse();
 
+
+    Page<Account> findByUsernameContainingIgnoreCaseAndIsDeletedFalse(String name, Pageable pageable );
+
     List<Account> findAllByStatusAndIsDeletedFalse(AccountStatus accountStatus);
 
     @Query("SELECT a.email FROM Account a WHERE a.role = 'ADMIN' AND a.isDeleted = false")
