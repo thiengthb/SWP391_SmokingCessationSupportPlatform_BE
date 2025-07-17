@@ -12,4 +12,7 @@ public interface CoachRepository extends JpaRepository<Coach, String> {
     Page<Coach> findAllByIsDeletedFalse(Pageable pageable);
 
     Optional<Coach> findByIdAndIsDeletedFalse(String id);
+
+    Page<Coach> findByFullNameContainingIgnoreCaseAndIsDeletedFalse(String name, Pageable pageable);
+
 }

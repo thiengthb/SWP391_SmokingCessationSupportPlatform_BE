@@ -22,5 +22,8 @@ public interface ICoachService {
     CoachResponse updateMyCoachProfile(CoachUpdateRequest request);
 
     Coach findCoachById(String id);
-    
+
+    PageResponse<CoachResponse> searchCoachesByName(String name, PageableRequest request);
+
+
 }
