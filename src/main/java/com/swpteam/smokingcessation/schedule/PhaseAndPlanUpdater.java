@@ -156,11 +156,9 @@ public class PhaseAndPlanUpdater {
         }
 
         planService.updateCompletedPlan(plan, successRatio * 100.0, plan.getPlanStatus());
-        if (account.getStatus() == AccountStatus.ONLINE) {
             notificationService.sendPlanDoneNotification(plan.getPlanName(), account.getId());
-        } else {
             mailService.sendPlanSummary(plan.getPlanName(), plan.getStartDate(), plan.getEndDate(), totalReportedDays, totalNotReportedDays, maxCig, minCig, account.getEmail(), plan.getPlanStatus(), plan.getSuccessRate());
-        }
+        log.info("max cig: {},min cig {}",maxCig,minCig);
     }
 
     private void processFullyReported(Plan plan, String accountId) {
