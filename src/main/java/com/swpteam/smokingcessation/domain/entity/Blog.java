@@ -7,6 +7,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,10 +40,13 @@ public class Blog extends AuditableEntity {
 
     String coverImageUrl;
     String excerpt;
+    int readingTime;
 
     @Lob
     String content;
 
     @Enumerated(EnumType.STRING)
     BlogStatus status;
+
+    LocalDateTime publishedAt;
 }

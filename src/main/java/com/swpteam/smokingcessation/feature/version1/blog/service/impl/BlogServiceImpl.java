@@ -5,7 +5,8 @@ import com.swpteam.smokingcessation.common.PageableRequest;
 import com.swpteam.smokingcessation.constant.App;
 import com.swpteam.smokingcessation.constant.ErrorCode;
 import com.swpteam.smokingcessation.domain.dto.blog.BlogCreateRequest;
-import com.swpteam.smokingcessation.domain.dto.blog.BlogResponse;
+import com.swpteam.smokingcessation.domain.dto.blog.BlogDetailsResponse;
+import com.swpteam.smokingcessation.domain.dto.blog.BlogListItemResponse;
 import com.swpteam.smokingcessation.domain.dto.blog.BlogUpdateRequest;
 import com.swpteam.smokingcessation.domain.entity.Account;
 import com.swpteam.smokingcessation.domain.entity.Blog;
@@ -50,20 +51,20 @@ public class BlogServiceImpl implements IBlogService {
     @Override
     @Cacheable(value = "BLOG_PAGE_CACHE",
             key = "#request.page + '-' + #request.size + '-' + #request.sortBy + '-' + #request.direction")
-    public PageResponse<BlogResponse> getAllBlogsPage(PageableRequest request) {
+    public PageResponse<BlogListItemResponse> getAllBlogsPage(PageableRequest request) {
         ValidationUtil.checkFieldExist(Blog.class, request.sortBy());
 
         Pageable pageable = PageableRequest.getPageable(request);
         Page<Blog> blogs = blogRepository.findAllByIsDeletedFalse(pageable);
 
-        return new PageResponse<>(blogs.map(blogMapper::toResponse));
+        return new PageResponse<>(blogs.map(blogMapper::toListItemResponse));
     }
 
     @Override
     @PreAuthorize("hasRole('ADMIN')")
     @Cacheable(value = "BLOG_PAGE_CACHE",
             key = "#request.page + '-' + #request.size + '-' + #request.sortBy + '-' + #request.direction + '-' + @authUtilService.getCurrentAccountOrThrowError().id")
-    public PageResponse<BlogResponse> getMyBlogsPage(PageableRequest request) {
+    public PageResponse<BlogListItemResponse> getMyBlogsPage(PageableRequest request) {
         ValidationUtil.checkFieldExist(Blog.class, request.sortBy());
 
         Account currentAccount = authUtilService.getCurrentAccountOrThrowError();
@@ -71,30 +72,30 @@ public class BlogServiceImpl implements IBlogService {
         Pageable pageable = PageableRequest.getPageable(request);
         Page<Blog> blogs = blogRepository.findAllByAccountIdAndIsDeletedFalse(currentAccount.getId(), pageable);
 
-        return new PageResponse<>(blogs.map(blogMapper::toResponse));
+        return new PageResponse<>(blogs.map(blogMapper::toListItemResponse));
     }
 
     @Override
     @Cacheable(value = "BLOG_PAGE_CACHE",
             key = "#request.page + '-' + #request.size + '-' + #request.sortBy + '-' + #request.direction + '-' + #categoryName")
-    public PageResponse<BlogResponse> getBlogsPageByCategory(String categoryName, PageableRequest request) {
+    public PageResponse<BlogListItemResponse> getBlogsPageByCategory(String categoryName, PageableRequest request) {
         Category category = categoryService.findCategoryByNameOrThrowError(categoryName);
 
         Pageable pageable = PageableRequest.getPageable(request);
         Page<Blog> blogs = blogRepository.findByCategoryIdAndIsDeletedFalse(category.getId(), pageable);
 
-        return new PageResponse<>(blogs.map(blogMapper::toResponse));
+        return new PageResponse<>(blogs.map(blogMapper::toListItemResponse));
     }
 
     @Override
     @Cacheable(value = "BLOG_CACHE", key = "#slug")
-    public BlogResponse getBlogBySlug(String slug) {
+    public BlogDetailsResponse getBlogBySlug(String slug) {
         return blogMapper.toResponse(findBlogBySlugOrThrowError(slug));
     }
 
     @Override
     @Cacheable(value = "BLOG_CACHE", key = "#id")
-    public BlogResponse getBlogById(String id) {
+    public BlogDetailsResponse getBlogById(String id) {
         return blogMapper.toResponse(findBlogByIdOrThrowError(id));
     }
 
@@ -103,7 +104,7 @@ public class BlogServiceImpl implements IBlogService {
     @PreAuthorize("hasRole('ADMIN')")
     @CachePut(value = "BLOG_CACHE", key = "#result.getId()")
     @CacheEvict(value = "BLOG_PAGE_CACHE", allEntries = true)
-    public BlogResponse createBlog(BlogCreateRequest request) {
+    public BlogDetailsResponse createBlog(BlogCreateRequest request) {
         Account currentAccount = authUtilService.getCurrentAccountOrThrowError();
 
         Category category = categoryRepository.findByName(request.categoryName())
@@ -128,7 +129,7 @@ public class BlogServiceImpl implements IBlogService {
     @PreAuthorize("hasRole('ADMIN')")
     @CachePut(value = "BLOG_CACHE", key = "#result.getId()")
     @CacheEvict(value = "BLOG_PAGE_CACHE", allEntries = true)
-    public BlogResponse updateBlog(String id, BlogUpdateRequest request) {
+    public BlogDetailsResponse updateBlog(String id, BlogUpdateRequest request) {
         Blog blog = findBlogByIdOrThrowError(id);
 
         blogMapper.update(blog, request);

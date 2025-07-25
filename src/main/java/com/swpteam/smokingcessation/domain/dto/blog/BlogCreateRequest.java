@@ -31,6 +31,8 @@ public record BlogCreateRequest (
 
     String content,
 
+    Integer readingTime,
+
     @NotNull(message = "BLOG_STATUS_REQUIRED")
     BlogStatus status
 ) {}

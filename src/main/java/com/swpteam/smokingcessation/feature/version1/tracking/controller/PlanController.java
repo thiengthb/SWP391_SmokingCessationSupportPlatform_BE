@@ -33,7 +33,7 @@ public class PlanController {
     ResponseUtilService responseUtilService;
 
     @GetMapping("/my-current-plan")
-    ResponseEntity<ApiResponse<PlanResponse>> getPlanById() {
+    ResponseEntity<ApiResponse<PlanResponse>> getMyCurrentPlan() {
         return responseUtilService.buildSuccessResponse(
                 SuccessCode.PLAN_FETCHED_BY_ID,
                 planService.getMyCurrentPlan()
