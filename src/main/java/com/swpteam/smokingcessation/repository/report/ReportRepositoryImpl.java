@@ -19,7 +19,7 @@ public class ReportRepositoryImpl implements IReportRepository {
     @Override
     public ReportSummaryResponse getReportSummary(LocalDateTime from, LocalDateTime to) {
         Object[] result = (Object[]) entityManager.createQuery("""
-                        SELECT 
+                        SELECT
                             (SELECT COALESCE(SUM(t.amount), 0) FROM Transaction t WHERE t.createdAt BETWEEN :from AND :to AND t.isDeleted = false),
                             (SELECT COUNT(a) FROM Account a WHERE a.createdAt BETWEEN :from AND :to AND a.isDeleted = false),
                             (SELECT COUNT(a) FROM Account a WHERE a.isDeleted = false),

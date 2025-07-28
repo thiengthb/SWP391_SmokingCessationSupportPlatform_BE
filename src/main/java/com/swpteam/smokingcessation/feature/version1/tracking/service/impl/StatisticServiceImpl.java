@@ -1,5 +1,6 @@
 package com.swpteam.smokingcessation.feature.version1.tracking.service.impl;
 
+import com.swpteam.smokingcessation.domain.dto.statistics.AdminStatisticResponse;
 import com.swpteam.smokingcessation.domain.dto.statistics.MemberStatisticResponse;
 import com.swpteam.smokingcessation.domain.entity.Account;
 import com.swpteam.smokingcessation.feature.version1.tracking.service.IStatisticService;
@@ -35,5 +36,11 @@ public class StatisticServiceImpl implements IStatisticService {
         Account account = authUtilService.getCurrentAccountOrThrowError();
 
         return statisticRepository.getCurrentMonthMemberStatistics(account.getId());
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @Override
+    public AdminStatisticResponse getAdminStatistics(){
+        return statisticRepository.getAdminStatistics();
     }
 }

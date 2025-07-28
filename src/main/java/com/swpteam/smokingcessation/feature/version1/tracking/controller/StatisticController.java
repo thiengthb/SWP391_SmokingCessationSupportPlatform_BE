@@ -2,6 +2,7 @@ package com.swpteam.smokingcessation.feature.version1.tracking.controller;
 
 import com.swpteam.smokingcessation.common.ApiResponse;
 import com.swpteam.smokingcessation.constant.SuccessCode;
+import com.swpteam.smokingcessation.domain.dto.statistics.AdminStatisticResponse;
 import com.swpteam.smokingcessation.domain.dto.statistics.MemberStatisticResponse;
 import com.swpteam.smokingcessation.feature.version1.tracking.service.IStatisticService;
 import com.swpteam.smokingcessation.utils.ResponseUtilService;
@@ -38,6 +39,14 @@ public class StatisticController {
         return responseUtilService.buildSuccessResponse(
                 SuccessCode.STATISTICS_FETCHED_BY_ACCOUNT,
                 statisticService.getCurrentMonthMemberStatistics()
+        );
+    }
+
+    @GetMapping("/admin")
+    ResponseEntity<ApiResponse<AdminStatisticResponse>> getAdminStatistics() {
+        return responseUtilService.buildSuccessResponse(
+                SuccessCode.STATISTICS_FETCHED_BY_ACCOUNT,
+                statisticService.getAdminStatistics()
         );
     }
 }
