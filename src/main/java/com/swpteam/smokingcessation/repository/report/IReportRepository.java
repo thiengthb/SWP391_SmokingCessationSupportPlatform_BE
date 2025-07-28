@@ -14,5 +14,7 @@ public interface IReportRepository {
 
     List<RevenueResponse> getRevenue(LocalDateTime from, LocalDateTime to);
 
+    List<CompletionResponse> getCompletetion(LocalDateTime from, LocalDateTime to);
+
     PremiumDistributionResponse getPremiumDistribution();
 }

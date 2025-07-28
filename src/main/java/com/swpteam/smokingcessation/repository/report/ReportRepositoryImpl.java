@@ -114,6 +114,38 @@ public class ReportRepositoryImpl implements IReportRepository {
         return revenue;
     }
 
+    @SuppressWarnings("unchecked")
+    @Override
+    public List<CompletionResponse> getCompletetion(LocalDateTime from, LocalDateTime to) {
+        List<Object[]> result = entityManager.createNativeQuery("""
+                        SELECT
+                            DATE(p.end_date) AS date,
+                            COUNT(CASE WHEN p.plan_status = 'COMPLETED' THEN 1 END) AS completed_count,
+                            COUNT(CASE WHEN p.plan_status = 'FAILED' THEN 1 END) AS failed_count,
+                            COUNT(CASE WHEN p.plan_status = 'CANCELLED' THEN 1 END) AS cancelled_count
+                        FROM plan p
+                        WHERE p.end_date BETWEEN :from AND :to
+                          AND p.is_deleted = false
+                        GROUP BY DATE(p.end_date)
+                        ORDER BY DATE(p.end_date)
+                        """)
+                .setParameter("from", from)
+                .setParameter("to", to)
+                .getResultList();
+
+        List<CompletionResponse> completion = new ArrayList<>();
+
+        for (Object[] row : result) {
+            completion.add(CompletionResponse.builder()
+                    .date(((java.sql.Date) row[0]).toLocalDate())
+                    .totalCompletedPlans((long) row[1])
+                    .totalFailedPlans((long) row[2])
+                    .totalCancelledPlans((long) row[3])
+                    .build());
+        }
+        return completion;
+    }
+
     @Override
     public PremiumDistributionResponse getPremiumDistribution() {
         Object[] result = (Object[]) entityManager.createNativeQuery("""

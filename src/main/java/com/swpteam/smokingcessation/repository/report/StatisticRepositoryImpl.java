@@ -23,21 +23,24 @@ public class StatisticRepositoryImpl implements IStatisticRepository {
                         SELECT
                             (SELECT COALESCE(SUM(r.cigarettesSmoked), 0) FROM RecordHabit r WHERE r.isDeleted = false AND r.account.id = :accountId),
                             (SELECT COUNT(*) FROM RecordHabit r WHERE r.isDeleted = false AND r.account.id = :accountId),
-                            (SELECT COUNT(*) FROM RecordHabit r WHERE r.isDeleted = false AND r.account.id = :accountId)
+                            (SELECT m.cigarettesAvoided FROM Member m WHERE m.isDeleted = false AND m.account.id = :accountId),
+                            (SELECT m.moneySaved FROM Member m WHERE m.isDeleted = false AND m.account.id = :accountId)
                         """)
                 .setParameter("accountId", accountId)
                 .getSingleResult();
 
         long totalCigarettes = ((Number) result[0]).longValue();
         long daysTracked = ((Number) result[1]).longValue();
-        long totalRecords = ((Number) result[2]).longValue();
+        long cigarettesAvoided = ((Number) result[2]).longValue();
+        double moneySaved = ((Number) result[3]).doubleValue();
 
         double avgPerDay = daysTracked == 0 ? 0.0 : (double) totalCigarettes / daysTracked;
 
         return MemberStatisticResponse.builder()
                 .avgCigarettesPerDay(avgPerDay)
                 .daysTracked(daysTracked)
-                .totalRecords(totalRecords)
+                .cigarettesAvoided(cigarettesAvoided)
+                .moneySaved(moneySaved)
                 .build();
     }
 
@@ -66,7 +69,6 @@ public class StatisticRepositoryImpl implements IStatisticRepository {
         return MemberStatisticResponse.builder()
                 .avgCigarettesPerDay(avgPerDay)
                 .daysTracked(daysTracked)
-                .totalRecords(totalRecords)
                 .build();
     }
 
