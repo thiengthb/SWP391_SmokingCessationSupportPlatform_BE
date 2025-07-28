@@ -49,4 +49,12 @@ public class StatisticController {
                 statisticService.getAdminStatistics()
         );
     }
+
+    @GetMapping("/admin/current-month")
+    ResponseEntity<ApiResponse<AdminStatisticResponse>> getCurrentMonthAdminStatistics() {
+        return responseUtilService.buildSuccessResponse(
+                SuccessCode.STATISTICS_FETCHED_BY_ACCOUNT,
+                statisticService.getCurrentMonthAdminStatistics()
+        );
+    }
 }

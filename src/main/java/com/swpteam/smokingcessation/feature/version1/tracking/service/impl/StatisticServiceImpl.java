@@ -43,4 +43,10 @@ public class StatisticServiceImpl implements IStatisticService {
     public AdminStatisticResponse getAdminStatistics(){
         return statisticRepository.getAdminStatistics();
     }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @Override
+    public AdminStatisticResponse getCurrentMonthAdminStatistics(){
+        return statisticRepository.getCurrentMonthAdminStatistics();
+    }
 }

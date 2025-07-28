@@ -9,4 +9,6 @@ public interface IStatisticRepository {
     MemberStatisticResponse getCurrentMonthMemberStatistics(String accountId);
 
     AdminStatisticResponse getAdminStatistics();
+
+    AdminStatisticResponse getCurrentMonthAdminStatistics();
 }

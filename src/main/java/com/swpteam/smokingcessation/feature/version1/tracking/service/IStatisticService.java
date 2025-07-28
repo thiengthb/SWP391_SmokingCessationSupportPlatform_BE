@@ -9,4 +9,6 @@ public interface IStatisticService {
     MemberStatisticResponse getCurrentMonthMemberStatistics();
 
     AdminStatisticResponse getAdminStatistics();
+
+    AdminStatisticResponse getCurrentMonthAdminStatistics();
 }
