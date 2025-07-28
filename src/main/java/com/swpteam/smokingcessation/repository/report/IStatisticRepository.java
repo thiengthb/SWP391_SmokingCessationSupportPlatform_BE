@@ -4,4 +4,6 @@ import com.swpteam.smokingcessation.domain.dto.statistics.MemberStatisticRespons
 
 public interface IStatisticRepository {
     MemberStatisticResponse getMemberStatisticsByAccountId(String accountId);
+
+    MemberStatisticResponse getCurrentMonthMemberStatistics(String accountId);
 }

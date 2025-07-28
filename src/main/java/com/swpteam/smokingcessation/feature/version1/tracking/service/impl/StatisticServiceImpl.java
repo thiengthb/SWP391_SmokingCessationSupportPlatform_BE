@@ -28,4 +28,12 @@ public class StatisticServiceImpl implements IStatisticService {
 
         return statisticRepository.getMemberStatisticsByAccountId(account.getId());
     }
+
+    @PreAuthorize("hasRole('MEMBER')")
+    @Override
+    public MemberStatisticResponse getCurrentMonthMemberStatistics(){
+        Account account = authUtilService.getCurrentAccountOrThrowError();
+
+        return statisticRepository.getCurrentMonthMemberStatistics(account.getId());
+    }
 }

@@ -32,4 +32,12 @@ public class StatisticController {
                 statisticService.getMemberStatistics()
         );
     }
+
+    @GetMapping("member/current-month")
+    ResponseEntity<ApiResponse<MemberStatisticResponse>> GetCurrentMonthMemberStatistics() {
+        return responseUtilService.buildSuccessResponse(
+                SuccessCode.STATISTICS_FETCHED_BY_ACCOUNT,
+                statisticService.getCurrentMonthMemberStatistics()
+        );
+    }
 }
