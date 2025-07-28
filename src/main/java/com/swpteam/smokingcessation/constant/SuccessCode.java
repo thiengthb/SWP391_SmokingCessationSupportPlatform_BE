@@ -213,7 +213,8 @@ public enum SuccessCode {
     TRANSACTION_FETCH_BY_ACCOUNT(3901, "success.transaction.fetch_by_account"),
     TRANSACTION_FETCH_BY_ID(3901, "success.transaction.fetch_by_id"),
 
-
+    // Statistics (4000 - 4099)
+    STATISTICS_FETCHED_BY_ACCOUNT(4000, "success.statistics.fetch_by_account"),
     ;
     int code;
     String messageLocaleKey;

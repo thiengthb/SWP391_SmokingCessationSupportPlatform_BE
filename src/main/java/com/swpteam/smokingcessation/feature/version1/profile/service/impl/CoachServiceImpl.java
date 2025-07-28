@@ -61,7 +61,7 @@ public class CoachServiceImpl implements ICoachService {
 
     @Override
     @Transactional
-    @PreAuthorize("hasRole('COACH')")
+    @PreAuthorize("hasAnyRole('COACH','ADMIN')")
     public CoachResponse registerCoachProfile(CoachCreateRequest request) {
         Account currentAccount = authUtilService.getCurrentAccountOrThrowError();
 
