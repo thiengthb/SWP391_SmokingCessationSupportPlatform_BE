@@ -47,7 +47,7 @@ public class Setting extends AuditableEntity {
                 .theme(Theme.SYSTEM)
                 .language(Language.EN)
                 .motivationFrequency(MotivationFrequency.DAILY)
-                .trackingMode(TrackingMode.AUTO_COUNT)
+                .trackingMode(TrackingMode.DAILY_RECORD)
                 .reportDeadline(LocalTime.of(19, 0))
                 .build();
     }

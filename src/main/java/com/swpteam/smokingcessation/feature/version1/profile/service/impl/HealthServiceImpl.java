@@ -125,7 +125,9 @@ public class HealthServiceImpl implements IHealthService {
         LocalDateTime startOfDay = today.atStartOfDay();
         LocalDateTime endOfDay = today.atTime(LocalTime.MAX);
 
-        return healthRepository.findByCreatedAtBetween(startOfDay, endOfDay);
+        Account currentAccount = authUtilService.getCurrentAccountOrThrowError();
+
+        return healthRepository.findByAccountAndCreatedAtBetween(currentAccount, startOfDay, endOfDay);
     }
 
     @Override
