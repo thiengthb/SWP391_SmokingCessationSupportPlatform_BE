@@ -31,7 +31,7 @@ public class Reminder {
     Random random = new Random();
     AIService aiService;
 
-    @Scheduled(cron = "0 * * * * *")
+    @Scheduled(cron = "*/30 * * * * *")
     public void sendReminders() {
         LocalTime currentTime = LocalTime.now().withSecond(0).withNano(0);
         LocalTime deadlineIn30Minutes = currentTime.plusMinutes(30);

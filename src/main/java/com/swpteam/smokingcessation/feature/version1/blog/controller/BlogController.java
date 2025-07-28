@@ -5,7 +5,8 @@ import com.swpteam.smokingcessation.common.PageResponse;
 import com.swpteam.smokingcessation.common.PageableRequest;
 import com.swpteam.smokingcessation.constant.SuccessCode;
 import com.swpteam.smokingcessation.domain.dto.blog.BlogCreateRequest;
-import com.swpteam.smokingcessation.domain.dto.blog.BlogResponse;
+import com.swpteam.smokingcessation.domain.dto.blog.BlogDetailsResponse;
+import com.swpteam.smokingcessation.domain.dto.blog.BlogListItemResponse;
 import com.swpteam.smokingcessation.domain.dto.blog.BlogUpdateRequest;
 import com.swpteam.smokingcessation.feature.version1.blog.service.IBlogService;
 import com.swpteam.smokingcessation.utils.ResponseUtilService;
@@ -30,7 +31,7 @@ public class BlogController {
     ResponseUtilService responseUtilService;
 
     @GetMapping
-    ResponseEntity<ApiResponse<PageResponse<BlogResponse>>> getAllBlogsPage(
+    ResponseEntity<ApiResponse<PageResponse<BlogListItemResponse>>> getAllBlogsPage(
             @Valid PageableRequest request
     ) {
         return responseUtilService.buildSuccessResponse(
@@ -40,7 +41,7 @@ public class BlogController {
     }
 
     @GetMapping("/my-blogs")
-    ResponseEntity<ApiResponse<PageResponse<BlogResponse>>> getMyBlogsPage(
+    ResponseEntity<ApiResponse<PageResponse<BlogListItemResponse>>> getMyBlogsPage(
             @Valid PageableRequest request
     ) {
         return responseUtilService.buildSuccessResponse(
@@ -50,7 +51,7 @@ public class BlogController {
     }
 
     @GetMapping("/category/{name}")
-    ResponseEntity<ApiResponse<PageResponse<BlogResponse>>> getBlogsPageByCategory(
+    ResponseEntity<ApiResponse<PageResponse<BlogListItemResponse>>> getBlogsPageByCategory(
             @PathVariable String name,
             @Valid PageableRequest request
     ) {
@@ -61,7 +62,7 @@ public class BlogController {
     }
 
     @GetMapping("/slug/{slugName}")
-    ResponseEntity<ApiResponse<BlogResponse>> getBlogBySlug(
+    ResponseEntity<ApiResponse<BlogDetailsResponse>> getBlogBySlug(
             @PathVariable String slugName
     ) {
         return responseUtilService.buildSuccessResponse(
@@ -71,7 +72,7 @@ public class BlogController {
     }
 
     @GetMapping("/{id}")
-    ResponseEntity<ApiResponse<BlogResponse>> getBlogById(
+    ResponseEntity<ApiResponse<BlogDetailsResponse>> getBlogById(
             @PathVariable String id
     ) {
         return responseUtilService.buildSuccessResponse(
@@ -81,7 +82,7 @@ public class BlogController {
     }
 
     @PostMapping
-    ResponseEntity<ApiResponse<BlogResponse>> createBlog(
+    ResponseEntity<ApiResponse<BlogDetailsResponse>> createBlog(
             @RequestBody @Valid BlogCreateRequest request
     ) {
         return responseUtilService.buildSuccessResponse(
@@ -91,7 +92,7 @@ public class BlogController {
     }
 
     @PutMapping("/{id}")
-    ResponseEntity<ApiResponse<BlogResponse>> updateBlog(
+    ResponseEntity<ApiResponse<BlogDetailsResponse>> updateBlog(
             @PathVariable String id,
             @RequestBody @Valid BlogUpdateRequest request
     ) {

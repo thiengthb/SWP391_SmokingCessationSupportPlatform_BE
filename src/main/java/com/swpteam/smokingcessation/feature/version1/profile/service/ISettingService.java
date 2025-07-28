@@ -20,5 +20,5 @@ public interface ISettingService {
 
     void softDeleteSettingById(String accountId);
 
-    public List<Setting> getAllSetting();
+    List<Setting> getAllSetting();
 }

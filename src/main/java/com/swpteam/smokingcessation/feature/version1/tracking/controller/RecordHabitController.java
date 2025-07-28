@@ -28,7 +28,7 @@ public class RecordHabitController {
     IRecordHabitService recordService;
     ResponseUtilService responseUtilService;
 
-    @GetMapping
+    @GetMapping("/my-records")
     ResponseEntity<ApiResponse<PageResponse<RecordHabitResponse>>> getMyRecordPage(
             @Valid PageableRequest request
     ) {
