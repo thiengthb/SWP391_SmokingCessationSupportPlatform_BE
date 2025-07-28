@@ -419,11 +419,17 @@ public class PlanServiceImpl implements IPlanService {
     }
 
     @Override
-    public void updateCompletedPlan(Plan plan, double successRate, PlanStatus planStatus) {
+    public void updateCompletedPlan(Plan plan, double successRate, PlanStatus planStatus,
+                                    int maxCig, int minCig, long totalReportedDays, long totalNotReportedDays) {
         plan.setSuccessRate(successRate);
         plan.setPlanStatus(planStatus);
+        plan.setTotalMostSmoked(maxCig);
+        plan.setTotalLeastSmoked(minCig);
+        plan.setTotalDaysReported(totalReportedDays);
+        plan.setTotalDaysNotReported(totalNotReportedDays);
         planRepository.save(plan);
     }
+
 
     @Override
     public List<Plan> getAllActivePlans() {

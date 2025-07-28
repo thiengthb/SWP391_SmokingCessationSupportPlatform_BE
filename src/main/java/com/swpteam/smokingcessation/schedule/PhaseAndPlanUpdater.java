@@ -92,14 +92,14 @@ public class PhaseAndPlanUpdater {
     }
 
     private boolean allPhasesFullyReported(Plan plan, String accountId) {
-        for (Phase phase : plan.getPhases()) {
-            List<RecordHabit> records = recordHabitService.findAllByAccountIdAndDateBetweenAndIsDeletedFalse(
-                    accountId, phase.getStartDate(), phase.getEndDate()
-            );
-            long totalDays = ChronoUnit.DAYS.between(phase.getStartDate(), phase.getEndDate()) + 1;
-            if (!phaseService.isPhaseFullyReported(totalDays, records)) {
-                return false;
-            }
+            for (Phase phase : plan.getPhases()) {
+                List<RecordHabit> records = recordHabitService.findAllByAccountIdAndDateBetweenAndIsDeletedFalse(
+                        accountId, phase.getStartDate(), phase.getEndDate()
+                );
+                long totalDays = ChronoUnit.DAYS.between(phase.getStartDate(), phase.getEndDate()) + 1;
+                if (!phaseService.isPhaseFullyReported(totalDays, records)) {
+                    return false;
+                }
         }
         return true;
     }
@@ -155,7 +155,7 @@ public class PhaseAndPlanUpdater {
             scoreService.updateScore(account.getId(), ScoreRule.PLAN_SUCCESS);
         }
 
-        planService.updateCompletedPlan(plan, successRatio * 100.0, plan.getPlanStatus());
+        planService.updateCompletedPlan(plan, successRatio * 100.0, planStatus, maxCig, minCig != null ? minCig : 0, totalReportedDays, totalNotReportedDays);
             notificationService.sendPlanDoneNotification(plan.getPlanName(), account.getId());
             mailService.sendPlanSummary(plan.getPlanName(), plan.getStartDate(), plan.getEndDate(), totalReportedDays, totalNotReportedDays, maxCig, minCig, account.getEmail(), plan.getPlanStatus(), plan.getSuccessRate());
         log.info("max cig: {},min cig {}",maxCig,minCig);
