@@ -103,6 +103,7 @@ public class MailServiceImpl implements IMailService {
         log.info("Payment success mail sent to {}", to);
     }
 
+    @Async
     @Override
     public void sendMotivationMail(String to, String motivation) {
         buildAndSendMail(
@@ -118,6 +119,7 @@ public class MailServiceImpl implements IMailService {
         log.info("Motivation mail sent to {}", to);
     }
 
+    @Async
     @Override
     public void sendReminderMail(String to) {
         buildAndSendMail(
