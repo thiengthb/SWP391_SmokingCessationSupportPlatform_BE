@@ -42,7 +42,7 @@ public interface IMailService {
                              long totalReportedDays,
                              long totalNotReportedDays,
                              int totalMostSmoked,
-                             Integer totalLeastSmoked,
+                             int totalLeastSmoked,
                              String email,
                              PlanStatus planStatus,
                              Double successRate

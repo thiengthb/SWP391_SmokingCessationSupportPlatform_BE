@@ -52,7 +52,7 @@ public class Reminder {
         }
     }
 
-    @Scheduled(cron = "0 0 0 * * *")
+    @Scheduled(cron = "0 0 8 * * *")
     public void sendDailyMotivation() {
         sendMotivation(MotivationFrequency.DAILY);
     }
@@ -100,19 +100,14 @@ public class Reminder {
             String language = String.valueOf(setting.getLanguage());
 
             String motivationMessage;
-            double chance = Math.random();
 
-            try {
-                if (chance < 0.7) {
+
+
                     motivationMessage = getRandomMotivationMessage().getContent();
-                } else {
-                    motivationMessage = aiService.generateMotivationMessage(language);
-                }
+
 
                 mailServiceImpl.sendMotivationMail(email, motivationMessage);
-            } catch (Exception e) {
-                log.error("Failed to send motivation to email: {}", email, e);
-            }
+
         }
 
     }

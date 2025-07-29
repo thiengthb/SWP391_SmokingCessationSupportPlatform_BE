@@ -17,6 +17,8 @@ public interface IAccountService {
 
     PageResponse<AccountResponse> getAccountsPage(PageableRequest request);
 
+    PageResponse<AccountResponse> searchAccountByName(String name, PageableRequest request);
+
     AccountResponse getAccountById(String id);
 
     AccountResponse getCurrentAccount();
@@ -48,5 +50,7 @@ public interface IAccountService {
     void banAccount(String id);
 
     void checkExistByEmailOrThrowError(String email);
+
+
 
 }

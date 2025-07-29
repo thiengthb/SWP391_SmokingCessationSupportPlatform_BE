@@ -28,6 +28,17 @@ public class TimeTableController {
     ITimeTableService timeTableService;
     ResponseUtilService responseUtilService;
 
+    @GetMapping("/my/search")
+    ResponseEntity<ApiResponse<PageResponse<TimeTableResponse>>> searchMyTimetablesByName(
+            @RequestParam String name,
+            @Valid PageableRequest request
+    ) {
+        return responseUtilService.buildSuccessResponse(
+                SuccessCode.TIMETABLE_PAGE_FETCHED,
+                timeTableService.searchMyTimetablesByName(name, request)
+        );
+    }
+
     @GetMapping
     ResponseEntity<ApiResponse<PageResponse<TimeTableResponse>>> getTimeTablePage(
             @Valid PageableRequest request

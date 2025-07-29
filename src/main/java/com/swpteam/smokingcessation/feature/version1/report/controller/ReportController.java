@@ -74,4 +74,15 @@ public class ReportController {
                 reportService.getPremiumDistribution()
         );
     }
+
+    @GetMapping("completion")
+    ResponseEntity<ApiResponse<List<CompletionResponse>>> getCompletion(
+            @Valid ReportSummaryRequest reportSummaryRequest
+    )
+    {
+        return responseUtilService.buildSuccessResponse(
+                SuccessCode.COMPLETION_RATE_FETCHED,
+                reportService.getCompletion(reportSummaryRequest)
+        );
+    }
 }

@@ -40,6 +40,17 @@ public class PlanController {
         );
     }
 
+    @GetMapping("/my-plan/search")
+    ResponseEntity<ApiResponse<PageResponse<PlanPageResponse>>> searchMyPlansByName(
+            @RequestParam String name,
+            @Valid PageableRequest request
+    ) {
+        return responseUtilService.buildSuccessResponse(
+                SuccessCode.PLAN_PAGE_FETCHED,
+                planService.searchMyPlansByName(name, request)
+        );
+    }
+
     @GetMapping("/my-plans")
     ResponseEntity<ApiResponse<PageResponse<PlanPageResponse>>> getMyPlanPage(
             @Valid PageableRequest request

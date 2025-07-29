@@ -1,5 +1,7 @@
 package com.swpteam.smokingcessation.feature.version1.profile.controller;
 
+import com.swpteam.smokingcessation.common.PageResponse;
+import com.swpteam.smokingcessation.common.PageableRequest;
 import com.swpteam.smokingcessation.domain.dto.member.MemberCreateRequest;
 import com.swpteam.smokingcessation.domain.dto.member.MemberProfileResponse;
 import com.swpteam.smokingcessation.common.ApiResponse;
@@ -33,6 +35,18 @@ public class MemberController {
                 memberService.getMyMemberProfile()
         );
     }
+
+    @GetMapping("/search")
+    ResponseEntity<ApiResponse<PageResponse<MemberProfileResponse>>> searchMembersByName(
+            @RequestParam String name,
+            @Valid PageableRequest request
+    ) {
+        return responseUtilService.buildSuccessResponse(
+                SuccessCode.MEMBER_FETCHED_BY_FULLNAME,
+                memberService.searchMembersByName(name, request)
+        );
+    }
+
 
     @GetMapping("/{accountId}")
     ResponseEntity<ApiResponse<MemberProfileResponse>> getMemberById(

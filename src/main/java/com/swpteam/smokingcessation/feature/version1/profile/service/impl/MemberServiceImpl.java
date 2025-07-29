@@ -1,5 +1,7 @@
 package com.swpteam.smokingcessation.feature.version1.profile.service.impl;
 
+import com.swpteam.smokingcessation.common.PageResponse;
+import com.swpteam.smokingcessation.common.PageableRequest;
 import com.swpteam.smokingcessation.domain.dto.account.AccountUpdateRequest;
 import com.swpteam.smokingcessation.domain.dto.member.MemberCreateRequest;
 import com.swpteam.smokingcessation.domain.dto.member.MemberProfileResponse;
@@ -14,11 +16,14 @@ import com.swpteam.smokingcessation.feature.version1.identity.service.IAccountSe
 import com.swpteam.smokingcessation.repository.jpa.MemberRepository;
 import com.swpteam.smokingcessation.feature.version1.profile.service.IMemberService;
 import com.swpteam.smokingcessation.utils.AuthUtilService;
+import com.swpteam.smokingcessation.utils.ValidationUtil;
 import jakarta.transaction.Transactional;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 
@@ -34,6 +39,17 @@ public class MemberServiceImpl implements IMemberService {
     MemberRepository memberRepository;
     AuthUtilService authUtilService;
     IAccountService accountService;
+
+    @Override
+    @PreAuthorize("hasRole('ADMIN')")
+    public PageResponse<MemberProfileResponse> searchMembersByName(String name, PageableRequest request) {
+        ValidationUtil.checkFieldExist(Member.class, request.sortBy());
+
+        Pageable pageable = PageableRequest.getPageable(request);
+        Page<Member> members = memberRepository.findByFullNameContainingIgnoreCaseAndIsDeletedFalse(name, pageable);
+
+        return new PageResponse<>(members.map(memberMapper::toResponse));
+    }
 
     @Override
     public MemberProfileResponse getMyMemberProfile() {

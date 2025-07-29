@@ -18,7 +18,7 @@ import java.util.List;
 @FieldDefaults(makeFinal = true, level = AccessLevel.PRIVATE)
 public class ReportServiceImpl implements IReportService {
 
-    IReportRepository IReportRepository;
+    IReportRepository reportRepository;
     AccountRepository accountRepository;
     TransactionRepository transactionRepository;
 
@@ -36,7 +36,7 @@ public class ReportServiceImpl implements IReportService {
 //        int currentAccounts = (int) accountRepository.count();
 //        int activeAccounts = accountRepository.countActiveUsersBetween(from, to);
 
-        return IReportRepository.getReportSummary(from, to);
+        return reportRepository.getReportSummary(from, to);
     }
 
     @PreAuthorize("hasRole('ADMIN')")
@@ -49,13 +49,13 @@ public class ReportServiceImpl implements IReportService {
         }
 
 
-        return IReportRepository.getUserActivity(from, to);
+        return reportRepository.getUserActivity(from, to);
     }
 
     @PreAuthorize("hasRole('ADMIN')")
     @Override
     public UserDistributionResponse getUserDistribution() {
-        return IReportRepository.getUserDistribution();
+        return reportRepository.getUserDistribution();
     }
 
     @PreAuthorize("hasRole('ADMIN')")
@@ -66,12 +66,23 @@ public class ReportServiceImpl implements IReportService {
         if (request.to() != null) {
             to = request.to();
         }
-        return IReportRepository.getRevenue(from, to);
+        return reportRepository.getRevenue(from, to);
     }
 
     @PreAuthorize("hasRole('ADMIN')")
     @Override
     public PremiumDistributionResponse getPremiumDistribution() {
-        return IReportRepository.getPremiumDistribution();
+        return reportRepository.getPremiumDistribution();
+    }
+
+    @PreAuthorize("hasRole('ADMIN')")
+    @Override
+    public List<CompletionResponse> getCompletion(ReportSummaryRequest request) {
+        LocalDateTime to = LocalDateTime.now();
+        LocalDateTime from = request.from();
+        if (request.to() != null) {
+            to = request.to();
+        }
+        return reportRepository.getCompletetion(from, to);
     }
 }

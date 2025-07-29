@@ -61,7 +61,7 @@ public class CoachServiceImpl implements ICoachService {
 
     @Override
     @Transactional
-    @PreAuthorize("hasRole('COACH')")
+    @PreAuthorize("hasAnyRole('COACH','ADMIN')")
     public CoachResponse registerCoachProfile(CoachCreateRequest request) {
         Account currentAccount = authUtilService.getCurrentAccountOrThrowError();
 
@@ -127,6 +127,17 @@ public class CoachServiceImpl implements ICoachService {
         }
 
         return coach;
+    }
+
+    @Override
+    @PreAuthorize("hasRole('ADMIN')")
+    public PageResponse<CoachResponse> searchCoachesByName(String name, PageableRequest request) {
+        ValidationUtil.checkFieldExist(Coach.class, request.sortBy());
+
+        Pageable pageable = PageableRequest.getPageable(request);
+        Page<Coach> coaches = coachRepository.findByFullNameContainingIgnoreCaseAndIsDeletedFalse(name, pageable);
+
+        return new PageResponse<>(coaches.map(coachMapper::toResponse));
     }
 
 }

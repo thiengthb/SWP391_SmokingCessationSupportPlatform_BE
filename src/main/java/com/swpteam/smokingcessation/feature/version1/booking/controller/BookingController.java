@@ -15,6 +15,7 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.coyote.Response;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -36,6 +37,16 @@ public class BookingController {
         return responseUtilService.buildSuccessResponse(
                 SuccessCode.BOOKING_PAGE_FETCHED,
                 bookingService.getBookingPage(request)
+        );
+    }
+
+    @GetMapping("/member-booking")
+    ResponseEntity<ApiResponse<PageResponse<BookingResponse>>> getBookingPageAsMember(
+            @Valid PageableRequest request
+    ) {
+        return responseUtilService.buildSuccessResponse(
+                SuccessCode.BOOKING_PAGE_FETCHED,
+                bookingService.getMyBookingPageAsMember(request)
         );
     }
 
