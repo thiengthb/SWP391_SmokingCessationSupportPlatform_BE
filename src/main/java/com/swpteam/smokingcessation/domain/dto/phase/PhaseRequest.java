@@ -24,7 +24,7 @@ public record PhaseRequest(
 
         @NotNull(message = "PHASE_END_DATE_REQUIRED")
        // @Future(message = "PHASE_END_DATE_INVALID")
-        @FutureOrPresent
+     //   @FutureOrPresent
         LocalDate endDate,
 
         List<TipRequest> tips
