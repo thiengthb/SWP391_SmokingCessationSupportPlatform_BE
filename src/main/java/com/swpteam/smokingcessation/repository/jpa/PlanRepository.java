@@ -37,4 +37,7 @@ public interface PlanRepository extends JpaRepository<Plan, String> {
     Page<Plan> findAllByIsDeletedFalse(Pageable pageable);
 
     Optional<Plan> findByIdAndAccountIdAndIsDeletedFalse(String planId, String accountId);
+
+    Page<Plan> findByAccountIdAndPlanNameContainingIgnoreCaseAndIsDeletedFalse(String accountId, String planName, Pageable pageable);
+
 }

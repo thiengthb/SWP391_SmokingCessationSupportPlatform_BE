@@ -98,19 +98,19 @@ public class PlanServiceImpl implements IPlanService {
         return planResponse;
     }
 
-        @Override
-        @Transactional
-        @PreAuthorize("hasRole('MEMBER')")
-        @CachePut(value = "PLAN_CACHE", key = "#result.getId()")
-        @CacheEvict(value = "PLAN_PAGE_CACHE", allEntries = true)
-        public PlanResponse createPlan(PlanRequest request) {
-            Account currentAccount = authUtilService.getCurrentAccountOrThrowError();
+    @Override
+    @Transactional
+    @PreAuthorize("hasRole('MEMBER')")
+    @CachePut(value = "PLAN_CACHE", key = "#result.getId()")
+    @CacheEvict(value = "PLAN_PAGE_CACHE", allEntries = true)
+    public PlanResponse createPlan(PlanRequest request) {
+        Account currentAccount = authUtilService.getCurrentAccountOrThrowError();
 
-            // get Plan with status active and pending
-            List<Plan> existingPlans = planRepository.findAllByAccountIdAndPlanStatusInAndIsDeletedFalse(
-                    currentAccount.getId(),
-                    List.of(PlanStatus.ACTIVE, PlanStatus.PENDING)
-            );
+        // get Plan with status active and pending
+        List<Plan> existingPlans = planRepository.findAllByAccountIdAndPlanStatusInAndIsDeletedFalse(
+                currentAccount.getId(),
+                List.of(PlanStatus.ACTIVE, PlanStatus.PENDING)
+        );
 
         Optional<Plan> activePlan = existingPlans.stream()
                 .filter(p -> p.getPlanStatus() == PlanStatus.ACTIVE)
@@ -205,7 +205,6 @@ public class PlanServiceImpl implements IPlanService {
 
         return planMapper.toResponse(planRepository.save(plan));
     }
-
 
 
     private LocalDate[] getDateRangeFromPhases(List<PhaseRequest> phases) {
@@ -420,11 +419,17 @@ public class PlanServiceImpl implements IPlanService {
     }
 
     @Override
-    public void updateCompletedPlan(Plan plan, double successRate, PlanStatus planStatus) {
+    public void updateCompletedPlan(Plan plan, double successRate, PlanStatus planStatus,
+                                    int maxCig, int minCig, long totalReportedDays, long totalNotReportedDays) {
         plan.setSuccessRate(successRate);
         plan.setPlanStatus(planStatus);
+        plan.setTotalMostSmoked(maxCig);
+        plan.setTotalLeastSmoked(minCig);
+        plan.setTotalDaysReported(totalReportedDays);
+        plan.setTotalDaysNotReported(totalNotReportedDays);
         planRepository.save(plan);
     }
+
 
     @Override
     public List<Plan> getAllActivePlans() {
@@ -443,6 +448,20 @@ public class PlanServiceImpl implements IPlanService {
         }
 
         return planMapper.toSummaryResponse(plan);
+    }
+
+    @Override
+    @PreAuthorize("hasRole('MEMBER')")
+    public PageResponse<PlanPageResponse> searchMyPlansByName(String name, PageableRequest request) {
+        ValidationUtil.checkFieldExist(Plan.class, request.sortBy());
+
+        Account currentAccount = authUtilService.getCurrentAccountOrThrowError();
+        Pageable pageable = PageableRequest.getPageable(request);
+
+        Page<Plan> plans = planRepository
+                .findByAccountIdAndPlanNameContainingIgnoreCaseAndIsDeletedFalse(currentAccount.getId(), name, pageable);
+
+        return new PageResponse<>(plans.map(planMapper::toPageResponse));
     }
 
     private double getPlanProgress(Plan plan) {

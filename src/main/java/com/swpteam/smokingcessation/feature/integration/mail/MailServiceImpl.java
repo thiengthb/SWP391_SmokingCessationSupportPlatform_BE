@@ -103,6 +103,7 @@ public class MailServiceImpl implements IMailService {
         log.info("Payment success mail sent to {}", to);
     }
 
+    @Async
     @Override
     public void sendMotivationMail(String to, String motivation) {
         buildAndSendMail(
@@ -118,6 +119,7 @@ public class MailServiceImpl implements IMailService {
         log.info("Motivation mail sent to {}", to);
     }
 
+    @Async
     @Override
     public void sendReminderMail(String to) {
         buildAndSendMail(
@@ -162,7 +164,7 @@ public class MailServiceImpl implements IMailService {
         );
         log.info("Report mail sent to {}", to);
     }
-
+    @Async
     @Override
     public void sendPhaseSummary(String planName, LocalDate startDate, LocalDate endDate, long totalReportedDays, long totalNotReportedDays, int totalMostSmoked, double successRate, PhaseStatus phaseStatus, String mail,String healthImprovedSummary) {
         buildAndSendMail(
@@ -185,6 +187,7 @@ public class MailServiceImpl implements IMailService {
         log.info("Phase summary mail sent to {}", mail);
     }
 
+        @Async
     @Override
     public void sendPlanSummary(
             String planName,
@@ -193,7 +196,7 @@ public class MailServiceImpl implements IMailService {
             long totalReportedDays,
             long totalNotReportedDays,
             int totalMostSmoked,
-            Integer totalLeastSmoked,
+            int totalLeastSmoked,
             String email,
             PlanStatus planStatus,
             Double successRate
@@ -209,8 +212,8 @@ public class MailServiceImpl implements IMailService {
                         Map.entry("endDate", endDate),
                         Map.entry("totalReportedDays", totalReportedDays),
                         Map.entry("totalNotReportedDays", totalNotReportedDays),
-                        Map.entry("totalMostSmoked", totalMostSmoked),
-                        Map.entry("totalLeastSmoked", totalLeastSmoked),
+                        Map.entry("maxCig", totalMostSmoked),
+                        Map.entry("minCig", totalLeastSmoked),
                         Map.entry("planStatus", planStatus),
                         Map.entry("successRate", successRate)
                 )

@@ -64,6 +64,17 @@ public class AccountServiceImpl implements IAccountService {
 
     @Override
     @PreAuthorize("hasRole('ADMIN')")
+    public PageResponse<AccountResponse> searchAccountByName(String name, PageableRequest request) {
+        ValidationUtil.checkFieldExist(Account.class, request.sortBy());
+
+        Pageable pageable = PageableRequest.getPageable(request);
+        Page<Account> accounts = accountRepository.findByUsernameContainingIgnoreCaseAndIsDeletedFalse(name,pageable);
+
+        return new PageResponse<>(accounts.map(accountMapper::toResponse));
+    }
+
+    @Override
+    @PreAuthorize("hasRole('ADMIN')")
     public AccountResponse getAccountById(String id) {
         return accountMapper.toResponse(findAccountByIdOrThrowError(id));
     }

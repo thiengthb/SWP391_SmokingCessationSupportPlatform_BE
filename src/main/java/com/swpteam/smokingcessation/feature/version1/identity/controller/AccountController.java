@@ -49,6 +49,17 @@ public class AccountController {
         );
     }
 
+    @GetMapping("/search")
+    ResponseEntity<ApiResponse<PageResponse<AccountResponse>>> searchAccountsByName(
+            @RequestParam String name,
+            @Valid PageableRequest request
+    ) {
+        return responseUtilService.buildSuccessResponse(
+                SuccessCode.ACCOUNT_FETCHED,
+                accountService.searchAccountByName(name, request)
+        );
+    }
+
     @GetMapping("/online-users")
     ResponseEntity<ApiResponse<List<AccountResponse>>> getOnlineAccounts() {
         return responseUtilService.buildSuccessResponse(
