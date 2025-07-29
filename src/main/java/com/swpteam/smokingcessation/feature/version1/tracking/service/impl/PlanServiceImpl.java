@@ -2,26 +2,27 @@ package com.swpteam.smokingcessation.feature.version1.tracking.service.impl;
 
 import com.swpteam.smokingcessation.common.PageResponse;
 import com.swpteam.smokingcessation.common.PageableRequest;
-import com.swpteam.smokingcessation.constant.ResourceFilePaths;
+import com.swpteam.smokingcessation.constant.ErrorCode;
 import com.swpteam.smokingcessation.domain.dto.phase.PhaseRequest;
-import com.swpteam.smokingcessation.domain.dto.phase.PhaseResponse;
-import com.swpteam.smokingcessation.domain.dto.phase.PhaseTemplateResponse;
-import com.swpteam.smokingcessation.domain.dto.plan.*;
+import com.swpteam.smokingcessation.domain.dto.plan.PlanPageResponse;
+import com.swpteam.smokingcessation.domain.dto.plan.PlanRequest;
+import com.swpteam.smokingcessation.domain.dto.plan.PlanResponse;
+import com.swpteam.smokingcessation.domain.dto.plan.PlanSummaryResponse;
 import com.swpteam.smokingcessation.domain.dto.tip.TipRequest;
-import com.swpteam.smokingcessation.domain.dto.tip.TipResponse;
-import com.swpteam.smokingcessation.domain.entity.*;
+import com.swpteam.smokingcessation.domain.entity.Account;
+import com.swpteam.smokingcessation.domain.entity.Phase;
+import com.swpteam.smokingcessation.domain.entity.Plan;
+import com.swpteam.smokingcessation.domain.entity.Tip;
 import com.swpteam.smokingcessation.domain.enums.PhaseStatus;
 import com.swpteam.smokingcessation.domain.enums.PlanStatus;
 import com.swpteam.smokingcessation.domain.mapper.PhaseMapper;
 import com.swpteam.smokingcessation.domain.mapper.PlanMapper;
-import com.swpteam.smokingcessation.constant.ErrorCode;
 import com.swpteam.smokingcessation.exception.AppException;
-import com.swpteam.smokingcessation.repository.jpa.PlanRepository;
 import com.swpteam.smokingcessation.feature.version1.internalization.MessageSourceService;
 import com.swpteam.smokingcessation.feature.version1.tracking.service.IPhaseService;
 import com.swpteam.smokingcessation.feature.version1.tracking.service.IPlanService;
+import com.swpteam.smokingcessation.repository.jpa.PlanRepository;
 import com.swpteam.smokingcessation.utils.AuthUtilService;
-import com.swpteam.smokingcessation.utils.FileLoaderUtil;
 import com.swpteam.smokingcessation.utils.ValidationUtil;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -38,7 +39,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -94,19 +98,19 @@ public class PlanServiceImpl implements IPlanService {
         return planResponse;
     }
 
-        @Override
-        @Transactional
-        @PreAuthorize("hasRole('MEMBER')")
-        @CachePut(value = "PLAN_CACHE", key = "#result.getId()")
-        @CacheEvict(value = "PLAN_PAGE_CACHE", allEntries = true)
-        public PlanResponse createPlan(PlanRequest request) {
-            Account currentAccount = authUtilService.getCurrentAccountOrThrowError();
+    @Override
+    @Transactional
+    @PreAuthorize("hasRole('MEMBER')")
+    @CachePut(value = "PLAN_CACHE", key = "#result.getId()")
+    @CacheEvict(value = "PLAN_PAGE_CACHE", allEntries = true)
+    public PlanResponse createPlan(PlanRequest request) {
+        Account currentAccount = authUtilService.getCurrentAccountOrThrowError();
 
-            // get Plan with status active and pending
-            List<Plan> existingPlans = planRepository.findAllByAccountIdAndPlanStatusInAndIsDeletedFalse(
-                    currentAccount.getId(),
-                    List.of(PlanStatus.ACTIVE, PlanStatus.PENDING)
-            );
+        // get Plan with status active and pending
+        List<Plan> existingPlans = planRepository.findAllByAccountIdAndPlanStatusInAndIsDeletedFalse(
+                currentAccount.getId(),
+                List.of(PlanStatus.ACTIVE, PlanStatus.PENDING)
+        );
 
         Optional<Plan> activePlan = existingPlans.stream()
                 .filter(p -> p.getPlanStatus() == PlanStatus.ACTIVE)
@@ -188,112 +192,58 @@ public class PlanServiceImpl implements IPlanService {
         // 2. Validate phase ngày tháng và sort theo startDate
         validatePhaseDates(request.phases());
 
+        LocalDate[] dateRange = getDateRangeFromPhases(request.phases());
+        LocalDate newStartDate = dateRange[0];
+        LocalDate newEndDate = dateRange[1];
+
+        validatePlanConflicts(currentAccount.getId(), planId, newStartDate, newEndDate);
+
+        updatePlanPhases(plan, request.phases());
+        updatePlanBasicInfo(plan, request);
+
+        updatePlanDatesAndStatus(plan, newStartDate, newEndDate);
+
+        return planMapper.toResponse(planRepository.save(plan));
+    }
+
+
+    private LocalDate[] getDateRangeFromPhases(List<PhaseRequest> phases) {
+        LocalDate startDate = phases.stream()
+                .map(PhaseRequest::startDate)
+                .min(LocalDate::compareTo)
+                .orElseThrow(() -> new AppException(ErrorCode.PHASE_REQUIRED));
+
+        LocalDate endDate = phases.stream()
+                .map(PhaseRequest::endDate)
+                .max(LocalDate::compareTo)
+                .orElseThrow(() -> new AppException(ErrorCode.PHASE_REQUIRED));
+
+        return new LocalDate[]{startDate, endDate};
+    }
+
+    private void validatePlanConflicts(String accountId, String excludePlanId, LocalDate startDate, LocalDate endDate) {
         List<Plan> existingPlans = planRepository.findAllByAccountIdAndPlanStatusInAndIsDeletedFalse(
-                currentAccount.getId(),
-                List.of(PlanStatus.ACTIVE, PlanStatus.PENDING)
-        );
+                accountId, List.of(PlanStatus.ACTIVE, PlanStatus.PENDING));
 
         Optional<Plan> activePlan = existingPlans.stream()
                 .filter(p -> p.getPlanStatus() == PlanStatus.ACTIVE)
                 .findFirst();
 
         List<Plan> pendingPlans = existingPlans.stream()
-                .filter(p -> p.getPlanStatus() == PlanStatus.PENDING && !p.getId().equals(planId))
+                .filter(p -> p.getPlanStatus() == PlanStatus.PENDING && !p.getId().equals(excludePlanId))
                 .toList();
 
-        LocalDate newStartDate = request.phases().stream()
-                .map(PhaseRequest::startDate)
-                .min(LocalDate::compareTo)
-                .get();
+        restrictPlanDate(startDate, endDate, activePlan, pendingPlans);
+    }
 
-        LocalDate newEndDate = request.phases().stream()
-                .map(PhaseRequest::endDate)
-                .max(LocalDate::compareTo)
-                .get();
-
-        // 3. Validate conflict với other plans
-        restrictPlanDate(newStartDate, newEndDate, activePlan, pendingPlans);
-
-        // 4. Sort request phases và assign phase number
-        List<PhaseRequest> sortedPhaseRequests = new ArrayList<>(request.phases());
+    private void updatePlanPhases(Plan plan, List<PhaseRequest> phaseRequests) {
+        List<PhaseRequest> sortedPhaseRequests = new ArrayList<>(phaseRequests);
         sortedPhaseRequests.sort(Comparator.comparing(PhaseRequest::startDate));
 
-        // Assign phase number for comparison
-        for (int i = 0; i < sortedPhaseRequests.size(); i++) {
-            // Create a map to track phase numbers for comparison
-        }
+        mergeAndUpdatePhases(plan, sortedPhaseRequests);
+    }
 
-        // 5. Get current phases sorted by phase number
-        List<Phase> currentPhases = new ArrayList<>(plan.getPhases());
-        currentPhases.sort(Comparator.comparing(Phase::getPhaseNo));
-
-        // 6. Merge phases based on phase number
-        int requestSize = sortedPhaseRequests.size();
-        int currentSize = currentPhases.size();
-
-        // Handle existing phases (merge or update)
-        for (int i = 0; i < Math.min(requestSize, currentSize); i++) {
-            PhaseRequest phaseRequest = sortedPhaseRequests.get(i);
-            Phase existingPhase = currentPhases.get(i);
-
-            // Merge phase fields - only update non-null fields from request
-            if (phaseRequest.phaseName() != null && !phaseRequest.phaseName().trim().isEmpty()) {
-                existingPhase.setPhaseName(phaseRequest.phaseName());
-            }
-
-            if (phaseRequest.description() != null && !phaseRequest.description().trim().isEmpty()) {
-                existingPhase.setDescription(phaseRequest.description());
-            }
-
-            if (phaseRequest.cigaretteBound() != null) {
-                existingPhase.setCigaretteBound(phaseRequest.cigaretteBound());
-            }
-
-            if (phaseRequest.startDate() != null) {
-                existingPhase.setStartDate(phaseRequest.startDate());
-            }
-
-            if (phaseRequest.endDate() != null) {
-                existingPhase.setEndDate(phaseRequest.endDate());
-            }
-
-            // Merge tips
-            if (phaseRequest.tips() != null) {
-                mergeTips(existingPhase, phaseRequest.tips());
-            }
-        }
-
-        // 7. Add new phases if request has more phases
-        if (requestSize > currentSize) {
-            for (int i = currentSize; i < requestSize; i++) {
-                PhaseRequest phaseRequest = sortedPhaseRequests.get(i);
-                Phase newPhase = phaseMapper.toEntity(phaseRequest);
-
-                newPhase.setPlan(plan);
-                newPhase.setPhaseNo(i + 1); // Set phase number
-                newPhase.setPhaseStatus(PhaseStatus.PENDING); // New phases are PENDING
-
-                // Set tips for new phase
-                if (newPhase.getTips() != null) {
-                    newPhase.getTips().forEach(tip -> tip.setPhase(newPhase));
-                }
-
-                plan.getPhases().add(newPhase);
-            }
-        }
-
-        // 8. Remove excess phases if request has fewer phases
-        if (requestSize < currentSize) {
-            // Remove phases from the end
-            List<Phase> phasesToRemove = new ArrayList<>();
-            for (int i = requestSize; i < currentSize; i++) {
-                phasesToRemove.add(currentPhases.get(i));
-            }
-
-            plan.getPhases().removeAll(phasesToRemove);
-        }
-
-        // 9. Update plan basic info
+    private void updatePlanBasicInfo(Plan plan, PlanRequest request) {
         if (request.planName() != null && !request.planName().trim().isEmpty()) {
             plan.setPlanName(request.planName());
         }
@@ -301,25 +251,32 @@ public class PlanServiceImpl implements IPlanService {
         if (request.description() != null && !request.description().trim().isEmpty()) {
             plan.setDescription(request.description());
         }
+    }
 
-        // 10. Update plan start and end dates based on merged phases
-        plan.setStartDate(newStartDate);
-        plan.setEndDate(newEndDate);
-        if (plan.getStartDate().isEqual(LocalDate.now())) {
+    private void updatePlanDatesAndStatus(Plan plan, LocalDate startDate, LocalDate endDate) {
+        plan.setStartDate(startDate);
+        plan.setEndDate(endDate);
+
+        LocalDate today = LocalDate.now();
+        if (startDate.isEqual(today)) {
             plan.setPlanStatus(PlanStatus.ACTIVE);
-            plan.getPhases().getFirst().setPhaseStatus(PhaseStatus.ACTIVE);
-            for (int i = 1; i < plan.getPhases().size(); i++) {
-                plan.getPhases().get(i).setPhaseStatus(PhaseStatus.PENDING);
-            }
+            setPhaseStatusForActivePlan(plan);
         } else {
             plan.setPlanStatus(PlanStatus.PENDING);
-            plan.getPhases().forEach(phase -> {
-                phase.setPhaseStatus(PhaseStatus.PENDING);
-            });
+            plan.getPhases().forEach(phase -> phase.setPhaseStatus(PhaseStatus.PENDING));
         }
+    }
 
-        // 11. Save and return response
-        return planMapper.toResponse(planRepository.save(plan));
+    private void setPhaseStatusForActivePlan(Plan plan) {
+        List<Phase> phases = plan.getPhases();
+        phases.sort(Comparator.comparing(Phase::getPhaseNo));
+
+        if (!phases.isEmpty()) {
+            phases.get(0).setPhaseStatus(PhaseStatus.ACTIVE);
+            for (int i = 1; i < phases.size(); i++) {
+                phases.get(i).setPhaseStatus(PhaseStatus.PENDING);
+            }
+        }
     }
 
     private void mergeTips(Phase existingPhase, List<TipRequest> tipRequests) {
@@ -362,60 +319,6 @@ public class PlanServiceImpl implements IPlanService {
             currentTips.removeAll(tipsToRemove);
         }
     }
-
-    @Override
-    @PreAuthorize("hasRole('MEMBER')")
-    @CachePut(value = "PLAN_TEMPLATE_CACHE")
-    public List<PlanResponse> generateAllPlans() {
-        // Load all templates
-        List<PlanTemplateResponse> templates = FileLoaderUtil.loadPlanTemplate(ResourceFilePaths.QUIT_PLAN_TEMPLATES);
-
-        List<PlanResponse> planResponses = new ArrayList<>();
-
-        for (PlanTemplateResponse template : templates) {
-            LocalDate planStartDate = LocalDate.now();
-            LocalDate currentPhaseStartDate = planStartDate;
-            List<PhaseResponse> phases = new ArrayList<>();
-
-            for (PhaseTemplateResponse phase : template.getPhases()) {
-                LocalDate phaseEndDate = currentPhaseStartDate.plusDays(phase.getDuration() - 1);
-
-                List<TipResponse> tipResponses = phase.getTips().stream()
-                        .map(tipContent -> TipResponse.builder()
-                                .content(messageSourceService.getLocalizeMessage(tipContent))
-                                .build())
-                        .toList();
-
-                PhaseResponse response = PhaseResponse.builder()
-                        .phaseNo(phase.getPhaseNo())
-                        .phaseName(messageSourceService.getLocalizeMessage(phase.getPhaseName()))
-                        .cigaretteBound(phase.getCigaretteBound())
-                        .startDate(currentPhaseStartDate)
-                        .endDate(phaseEndDate)
-                        .description(messageSourceService.getLocalizeMessage(phase.getDescription()))
-                        .tips(tipResponses)
-                        .build();
-
-                phases.add(response);
-                currentPhaseStartDate = phaseEndDate.plusDays(1);
-            }
-
-            LocalDate planEndDate = phases.getLast().getEndDate();
-
-            PlanResponse planResponse = PlanResponse.builder()
-                    .planName(messageSourceService.getLocalizeMessage(template.getPlanName()))
-                    .description(messageSourceService.getLocalizeMessage(template.getDescription()))
-                    .startDate(planStartDate)
-                    .endDate(planEndDate)
-                    .phases(phases)
-                    .build();
-
-            planResponses.add(planResponse);
-        }
-
-        return planResponses;
-    }
-
 
     @Override
     @Transactional
@@ -516,11 +419,17 @@ public class PlanServiceImpl implements IPlanService {
     }
 
     @Override
-    public void updateCompletedPlan(Plan plan, double successRate, PlanStatus planStatus) {
+    public void updateCompletedPlan(Plan plan, double successRate, PlanStatus planStatus,
+                                    int maxCig, int minCig, long totalReportedDays, long totalNotReportedDays) {
         plan.setSuccessRate(successRate);
         plan.setPlanStatus(planStatus);
+        plan.setTotalMostSmoked(maxCig);
+        plan.setTotalLeastSmoked(minCig);
+        plan.setTotalDaysReported(totalReportedDays);
+        plan.setTotalDaysNotReported(totalNotReportedDays);
         planRepository.save(plan);
     }
+
 
     @Override
     public List<Plan> getAllActivePlans() {
@@ -539,6 +448,20 @@ public class PlanServiceImpl implements IPlanService {
         }
 
         return planMapper.toSummaryResponse(plan);
+    }
+
+    @Override
+    @PreAuthorize("hasRole('MEMBER')")
+    public PageResponse<PlanPageResponse> searchMyPlansByName(String name, PageableRequest request) {
+        ValidationUtil.checkFieldExist(Plan.class, request.sortBy());
+
+        Account currentAccount = authUtilService.getCurrentAccountOrThrowError();
+        Pageable pageable = PageableRequest.getPageable(request);
+
+        Page<Plan> plans = planRepository
+                .findByAccountIdAndPlanNameContainingIgnoreCaseAndIsDeletedFalse(currentAccount.getId(), name, pageable);
+
+        return new PageResponse<>(plans.map(planMapper::toPageResponse));
     }
 
     private double getPlanProgress(Plan plan) {
@@ -582,4 +505,69 @@ public class PlanServiceImpl implements IPlanService {
             }
         }
     }
+
+    private void mergeAndUpdatePhases(
+            Plan plan,
+            List<PhaseRequest> sortedPhaseRequests
+    ) {
+        List<Phase> currentPhases = new ArrayList<>(plan.getPhases());
+        currentPhases.sort(Comparator.comparing(Phase::getPhaseNo));
+
+        int requestSize = sortedPhaseRequests.size();
+        int currentSize = currentPhases.size();
+
+        // Update existing phases
+        for (int i = 0; i < Math.min(requestSize, currentSize); i++) {
+            PhaseRequest phaseRequest = sortedPhaseRequests.get(i);
+            Phase existingPhase = currentPhases.get(i);
+
+            if (phaseRequest.phaseName() != null && !phaseRequest.phaseName().trim().isEmpty()) {
+                existingPhase.setPhaseName(phaseRequest.phaseName());
+            }
+            if (phaseRequest.description() != null && !phaseRequest.description().trim().isEmpty()) {
+                existingPhase.setDescription(phaseRequest.description());
+            }
+            if (phaseRequest.cigaretteBound() != null) {
+                existingPhase.setCigaretteBound(phaseRequest.cigaretteBound());
+            }
+            if (phaseRequest.startDate() != null) {
+                existingPhase.setStartDate(phaseRequest.startDate());
+            }
+            if (phaseRequest.endDate() != null) {
+                existingPhase.setEndDate(phaseRequest.endDate());
+            }
+
+            // Merge tips
+            if (phaseRequest.tips() != null) {
+                mergeTips(existingPhase, phaseRequest.tips());
+            }
+        }
+
+        // Add new phases
+        if (requestSize > currentSize) {
+            for (int i = currentSize; i < requestSize; i++) {
+                PhaseRequest phaseRequest = sortedPhaseRequests.get(i);
+                Phase newPhase = phaseMapper.toEntity(phaseRequest);
+                newPhase.setPlan(plan);
+                newPhase.setPhaseNo(i + 1);
+                newPhase.setPhaseStatus(PhaseStatus.PENDING);
+
+                if (newPhase.getTips() != null) {
+                    newPhase.getTips().forEach(tip -> tip.setPhase(newPhase));
+                }
+
+                plan.getPhases().add(newPhase);
+            }
+        }
+
+        // Remove excess phases
+        if (requestSize < currentSize) {
+            List<Phase> phasesToRemove = new ArrayList<>();
+            for (int i = requestSize; i < currentSize; i++) {
+                phasesToRemove.add(currentPhases.get(i));
+            }
+            plan.getPhases().removeAll(phasesToRemove);
+        }
+    }
+
 }

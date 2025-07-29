@@ -49,7 +49,7 @@ public class RecordHabitServiceImpl implements IRecordHabitService {
 
     @Override
     public PageResponse<RecordHabitResponse> getMyRecordPage(PageableRequest request) {
-        ValidationUtil.checkFieldExist(RecordHabitMapper.class, request.sortBy());
+        ValidationUtil.checkFieldExist(RecordHabit.class, request.sortBy());
 
         Account currentAccount = authUtilService.getCurrentAccountOrThrowError();
 
@@ -66,7 +66,7 @@ public class RecordHabitServiceImpl implements IRecordHabitService {
 
     @Override
     public PageResponse<RecordHabitResponse> getRecordPageByAccountId(String accountId, PageableRequest request) {
-        ValidationUtil.checkFieldExist(RecordHabitMapper.class, request.sortBy());
+        ValidationUtil.checkFieldExist(RecordHabit.class, request.sortBy());
 
         accountService.findAccountByIdOrThrowError(accountId);
 

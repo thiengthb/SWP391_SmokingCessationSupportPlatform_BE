@@ -1,5 +1,6 @@
 package com.swpteam.smokingcessation.repository.jpa;
 
+import com.swpteam.smokingcessation.domain.entity.Account;
 import com.swpteam.smokingcessation.domain.entity.Health;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -25,6 +26,9 @@ public interface HealthRepository extends JpaRepository<Health, String> {
 
     boolean existsByAccountId(String accountId);
 
-    List<Health> findByCreatedAtBetween(LocalDateTime start, LocalDateTime end);
+    List<Health> findByAccountAndCreatedAtBetween(Account account, LocalDateTime start, LocalDateTime end);
+
+    Optional<Health> findFirstByAccountIdAndIsDeletedFalseOrderByCreatedAtAsc(String accountId);
+
 
 }

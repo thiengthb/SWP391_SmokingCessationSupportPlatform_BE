@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @JsonInclude(JsonInclude.Include.NON_NULL)
-public class BlogResponse {
+public class BlogListItemResponse {
 
     String id;
     String authorName;
@@ -22,12 +22,6 @@ public class BlogResponse {
     String slug;
     String coverImageUrl;
     String excerpt;
-    String content;
     BlogStatus status;
-
-    String createdBy;
-    LocalDateTime createdAt;
-
-    String updateBy;
-    LocalDateTime updatedAt;
+    LocalDateTime publishedAt;
 }

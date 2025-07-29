@@ -58,4 +58,14 @@ public class AIService implements IAIService {
 
         return prompt.toString().trim();
     }
+
+    public String generateMotivationMessage(String language) {
+        String prompt;
+        if ("vi".equalsIgnoreCase(language)) {
+            prompt = "Hãy gửi một câu động viên ngắn gọn giúp bỏ thuốc lá bằng tiếng Việt.";
+        } else {
+            prompt = "Give a short motivational message to help someone quit smoking in English.";
+        }
+        return chat(prompt);
+    }
 }

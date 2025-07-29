@@ -18,5 +18,7 @@ public record GoalCreateRequest(
 
     @NotNull(message = "GOAL_CRITERIA_VALUE_REQUIRED")
     @Min(value = 0, message = "GOAL_CRITERIA_VALUE_INVALID")
-    Integer criteriaValue
+    Integer criteriaValue,
+
+    String goalDifficulty
 ){}

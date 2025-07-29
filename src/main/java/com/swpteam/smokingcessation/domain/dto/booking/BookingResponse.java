@@ -17,7 +17,9 @@ public class BookingResponse {
 
     String id;
     String memberId;
+    String memberName;
     String coachId;
+    String coachFullName;
     String meetLink;
     LocalDateTime startedAt;
     LocalDateTime endedAt;

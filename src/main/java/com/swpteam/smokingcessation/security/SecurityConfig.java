@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -41,11 +42,11 @@ public class SecurityConfig {
             "/api/v1/webhook/stripe",
             "/api/v1/auth/**",
             "/api/v1/auth/verify",
-            "/api/v1/memberships/**",
             "/api/test/**",
             "/api/v1/accounts/online-users",
             "/api/v1/scores/**",
-            "/api/v1/chats/**"
+            "/api/v1/chats/**",
+            "/api/v1/goals/hall-of-fame"
     };
 
     JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
@@ -70,6 +71,7 @@ public class SecurityConfig {
                 )
                 .authorizeHttpRequests(request -> request
                         .requestMatchers(PUBLIC_ENDPOINTS).permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/memberships/**").permitAll()
                         .anyRequest().authenticated()
                 )
                 .exceptionHandling(exception -> exception

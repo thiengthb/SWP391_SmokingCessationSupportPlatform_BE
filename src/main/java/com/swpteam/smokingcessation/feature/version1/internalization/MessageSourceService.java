@@ -20,7 +20,6 @@ public class MessageSourceService {
 
     MessageSource messageSource;
 
-
     public String getLocalizeMessage(String key) {
         Locale locale = LocaleContextHolder.getLocale();
         return getMessage(key, locale);

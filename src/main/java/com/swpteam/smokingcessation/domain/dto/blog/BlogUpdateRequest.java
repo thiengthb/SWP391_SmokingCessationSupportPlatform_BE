@@ -27,5 +27,7 @@ public record BlogUpdateRequest (
 
     String content,
 
+    String readingTime,
+
     BlogStatus status
 ) {}

@@ -28,6 +28,17 @@ public class TimeTableController {
     ITimeTableService timeTableService;
     ResponseUtilService responseUtilService;
 
+    @GetMapping("/my/search")
+    ResponseEntity<ApiResponse<PageResponse<TimeTableResponse>>> searchMyTimetablesByName(
+            @RequestParam String name,
+            @Valid PageableRequest request
+    ) {
+        return responseUtilService.buildSuccessResponse(
+                SuccessCode.TIMETABLE_PAGE_FETCHED,
+                timeTableService.searchMyTimetablesByName(name, request)
+        );
+    }
+
     @GetMapping
     ResponseEntity<ApiResponse<PageResponse<TimeTableResponse>>> getTimeTablePage(
             @Valid PageableRequest request
@@ -67,4 +78,29 @@ public class TimeTableController {
                 timeTableService.createTimeTable(request)
         );
     }
+
+    @PutMapping("/{id}")
+    ResponseEntity<ApiResponse<TimeTableResponse>> updateTimeTable(
+            @PathVariable String id,
+            @Valid @RequestBody TimeTableRequest request
+    ) {
+        return responseUtilService.buildSuccessResponse(
+                SuccessCode.TIMETABLE_UPDATED,
+                timeTableService.updateTimeTableById(id, request)
+        );
+    }
+
+
+    @DeleteMapping("/{id}")
+    ResponseEntity<ApiResponse<Void>> deleteTimeTable(
+            @PathVariable String id
+    ) {
+        timeTableService.softDeleteTimeTableById(id);
+        return responseUtilService.buildSuccessResponse(
+                SuccessCode.TIMETABLE_DELETED,
+                null
+        );
+    }
+
+
 }

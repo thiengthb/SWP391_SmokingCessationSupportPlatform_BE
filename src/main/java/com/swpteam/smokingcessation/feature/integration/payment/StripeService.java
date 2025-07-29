@@ -55,7 +55,7 @@ public class StripeService implements IStripeService {
 
         Account currentAccount = authUtilService.getCurrentAccountOrThrowError();
 
-        Transaction transaction = transactionService.createTransaction(currentAccount, membership.getPrice(), membership.getCurrency());
+        Transaction transaction = transactionService.createTransaction(currentAccount, membership.getPrice(), membership.getCurrency(), membership);
 
         SessionCreateParams.LineItem.PriceData.ProductData productData =
                 SessionCreateParams.LineItem.PriceData.ProductData.builder()

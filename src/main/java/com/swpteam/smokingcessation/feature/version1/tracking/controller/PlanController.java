@@ -33,10 +33,21 @@ public class PlanController {
     ResponseUtilService responseUtilService;
 
     @GetMapping("/my-current-plan")
-    ResponseEntity<ApiResponse<PlanResponse>> getPlanById() {
+    ResponseEntity<ApiResponse<PlanResponse>> getMyCurrentPlan() {
         return responseUtilService.buildSuccessResponse(
                 SuccessCode.PLAN_FETCHED_BY_ID,
                 planService.getMyCurrentPlan()
+        );
+    }
+
+    @GetMapping("/my-plan/search")
+    ResponseEntity<ApiResponse<PageResponse<PlanPageResponse>>> searchMyPlansByName(
+            @RequestParam String name,
+            @Valid PageableRequest request
+    ) {
+        return responseUtilService.buildSuccessResponse(
+                SuccessCode.PLAN_PAGE_FETCHED,
+                planService.searchMyPlansByName(name, request)
         );
     }
 
@@ -49,16 +60,7 @@ public class PlanController {
                 planService.getMyPlanPage(request)
         );
     }
-
-    @GetMapping("/template")
-    public ResponseEntity<ApiResponse<List<PlanResponse>>> getPlanTemplate() {
-        return responseUtilService.buildSuccessResponse(
-                SuccessCode.PLAN_TEMPLATE_FETCHED,
-                planService.generateAllPlans()
-        );
-    }
-
-
+    
     @PostMapping
     ResponseEntity<ApiResponse<PlanResponse>> createPlan(
             @Valid @RequestBody PlanRequest request

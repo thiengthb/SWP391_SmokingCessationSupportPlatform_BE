@@ -34,4 +34,9 @@ public class Booking extends AuditableEntity {
     String bookingReason;
 
     String declineReason;
+
+    boolean notifyBeforeBooking = false;
+
+    @OneToOne(mappedBy = "booking", cascade = CascadeType.ALL)
+    TimeTable timeTable;
 }

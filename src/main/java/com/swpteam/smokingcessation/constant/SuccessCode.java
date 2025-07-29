@@ -38,6 +38,7 @@ public enum SuccessCode {
     MEMBERSHIP_DELETED(1302, "success.membership.deleted"),
     MEMBERSHIP_LIST_FETCHED(1303, "success.membership.list_fetched"),
     MEMBERSHIP_FETCHED_BY_ID(1304, "success.membership.fetched_by_id"),
+    MEMBER_FETCHED_BY_FULLNAME(1305,"success.membership.fetchedByFullName"),
 
     // Subscription Successes (1400-1499)
     SUBSCRIPTION_CREATED(1400, "success.subscription.created"),
@@ -158,6 +159,11 @@ public enum SuccessCode {
 
     // Report Successes (3000-3099)
     REPORT_SUMMARY_FETCHED(3000, "success.report.summary_fetched"),
+    USER_DISTRIBUTION_FETCHED(3001, "success.report.user_distribution_fetched"),
+    USER_GROWTH_FETCHED(3002, "success.report.user_growth_fetched"),
+    REVENUE_FETCHED(3003, "success.report.revenue_fetched"),
+    PREMIUM_DISTRIBUTION_FETCHED(3003, "success.report.premium_distribution.fetched"),
+    COMPLETION_RATE_FETCHED(3004, "success.report.completion_rate.fetched"),
 
     // Goal Successes (3100-3199)
     GOAL_CREATED(3100, "success.goal.created"),
@@ -187,6 +193,8 @@ public enum SuccessCode {
     TIMETABLE_CREATED(3400, "success.timetable.created"),
     TIMETABLE_PAGE_FETCHED(3401, "success.timetable.page_fetched"),
     TIMETABLE_FETCHED_BY_ID(3402, "success.timetable.fetched_by_id"),
+    TIMETABLE_UPDATED(3403,"success.timetable.updated"),
+    TIMETABLE_DELETED(3404, "success.timetable.deleted"),
 
     // Setting Successes (3500-3599)
     SETTING_UPDATED(3500, "success.setting.updated"),
@@ -206,7 +214,8 @@ public enum SuccessCode {
     TRANSACTION_FETCH_BY_ACCOUNT(3901, "success.transaction.fetch_by_account"),
     TRANSACTION_FETCH_BY_ID(3901, "success.transaction.fetch_by_id"),
 
-
+    // Statistics (4000 - 4099)
+    STATISTICS_FETCHED_BY_ACCOUNT(4000, "success.statistics.fetch_by_account"),
     ;
     int code;
     String messageLocaleKey;

@@ -2,7 +2,7 @@ package com.swpteam.smokingcessation.domain.enums;
 
 public enum BlogStatus {
     DRAFTING,
-    PUBLISH,
+    PUBLISHED,
     ARCHIVED,
     SCHEDULED
 }

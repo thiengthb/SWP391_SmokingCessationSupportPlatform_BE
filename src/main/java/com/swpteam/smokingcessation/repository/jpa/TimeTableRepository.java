@@ -26,4 +26,13 @@ public interface TimeTableRepository extends JpaRepository<TimeTable, String> {
     );
 
     List<TimeTable> getAllByCoachIdAndIsDeletedFalse(String coachId);
+
+    Optional<TimeTable> findByCoach_IdAndStartedAtAndEndedAtAndIsDeletedFalse(
+            String coachId,
+            LocalDateTime startedAt,
+            LocalDateTime endedAt
+    );
+
+    Page<TimeTable> findByCoachIdAndNameContainingIgnoreCaseAndIsDeletedFalse(String coachId, String name, Pageable pageable);
+
 }

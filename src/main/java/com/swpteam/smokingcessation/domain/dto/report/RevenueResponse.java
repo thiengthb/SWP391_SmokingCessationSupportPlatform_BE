@@ -1,17 +1,18 @@
-package com.swpteam.smokingcessation.domain.dto.plan;
+package com.swpteam.smokingcessation.domain.dto.report;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import java.util.List;
+import java.time.LocalDate;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@JsonInclude(JsonInclude.Include.NON_NULL)
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class PlanTemplateWrapper {
-    List<PlanTemplateResponse> levels;
+@JsonInclude(JsonInclude.Include.NON_NULL)
+public class RevenueResponse {
+    LocalDate date;
+    double revenue;
 }

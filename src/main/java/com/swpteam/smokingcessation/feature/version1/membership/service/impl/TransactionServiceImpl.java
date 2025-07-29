@@ -5,6 +5,7 @@ import com.swpteam.smokingcessation.common.PageableRequest;
 import com.swpteam.smokingcessation.domain.dto.transaction.TransactionListItemResponse;
 import com.swpteam.smokingcessation.domain.dto.transaction.TransactionResponse;
 import com.swpteam.smokingcessation.domain.entity.Account;
+import com.swpteam.smokingcessation.domain.entity.Membership;
 import com.swpteam.smokingcessation.domain.entity.Subscription;
 import com.swpteam.smokingcessation.domain.entity.Transaction;
 import com.swpteam.smokingcessation.domain.enums.Currency;
@@ -60,13 +61,14 @@ public class TransactionServiceImpl implements ITransactionService {
 
     @Override
     @Transactional
-    public Transaction createTransaction(Account account, double amount, Currency currency) {
+    public Transaction createTransaction(Account account, double amount, Currency currency, Membership membership) {
         accountService.findAccountByIdOrThrowError(account.getId());
 
         Transaction transaction = Transaction.startTransaction(account);
         transaction.setAmount(amount);
         transaction.setCurrency(currency);
         transaction.setMethod(PaymentMethod.CARD);
+        transaction.setMembership(membership);
 
         return transactionRepository.save(transaction);
     }

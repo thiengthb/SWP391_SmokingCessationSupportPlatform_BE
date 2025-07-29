@@ -24,8 +24,6 @@ public interface IPlanService {
 
     PlanResponse updatePlanById(String id, PlanRequest request);
 
-    List<PlanResponse> generateAllPlans();
-
     Plan findPlanByIdOrThrowError(String id);
 
     void softDeletePlanById(String id);
@@ -34,9 +32,13 @@ public interface IPlanService {
 
     void dailyCheckingPlanStatus();
 
-    void updateCompletedPlan(Plan plan, double successRate, PlanStatus planStatus);
+    void updateCompletedPlan(Plan plan, double successRate, PlanStatus planStatus,
+                             int maxCig, int minCig, long totalReportedDays, long totalNotReportedDays);
 
     List<Plan> getAllActivePlans();
 
     PlanSummaryResponse getPlanSummary(String planId);
+
+    PageResponse<PlanPageResponse> searchMyPlansByName(String name, PageableRequest request);
+
 }

@@ -78,8 +78,7 @@ public class AuthenticationController {
 
     @PostMapping("/register")
     ResponseEntity<ApiResponse<Void>> register(
-            @RequestBody @Valid RegisterRequest request,
-            HttpServletResponse response
+            @RequestBody @Valid RegisterRequest request
     ) {
         authenticationService.register(request);
 

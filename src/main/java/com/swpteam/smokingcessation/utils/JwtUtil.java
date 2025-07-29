@@ -41,6 +41,10 @@ public class JwtUtil {
     }
 
     public SignedJWT verifyToken(String token, JWSVerifier verifier) {
+        if (token == null || token.trim().isEmpty()) {
+            throw new AppException(ErrorCode.INVALID_TOKEN);
+        }
+
         try {
             SignedJWT jwt = SignedJWT.parse(token);
 

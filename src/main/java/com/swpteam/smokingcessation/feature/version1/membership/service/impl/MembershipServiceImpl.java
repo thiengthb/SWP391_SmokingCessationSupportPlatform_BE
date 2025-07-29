@@ -39,7 +39,7 @@ public class MembershipServiceImpl implements IMembershipService {
 
     @Override
     public List<MembershipResponse> getMembershipList() {
-        return membershipRepository.findAll(Sort.by("name")).stream().map(membershipMapper::toResponse).toList();
+        return membershipRepository.findAll(Sort.by("price")).stream().map(membershipMapper::toResponse).toList();
     }
 
     @Override

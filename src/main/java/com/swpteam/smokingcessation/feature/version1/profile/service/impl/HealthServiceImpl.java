@@ -125,7 +125,9 @@ public class HealthServiceImpl implements IHealthService {
         LocalDateTime startOfDay = today.atStartOfDay();
         LocalDateTime endOfDay = today.atTime(LocalTime.MAX);
 
-        return healthRepository.findByCreatedAtBetween(startOfDay, endOfDay);
+        Account currentAccount = authUtilService.getCurrentAccountOrThrowError();
+
+        return healthRepository.findByAccountAndCreatedAtBetween(currentAccount, startOfDay, endOfDay);
     }
 
     @Override
@@ -188,5 +190,11 @@ public class HealthServiceImpl implements IHealthService {
     public Health findLatestHealthByAccountIdOrNull(String accountId){
         return healthRepository.findFirstByAccountIdAndIsDeletedFalseOrderByCreatedAtDesc(accountId)
                 .orElse(null);
+    }
+
+    @Override
+    public Health getInitialHealth(String accountId) {
+        return healthRepository.findFirstByAccountIdAndIsDeletedFalseOrderByCreatedAtAsc(accountId)
+                .orElseThrow(() -> new AppException(ErrorCode.HEALTH_RECORD_NOT_FOUND));
     }
 }

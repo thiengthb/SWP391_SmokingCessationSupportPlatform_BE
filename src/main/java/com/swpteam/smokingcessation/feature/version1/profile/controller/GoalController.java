@@ -2,10 +2,8 @@ package com.swpteam.smokingcessation.feature.version1.profile.controller;
 
 import com.swpteam.smokingcessation.common.ApiResponse;
 import com.swpteam.smokingcessation.constant.SuccessCode;
-import com.swpteam.smokingcessation.domain.dto.goal.GoalCreateRequest;
-import com.swpteam.smokingcessation.domain.dto.goal.GoalDetailsResponse;
-import com.swpteam.smokingcessation.domain.dto.goal.GoalListItemResponse;
-import com.swpteam.smokingcessation.domain.dto.goal.GoalUpdateRequest;
+import com.swpteam.smokingcessation.domain.dto.goal.*;
+import com.swpteam.smokingcessation.feature.version1.profile.service.IGoalProgressService;
 import com.swpteam.smokingcessation.feature.version1.profile.service.IGoalService;
 import com.swpteam.smokingcessation.utils.ResponseUtilService;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -28,6 +26,7 @@ import java.util.List;
 public class GoalController {
 
     IGoalService goalService;
+    IGoalProgressService goalProgressService;
     ResponseUtilService responseUtilService;
 
     @GetMapping
@@ -62,6 +61,15 @@ public class GoalController {
         return responseUtilService.buildSuccessResponse(
                 SuccessCode.GOAL_FETCHED_BY_NAME,
                 goalService.getGoalByName(name)
+        );
+    }
+
+    @GetMapping("/hall-of-fame")
+    public ResponseEntity<ApiResponse<List<HallOfFameResponse>>> getHallOfFame(
+    ) {
+        return responseUtilService.buildSuccessResponse(
+                SuccessCode.GOAL_PAGE_FETCHED,
+                goalProgressService.getHallOfFame()
         );
     }
 

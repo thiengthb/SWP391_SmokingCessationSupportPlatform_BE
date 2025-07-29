@@ -16,6 +16,12 @@ import java.util.Optional;
 @Repository
 public interface SettingRepository extends JpaRepository<Setting, String> {
 
+    @Query("""
+    SELECT s FROM Setting s
+    WHERE s.reportDeadline = :deadlineTime
+    AND s.isDeleted = false
+    AND s.trackingMode = 'DAILY_RECORD'
+""")
     List<Setting> findByReportDeadlineAndIsDeletedFalse(LocalTime deadlineTime);
 
     @Query("SELECT s FROM Setting s " +
