@@ -14,11 +14,11 @@ import com.swpteam.smokingcessation.domain.enums.AuthProvider;
 import com.swpteam.smokingcessation.domain.enums.Role;
 import com.swpteam.smokingcessation.domain.mapper.AccountMapper;
 import com.swpteam.smokingcessation.exception.AppException;
+import com.swpteam.smokingcessation.feature.version1.identity.service.IAccountService;
+import com.swpteam.smokingcessation.feature.version1.profile.service.IGoalProgressService;
 import com.swpteam.smokingcessation.repository.jpa.AccountRepository;
 import com.swpteam.smokingcessation.repository.jpa.CoachRepository;
 import com.swpteam.smokingcessation.repository.jpa.MemberRepository;
-import com.swpteam.smokingcessation.feature.version1.identity.service.IAccountService;
-import com.swpteam.smokingcessation.feature.version1.profile.service.IGoalProgressService;
 import com.swpteam.smokingcessation.utils.AuthUtilService;
 import com.swpteam.smokingcessation.utils.RandomUtil;
 import com.swpteam.smokingcessation.utils.ValidationUtil;
@@ -102,7 +102,14 @@ public class AccountServiceImpl implements IAccountService {
         account.setUsername(RandomUtil.generateRandomUsername());
         account.setPassword(passwordEncoder.encode(request.password()));
         account.setProvider(AuthProvider.LOCAL);
-        account.setStatus(AccountStatus.INACTIVE);
+        account.setStatus(AccountStatus.OFFLINE);
+
+        if (account.getRole() == Role.COACH) {
+            account.setCoach(Coach.getDefaultCoach(account));
+        } else if (account.getRole() == Role.MEMBER) {
+            account.setMember(Member.getDefaultMember(account));
+        }
+        account.setSetting(Setting.getDefaultSetting(account));
 
         return accountMapper.toResponse(accountRepository.save(account));
     }
